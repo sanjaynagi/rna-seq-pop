@@ -1,0 +1,7 @@
+ref:
+  genome:
+        "data/reference/aedes-aegypti-lvpagwg_chromosomes.l5.fa"
+  transcriptome:
+        "data/reference/aedes-aegypti-lvpagwg_transcripts.l5.fa"
+  gtf: 
+        "data/reference/Aedes-aegypti-LVP_AGWG_BASEFEATURES_AaegL5.2.gtf"

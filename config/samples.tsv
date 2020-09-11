@@ -1,0 +1,13 @@
+ID	treatment	samples	bam	cohort	species	strain	insecticide	lab
+s01_RUN	ContAngola	ContAngola1	ContAngola1.bam	control	aegypti	Angola	none	FALSE
+s02_RUN	ContAngola	ContAngola2	ContAngola2.bam	control	aegypti	Angola	none	FALSE
+s03_RUN	ContAngola	ContAngola3	ContAngola3.bam	control	aegypti	Angola	none	FALSE
+s12_RFE	FenAngola	FenAngola1	FenAngola1.bam	case	aegypti	Angola	Fenitrothion	FALSE
+s13_RFE	FenAngola	FenAngola2	FenAngola2.bam	case	aegypti	Angola	Fenitrothion	FALSE
+s14_RFE	FenAngola	FenAngola3	FenAngola3.bam	case	aegypti	Angola	Fenitrothion	FALSE
+s05_SNO	NewOrleans	NewOrleans1	NewOrleans1.bam	control	aegypti	NewOrleans	none	TRUE
+s06_SNO	NewOrleans	NewOrleans2	NewOrleans2.bam	control	aegypti	NewOrleans	none	TRUE
+s07_SNO	NewOrleans	NewOrleans3	NewOrleans3.bam	control	aegypti	NewOrleans	none	TRUE
+s08_SRO	Rockefeller	Rockefeller1	Rockefeller1.bam	control	aegypti	Rockefeller	none	TRUE
+s09_SRO	Rockefeller	Rockefeller2	Rockefeller2.bam	control	aegypti	Rockefeller	none	TRUE
+s10_SRO	Rockefeller	Rockefeller3	Rockefeller3.bam	control	aegypti	Rockefeller	none	TRUE
