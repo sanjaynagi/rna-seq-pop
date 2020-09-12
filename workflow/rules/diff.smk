@@ -4,55 +4,52 @@
 # Sleuth (Pimentel et al., 2017)                       	 						               #
 ####################################################################################################
 
-rule transcriptome_index:
+rule KallistoIndex:
 	input:
-		lambda wildcards:config['ref']['transcriptome']
+		fasta=lambda wildcards:config['ref']['transcriptome']
 	output:
-		"data/reference/kallisto.idx"
+		index="resources/reference/kallisto.idx"
 	log:
 		"logs/kallisto/index.log"
-	shell:
-		"""
-		kallisto index -i {output} {input} 2> {log}
-		"""
+	wrapper:
+		"0.65.0/kallisto/index"
 
-rule kallisto:
+rule KallistoQuant:
 	input:
-		fwd="data/reads/{sample}_1.fastq.gz",\
-		rev="data/reads/{sample}_2.fastq.gz",
-		idx="data/reference/kallisto.idx"
+		fastq=expand("resources/reads/{{sample}}_{n}.fastq.gz", n=[1,2]),
+		index="resources/reference/kallisto.idx"
 	output:
-		directory("analysis/quant/{sample}")
+		directory("results/quant/{sample}")
+	params:
+		bootstrap="-b 100"
 	threads:12
 	log:
 		"logs/kallisto/quant_{sample}.log"
 	shell:
-		"""
-		kallisto quant -i {input.idx} -t {threads} -o {output} {input.fwd} {input.rev} -b 100 2> {log}
-		"""
+		"0.65.0/bio/kallisto/quant"
 
-rule gene_differential_expression:
+rule DifferentialGeneExpression:
 	input:
-		expand("analysis/quant/{sample}", sample=samples)
+		expand("results/quant/{sample}", sample=samples)
 	output:
-		"analysis/diff/RNA-Seq_diff.xlsx"
+		"results/diff/RNA-Seq_diff.xlsx"
 	log:
 		"logs/DESeq2/geneDE.log"
 	shell:
 		"""
-		mkdir -pv analysis/diff
-		Rscript analysis/scripts/kallisto_DE.R 2> {log}
+		mkdir -pv results/diff
+		Rscript results/scripts/kallisto_DE.R 2> {log}
 		"""
 
-rule transcript_differential_expression:
+rule DifferentialIsoformExpression:
 	input:
-		expand("analysis/quant/{sample}", sample=samples)
+		expand("results/quant/{sample}", sample=samples)
 	output:
-		"analysis/isoformdiff/RNA-Seq_isoformdiff.xlsx"
+		"results/isoformdiff/RNA-Seq_isoformdiff.xlsx"
 	log:
 		"logs/DESeq2/geneDE.log"
 	shell:
 		"""
-		mkdir -pv analysis/isoformdiff
-		Rscript analysis/scripts/sleuth_isoforms_DE.R 2> {log}
+		mkdir -pv results/isoformdiff
+		Rscript results/scripts/sleuth_isoforms_DE.R 2> {log}
 		"""

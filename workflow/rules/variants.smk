@@ -4,57 +4,84 @@
 # FreeBayes (Kim et al., 2018)                                                    #
 ##################################################################################
 
-rule genome_index:
+rule HISAT2splicesites:
 	input:
 		ref = lambda wildcards:config['ref']['genome'],
 		gtf = lambda wildcards:config['ref']['gtf']
 	output:
-		touch("data/reference/ht.index")
+		splice_sites="resources/reference/splice-sites.gtf",
+		exons="resources/reference/exon-sites.gtf"
 	log:
-		"logs/hisat2/build_index.log"
+		"logs/hisat2/splice_sites.log"
 	shell:
 		"""
-		hisat2_extract_splice_sites.py {input.gtf} > data/reference/splice-sites.gtf 2> {log}
-		hisat2_extract_exons.py {input.gtf} > data/reference/exon-sites.gtf 2>> {log}
-		hisat2-build --ss data/reference/splice-sites.gtf --exon data/reference/exon-sites.gtf {input.ref} {input.ref} 2>> {log}
+		hisat2_extract_splice_sites.py {input.gtf} > {output.splice_sites} 2> {log}
+		hisat2_extract_exons.py {input.gtf} > {output.exons} 2>> {log}
 		"""
-	
+
+rule HISAT2index:
+	input:
+		fasta = lambda wildcards:config['ref']['genome'],
+		splice_sites="resources/reference/splice-sites.gtf",
+		exons="resources/reference/exon-sites.gtf"
+	output:
+		touch("resources/reference/ht.index")
+	log:
+		"logs/hisat2/build_index.log"
+	params:
+		ss="--ss {input.splice_sites}",
+		exon="--exon {input.exons}",
+		prefix="resources/reference/ht2index/"
+	threads:8
+	wrapper:
+		"0.65.0/bio/hisat2/index"
 	
 rule HISAT2align:
 	input:
-		fwd="data/reads/{sample}_1.fastq.gz",
-		rev="data/reads/{sample}_2.fastq.gz",
-		idx="data/reference/ht.index"
+		reads=["resources/reads/{sample}_1.fastq.gz", "resources/reads/{sample}_2.fastq.gz"],
+		idx="resources/reference/ht2index/"
 	output:
-		"data/alignments/{sample}.bam"
+		pipe("resources/alignments/{sample}.temp.bam")
 	log:
-		align = "logs/hisat2/{sample}_align.log",
-		sort = "logs/samtools_sort/{sample}.log"
+		"logs/hisat2/{sample}_align.log"
 	params:
 		ref=lambda wildcards:config['ref']['genome'],
+		dta="--dta",
+		q="-q",
+		rgid="--rg-id {sample}",
+		rg="--rg SM:{sample}"
 	threads:12
-	shell:
-		"""
-		hisat2 -x {params.ref} -1 {input.fwd} -2 {input.rev} -p {threads} -q --dta --rg-id {wildcards.sample} --rg SM:{wildcards.sample} 2> {log.align} | 
-		samtools view -bS - | samtools sort - -o {output} 2> {log.sort}
-		"""
+	wrapper:
+		"0.65.0/bio/hisat2/align"
 
-rule indexbams:
-     input:
-        "data/alignments/{sample}.bam"
-     output:
-        "data/alignments/{sample}.bam.bai"
-     log:
-        "logs/samtools_index/{sample}.log"
-     shell:
-        "samtools index {input} {output} 2> {log}"
+rule SortBams:
+    input:
+        "resources/alignments/{sample}.temp.bam"
+    output:
+        "resources/alignments/{sample}.bam"
+    wildcard_constraints:
+        sample="^[A-Z]\d$"
+    log:
+        "logs/samtools/sortbams/{sample}.log"
+    wrapper:
+        "0.65.0/bio/samtools/sort"
+
+rule IndexBams:
+    input:
+        "resources/alignments/{sample}.bam"
+    output:
+        "resources/alignments/{sample}.bam.bai"
+    log:
+        "logs/samtools/indexbams/{sample}.log"
+    wrapper:
+        "0.65.0/bio/samtools/index"
 
 rule mpileup:
     input:
-        bam="data/alignments/{sample}.bam",
-        idx="data/alignments/{sample}.bam.bai"
+        bam="resources/alignments/{sample}.bam",
+        index="resources/alignments/{sample}.bam.bai"
     output:
-        "analysis/allele_balance/counts/{sample}_{mut}_allele_counts.tsv"
+        "results/allele_balance/counts/{sample}_{mut}_allele_counts.tsv"
     log:
         "logs/mpileup/{sample}_{mut}.log"
     params:
@@ -62,71 +89,80 @@ rule mpileup:
         ref = lambda wildcards:config['ref']['genome']
     shell:
         """
-		mkdir -pv analysis/allele_balance/counts
-        samtools mpileup {input.bam} -r {params.region} -f {params.ref} | python2 analysis/scripts/baseParser.py > {output}
+		mkdir -pv results/allele_balance/counts
+        samtools mpileup {input.bam} -r {params.region} -f {params.ref} | python2 workflow/scripts/baseParser.py > {output}
         """
 
-rule allele_balance:
+rule AlleleBalance:
     input:
-        expand("analysis/allele_balance/counts/{sample}_{mut}_allele_counts.tsv", sample=samples, mut=mutations)
+        expand("results/allele_balance/counts/{sample}_{mut}_allele_counts.tsv", sample=samples, mut=mutations)
     output:
-        "analysis/allele_balance/allele_balance.xlsx"
+        "results/allele_balance/allele_balance.xlsx"
     log:
         "logs/allele_balance/Rscript.log"
     shell:
         """
-		mkdir -pv analysis/allele_balance/csvs
-		Rscript analysis/scripts/allele_balance.R 2> {log} 
+		mkdir -pv results/allele_balance/csvs
+		Rscript workflow/scripts/allele_balance.R 2> {log} 
         """
 
-
-rule generateParams_Freebayes:
+rule GenerateParamsFreebayes:
 	input:
 		ref_idx=lambda wildcards:config['ref']['genome'],
-		metadata="data/samples.tsv"
+		metadata="resources/samples.tsv"
 	output:
-		regions="data/regions/freebayes.regions",
-		bamlist="data/bam.list",
-		pops="data/populations.tsv"
+		regions="/regions/freebayes.regions",
+		bamlist="resources/bam.list",
+		pops="resources/populations.tsv"
 	shell:
 		"""
-		ls data/alignments/*bam > {output.bamlist}
+		ls resources/alignments/*bam > {output.bamlist}
 		cut -f 4,7 {input.metadata} | tail -n +2 > {output.pops}
 		"""
 
-rule variantCalling_Freebayes:
+rule VariantCallingFreebayes:
 	input:
-		bams=expand("data/alignments/{sample}.bam", sample=samples),
-	    idx=expand("data/alignments/{sample}.bam.bai", sample=samples),
-	    pops="data/populations.tsv",
-		bamlist="data/bam.list"
+		bams=expand("resources/alignments/{sample}.bam", sample=samples),
+		index=expand("resources/alignments/{sample}.bam.bai", sample=samples),
+		ref=lambda wildcards:config['ref']['genome'],
+		samples="resources/bam.list"
 	output:
-		"data/variants/variants.freebayes.{chrom}.vcf"
+		"results/variants/variants.{chrom}.vcf"
 	log:
 		"logs/freebayes/{chrom}.log"
 	params:
-		ref=lambda wildcards:config['ref']['genome'],
-		ploidy=10
-	shell:
-		"""
-		freebayes -L {input.bamlist} -f {params.ref} \
-		-r {wildcards.chrom} --populations {input.pops} --ploidy {params.ploidy} --pooled-discrete --use-best-n-alleles 5 > {output} 2> {log}
-		"""
+		ploidy="--ploidy 10",
+		chrom="-r {chrom}",
+		pooled="--pooled-discrete",
+		bestn="--use-best-n-alleles 5",
+		pops="--populations resources/populations.tsv"
+	threads:1
+	wrapper:
+		"0.65.0/bio/freebayes"
 
+rule snpEffDbDownload:
+    output:
+        directory("resources/snpeff/{reference}")
+    log:
+        "logs/SnpEff/snpeff_download_{reference}.log"
+    params:
+        reference="{reference}"
+    wrapper:
+        "0.65.0/bio/snpeff/download"
 
 rule snpEff:
     input:
-        vcf="data/variants/merged.vcf.gz",
-	    database="Aedes_aegypti_lvpagwg"
+        calls="results/variants/merged.vcf.gz",
+	    db=lambda wildcards:config['ref']['snpeffdb']
     output:
-        "data/variants/snpEff.merged.vcf.gz"
+        "results/variants/snpEff.merged.vcf.gz"
     log:
         "logs/SnpEff/snpeff.log"
     params:
-        prefix="data/variants/snpEff.merged.vcf"
-    shell:
-        """
-        java -jar ~/apps/snpEff/snpEff.jar download {input.database}
-        java -jar ~/apps/snpEff/snpEff.jar eff {input.database} {input.vcf} > {params.prefix}
-        bgzip {params.prefix}
-        """
+        prefix="results/variants/snpEff.merged.vcf"
+    wrapper:
+        "0.65.0/bio/snpeff/annotate"
+
+#rule get missense snps
+#convert to mpileup > kissde 
+#fst/pbs analysis 

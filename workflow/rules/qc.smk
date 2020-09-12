@@ -1,18 +1,15 @@
 #QC rules 
-
-
 ################################          FASTQC				##################################	                                                    					
 
-rule fastqc:
+rule FastQC:
 	input:
-		"data/reads/{sample}_{n}.fastq.gz"
+		"resources/reads/{sample}_{n}.fastq.gz"
 	output:
-		"data/reads/QC/{sample}_{n}_fastqc.html"
+		html="resources/reads/qc/{sample}_{n}_fastqc.html",
+		zip="resources/reads/qc/{sample}_{n}_fastqc.zip"
 	log:
 		"logs/fastqc/{sample}_{n}_QC.log"
 	params:
-		out="data/reads/QC"
-	shell:
-		"""
-		fastqc {input} --outdir {params.out} 2> {log}
-		"""
+		outdir="resources/reads/qc"
+	wrapper:
+		"0.65.0/bio/fastqc"

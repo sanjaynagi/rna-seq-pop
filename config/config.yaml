@@ -1,7 +1,24 @@
+samples: config/samples.tsv
+units: config/units.tsv
+
 ref:
   genome:
-        "data/reference/aedes-aegypti-lvpagwg_chromosomes.l5.fa"
+        "resources/reference/aedes-aegypti-lvpagwg_chromosomes.l5.fa"
   transcriptome:
-        "data/reference/aedes-aegypti-lvpagwg_transcripts.l5.fa"
+        "resources/reference/aedes-aegypti-lvpagwg_transcripts.l5.fa"
   gtf: 
-        "data/reference/Aedes-aegypti-LVP_AGWG_BASEFEATURES_AaegL5.2.gtf"
+        "resources/reference/Aedes-aegypti-LVP_AGWG_BASEFEATURES_AaegL5.2.gtf"
+  snpeffdb:
+        "Aedes_aegypti_lvpagwg"
+
+# Chromosome names for the appropriate species. Should correspond to the reference files. 
+chroms: ['1', '2', '3']
+
+# ploidy level for freebayes, as generally we are using pooled samples.
+ploidy: 10
+
+# If activate:True, creates allele balance .xlsx reports on IR mutations of choice
+IRmutations: 
+      activate: True
+      path: "resources/IRmutations.tsv"
+

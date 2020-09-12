@@ -1,18 +1,39 @@
 # The main entry point of your workflow.
 # After configuring, running snakemake -n in a clone of this repository should successfully execute a dry-run of the workflow.
-
-
 report: "report/workflow.rst"
 
 # Allow users to fix the underlying OS via singularity.
 singularity: "docker://continuumio/miniconda3"
+import pandas as pd
+configfile:"config/config.yaml"
 
+########## this all needs to go in config #####
+# dataset name
+dataset = 'Angola_aegypti'
+geneset = 'lvpgwg'
+# metadata file 																							 										 			  				 
+metadata = pd.read_csv("config/samples.tsv", sep="\s+")
+samples = metadata.samples
+# IR allele balance mutations file 		
+mutation_data = pd.read_csv("resources/IRmutations.tsv", sep="\t")
+mutations = mutation_data.Name[:3]
+
+
+#include: "rules/common.smk"
+include: "rules/qc.smk"
+include: "rules/diff.smk"
+include: "rules/variants.smk"
+#include: "rules/lncrna.smk"
 
 rule all:
     input:
         # The first rule should define the default target files
         # Subsequent target rules can be specified below. They should start with all_*.
+        expand("resources/reads/QC/{sample}_{n}_fastqc.html", sample=samples, n=[1,2]),
+        "results/diff/RNA-Seq_diff.xlsx",
+        "results/isoformdiff/RNA-Seq_isoformdiff.xlsx",
+#		"results/allele_balance/allele_balance.xlsx",
+#       "results/variants/merged.vcf.gz",
+#		"results/transcript_assembly/merged.gtf",
+        expand("results/variants/variants.{chrom}.vcf", chrom=lambda wildcards:config['chroms'])
 
-
-include: "rules/common.smk"
-include: "rules/other.smk"
