@@ -1,0 +1,4 @@
+SyntaxError:
+Not all output, log and benchmark files of rule snpEffDbDownload contain the same wildcards. This is crucial though, in order to avoid that two or more jobs write to the same file.
+  File "/home/snagi/lstm_data/rna-seq-ir/workflow/Snakefile", line 25, in <module>
+  File "/home/snagi/lstm_data/rna-seq-ir/workflow/rules/variants.smk", line 151, in <module>

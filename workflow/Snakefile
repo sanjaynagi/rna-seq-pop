@@ -29,11 +29,12 @@ rule all:
     input:
         # The first rule should define the default target files
         # Subsequent target rules can be specified below. They should start with all_*.
-        expand("resources/reads/QC/{sample}_{n}_fastqc.html", sample=samples, n=[1,2]),
+        expand("resources/reads/qc/{sample}_{n}_fastqc.html", sample=samples, n=[1,2]),
         "results/diff/RNA-Seq_diff.xlsx",
         "results/isoformdiff/RNA-Seq_isoformdiff.xlsx",
 #		"results/allele_balance/allele_balance.xlsx",
 #       "results/variants/merged.vcf.gz",
 #		"results/transcript_assembly/merged.gtf",
-        expand("results/variants/variants.{chrom}.vcf", chrom=lambda wildcards:config['chroms'])
+        expand("results/variants/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
+
 

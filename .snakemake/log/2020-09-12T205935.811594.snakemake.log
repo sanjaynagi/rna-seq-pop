@@ -1,0 +1,4 @@
+IndentationError in line 167 of <tokenize>:
+unindent does not match any outer indentation level (<tokenize>, line 167)
+  File "/home/snagi/lstm_data/rna-seq-ir/workflow/Snakefile", line 25, in <module>
+  File "/home/snagi/miniconda3/lib/python3.7/tokenize.py", line 572, in _tokenize

@@ -1,0 +1,27 @@
+Building DAG of jobs...
+MissingInputException in line 28 of /home/snagi/lstm_data/rna-seq-ir/workflow/Snakefile:
+Missing input files for rule all:
+resources/reads/QC/NewOrleans3_2_fastqc.html
+resources/reads/QC/Rockefeller3_1_fastqc.html
+resources/reads/QC/NewOrleans1_1_fastqc.html
+resources/reads/QC/FenAngola3_2_fastqc.html
+resources/reads/QC/ContAngola2_1_fastqc.html
+resources/reads/QC/ContAngola3_1_fastqc.html
+resources/reads/QC/NewOrleans2_2_fastqc.html
+resources/reads/QC/FenAngola3_1_fastqc.html
+resources/reads/QC/Rockefeller2_2_fastqc.html
+resources/reads/QC/FenAngola2_1_fastqc.html
+resources/reads/QC/FenAngola1_1_fastqc.html
+resources/reads/QC/NewOrleans3_1_fastqc.html
+resources/reads/QC/Rockefeller1_1_fastqc.html
+resources/reads/QC/ContAngola1_1_fastqc.html
+resources/reads/QC/NewOrleans2_1_fastqc.html
+resources/reads/QC/ContAngola3_2_fastqc.html
+resources/reads/QC/NewOrleans1_2_fastqc.html
+resources/reads/QC/Rockefeller3_2_fastqc.html
+resources/reads/QC/Rockefeller1_2_fastqc.html
+resources/reads/QC/ContAngola1_2_fastqc.html
+resources/reads/QC/FenAngola1_2_fastqc.html
+resources/reads/QC/Rockefeller2_1_fastqc.html
+resources/reads/QC/ContAngola2_2_fastqc.html
+resources/reads/QC/FenAngola2_2_fastqc.html

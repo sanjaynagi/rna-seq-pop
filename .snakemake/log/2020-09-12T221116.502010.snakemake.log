@@ -1,0 +1,35 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 20
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Singularity containers: ignored
+Job counts:
+	count	jobs
+	1	all
+	3	gzip
+	3	snpEff
+	1	snpEffDbDownload
+	8
+
+[Sat Sep 12 22:11:16 2020]
+rule snpEffDbDownload:
+    output: resources/snpeff/
+    log: logs/snpEff/snpeff_download.log
+    jobid: 61
+
+snpEff download -dataDir resources/snpeff/ Aedes_aegypti_lvpagwg 2> logs/snpEff/snpeff_download.log
+[Sat Sep 12 22:11:19 2020]
+Error in rule snpEffDbDownload:
+    jobid: 61
+    output: resources/snpeff/
+    log: logs/snpEff/snpeff_download.log (check log file(s) for error message)
+    shell:
+        snpEff download -dataDir resources/snpeff/ Aedes_aegypti_lvpagwg 2> logs/snpEff/snpeff_download.log
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Removing output files of failed job snpEffDbDownload since they might be corrupted:
+resources/snpeff/
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/snagi/lstm_data/rna-seq-ir/.snakemake/log/2020-09-12T221116.502010.snakemake.log

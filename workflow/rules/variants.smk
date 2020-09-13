@@ -142,26 +142,40 @@ rule VariantCallingFreebayes:
 
 rule snpEffDbDownload:
     output:
-        directory("resources/snpeff/{reference}")
+        directory("resources/snpeff/db")
     log:
-        "logs/SnpEff/snpeff_download_{reference}.log"
+        "logs/snpEff/snpeff_download.log"
     params:
-        reference="{reference}"
-    wrapper:
-        "0.65.0/bio/snpeff/download"
+        reference=config['ref']['snpeffdb']
+    shell:
+        "java -jar workflow/scripts/snpEff/snpEff.jar download -dataDir {output} {params.reference} 2> {log}"
 
 rule snpEff:
     input:
-        calls="results/variants/merged.vcf.gz",
-	    db=lambda wildcards:config['ref']['snpeffdb']
+        calls="results/variants/variants.{chrom}.vcf",
+        db="resources/snpeff/db"
     output:
-        "results/variants/snpEff.merged.vcf.gz"
+        calls="results/variants/annot.variants.{chrom}.vcf",
+        stats="results/variants/snpeff/{chrom}.html",
+        csvstats="results/variants/snpeff/{chrom}.csv"
     log:
-        "logs/SnpEff/snpeff.log"
-    params:
-        prefix="results/variants/snpEff.merged.vcf"
+        "logs/snpEff/snpeff_{chrom}.log"
     wrapper:
         "0.65.0/bio/snpeff/annotate"
+
+rule bgzip:
+    input:
+        raw="results/variants/variants.{chrom}.vcf",
+        annot="results/variants/annot.variants.{chrom}.vcf"
+    output:
+        "results/variants/variants.{chrom}.vcf.gz",
+        "results/variants/annot.variants.{chrom}.vcf.gz"
+    shell:
+        """
+        bgzip {input.raw}
+        bgzip {input.annot}
+        """
+
 
 #rule get missense snps
 #convert to mpileup > kissde 

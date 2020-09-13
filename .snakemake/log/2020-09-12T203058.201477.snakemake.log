@@ -1,0 +1,4 @@
+Building DAG of jobs...
+MissingInputException in line 123 of /home/snagi/lstm_data/rna-seq-ir/workflow/rules/variants.smk:
+Missing input files for rule VariantCallingFreebayes:
+resources/reference/aedes-aegypti-lvpagwg_chromosomes.l5.fa
