@@ -1,0 +1,82 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 10
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Singularity containers: ignored
+Job counts:
+	count	jobs
+	1	all
+	3	snpEff
+	1	snpEffDbDownload
+	5
+
+[Mon Sep 14 17:17:36 2020]
+rule snpEffDbDownload:
+    output: workflow/scripts/snpeff/db.dl
+    log: logs/snpEff/snpeff_download.log
+    jobid: 43
+
+java -jar workflow/scripts/snpEff/snpEff.jar download Aedes_aegypti_lvpagwg 2> logs/snpEff/snpeff_download.log
+Touching output file workflow/scripts/snpeff/db.dl.
+[Mon Sep 14 17:17:53 2020]
+Finished job 43.
+1 of 5 steps (20%) done
+
+[Mon Sep 14 17:17:53 2020]
+rule snpEff:
+    input: results/variants/variants.1.vcf, workflow/scripts/snpeff/db.dl
+    output: results/variants/annot.variants.1.vcf.gz
+    log: logs/snpEff/snpeff_1.log
+    jobid: 27
+    wildcards: chrom=1
+
+
+        java -jar workflow/scripts/snpEff/snpEff.jar eff Aedes_aegypti_lvpagwg results/variants/variants.1.vcf > results/variants/annot.variants.1.vcf
+        bgzip results/variants/annot.variants.1.vcf
+        
+
+[Mon Sep 14 17:17:53 2020]
+rule snpEff:
+    input: results/variants/variants.2.vcf, workflow/scripts/snpeff/db.dl
+    output: results/variants/annot.variants.2.vcf.gz
+    log: logs/snpEff/snpeff_2.log
+    jobid: 28
+    wildcards: chrom=2
+
+
+        java -jar workflow/scripts/snpEff/snpEff.jar eff Aedes_aegypti_lvpagwg results/variants/variants.2.vcf > results/variants/annot.variants.2.vcf
+        bgzip results/variants/annot.variants.2.vcf
+        
+
+[Mon Sep 14 17:17:53 2020]
+rule snpEff:
+    input: results/variants/variants.3.vcf, workflow/scripts/snpeff/db.dl
+    output: results/variants/annot.variants.3.vcf.gz
+    log: logs/snpEff/snpeff_3.log
+    jobid: 29
+    wildcards: chrom=3
+
+
+        java -jar workflow/scripts/snpEff/snpEff.jar eff Aedes_aegypti_lvpagwg results/variants/variants.3.vcf > results/variants/annot.variants.3.vcf
+        bgzip results/variants/annot.variants.3.vcf
+        
+[Mon Sep 14 17:20:32 2020]
+Finished job 27.
+2 of 5 steps (40%) done
+[Mon Sep 14 17:20:35 2020]
+Finished job 29.
+3 of 5 steps (60%) done
+[Mon Sep 14 17:21:00 2020]
+Finished job 28.
+4 of 5 steps (80%) done
+
+[Mon Sep 14 17:21:00 2020]
+localrule all:
+    input: resources/reads/qc/ContAngola1_1_fastqc.html, resources/reads/qc/ContAngola1_2_fastqc.html, resources/reads/qc/ContAngola2_1_fastqc.html, resources/reads/qc/ContAngola2_2_fastqc.html, resources/reads/qc/ContAngola3_1_fastqc.html, resources/reads/qc/ContAngola3_2_fastqc.html, resources/reads/qc/FenAngola1_1_fastqc.html, resources/reads/qc/FenAngola1_2_fastqc.html, resources/reads/qc/FenAngola2_1_fastqc.html, resources/reads/qc/FenAngola2_2_fastqc.html, resources/reads/qc/FenAngola3_1_fastqc.html, resources/reads/qc/FenAngola3_2_fastqc.html, resources/reads/qc/NewOrleans1_1_fastqc.html, resources/reads/qc/NewOrleans1_2_fastqc.html, resources/reads/qc/NewOrleans2_1_fastqc.html, resources/reads/qc/NewOrleans2_2_fastqc.html, resources/reads/qc/NewOrleans3_1_fastqc.html, resources/reads/qc/NewOrleans3_2_fastqc.html, resources/reads/qc/Rockefeller1_1_fastqc.html, resources/reads/qc/Rockefeller1_2_fastqc.html, resources/reads/qc/Rockefeller2_1_fastqc.html, resources/reads/qc/Rockefeller2_2_fastqc.html, resources/reads/qc/Rockefeller3_1_fastqc.html, resources/reads/qc/Rockefeller3_2_fastqc.html, results/diff/RNA-Seq_diff.xlsx, results/isoformdiff/RNA-Seq_isoformdiff.xlsx, results/variants/annot.variants.1.vcf.gz, results/variants/annot.variants.2.vcf.gz, results/variants/annot.variants.3.vcf.gz
+    jobid: 0
+
+[Mon Sep 14 17:21:00 2020]
+Finished job 0.
+5 of 5 steps (100%) done
+Complete log: /home/snagi/lstm_data/rna-seq-ir/.snakemake/log/2020-09-14T171735.534050.snakemake.log

@@ -1,0 +1,105 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 10
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Singularity containers: ignored
+Job counts:
+	count	jobs
+	1	all
+	3	snpEff
+	1	snpEffDbDownload
+	5
+
+[Mon Sep 14 17:01:33 2020]
+rule snpEffDbDownload:
+    output: resources/snpeff
+    log: logs/snpEff/snpeff_download.log
+    jobid: 43
+
+java -jar workflow/scripts/snpEff/snpEff.jar download -dataDir ../../../resources/snpeff Aedes_aegypti_lvpagwg 2> logs/snpEff/snpeff_download.log
+[Mon Sep 14 17:01:48 2020]
+Finished job 43.
+1 of 5 steps (20%) done
+
+[Mon Sep 14 17:01:48 2020]
+rule snpEff:
+    input: results/variants/variants.1.vcf, resources/snpeff
+    output: results/variants/annot.variants.1.vcf.gz, results/variants/snpeff/1.html, results/variants/snpeff/1.csv
+    log: logs/snpEff/snpeff_1.log
+    jobid: 27
+    wildcards: chrom=1
+
+[Mon Sep 14 17:01:48 2020]
+rule snpEff:
+    input: results/variants/variants.2.vcf, resources/snpeff
+    output: results/variants/annot.variants.2.vcf.gz, results/variants/snpeff/2.html, results/variants/snpeff/2.csv
+    log: logs/snpEff/snpeff_2.log
+    jobid: 28
+    wildcards: chrom=2
+
+[Mon Sep 14 17:01:48 2020]
+rule snpEff:
+    input: results/variants/variants.3.vcf, resources/snpeff
+    output: results/variants/annot.variants.3.vcf.gz, results/variants/snpeff/3.html, results/variants/snpeff/3.csv
+    log: logs/snpEff/snpeff_3.log
+    jobid: 29
+    wildcards: chrom=3
+
+/home/snagi/miniconda3/bin/python /home/snagi/lstm_data/rna-seq-ir/.snakemake/scripts/tmpj47xpd7y.wrapper.py
+/home/snagi/miniconda3/bin/python /home/snagi/lstm_data/rna-seq-ir/.snakemake/scripts/tmpexzevwlj.wrapper.py
+/home/snagi/miniconda3/bin/python /home/snagi/lstm_data/rna-seq-ir/.snakemake/scripts/tmpztuux642.wrapper.py
+[Mon Sep 14 17:01:51 2020]
+Error in rule snpEff:
+    jobid: 28
+    output: results/variants/annot.variants.2.vcf.gz, results/variants/snpeff/2.html, results/variants/snpeff/2.csv
+    log: logs/snpEff/snpeff_2.log (check log file(s) for error message)
+
+RuleException:
+CalledProcessError in line 165 of /home/snagi/lstm_data/rna-seq-ir/workflow/rules/variants.smk:
+Command 'set -euo pipefail;  /home/snagi/miniconda3/bin/python /home/snagi/lstm_data/rna-seq-ir/.snakemake/scripts/tmpztuux642.wrapper.py' returned non-zero exit status 1.
+  File "/home/snagi/miniconda3/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 2189, in run_wrapper
+  File "/home/snagi/lstm_data/rna-seq-ir/workflow/rules/variants.smk", line 165, in __rule_snpEff
+  File "/home/snagi/miniconda3/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 529, in _callback
+  File "/home/snagi/miniconda3/lib/python3.7/concurrent/futures/thread.py", line 57, in run
+  File "/home/snagi/miniconda3/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 515, in cached_or_run
+  File "/home/snagi/miniconda3/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 2201, in run_wrapper
+Removing output files of failed job snpEff since they might be corrupted:
+results/variants/annot.variants.2.vcf.gz
+[Mon Sep 14 17:01:51 2020]
+Error in rule snpEff:
+    jobid: 27
+    output: results/variants/annot.variants.1.vcf.gz, results/variants/snpeff/1.html, results/variants/snpeff/1.csv
+    log: logs/snpEff/snpeff_1.log (check log file(s) for error message)
+
+RuleException:
+CalledProcessError in line 165 of /home/snagi/lstm_data/rna-seq-ir/workflow/rules/variants.smk:
+Command 'set -euo pipefail;  /home/snagi/miniconda3/bin/python /home/snagi/lstm_data/rna-seq-ir/.snakemake/scripts/tmpexzevwlj.wrapper.py' returned non-zero exit status 1.
+  File "/home/snagi/miniconda3/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 2189, in run_wrapper
+  File "/home/snagi/lstm_data/rna-seq-ir/workflow/rules/variants.smk", line 165, in __rule_snpEff
+  File "/home/snagi/miniconda3/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 529, in _callback
+  File "/home/snagi/miniconda3/lib/python3.7/concurrent/futures/thread.py", line 57, in run
+  File "/home/snagi/miniconda3/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 515, in cached_or_run
+  File "/home/snagi/miniconda3/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 2201, in run_wrapper
+[Mon Sep 14 17:01:51 2020]
+Error in rule snpEff:
+    jobid: 29
+    output: results/variants/annot.variants.3.vcf.gz, results/variants/snpeff/3.html, results/variants/snpeff/3.csv
+    log: logs/snpEff/snpeff_3.log (check log file(s) for error message)
+
+Removing output files of failed job snpEff since they might be corrupted:
+results/variants/annot.variants.1.vcf.gz
+RuleException:
+CalledProcessError in line 165 of /home/snagi/lstm_data/rna-seq-ir/workflow/rules/variants.smk:
+Command 'set -euo pipefail;  /home/snagi/miniconda3/bin/python /home/snagi/lstm_data/rna-seq-ir/.snakemake/scripts/tmpj47xpd7y.wrapper.py' returned non-zero exit status 1.
+  File "/home/snagi/miniconda3/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 2189, in run_wrapper
+  File "/home/snagi/lstm_data/rna-seq-ir/workflow/rules/variants.smk", line 165, in __rule_snpEff
+  File "/home/snagi/miniconda3/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 529, in _callback
+  File "/home/snagi/miniconda3/lib/python3.7/concurrent/futures/thread.py", line 57, in run
+  File "/home/snagi/miniconda3/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 515, in cached_or_run
+  File "/home/snagi/miniconda3/lib/python3.7/site-packages/snakemake/executors/__init__.py", line 2201, in run_wrapper
+Removing output files of failed job snpEff since they might be corrupted:
+results/variants/annot.variants.3.vcf.gz
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /home/snagi/lstm_data/rna-seq-ir/.snakemake/log/2020-09-14T170132.736115.snakemake.log

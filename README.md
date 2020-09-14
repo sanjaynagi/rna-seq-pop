@@ -3,14 +3,16 @@
 [![Snakemake](https://img.shields.io/badge/snakemake-≥5.11.0-brightgreen.svg)](https://snakemake.bitbucket.io)
 [![Build Status](https://travis-ci.org/snakemake-workflows/rna-seq-ir.svg?branch=master)](https://travis-ci.org/snakemake-workflows/rna-seq-ir)
 
-This workflow performs various analysis of illumina paired-end RNA-Sequencing data:
+This workflow performs various analyses of illumina paired-end RNA-Sequencing data:
 
 * Quality control with FASTQC and RSeqQC
 * Differential expression analysis with Kallisto at the gene level (DESeq2) and transcript level (Sleuth)
 * Allele balance reports of pre-specified loci of choice. 
 * Variant calling with freebayes, and a gene-based Fst and Population branch statistic (PBS) analysis.
 * Differential SNP testing with the R package 'kissDE', which accounts for allele-specific expression.
-* Enrichment analyses and Venn diagrams. 
+* Enrichment analyses and Venn diagrams. (To be implemented) 
+
+The workflow is still in construction, and not yet ready for release.
 
 ## Authors
 

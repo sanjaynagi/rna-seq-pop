@@ -66,6 +66,7 @@ rule SortBams:
     wrapper:
         "0.65.0/bio/samtools/sort"
 
+
 rule IndexBams:
     input:
         "resources/alignments/{sample}.bam"
@@ -142,39 +143,31 @@ rule VariantCallingFreebayes:
 
 rule snpEffDbDownload:
     output:
-        directory("resources/snpeff/db")
+        touch("workflow/scripts/snpeff/db.dl")
     log:
         "logs/snpEff/snpeff_download.log"
     params:
-        reference=config['ref']['snpeffdb']
+        reference=config['ref']['snpeffdb'],
     shell:
-        "java -jar workflow/scripts/snpEff/snpEff.jar download -dataDir {output} {params.reference} 2> {log}"
+        "java -jar workflow/scripts/snpEff/snpEff.jar download {params.reference} 2> {log}"
 
 rule snpEff:
     input:
         calls="results/variants/variants.{chrom}.vcf",
-        db="resources/snpeff/db"
+        touch="workflow/scripts/snpeff/db.dl"
     output:
-        calls="results/variants/annot.variants.{chrom}.vcf",
-        stats="results/variants/snpeff/{chrom}.html",
-        csvstats="results/variants/snpeff/{chrom}.csv"
+        calls="results/variants/annot.variants.{chrom}.vcf.gz",
     log:
         "logs/snpEff/snpeff_{chrom}.log"
-    wrapper:
-        "0.65.0/bio/snpeff/annotate"
-
-rule bgzip:
-    input:
-        raw="results/variants/variants.{chrom}.vcf",
-        annot="results/variants/annot.variants.{chrom}.vcf"
-    output:
-        "results/variants/variants.{chrom}.vcf.gz",
-        "results/variants/annot.variants.{chrom}.vcf.gz"
+    params:
+        db=config['ref']['snpeffdb'],
+        prefix="results/variants/annot.variants.{chrom}.vcf"
     shell:
         """
-        bgzip {input.raw}
-        bgzip {input.annot}
+        java -jar workflow/scripts/snpEff/snpEff.jar eff {params.db} {input.calls} > {params.prefix}
+        bgzip {params.prefix}
         """
+
 
 
 #rule get missense snps

@@ -1,0 +1,5 @@
+Building DAG of jobs...
+InputFunctionException in line 154 of /home/snagi/lstm_data/rna-seq-ir/workflow/rules/variants.smk:
+KeyError: 'snpeffdb'
+Wildcards:
+chrom=1
