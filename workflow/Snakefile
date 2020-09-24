@@ -36,5 +36,6 @@ rule all:
 #       "results/variants/merged.vcf.gz",
 #		"results/transcript_assembly/merged.gtf",
         expand("results/variants/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
+        expand("results/variants/alleleTable/{sample}.chr{chrom}.allele.table", sample=samples, chrom=config['chroms'])
 
 

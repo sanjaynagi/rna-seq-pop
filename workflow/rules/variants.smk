@@ -77,7 +77,7 @@ rule IndexBams:
     wrapper:
         "0.65.0/bio/samtools/index"
 
-rule mpileup:
+rule mpileupIR:
     input:
         bam="resources/alignments/{sample}.bam",
         index="resources/alignments/{sample}.bam.bai"
@@ -169,7 +169,56 @@ rule snpEff:
         """
 
 
+#### Differential SNP testing ########
 
-#rule get missense snps
-#convert to mpileup > kissde 
-#fst/pbs analysis 
+rule missenseFilter:
+    input:
+        vcf="results/variants/annot.variants.{chrom}.vcf.gz"
+    output:
+        "results/variants/annot.missense.{chrom}.vcf"
+    log:
+        "logs/snpsift/missense_vcf_{chrom}.log"
+    params:
+        expression="ANN[*].EFFECT has 'missense_variant'"
+    shell:
+        """
+        java -jar workflow/scripts/snpEff/SnpSift.jar filter "{params.expression}" {input.vcf} > {output} 2> {log}
+        """
+
+rule makeBedOfMissense:
+    input:
+        vcf="results/variants/annot.missense.{chrom}.vcf",
+    output:
+        "results/variants/missense.pos.{chrom}.bed"
+    log:
+        "logs/allelicdepth/makebed.{chrom}.log"
+    shell:
+        """
+        vcf2bed < {input.vcf} | cut -f 1-3 > {output} 2> {log}
+        """
+
+rule alleleTable:
+    input:
+        bam="resources/alignments/{sample}.bam",
+        bed="results/variants/missense.pos.{chrom}.bed",
+        ref=lambda wildcards:config['ref']['genome']
+    output:
+        "results/variants/alleleTable/{sample}.chr{chrom}.allele.table"
+    log:
+        "logs/mpileup/{sample}.{chrom}.log"
+    params:
+        ignore_indels='false',
+        baseflt=-5,
+        min_alt=3,
+        min_af=0
+    shell:
+        """
+        samtools mpileup -f {input.ref} -l {input.bed} {input.bam} | 
+        workflow/scripts/mpileup2readcounts/mpileup2readcounts 0 {params.baseflt} {params.ignore_indels} {params.min_alt} {params.min_af} > {output} 2> {log}
+        """
+
+
+
+
+
+

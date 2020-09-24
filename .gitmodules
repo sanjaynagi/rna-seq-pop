@@ -1,0 +1,3 @@
+[submodule "workflow/scripts/mpileup2readcounts"]
+	path = workflow/scripts/mpileup2readcounts
+	url = https://github.com/IARCbioinfo/mpileup2readcounts
