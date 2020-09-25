@@ -1,14 +1,108 @@
-biocManager::install("kissDE")
-
 library(data.table)
 library(kissDE)
+library(glue)
 library(tidyverse)
 
 ?kissDE
-
 ?diffExpressedVariants
 
+######## parse files #############
+chroms = c(1,2,3) #args.chrom
+metadata = fread("config/samples.tsv")
+names = fread("resources/DE.comparison.list", header = FALSE) 
+comparisons = names %>% separate(V1, into = c("control", "case"), sep = "_")
 
+
+for (i in 1:nrow(comparisons)){
+  name = names[i,]
+  control = comparisons$control[i]
+  case = comparisons$case[i]
+  
+  samples = metadata[metadata$treatment %in% c(case, control)]$samples
+
+  for (sample in samples){
+    print(sample)
+    chrom_list = list()
+    for (chrom in chroms){
+      alleles  = fread(glue("results/variants/alleleTable/{sample}.chr{chrom}.allele.table"))
+      chrom_list[[chrom]] = alleles %>% 
+        mutate("A" = A+a,"T" = T+t,"G" = G+g,"C" = C+c) %>% 
+        select(-c(a,t,c,g,V15)) %>% 
+        mutate(refcount = case_when(ref == 'T' ~ T,
+                                    ref == 'G' ~ G, 
+                                    ref == 'A' ~ A,
+                                    ref == 'C' ~ C))
+    }
+    
+    alleles = rbindlist(chrom_list)
+    
+    list_ = list()
+    for (base in c("A", "C", "G", "T")){
+      a = alleles %>% filter(ref == base) %>% select(A,T,C,G) %>% select(-base)
+      b = alleles %>% filter(ref == base)
+      col = colnames(a)[apply(a, 1 , which.max)]
+      b$alt = col
+      b$altcount = apply(a, 1, max)
+      list_[[base]] = b
+    }
+    
+    alleles = rbindlist(list_) %>% arrange(chr, loc)
+    
+  }
+  sample_list = list()
+  sample_list[[sample]] = alleles %>% select(chr, loc, ref,alt, refcount, altcount) %>% 
+      pivot_longer(c(refcount, altcount),names_to="type", values_to=sample) %>% 
+      mutate(eventsName = paste0("chr",chr,"_",loc,"_",ref,">",alt)) %>% select(eventsName, sample)
+    
+}
+
+
+str(sample_list)
+
+
+
+
+
+
+
+
+chrom_list = list()
+
+for (chrom in chroms){
+  alleles  = fread(glue("results/variants/alleleTable/{sample}.chr{chrom}.allele.table"))
+  chrom_list[[chrom]] = alleles %>% 
+    mutate("A" = A+a,"T" = T+t,"G" = G+g,"C" = C+c) %>% 
+    select(-c(a,t,c,g,V15)) %>% 
+    mutate(refcount = case_when(ref == 'T' ~ T,
+                                ref == 'G' ~ G, 
+                                ref == 'A' ~ A,
+                                ref == 'C' ~ C))
+  }
+  
+alleles = rbindlist(chrom_list)
+
+
+list_ = list()
+for (base in c("A", "C", "G", "T")){
+  a = alleles %>% filter(ref == base) %>% select(A,T,C,G) %>% select(-base)
+  b = alleles %>% filter(ref == base)
+  col = colnames(a)[apply(a, 1 , which.max)]
+  b$alt = col
+  b$altcount = apply(a, 1, max)
+  list_[[base]] = b
+}
+  
+alleles = rbindlist(list_) %>% arrange(chr, loc)
+  
+sample_list[[sample]] = alleles %>% select(chr, loc, ref,alt, refcount, altcount) %>% 
+    pivot_longer(c(refcount, altcount),names_to="type", values_to=sample) %>% 
+    mutate(eventsName = paste0("chr",chr,"_",loc,"_",ref,">",alt)) %>% select(eventsName, type, sample)
+  
+
+
+  
+
+?pivot_longer
 g280s = fread("analysis/allele_balance/csvs/G280S_allele_balance.csv")
 
 ?fisher.test()
