@@ -45,7 +45,7 @@ rule HISAT2align:
 	log:
 		"logs/hisat2/{sample}_align.log"
 	params:
-		ref=lambda wildcards:config['ref']['genome'],
+		ref=config['ref']['genome'],
 		dta="--dta",
 		q="-q",
 		rgid="--rg-id {sample}",
@@ -78,7 +78,7 @@ rule IndexBams:
 
 rule GenerateParamsFreebayes:
 	input:
-		ref_idx=lambda wildcards:config['ref']['genome'],
+		ref_idx=config['ref']['genome'],
 		metadata="resources/samples.tsv"
 	output:
 		bamlist="resources/bam.list",
@@ -93,14 +93,14 @@ rule VariantCallingFreebayes:
 	input:
 		bams=expand("resources/alignments/{sample}.bam", sample=samples),
 		index=expand("resources/alignments/{sample}.bam.bai", sample=samples),
-		ref=lambda wildcards:config['ref']['genome'],
+		ref=config['ref']['genome'],
 		samples="resources/bam.list"
 	output:
 		"results/variants/variants.{chrom}.vcf"
 	log:
 		"logs/freebayes/{chrom}.log"
 	params:
-		ploidy=lambda wildcards:"--ploidy " + str(config['ploidy'])
+		ploidy="--ploidy " + str(config['ploidy'])
 		chrom="-r {chrom}",
 		pooled="--pooled-discrete",
 		bestn="--use-best-n-alleles 5",
