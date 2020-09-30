@@ -30,26 +30,23 @@ rule KallistoQuant:
 
 rule DifferentialGeneExpression:
 	input:
-		expand("results/quant/{sample}", sample=samples)
+		expand("results/quant/{sample}", sample=samples),
+		samples = config['samples']
 	output:
-		"results/diff/RNA-Seq_diff.xlsx"
+		"results/diff/RNA-Seq_diff.xlsx",
+		DEcomparisons="resources/DE.comparison.list",
 	log:
 		"logs/DESeq2/geneDE.log"
-	shell:
-		"""
-		mkdir -pv results/diff
-		Rscript results/scripts/kallisto_DE.R 2> {log}
-		"""
+	script:
+		"../scripts/kallistoDE.R"
 
 rule DifferentialIsoformExpression:
 	input:
-		expand("results/quant/{sample}", sample=samples)
+		expand("results/quant/{sample}", sample=samples),
+		samples = config['samples']
 	output:
 		"results/isoformdiff/RNA-Seq_isoformdiff.xlsx"
 	log:
-		"logs/DESeq2/geneDE.log"
-	shell:
-		"""
-		mkdir -pv results/isoformdiff
-		Rscript results/scripts/sleuth_isoforms_DE.R 2> {log}
-		"""
+		"logs/sleuth/isoformDE.log"
+	script:
+	    "../scripts/sleuthIsoformsDE.R"

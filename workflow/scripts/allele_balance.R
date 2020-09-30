@@ -1,4 +1,8 @@
 #!/usr/bin/env Rscript
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
+
 .libPaths(c("/home/snagi/miniconda3/lib/R/library", "~/R/x86_64-conda_cos6-linux-gnu-library/3.6", "/home/sanj/R/x86_64-pc-linux-gnu-library/3.6", 
             "/usr/local/lib/R/site-library", "/usr/lib/R/site-library",  "/usr/lib/R/library"))
 library(tidyverse)
@@ -7,16 +11,15 @@ library(glue)
 library(openxlsx)
 
 #### allele imbalance ####
-metadata = fread("config/samples.tsv", sep="\t")
-samples= metadata$samples
-#read IR mutation data 
-mutation_data = fread("resources/IRmutations.tsv", sep="\t")
-
-#human readable treatment column
+metadata = fread(snakemake@input[[2]], sep="\t")
+samples = metadata$samples
+# Read IR mutation data 
+mutation_data = fread(snakemake@input[[3]], sep="\t")
 
 all_list = list()
 mean_list = list()
 
+# Loop through each mutation, finding allele coverage at each position
 for (m in mutation_data$Name){
   
   base = mutation_data[mutation_data$Name == m]$ALT
@@ -54,20 +57,6 @@ for (m in mutation_data$Name){
   mean_list[[m]] = mean_alleles
 }
 
-# might want to group in spreadhseets rather than one sheet each
-#genelist = list()
-
-#for (gene in unique(mutation_data$Gene)){
-#  for (m in mutation_data$Name){
-#  
-#    if (mutation_data[mutation_data$Name == m]$Gene == gene){
-#      genelist[[gene]][[m]] = all_list[[m]]
-#    }
-#  }
-#}
-#genelist
-
-
 #### write to excel file on diff sheets #### 
 results_list = all_list
 sheets = unique(mutation_data$Name)
@@ -78,7 +67,7 @@ for (i in 1:length(sheets)){
   writeData(wb, sheets[i], results_list[[i]], rowNames = TRUE, colNames = TRUE)
 }
 #### save workbook to disk once all worksheets and data have been added ####
-saveWorkbook(wb,file="results/allele_balance/allele_balance.xlsx", overwrite = TRUE)
+saveWorkbook(wb,file=snakemake@output[['allele_balance']], overwrite = TRUE)
 
 
 ### mean balance ####
@@ -92,5 +81,5 @@ for (i in 1:length(sheets)){
   writeData(wb, sheets[i], results_list[[i]], rowNames = TRUE, colNames = TRUE)
 }
 #### save workbook to disk once all worksheets and data have been added ####
-saveWorkbook(wb,file="results/allele_balance/mean_allele_balance.xlsx", overwrite = TRUE)
+saveWorkbook(wb,file=snakemake@output[['mean_allele_balance']], overwrite = TRUE)
 

@@ -1,8 +1,8 @@
-################ 	Variant calling and IR mutation reports 	##################
-# HISAT2 (Kim et al., 2019)                                              		 #
-# samtools mpileup (Li et al., 2009)                                             #
-# FreeBayes (Kim et al., 2018)                                                    #
-##################################################################################
+################ 	Variant calling 	##################
+# HISAT2 (Kim et al., 2019)                                              		
+# samtools mpileup (Li et al., 2009)                                             
+# FreeBayes (Kim et al., 2018)                                                    
+
 
 rule HISAT2splicesites:
 	input:
@@ -77,36 +77,6 @@ rule IndexBams:
     wrapper:
         "0.65.0/bio/samtools/index"
 
-rule mpileupIR:
-    input:
-        bam="resources/alignments/{sample}.bam",
-        index="resources/alignments/{sample}.bam.bai"
-    output:
-        "results/allele_balance/counts/{sample}_{mut}_allele_counts.tsv"
-    log:
-        "logs/mpileup/{sample}_{mut}.log"
-    params:
-        region = lambda wildcards: mutation_data[mutation_data.Name == wildcards.mut].Location.tolist(),
-        ref = lambda wildcards:config['ref']['genome']
-    shell:
-        """
-		mkdir -pv results/allele_balance/counts
-        samtools mpileup {input.bam} -r {params.region} -f {params.ref} | python2 workflow/scripts/baseParser.py > {output}
-        """
-
-rule AlleleBalance:
-    input:
-        expand("results/allele_balance/counts/{sample}_{mut}_allele_counts.tsv", sample=samples, mut=mutations)
-    output:
-        "results/allele_balance/allele_balance.xlsx"
-    log:
-        "logs/allele_balance/Rscript.log"
-    shell:
-        """
-		mkdir -pv results/allele_balance/csvs
-		Rscript workflow/scripts/allele_balance.R 2> {log} 
-        """
-
 rule GenerateParamsFreebayes:
 	input:
 		ref_idx=lambda wildcards:config['ref']['genome'],
@@ -168,24 +138,21 @@ rule snpEff:
         bgzip {params.prefix}
         """
 
-
-#### Differential SNP testing ########
-
-rule missenseFilter:
+rule MissenseAndQualFilter:
     input:
         vcf="results/variants/annot.variants.{chrom}.vcf.gz"
     output:
-        "results/variants/annot.missense.{chrom}.vcf"
+        "results/variants/annot.missense.{chrom}.vcf.gz"
     log:
         "logs/snpsift/missense_vcf_{chrom}.log"
     params:
-        expression="ANN[*].EFFECT has 'missense_variant'"
+        expression="(ANN[*].EFFECT has 'missense_variant') & (QUAL >= 30)"
     shell:
         """
         java -jar workflow/scripts/snpEff/SnpSift.jar filter "{params.expression}" {input.vcf} > {output} 2> {log}
         """
 
-rule makeBedOfMissense:
+rule MakeBedOfMissense:
     input:
         vcf="results/variants/annot.missense.{chrom}.vcf",
     output:
@@ -217,8 +184,40 @@ rule alleleTable:
         workflow/scripts/mpileup2readcounts/mpileup2readcounts 0 {params.baseflt} {params.ignore_indels} {params.min_alt} {params.min_af} > {output} 2> {log}
         """
 
+rule pca:
+    input:
+        vcf=expand("results/variants/annot.variants.{chrom}.vcf.gz", chrom=config['chroms'])
+    output:
+        pcafig=expand("results/variants/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset'])
+    log:
+        "logs/pca/pca.log"
+    params:
+        dataset = config['dataset'],
+        chroms = config['chroms'],
+        missingprop = 0.98
+    script:
+        "../scripts/pca.py"
 
-
-
-
+rule Fst_PBS_TajimaD_SeqDiv_per_gene:
+    input:
+        samples=config['samples'],
+        gff=config['ref']['gff'],
+        DEcomparisons="resources/DE.comparison.list",
+        geneNames = "resources/gene_names.tsv",
+        vcf=expand("results/variants/annot.variants.{chrom}.vcf.gz", chrom=config['chroms'])
+    output:
+        "results/variants/snptesting/Fst_PBS.tsv",
+        "results/variants/snptesting/tajimas_d.tsv",
+        "results/variants/snptesting/sequence_div.tsv"
+    log:
+        "logs/pca/pca.log"
+    params:
+        pbs = config['pbs']['activate'],
+        pbscomps = config['pbs']['comparisons'],
+        chroms = config['chroms'],
+        ploidy = config['ploidy'],
+        missingprop = 0.66,
+        gffchromprefix="AaegL5_" #in case like the aedes genome, there is an annoying before each chromosome
+    script:
+        "../scripts/Fst_PBS_tajimasD_seqDiv.py"
 

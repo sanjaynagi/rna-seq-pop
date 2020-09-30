@@ -1,4 +1,8 @@
 #!/usr/bin/env Rscript
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
+
 args = commandArgs(trailingOnly=TRUE)
 .libPaths(c("/home/snagi/miniconda3/lib/R/library", "~/R/x86_64-conda_cos6-linux-gnu-library/3.6", "/home/sanj/R/x86_64-pc-linux-gnu-library/3.6", 
           "/usr/local/lib/R/site-library", "/usr/lib/R/site-library",  "/usr/lib/R/library"))
@@ -16,9 +20,9 @@ library(RColorBrewer)
 print("------------- Kallisto - Sleuth - RNASeq isoform Differential expression ---------")
 #### read data ####
 print("Reading metadata file...")
-samples = fread("data/samples.tsv") %>% as.data.frame() %>% rename('sample' = "samples")
+samples = fread(snakemake@input[[2]]) %>% as.data.frame() %>% rename('sample' = "samples")
 #add path column for sleuth object
-samples$path = paste0("results/quant/",samples$sample)
+#samples$path = paste0("results/quant/",samples$sample) # do i need this?
 
 ######### subset data and run DESeq for each combo we need, store in xlsx ########
 results_list = list()
