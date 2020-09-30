@@ -4,38 +4,42 @@ report: "report/workflow.rst"
 
 # Allow users to fix the underlying OS via singularity.
 singularity: "docker://continuumio/miniconda3"
+from snakemake.utils import validate
 import pandas as pd
 configfile:"config/config.yaml"
 
-########## this all needs to go in config #####
-# dataset name
-dataset = 'Angola_aegypti'
-geneset = 'lvpgwg'
-# metadata file 																							 										 			  				 
-metadata = pd.read_csv("config/samples.tsv", sep="\s+")
+metadata = pd.read_csv(config['samples'], sep="\t")
+validate(metadata, schema="schemas/samples.schema.yaml")
 samples = metadata.samples
+
 # IR allele balance mutations file 		
-mutation_data = pd.read_csv("resources/IRmutations.tsv", sep="\t")
-mutations = mutation_data.Name[:3]
+mutationdata = pd.read_csv(config['IRmutations']['path'], sep="\t")
+mutations = mutationdata.Name[:3]
 
 
 #include: "rules/common.smk"
 include: "rules/qc.smk"
 include: "rules/diff.smk"
-include: "rules/variants.smk"
-#include: "rules/lncrna.smk"
+include: "rules/variant_calling.smk"
+include: "rules/variant_analysis.smk"
 
 rule all:
     input:
         # The first rule should define the default target files
         # Subsequent target rules can be specified below. They should start with all_*.
-        expand("resources/reads/qc/{sample}_{n}_fastqc.html", sample=samples, n=[1,2]),
-        "results/diff/RNA-Seq_diff.xlsx",
-        "results/isoformdiff/RNA-Seq_isoformdiff.xlsx",
+        #expand("resources/reads/qc/{sample}_{n}_fastqc.html", sample=samples, n=[1,2]),
+        #"results/diff/RNA-Seq_diff.xlsx",
+        #"results/isoformdiff/RNA-Seq_isoformdiff.xlsx",
 #		"results/allele_balance/allele_balance.xlsx",
 #       "results/variants/merged.vcf.gz",
 #		"results/transcript_assembly/merged.gtf",
         expand("results/variants/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
-        expand("results/variants/alleleTable/{sample}.chr{chrom}.allele.table", sample=samples, chrom=config['chroms'])
+        expand("results/variants/alleleTable/{sample}.chr{chrom}.allele.table", sample=samples, chrom=config['chroms']),
+        expand("results/variants/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset']),
+        "results/variants/snptesting/Fst_PBS.tsv",
+        expand("results/variants/snptesting/{name}.sig.kissDE.tsv", name = config['contrasts']),
+        expand("results/variants/snptesting/{name}.kissDE.tsv", name = config['contrasts']),
+        expand("results/variants/snptesting/{name}.normcounts.tsv", name = config['contrasts'])
+
 
 

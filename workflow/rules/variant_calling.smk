@@ -6,8 +6,8 @@
 
 rule HISAT2splicesites:
 	input:
-		ref = lambda wildcards:config['ref']['genome'],
-		gtf = lambda wildcards:config['ref']['gtf']
+		ref = config['ref']['genome'],
+		gtf = config['ref']['gtf']
 	output:
 		splice_sites="resources/reference/splice-sites.gtf",
 		exons="resources/reference/exon-sites.gtf"
@@ -21,7 +21,7 @@ rule HISAT2splicesites:
 
 rule HISAT2index:
 	input:
-		fasta = lambda wildcards:config['ref']['genome'],
+		fasta = config['ref']['genome'],
 		splice_sites="resources/reference/splice-sites.gtf",
 		exons="resources/reference/exon-sites.gtf"
 	output:
@@ -163,61 +163,3 @@ rule MakeBedOfMissense:
         """
         vcf2bed < {input.vcf} | cut -f 1-3 > {output} 2> {log}
         """
-
-rule alleleTable:
-    input:
-        bam="resources/alignments/{sample}.bam",
-        bed="results/variants/missense.pos.{chrom}.bed",
-        ref=lambda wildcards:config['ref']['genome']
-    output:
-        "results/variants/alleleTable/{sample}.chr{chrom}.allele.table"
-    log:
-        "logs/mpileup/{sample}.{chrom}.log"
-    params:
-        ignore_indels='false',
-        baseflt=-5,
-        min_alt=3,
-        min_af=0
-    shell:
-        """
-        samtools mpileup -f {input.ref} -l {input.bed} {input.bam} | 
-        workflow/scripts/mpileup2readcounts/mpileup2readcounts 0 {params.baseflt} {params.ignore_indels} {params.min_alt} {params.min_af} > {output} 2> {log}
-        """
-
-rule pca:
-    input:
-        vcf=expand("results/variants/annot.variants.{chrom}.vcf.gz", chrom=config['chroms'])
-    output:
-        pcafig=expand("results/variants/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset'])
-    log:
-        "logs/pca/pca.log"
-    params:
-        dataset = config['dataset'],
-        chroms = config['chroms'],
-        missingprop = 0.98
-    script:
-        "../scripts/pca.py"
-
-rule Fst_PBS_TajimaD_SeqDiv_per_gene:
-    input:
-        samples=config['samples'],
-        gff=config['ref']['gff'],
-        DEcomparisons="resources/DE.comparison.list",
-        geneNames = "resources/gene_names.tsv",
-        vcf=expand("results/variants/annot.variants.{chrom}.vcf.gz", chrom=config['chroms'])
-    output:
-        "results/variants/snptesting/Fst_PBS.tsv",
-        "results/variants/snptesting/tajimas_d.tsv",
-        "results/variants/snptesting/sequence_div.tsv"
-    log:
-        "logs/pca/pca.log"
-    params:
-        pbs = config['pbs']['activate'],
-        pbscomps = config['pbs']['comparisons'],
-        chroms = config['chroms'],
-        ploidy = config['ploidy'],
-        missingprop = 0.66,
-        gffchromprefix="AaegL5_" #in case like the aedes genome, there is an annoying before each chromosome
-    script:
-        "../scripts/Fst_PBS_tajimasD_seqDiv.py"
-

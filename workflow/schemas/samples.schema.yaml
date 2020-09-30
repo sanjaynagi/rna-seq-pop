@@ -1,17 +1,35 @@
 $schema: "http://json-schema.org/draft-04/schema#"
 
-description: an entry in the sample sheet
+description: Schema to validate the input config/sample.tsv file.
 
 # columns that the config/samples.tsv file can have and which type they should be
 properties:
-  sample:
+  samples:
     type: string
-    description: sample name/identifier
-  condition:
+    description: sample name/identifier, should be a string ending in the sample number. Should match the input FASTQ files.
+  treatment:
     type: string
-    description: sample condition that will be compared during differential analysis (e.g. a treatment, a tissue time, a disease)
+    description: treatment/condition. Should match samples column without the sample number. 
+  species:
+    type: string
+    description: Name of species.
+  cohort:
+    type: string
+    description: i.e. "case" or "control". Unexposed strains = "control", exposed = "case". If there are no exposed strains, and only comparison to lab-susceptible, then the resistant strain should be "case".
+  insecticide:
+    type: string
+    description: Name of insecticide, necessary in case of a dataset with multiple different insecticides.
+  lab:
+    type: boolean
+    description: If the sample is a lab-susceptible strain, enter TRUE here, to ensure it is compared to the 'control' (unexposed) resistant strain.
+    default: FALSE
 
 # columns that the config/samples.tsv file must have to pass schema validation
 required:
-  - sample
-  - condition
+  - samples
+  - treatment
+  - cohort
+  - species
+  - strain
+  - insecticide 
+  - lab
