@@ -22,7 +22,6 @@ chroms: ['1', '2', '3']
 
 contrasts: [['ContAngola_FenAngola'], ['NewOrleans_ContAngola'], ['Rockefeller_ContAngola']]
 
-
 # ploidy level for freebayes, as generally we are using pooled samples.
 ploidy: 10
 

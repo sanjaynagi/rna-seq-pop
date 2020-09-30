@@ -1,0 +1,6 @@
+channels:
+  - bioconda
+dependencies:
+  - hisat2=2.2.1
+  - samtools=1.10
+  - bedops=2.4.39

@@ -1,0 +1,17 @@
+channels:
+  - r
+  - bioconda
+  - conda-forge
+dependencies:
+  - r=3.6.3
+  - bioconductor-deseq2=1.28.0
+  - r-sleuth=0.30
+  - r-tidyverse =1.2.1
+  - r-pheatmap =1.0.12
+  - r-data.table=1.12.2
+  - r-ggrepel=0.6.5
+  - r-openxlsx=4.0.17
+  - r-glue=1.4.2
+  - r-rcolorbrewer=1.1_2
+  - bioconductor-kissde=1.8.0
+  - bioconductor-rtracklayer=1.48.0

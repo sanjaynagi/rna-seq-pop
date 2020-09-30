@@ -9,38 +9,42 @@ rule mpileupIR:
         index="resources/alignments/{sample}.bam.bai"
     output:
         "results/allele_balance/counts/{sample}_{mut}_allele_counts.tsv"
+    conda:
+        "../envs/variants.yaml"
     log:
         "logs/mpileup/{sample}_{mut}.log"
     params:
         region = lambda wildcards: mutation_data[mutation_data.Name == wildcards.mut].Location.tolist(),
-        ref = lambda wildcards:config['ref']['genome']
+        ref = config['ref']['genome']
     shell:
         """
         samtools mpileup {input.bam} -r {params.region} -f {params.ref} | python2 workflow/scripts/baseParser.py > {output}
         """
 
-rule AlleleBalance:
+rule alleleBalanceIR:
     input:
         counts = expand("results/allele_balance/counts/{sample}_{mut}_allele_counts.tsv", sample=samples, mut=mutations),
         samples = config['samples'],
         mutations = config['IRmutations']['path']
     output:
         allele_balance = "results/allele_balance/allele_balance.xlsx",
-        mean_allele_balance = "results/allele_balance/mean_allele_balance.xlsx",
+        mean_allele_balance = "results/allele_balance/mean_allele_balance.xlsx"
+    conda:
+        "../envs/r-rnaseq.yaml"
     log:
         "logs/allele_balance.log"
     script:
-        """
-		../scripts/allele_balance.R
-        """
+        "../scripts/allele_balance.R"
 
 rule alleleTable:
     input:
         bam="resources/alignments/{sample}.bam",
         bed="results/variants/missense.pos.{chrom}.bed",
-        ref=lambda wildcards:config['ref']['genome']
+        ref= config['ref']['genome']
     output:
         "results/variants/alleleTable/{sample}.chr{chrom}.allele.table"
+    conda:
+        "../envs/variants.yaml"
     log:
         "logs/mpileup/{sample}.{chrom}.log"
     params:
@@ -54,13 +58,38 @@ rule alleleTable:
         workflow/scripts/mpileup2readcounts/mpileup2readcounts 0 {params.baseflt} {params.ignore_indels} {params.min_alt} {params.min_af} > {output} 2> {log}
         """
 
-rule pca:
+rule DifferentialSNPs:
+    input:
+        samples=config['samples'],
+        gff=config['ref']['gff'],
+        DEcomparisons="resources/DE.comparison.list",
+        geneNames = "resources/gene_names.tsv",
+    output:
+        expand("results/variants/snptesting/{name}.sig.kissDE.tsv", name = config['contrasts']),
+        expand("results/variants/snptesting/{name}.kissDE.tsv", name = config['contrasts']),
+        expand("results/variants/snptesting/{name}.normcounts.tsv", name = config['contrasts'])
+    conda:
+        "../envs/variants.yaml"
+    log:
+        "logs/variants/kissDE.log"
+    params:
+        chroms = config['chroms'],
+        gffchromprefix="AaegL5_", # in case like the aedes genome, there is an annoying prefix before each chromosome
+        mincounts = 100,
+        pval_flt = 0.001 # pvalues already adjusted but way want extra filter for sig file
+    script:
+        "../scripts/differential_SNPs.R"
+
+rule pca_variantdensity:
     input:
         vcf=expand("results/variants/annot.variants.{chrom}.vcf.gz", chrom=config['chroms'])
     output:
         pcafig=expand("results/variants/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset'])
+        snpdensityfig=expand("results/variants/{dataset}_SNPdensity_{chrom}.png", chrom=config['chroms'], dataset=config['dataset'])
     log:
         "logs/pca/pca.log"
+    conda:
+        "../envs/fstpca.yaml"
     params:
         dataset = config['dataset'],
         chroms = config['chroms'],
@@ -80,7 +109,7 @@ rule Fst_PBS_TajimaD_SeqDiv_per_gene:
         "results/variants/tajimas_d.tsv",
         "results/variants/sequence_div.tsv"
     conda:
-        "../envs/fst.yaml"
+        "../envs/fstpca.yaml"
     log:
         "logs/variants/fst_pbs.log"
     params:
@@ -92,25 +121,3 @@ rule Fst_PBS_TajimaD_SeqDiv_per_gene:
         gffchromprefix="AaegL5_" #in case like the aedes genome, there is an annoying before each chromosome
     script:
         "../scripts/Fst_PBS_tajimasD_seqDiv.py"
-
-
-rule DifferentialSNPs:
-    input:
-        samples=config['samples'],
-        gff=config['ref']['gff'],
-        DEcomparisons="resources/DE.comparison.list",
-        geneNames = "resources/gene_names.tsv",
-    output:
-        expand("results/variants/snptesting/{name}.sig.kissDE.tsv", name = config['contrasts']),
-        expand("results/variants/snptesting/{name}.kissDE.tsv", name = config['contrasts']),
-        expand("results/variants/snptesting/{name}.normcounts.tsv", name = config['contrasts'])
-    log:
-        "logs/variants/kissDE.log"
-    params:
-        chroms = config['chroms'],
-        gffchromprefix="AaegL5_", # in case like the aedes genome, there is an annoying prefix before each chromosome
-        mincounts = 100,
-        pval_flt = 0.001 # pvalues already adjusted but way want extra filter for sig file
-    script:
-        "../scripts/Fst_PBS_tajimasD_seqDiv.py"
-
