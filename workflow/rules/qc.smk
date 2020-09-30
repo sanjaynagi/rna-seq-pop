@@ -7,6 +7,8 @@ rule FastQC:
 	output:
 		html="resources/reads/qc/{sample}_{n}_fastqc.html",
 		zip="resources/reads/qc/{sample}_{n}_fastqc.zip"
+	conda:
+	    "../envs/qc.yaml"
 	log:
 		"logs/fastqc/{sample}_{n}_QC.log"
 	params:

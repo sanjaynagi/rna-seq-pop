@@ -66,7 +66,6 @@ rule SortBams:
     wrapper:
         "0.65.0/bio/samtools/sort"
 
-
 rule IndexBams:
     input:
         "resources/alignments/{sample}.bam"
@@ -82,7 +81,6 @@ rule GenerateParamsFreebayes:
 		ref_idx=lambda wildcards:config['ref']['genome'],
 		metadata="resources/samples.tsv"
 	output:
-		regions="/regions/freebayes.regions",
 		bamlist="resources/bam.list",
 		pops="resources/populations.tsv"
 	shell:
@@ -102,7 +100,7 @@ rule VariantCallingFreebayes:
 	log:
 		"logs/freebayes/{chrom}.log"
 	params:
-		ploidy="--ploidy 10",
+		ploidy=lambda wildcards:"--ploidy " + str(config['ploidy'])
 		chrom="-r {chrom}",
 		pooled="--pooled-discrete",
 		bestn="--use-best-n-alleles 5",
@@ -117,7 +115,7 @@ rule snpEffDbDownload:
     log:
         "logs/snpEff/snpeff_download.log"
     params:
-        reference=config['ref']['snpeffdb'],
+        reference=config['ref']['snpeffdb']
     shell:
         "java -jar workflow/scripts/snpEff/snpEff.jar download {params.reference} 2> {log}"
 
@@ -144,7 +142,7 @@ rule MissenseAndQualFilter:
     output:
         "results/variants/annot.missense.{chrom}.vcf.gz"
     log:
-        "logs/snpsift/missense_vcf_{chrom}.log"
+        "logs/snpSift/missense_vcf_{chrom}.log"
     params:
         expression="(ANN[*].EFFECT has 'missense_variant') & (QUAL >= 30)"
     shell:
@@ -156,10 +154,11 @@ rule MakeBedOfMissense:
     input:
         vcf="results/variants/annot.missense.{chrom}.vcf",
     output:
-        "results/variants/missense.pos.{chrom}.bed"
+        "results/variants/missense.pos.{chrom}.bed",
+        vcf=
+    conda:
+        "../envs/variants.yaml"
     log:
         "logs/allelicdepth/makebed.{chrom}.log"
     shell:
-        """
-        vcf2bed < {input.vcf} | cut -f 1-3 > {output} 2> {log}
-        """
+        "vcf2bed < {input.vcf} | cut -f 1-3 > {output} 2> {log}"

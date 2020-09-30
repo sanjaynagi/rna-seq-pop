@@ -20,11 +20,11 @@ rule KallistoQuant:
 		index="resources/reference/kallisto.idx"
 	output:
 		directory("results/quant/{sample}")
+	log:
+		"logs/kallisto/quant_{sample}.log"
 	params:
 		bootstrap="-b 100"
 	threads:12
-	log:
-		"logs/kallisto/quant_{sample}.log"
 	shell:
 		"0.65.0/bio/kallisto/quant"
 
@@ -34,7 +34,9 @@ rule DifferentialGeneExpression:
 		samples = config['samples']
 	output:
 		"results/diff/RNA-Seq_diff.xlsx",
-		DEcomparisons="resources/DE.comparison.list",
+		DEcomparisons="resources/DE.comparison.list"
+	conda:
+        "../envs/r-rnaseq.yaml"
 	log:
 		"logs/DESeq2/geneDE.log"
 	script:
@@ -46,6 +48,8 @@ rule DifferentialIsoformExpression:
 		samples = config['samples']
 	output:
 		"results/isoformdiff/RNA-Seq_isoformdiff.xlsx"
+	conda:
+        "../envs/r-rnaseq.yaml"
 	log:
 		"logs/sleuth/isoformDE.log"
 	script:
