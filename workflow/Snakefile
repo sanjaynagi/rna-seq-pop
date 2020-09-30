@@ -36,7 +36,7 @@ rule all:
         expand("results/variants/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
         expand("results/variants/alleleTable/{sample}.chr{chrom}.allele.table", sample=samples, chrom=config['chroms']),
         expand("results/variants/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset']),
-        "results/variants/snptesting/Fst_PBS.tsv",
+        "results/variants/Fst_PBS.tsv",
         expand("results/variants/snptesting/{name}.sig.kissDE.tsv", name = config['contrasts']),
         expand("results/variants/snptesting/{name}.kissDE.tsv", name = config['contrasts']),
         expand("results/variants/snptesting/{name}.normcounts.tsv", name = config['contrasts'])

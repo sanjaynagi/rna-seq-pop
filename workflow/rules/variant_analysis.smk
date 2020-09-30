@@ -79,6 +79,8 @@ rule Fst_PBS_TajimaD_SeqDiv_per_gene:
         "results/variants/Fst_PBS.tsv",
         "results/variants/tajimas_d.tsv",
         "results/variants/sequence_div.tsv"
+    conda:
+        "../envs/fst.yaml"
     log:
         "logs/variants/fst_pbs.log"
     params:

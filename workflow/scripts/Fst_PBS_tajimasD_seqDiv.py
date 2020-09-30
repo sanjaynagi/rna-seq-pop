@@ -198,10 +198,6 @@ tajdall = pd.concat(tajdbychrom.values(), ignore_index=True)
 gdivall = pd.concat(gdivbychrom.values(), ignore_index=True)
 
 #write to csv
-if pbs is True:
-    fstpbsall.to_csv(f"results/variants/Fst_PBS.tsv", index=False, sep="\t")
-else:
-    fstpbsall.to_csv(f"results/variants/Fst.tsv", index=False, sep="\t")
-
+fstpbsall.to_csv(f"results/variants/Fst_PBS.tsv", index=False, sep="\t")
 tajdall.to_csv(f"results/variants/tajimas_d.tsv", index=False, sep="\t")
 gdivall.to_csv(f"results/variants/sequence_div.tsv", index=False, sep="\t")
