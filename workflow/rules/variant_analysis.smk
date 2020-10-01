@@ -32,17 +32,17 @@ rule alleleBalanceIR:
     conda:
         "../envs/r-rnaseq.yaml"
     log:
-        "logs/allele_balance.log"
+        "logs/AlleleBalance.log"
     script:
-        "../scripts/allele_balance.R"
+        "../scripts/AlleleBalance.R"
 
-rule alleleTable:
+rule alleleTables:
     input:
         bam="resources/alignments/{sample}.bam",
         bed="results/variants/missense.pos.{chrom}.bed",
         ref= config['ref']['genome']
     output:
-        "results/variants/alleleTable/{sample}.chr{chrom}.allele.table"
+        "results/variants/alleleTables/{sample}.chr{chrom}.allele.table"
     conda:
         "../envs/variants.yaml"
     log:
@@ -78,7 +78,7 @@ rule DifferentialSNPs:
         mincounts = 100,
         pval_flt = 0.001 # pvalues already adjusted but way want extra filter for sig file
     script:
-        "../scripts/differential_SNPs.R"
+        "../scripts/differentialSNPs.R"
 
 rule pca_variantdensity:
     input:
@@ -120,4 +120,4 @@ rule Fst_PBS_TajimaD_SeqDiv_per_gene:
         missingprop = 0.66,
         gffchromprefix="AaegL5_" #in case like the aedes genome, there is an annoying before each chromosome
     script:
-        "../scripts/Fst_PBS_tajimasD_seqDiv.py"
+        "../scripts/FstPbsTajimasDseqDiv.py"
