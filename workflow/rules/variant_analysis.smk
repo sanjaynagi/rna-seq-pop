@@ -69,7 +69,7 @@ rule DifferentialSNPs:
         expand("results/variants/snptesting/{name}.kissDE.tsv", name = config['contrasts']),
         expand("results/variants/snptesting/{name}.normcounts.tsv", name = config['contrasts'])
     conda:
-        "../envs/variants.yaml"
+        "../envs/diffsnps.yaml"
     log:
         "logs/variants/kissDE.log"
     params:
