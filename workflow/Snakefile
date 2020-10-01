@@ -16,7 +16,6 @@ samples = metadata.samples
 mutationdata = pd.read_csv(config['IRmutations']['path'], sep="\t")
 mutations = mutationdata.Name[:3]
 
-print(samples)
 #include: "rules/common.smk"
 include: "rules/qc.smk"
 include: "rules/diff.smk"

@@ -1,0 +1,256 @@
+Loading required package: S4Vectors
+Loading required package: stats4
+Loading required package: BiocGenerics
+Loading required package: parallel
+
+Attaching package: ‘BiocGenerics’
+
+The following objects are masked from ‘package:parallel’:
+
+    clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+    clusterExport, clusterMap, parApply, parCapply, parLapply,
+    parLapplyLB, parRapply, parSapply, parSapplyLB
+
+The following objects are masked from ‘package:stats’:
+
+    IQR, mad, sd, var, xtabs
+
+The following objects are masked from ‘package:base’:
+
+    anyDuplicated, append, as.data.frame, basename, cbind, colnames,
+    dirname, do.call, duplicated, eval, evalq, Filter, Find, get, grep,
+    grepl, intersect, is.unsorted, lapply, Map, mapply, match, mget,
+    order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank,
+    rbind, Reduce, rownames, sapply, setdiff, sort, table, tapply,
+    union, unique, unsplit, which, which.max, which.min
+
+
+Attaching package: ‘S4Vectors’
+
+The following object is masked from ‘package:base’:
+
+    expand.grid
+
+Loading required package: IRanges
+Loading required package: GenomicRanges
+Loading required package: GenomeInfoDb
+Loading required package: SummarizedExperiment
+Loading required package: Biobase
+Welcome to Bioconductor
+
+    Vignettes contain introductory material; view with
+    'browseVignettes()'. To cite Bioconductor, see
+    'citation("Biobase")', and for packages 'citation("pkgname")'.
+
+Loading required package: DelayedArray
+Loading required package: matrixStats
+
+Attaching package: ‘matrixStats’
+
+The following objects are masked from ‘package:Biobase’:
+
+    anyMissing, rowMedians
+
+
+Attaching package: ‘DelayedArray’
+
+The following objects are masked from ‘package:matrixStats’:
+
+    colMaxs, colMins, colRanges, rowMaxs, rowMins, rowRanges
+
+The following objects are masked from ‘package:base’:
+
+    aperm, apply, rowsum
+
+── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──
+✔ ggplot2 3.3.2     ✔ purrr   0.3.4
+✔ tibble  3.0.3     ✔ dplyr   1.0.2
+✔ tidyr   1.1.1     ✔ stringr 1.4.0
+✔ readr   1.3.1     ✔ forcats 0.5.0
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::collapse()   masks IRanges::collapse()
+✖ dplyr::combine()    masks Biobase::combine(), BiocGenerics::combine()
+✖ dplyr::count()      masks matrixStats::count()
+✖ dplyr::desc()       masks IRanges::desc()
+✖ tidyr::expand()     masks S4Vectors::expand()
+✖ dplyr::filter()     masks stats::filter()
+✖ dplyr::first()      masks S4Vectors::first()
+✖ dplyr::lag()        masks stats::lag()
+✖ ggplot2::Position() masks BiocGenerics::Position(), base::Position()
+✖ purrr::reduce()     masks GenomicRanges::reduce(), IRanges::reduce()
+✖ dplyr::rename()     masks S4Vectors::rename()
+✖ purrr::simplify()   masks DelayedArray::simplify()
+✖ dplyr::slice()      masks IRanges::slice()
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+The following object is masked from ‘package:purrr’:
+
+    transpose
+
+The following object is masked from ‘package:SummarizedExperiment’:
+
+    shift
+
+The following object is masked from ‘package:GenomicRanges’:
+
+    shift
+
+The following object is masked from ‘package:IRanges’:
+
+    shift
+
+The following objects are masked from ‘package:S4Vectors’:
+
+    first, second
+
+
+Attaching package: ‘glue’
+
+The following object is masked from ‘package:dplyr’:
+
+    collapse
+
+The following object is masked from ‘package:SummarizedExperiment’:
+
+    trim
+
+The following object is masked from ‘package:GenomicRanges’:
+
+    trim
+
+The following objects are masked from ‘package:IRanges’:
+
+    collapse, trim
+
+[1] "------------- Kallisto - DESeq2 - RNASeq Differential expression ---------"
+[1] "Reading metadata file..."
+[1] "Counting and plotting total reads per sample..."
+converting counts to integer mode
+gene-wise dispersion estimates
+mean-dispersion relationship
+final dispersion estimates
+Warning message:
+In DESeqDataSet(se, design = design, ignoreRank) :
+  some variables in design formula are characters, converting to factors
+Running PCA for all Angola samples
+converting counts to integer mode
+gene-wise dispersion estimates
+mean-dispersion relationship
+final dispersion estimates
+[1] "Using exposed strain..."
+Using lab strain...NewOrleans
+Using lab strain...Rockefeller
+Running DESeq2 differential expression analysis on ContAngola_FenAngola
+converting counts to integer mode
+gene-wise dispersion estimates
+mean-dispersion relationship
+final dispersion estimates
+Joining, by = "Gene_stable_ID"
+   Gene_stable_ID
+1:     AAEL003332
+2:     AAEL000751
+3:     AAEL023949
+4:     AAEL011658
+5:     AAEL001809
+6:     AAEL023710
+                                                     Gene_description Gene_name
+1:                                                                             
+2:                   Na/Ca exchanger [Source:VB Community Annotation]          
+3:                                                                             
+4: plasma glutamate carboxypeptidase [Source:VB Community Annotation]          
+5:                                                                             
+6:                                                                             
+  Gene_stable_ID   baseMean log2FoldChange      lfcSE      stat        pvalue
+1     AAEL006575  26802.020      -6.908266 0.21865796 -31.59394 4.472317e-219
+2     AAEL026967  56162.503      -2.911286 0.10276498 -28.32956 1.495033e-176
+3     AAEL010884 100151.969      -5.640746 0.20571487 -27.42022 1.574613e-165
+4     AAEL006572  41167.583      -2.582045 0.09763925 -26.44474 4.193747e-154
+5    AAEL002761C   6344.894      -6.815435 0.26207385 -26.00578 4.259913e-149
+6     AAEL001184   1660.421      -3.410099 0.13677178 -24.93277 3.284272e-137
+           padj          FC absolute_diff
+1 7.091305e-215 0.008325391       -146111
+2 1.185262e-172 0.132927699       -236708
+3 8.322353e-162 0.020043159       -530510
+4 1.662401e-150 0.167004049       -159881
+5 1.350904e-145 0.008878703        -34809
+6 8.679236e-134 0.094071471         -7572
+Joining, by = "Gene_stable_ID"
+ContAngola_FenAngola complete!
+Running DESeq2 differential expression analysis on NewOrleans_ContAngola
+converting counts to integer mode
+gene-wise dispersion estimates
+mean-dispersion relationship
+final dispersion estimates
+Joining, by = "Gene_stable_ID"
+   Gene_stable_ID
+1:     AAEL003332
+2:     AAEL000751
+3:     AAEL023949
+4:     AAEL011658
+5:     AAEL001809
+6:     AAEL023710
+                                                     Gene_description Gene_name
+1:                                                                             
+2:                   Na/Ca exchanger [Source:VB Community Annotation]          
+3:                                                                             
+4: plasma glutamate carboxypeptidase [Source:VB Community Annotation]          
+5:                                                                             
+6:                                                                             
+  Gene_stable_ID  baseMean log2FoldChange     lfcSE      stat        pvalue
+1     AAEL017563  7089.801      -5.831472 0.1500126 -38.87323  0.000000e+00
+2     AAEL010776  2127.963       6.438355 0.1968378  32.70894 1.165564e-234
+3     AAEL022665 11749.515     -11.800816 0.3735832 -31.58818 5.364994e-219
+4     AAEL026304 29057.863      -9.726406 0.3091350 -31.46330 2.761534e-217
+5     AAEL022261  8481.655      -8.361129 0.2701725 -30.94737 2.756064e-210
+6     AAEL001319 13521.538      -8.828034 0.2875062 -30.70555 4.799724e-207
+           padj           FC absolute_diff
+1  0.000000e+00 1.756111e-02         39598
+2 9.592588e-231 8.672375e+01        -13315
+3 2.943593e-215 2.802854e-04         67899
+4 1.136371e-213 1.180484e-03        166055
+5 9.072963e-207 3.041230e-03         48396
+6 1.193590e-203 2.200376e-03         78157
+Joining, by = "Gene_stable_ID"
+NewOrleans_ContAngola complete!
+Running DESeq2 differential expression analysis on Rockefeller_ContAngola
+converting counts to integer mode
+gene-wise dispersion estimates
+mean-dispersion relationship
+final dispersion estimates
+Joining, by = "Gene_stable_ID"
+   Gene_stable_ID
+1:     AAEL003332
+2:     AAEL000751
+3:     AAEL023949
+4:     AAEL011658
+5:     AAEL001809
+6:     AAEL023710
+                                                     Gene_description Gene_name
+1:                                                                             
+2:                   Na/Ca exchanger [Source:VB Community Annotation]          
+3:                                                                             
+4: plasma glutamate carboxypeptidase [Source:VB Community Annotation]          
+5:                                                                             
+6:                                                                             
+  Gene_stable_ID   baseMean log2FoldChange     lfcSE      stat pvalue padj
+1     AAEL001319  18721.526     -11.759040 0.2707835 -43.42599      0    0
+2     AAEL001951 184035.171     -12.452017 0.2740187 -45.44221      0    0
+3     AAEL005961 184894.438      -5.366226 0.1068905 -50.20300      0    0
+4     AAEL007097  20764.895       6.826673 0.1292674  52.81048      0    0
+5     AAEL007281  67518.237     -11.681913 0.2239757 -52.15706      0    0
+6     AAEL008285   2391.479      -7.275586 0.1905089 -38.19028      0    0
+            FC absolute_diff
+1 2.885201e-04         78297
+2 1.784717e-04        755724
+3 2.424405e-02        705473
+4 1.135098e+02       -198935
+5 3.043643e-04        278060
+6 6.454020e-03          9818
+Joining, by = "Gene_stable_ID"
+Rockefeller_ContAngola complete!
+There were 11 warnings (use warnings() to see them)
