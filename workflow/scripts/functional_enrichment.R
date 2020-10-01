@@ -12,36 +12,65 @@ library(glue)
 library(tidyverse)
   
 
+
+
+    ########## GO Terms #########
+
+go = fread("resources/reference/VectorBase-48_AaegyptiLVP_AGWG_GO.gaf", sep = "\t", skip = 1, header = FALSE) %>% 
+  as_tibble()
+
+go = go[,c(2,5)]
+
+
+
+examplePathways
+
 ############## GSEA ################
 
 samples = fread("config/samples.tsv") %>% as.data.frame()
 comparisons = fread("resources/DE.comparison.list", header = FALSE)
 
-de = fread("results/diff/ContAbo_PiriAbo.csv")
-
-sort(de$absolute_diff, decreasing = TRUE)
-
-de = de[order(-absolute_diff)]
-de = de %>% column_to_rownames('Gene_stable_ID')
-diff = de %>% select('absolute_diff')
-
-
-
+de = fread("../RNA_Seq_Ag/analysis/diff/ContAbo_MalaAbo.csv")
+de = de[order(log2FoldChange)]
+rank = de[,c('Gene_stable_ID', 'log2FoldChange')] %>% column_to_rownames('Gene_stable_ID')
 ######
-data(examplePathways)
-data(exampleRanks)
+rownames(rank) = rownames(rank) %>% str_replace("AGAP", "AgaP_AGAP")
+head(rank)
+
+#------------------- get a.gambiae kegg pathways -------------------------
+kg.aga=kegg.gsets("aga")
+kg.aga.gs=kg.aga$kg.sets[kg.aga$sigmet.idx]
+kg.aga
+
+#kegg pathway enrichment
+kegg_enrich <- gage(rank, gsets=kg.aga.gs)
+kegg_enrich
+
+keggdf = as.data.frame(kegg_enrich$greater)
+
+kegg_sig<-sigGeneSet(kegg_enrich, outname="aga.gage")
+fwrite(rbind(kegg_enrich$greater, kegg_enrich$less), file = "aga.kegg.tsv", sep = "\t")
 
 
+### fgsea ##########
 
-fgseaRes <- fgsea(pathways = examplePathways, 
-                  stats    = exampleRanks,
+rank2 = setNames(rank$log2FoldChange, rownames(rank))
+
+str(rank2)
+str(exampleRanks)
+fgseaRes <- fgsea(pathways = kg.aga.gs, 
+                  stats    = rank,
                   minSize  = 15,
-                  maxSize  = 500,
-                  nperm = 10000)
+                  maxSize  = 50,
+                  nperm = 1000)
 
+kg.aga.gs
+head(str(examplePathways))
+head(str(kg.aga.gs))
+head(rank2)
+head(exampleRanks)
 
-
-plotEnrichment(examplePathways[["5991130_Programmed_Cell_Death"]],
+  plotEnrichment(examplePathways[["5991130_Programmed_Cell_Death"]],
                exampleRanks) + labs(title="Programmed Cell Death")
 
 topPathwaysUp <- fgseaRes[ES > 0][head(order(pval), n=10), pathway]
@@ -52,27 +81,3 @@ plotGseaTable(examplePathways[topPathways], exampleRanks, fgseaRes,
 
 
 
-
-
-#------------------- get a.gambiae kegg pathways -------------------------
-kg.aga=kegg.gsets("aga")
-kg.aga.gs=kg.aga$kg.sets[kg.aga$sigmet.idx]
-
-
-#kegg pathway enrichment
-Ag_gage <- gage(diff, gsets=kg.aga.gs)
-
-Ag_gage$greater
-
-?gage
-conv <- keggConv("aga", "ncbi-geneid")
-head(conv)
-?keggConv
-
-for (com in comparisons){
-}
-
-write.table(aga.gage$greater, file = "aga.kegg.txt", sep = "\t")
-write.table(rbind(aga.gage$greater, aga.gage$less), file = "aga.kegg.txt", sep = "\t")
-
-aga.gage.sig<-sigGeneSet(aga.gage, outname="aga.gage")

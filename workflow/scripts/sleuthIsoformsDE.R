@@ -20,7 +20,7 @@ library(RColorBrewer)
 print("------------- Kallisto - Sleuth - RNASeq isoform Differential expression ---------")
 #### read data ####
 print("Reading metadata file...")
-samples = fread(snakemake@input[[2]]) %>% as.data.frame() %>% rename('sample' = "samples")
+samples = fread(snakemake@input[[1]], sep="\t") %>% as.data.frame() %>% rename('sample' = "samples")
 #add path column for sleuth object
 #samples$path = paste0("results/quant/",samples$sample) # do i need this?
 
@@ -98,6 +98,7 @@ for (sp in unique(samples$species)){
 
         ## Run sleuth for each comparison
         print(glue("Running Sleuth differential isoform expression analysis on {comparison}"))
+        print(df2[[comparison]])
         so = sleuth_prep(df2[[comparison]], extra_bootstrap_summary = TRUE, 
                          transformation_function = function(x) log2(x + 0.5))
         so = sleuth_fit(so, ~treatment, 'full')
@@ -111,7 +112,7 @@ for (sp in unique(samples$species)){
           mutate("FC" = (2^b))
         
         #add in gene names
-        gene_names = fread("data/gene_names.tsv", sep="\t")
+        gene_names = fread(snakemake@input[[2]], sep="\t")
         #join DE results with normal gene names
         results_list[[comparison]] = unique(left_join(results, gene_names))
         fwrite(results_list[[comparison]], glue("results/isoformdiff/{comparison}.csv")) #write to csv 

@@ -100,7 +100,7 @@ rule VariantCallingFreebayes:
 	log:
 		"logs/freebayes/{chrom}.log"
 	params:
-		ploidy="--ploidy " + str(config['ploidy'])
+		ploidy="--ploidy " + str(config['ploidy']),
 		chrom="-r {chrom}",
 		pooled="--pooled-discrete",
 		bestn="--use-best-n-alleles 5",
@@ -155,7 +155,6 @@ rule MakeBedOfMissense:
         vcf="results/variants/annot.missense.{chrom}.vcf",
     output:
         "results/variants/missense.pos.{chrom}.bed",
-        vcf=
     conda:
         "../envs/variants.yaml"
     log:
