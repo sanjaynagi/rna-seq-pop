@@ -68,7 +68,7 @@ for (sample in samples$samples){
 colnames(counts) = c("Geneid", samples$samples)
 
 ## aggregate to gene level
-counts$Geneid = str_remove(counts$Geneid, "-RA|-RB|-RC|-RD|-RE|-RF|-RG|-RH|-RI|-RJ|-RK|-RL|-RM|-RN")
+counts$Geneid = substr(counts$Geneid, 1, 10) #get first 10 letters, (remove -RA,-RB etc of transcripts)
 counts = counts %>% group_by(Geneid) %>% summarise_all(sum)
 
 ### count total reads counted

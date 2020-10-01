@@ -51,6 +51,7 @@ The following objects are masked from ‘package:Biobase’:
 
     anyMissing, rowMedians
 
+Loading required package: BiocParallel
 
 Attaching package: ‘DelayedArray’
 
@@ -64,8 +65,8 @@ The following objects are masked from ‘package:base’:
 
 ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──
 ✔ ggplot2 3.3.2     ✔ purrr   0.3.4
-✔ tibble  3.0.3     ✔ dplyr   1.0.2
-✔ tidyr   1.1.1     ✔ stringr 1.4.0
+✔ tibble  3.0.2     ✔ dplyr   1.0.0
+✔ tidyr   1.1.0     ✔ stringr 1.4.0
 ✔ readr   1.3.1     ✔ forcats 0.5.0
 ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ✖ dplyr::collapse()   masks IRanges::collapse()
@@ -165,20 +166,20 @@ Joining, by = "Gene_stable_ID"
 4: plasma glutamate carboxypeptidase [Source:VB Community Annotation]          
 5:                                                                             
 6:                                                                             
-  Gene_stable_ID   baseMean log2FoldChange      lfcSE      stat        pvalue
-1     AAEL006575  26802.020      -6.908266 0.21865796 -31.59394 4.472317e-219
-2     AAEL026967  56162.503      -2.911286 0.10276498 -28.32956 1.495033e-176
-3     AAEL010884 100151.969      -5.640746 0.20571487 -27.42022 1.574613e-165
-4     AAEL006572  41167.583      -2.582045 0.09763925 -26.44474 4.193747e-154
-5    AAEL002761C   6344.894      -6.815435 0.26207385 -26.00578 4.259913e-149
-6     AAEL001184   1660.421      -3.410099 0.13677178 -24.93277 3.284272e-137
-           padj          FC absolute_diff
-1 7.091305e-215 0.008325391       -146111
-2 1.185262e-172 0.132927699       -236708
-3 8.322353e-162 0.020043159       -530510
-4 1.662401e-150 0.167004049       -159881
-5 1.350904e-145 0.008878703        -34809
-6 8.679236e-134 0.094071471         -7572
+  Gene_stable_ID   baseMean log2FoldChange     lfcSE      stat        pvalue
+1     AAEL006575  26824.936      -6.909490 0.2190948 -31.53653 2.743674e-218
+2     AAEL010884 100231.101      -5.641953 0.2062149 -27.35958 8.306707e-165
+3     AAEL026967  56205.191      -2.912499 0.1082307 -26.91010 1.673078e-159
+4     AAEL006572  41197.663      -2.583236 0.1035448 -24.94800 2.244778e-137
+5     AAEL001184   1661.648      -3.411240 0.1394274 -24.46606 3.395216e-132
+6     AAEL011915    841.516      -6.363103 0.2685403 -23.69515 4.045490e-124
+           padj         FC absolute_diff
+1 4.302904e-214 0.00831833       -146111
+2 6.513704e-161 0.02002640       -530510
+3 8.746296e-156 0.13281601       -236708
+4 8.801213e-134 0.16686622       -159881
+5 1.064943e-128 0.09399708         -7572
+6 1.057424e-120 0.01214829         -4587
 Joining, by = "Gene_stable_ID"
 ContAngola_FenAngola complete!
 Running DESeq2 differential expression analysis on NewOrleans_ContAngola
@@ -202,19 +203,19 @@ Joining, by = "Gene_stable_ID"
 5:                                                                             
 6:                                                                             
   Gene_stable_ID  baseMean log2FoldChange     lfcSE      stat        pvalue
-1     AAEL017563  7089.801      -5.831472 0.1500126 -38.87323  0.000000e+00
-2     AAEL010776  2127.963       6.438355 0.1968378  32.70894 1.165564e-234
-3     AAEL022665 11749.515     -11.800816 0.3735832 -31.58818 5.364994e-219
-4     AAEL026304 29057.863      -9.726406 0.3091350 -31.46330 2.761534e-217
-5     AAEL022261  8481.655      -8.361129 0.2701725 -30.94737 2.756064e-210
-6     AAEL001319 13521.538      -8.828034 0.2875062 -30.70555 4.799724e-207
+1     AAEL017563  7093.811      -5.831694 0.1539915 -37.87023  0.000000e+00
+2     AAEL010776  2128.924       6.438389 0.1993121  32.30305 6.338264e-229
+3     AAEL026304 29074.887      -9.725935 0.3043389 -31.95758 4.239127e-224
+4     AAEL022665 11756.957     -11.801051 0.3736627 -31.58210 6.503193e-219
+5     AAEL022261  8487.205      -8.361137 0.2680817 -31.18877 1.513055e-213
+6     AAEL001319 13528.726      -8.827596 0.2836973 -31.11625 1.452264e-212
            padj           FC absolute_diff
-1  0.000000e+00 1.756111e-02         39598
-2 9.592588e-231 8.672375e+01        -13315
-3 2.943593e-215 2.802854e-04         67899
-4 1.136371e-213 1.180484e-03        166055
-5 9.072963e-207 3.041230e-03         48396
-6 1.193590e-203 2.200376e-03         78157
+1  0.000000e+00 1.755841e-02         39598
+2 5.040188e-225 8.672580e+01        -13315
+3 2.247303e-220 1.180869e-03        166055
+4 2.585670e-215 2.802397e-04         67899
+5 4.812726e-210 3.041214e-03         48396
+6 3.849469e-209 2.201045e-03         78157
 Joining, by = "Gene_stable_ID"
 NewOrleans_ContAngola complete!
 Running DESeq2 differential expression analysis on Rockefeller_ContAngola
@@ -237,20 +238,37 @@ Joining, by = "Gene_stable_ID"
 4: plasma glutamate carboxypeptidase [Source:VB Community Annotation]          
 5:                                                                             
 6:                                                                             
-  Gene_stable_ID   baseMean log2FoldChange     lfcSE      stat pvalue padj
-1     AAEL001319  18721.526     -11.759040 0.2707835 -43.42599      0    0
-2     AAEL001951 184035.171     -12.452017 0.2740187 -45.44221      0    0
-3     AAEL005961 184894.438      -5.366226 0.1068905 -50.20300      0    0
-4     AAEL007097  20764.895       6.826673 0.1292674  52.81048      0    0
-5     AAEL007281  67518.237     -11.681913 0.2239757 -52.15706      0    0
-6     AAEL008285   2391.479      -7.275586 0.1905089 -38.19028      0    0
+  Gene_stable_ID  baseMean log2FoldChange     lfcSE      stat pvalue padj
+1     AAEL001319  18743.04     -11.761833 0.2699966 -43.56290      0    0
+2     AAEL001951 184266.58     -12.454383 0.2703809 -46.06237      0    0
+3     AAEL005961 185108.26      -5.368946 0.1101768 -48.73029      0    0
+4     AAEL006575  36142.65      -8.073984 0.2140399 -37.72186      0    0
+5     AAEL007097  20751.61       6.824127 0.1322653  51.59425      0    0
+6     AAEL007281  67601.92     -11.684678 0.2231749 -52.35660      0    0
             FC absolute_diff
-1 2.885201e-04         78297
-2 1.784717e-04        755724
-3 2.424405e-02        705473
-4 1.135098e+02       -198935
-5 3.043643e-04        278060
-6 6.454020e-03          9818
+1 2.879622e-04         78297
+2 1.781792e-04        755724
+3 2.419838e-02        705473
+4 3.710980e-03        146247
+5 1.133096e+02       -198935
+6 3.037816e-04        278060
 Joining, by = "Gene_stable_ID"
 Rockefeller_ContAngola complete!
-There were 11 warnings (use warnings() to see them)
+Warning messages:
+1: In DESeqDataSet(se, design = design, ignoreRank) :
+  some variables in design formula are characters, converting to factors
+2: In brewer.pal(length(levels(conds)), "Set2") :
+  minimal value for n is 3, returning requested palette with 3 different levels
+
+3: In brewer.pal(length(levels(conds)), "Set2") :
+  minimal value for n is 3, returning requested palette with 3 different levels
+
+4: Removed 22 rows containing missing values (geom_point). 
+5: In brewer.pal(length(levels(conds)), "Set2") :
+  minimal value for n is 3, returning requested palette with 3 different levels
+
+6: Removed 26 rows containing missing values (geom_point). 
+7: In brewer.pal(length(levels(conds)), "Set2") :
+  minimal value for n is 3, returning requested palette with 3 different levels
+
+8: Removed 38 rows containing missing values (geom_point). 

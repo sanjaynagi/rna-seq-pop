@@ -5,7 +5,8 @@ A script to perform Fst and population branch statistic analysis by gene on geno
 """
 
 from tools import *
-from tqdm import tqdm
+import warnings
+warnings.filterwarnings('ignore') # suppress numpy runtime warnings
 
 # snakemake inputs and params
 metadata_path = snakemake.input[0]
@@ -37,7 +38,6 @@ comparisons.columns = ['sus', 'res']
 comparisons = [list(row) for i,row in comparisons.iterrows()]
 print(f"The pairwise comparisons for Fst are {comparisons}")
 
-
 fstpbsbychrom=dict()
 tajdbychrom=dict()
 gdivbychrom = dict()
@@ -49,7 +49,8 @@ for chrom in chroms:
     #function to read in vcfs and associated SNP data
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops =  readAndFilterVcf(path=path, 
                                                                chrom=chrom, 
-                                                               qualflt=30, 
+                                                               qualflt=30,
+                                                               missingfltprop=missingprop, 
                                                                plot=False)
     #subset gff to appropriate chrom
     genes = gff[gff.seqid == f"{gffchromprefix}{chrom}"].sort_values('start').reset_index(drop=True)
@@ -69,7 +70,7 @@ for chrom in chroms:
     n_dict = dict()
 
     #loop through each gene and calculate fst, pbs, tajimas d, or sequence diversity for each comparison
-    for i, gene in tqdm(genes.iterrows()):
+    for i, gene in genes.iterrows():
         ID = gene.ID
         #locate_ranges() to get a boolean, needed as locate_range() will throw errors if no snps found in gene
         gene_bool = pos.locate_ranges([gene['start']], [gene['end']], strict=False)
@@ -122,7 +123,7 @@ for chrom in chroms:
     tajd_per_gene = flip_dict(tajd_per_gene)
     gdiv_per_gene = flip_dict(gdiv_per_gene)
 
-        
+    print(f"Chromosome {chrom} complete...\n")
     for comp1,comp2 in comparisons:
         name = comp1 + "_" + comp2 
         a = np.array(list(fst_per_gene[name].values()))
