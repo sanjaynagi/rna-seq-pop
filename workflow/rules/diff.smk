@@ -37,7 +37,7 @@ rule DifferentialGeneExpression:
 		"results/diff/RNA-Seq_diff.xlsx",
 		DEcomparisons="resources/DE.comparison.list"
 	conda:
-		"../envs/r-rnaseq.yaml"
+		"../envs/diffexp.yaml"
 	log:
 		"logs/DESeq2/geneDE.log"
 	script:
@@ -51,7 +51,7 @@ rule DifferentialIsoformExpression:
 	output:
 		"results/isoformdiff/RNA-Seq_isoformdiff.xlsx"
 	conda:
-		"../envs/r-rnaseq.yaml"
+		"../envs/sleuth.yaml"
 	log:
 		"logs/sleuth/isoformDE.log"
 	script:

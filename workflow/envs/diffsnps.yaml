@@ -1,0 +1,10 @@
+channels:
+  - r
+  - bioconda
+  - conda-forge
+dependencies:
+  - "r-tidyverse>=1.0"
+  - "r-data.table>=1.12"
+  - "r-glue>=1.0"
+  - bioconductor-kissde=1.8
+  - bioconductor-rtracklayer=1.48
