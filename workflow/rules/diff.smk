@@ -6,13 +6,13 @@
 
 rule KallistoIndex:
 	input:
-		fasta=lambda wildcards:config['ref']['transcriptome']
+		fasta=config['ref']['transcriptome']
 	output:
 		index="resources/reference/kallisto.idx"
 	log:
 		"logs/kallisto/index.log"
 	wrapper:
-		"0.65.0/kallisto/index"
+		"0.66.0/bio/kallisto/index"
 
 rule KallistoQuant:
 	input:
@@ -24,8 +24,8 @@ rule KallistoQuant:
 		"logs/kallisto/quant_{sample}.log"
 	params:
 		bootstrap="-b 100"
-	threads:12
-	shell:
+	threads:24
+	wrapper:
 		"0.65.0/bio/kallisto/quant"
 
 rule DifferentialGeneExpression:

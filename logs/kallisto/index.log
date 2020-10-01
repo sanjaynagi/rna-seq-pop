@@ -1,0 +1,12 @@
+
+[build] loading fasta file resources/reference/aedes-aegypti-lvpagwg_transcripts.l5.fa
+[build] k-mer length: 31
+[build] warning: clipped off poly-A tail (longer than 10)
+        from 171 target sequences
+[build] warning: replaced 219 non-ACGUT characters in the input sequence
+        with pseudorandom nucleotides
+[build] counting k-mers ... done.
+[build] building target de Bruijn graph ...  done 
+[build] creating equivalence classes ...  done
+[build] target de Bruijn graph has 118211 contigs and contains 37050156 k-mers 
+

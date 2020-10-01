@@ -5,7 +5,7 @@ sink(log, type="message")
 
 args = commandArgs(trailingOnly=TRUE)
 .libPaths(c("/home/snagi/miniconda3/lib/R/library", "~/R/x86_64-conda_cos6-linux-gnu-library/3.6", "/home/sanj/R/x86_64-pc-linux-gnu-library/3.6", 
-          "/usr/local/lib/R/site-library", "/usr/lib/R/site-library",  "/usr/lib/R/library"))
+          "/usr/local/lib/R/site-library", "/usr/lib/R/site-library",  "/usr/lib/R/library", "/home/snagi/miniconda3/envs/RNAg/lib/R/library"))
 
 ## Differential expression
 library(DESeq2)
