@@ -30,13 +30,14 @@ rule KallistoQuant:
 
 rule DifferentialGeneExpression:
 	input:
-		expand("results/quant/{sample}", sample=samples),
-		samples = config['samples']
+		samples = config['samples'],
+		gene_names= config['ref']['genenames'],
+		counts=expand("results/quant/{sample}", sample=samples)
 	output:
 		"results/diff/RNA-Seq_diff.xlsx",
 		DEcomparisons="resources/DE.comparison.list"
 	conda:
-        "../envs/r-rnaseq.yaml"
+		"../envs/r-rnaseq.yaml"
 	log:
 		"logs/DESeq2/geneDE.log"
 	script:
@@ -44,12 +45,13 @@ rule DifferentialGeneExpression:
 
 rule DifferentialIsoformExpression:
 	input:
-		expand("results/quant/{sample}", sample=samples),
-		samples = config['samples']
+		samples = config['samples'],
+		gene_names= config['ref']['genenames'],
+		counts=expand("results/quant/{sample}", sample=samples),
 	output:
 		"results/isoformdiff/RNA-Seq_isoformdiff.xlsx"
 	conda:
-        "../envs/r-rnaseq.yaml"
+		"../envs/r-rnaseq.yaml"
 	log:
 		"logs/sleuth/isoformDE.log"
 	script:

@@ -48,7 +48,7 @@ vst_pca = function(counts, samples, colourvar, name="PCA_", st="", comparison=""
 print("------------- Kallisto - DESeq2 - RNASeq Differential expression ---------")
 #### read data ####
 print("Reading metadata file...")
-samples = fread("data/samples.tsv") %>% as.data.frame()
+samples = fread(snakemake@input[[1]], sep="\t") %>% as.data.frame()
 
 #Read data
 df = list()
@@ -179,7 +179,7 @@ for (sp in unique(samples$species)){
       #for each set in the list df2, do DE. for  example either ngousso v tiefora or tiefora_control v tiefora_exposed 
       for (comparison in names(df2)){
         
-        write(glue("{comparison}\n"), file="data/DE.comparison.list", append=TRUE)
+        write(glue("{comparison}\n"), file="resources/DE.comparison.list", append=TRUE)
 
         #subset count data to be columns we need for this comparison
         subcounts = counts[colnames(counts) %in% df2[[comparison]]$samples]
@@ -225,7 +225,9 @@ for (sp in unique(samples$species)){
         results = unique(left_join(results, readdiff[,c('Gene_stable_ID','absolute_diff')]))
           
         #add in gene names
-        gene_names = fread("data/gene_names.tsv", sep="\t")
+        gene_names = fread(snakemake@input[[2]], sep="\t")
+        print(head(gene_names))
+        print(head(results))
         #join DE results with normal gene names
         results_list[[comparison]] = unique(left_join(results, gene_names))
         fwrite(results_list[[comparison]], glue("results/diff/{comparison}.csv")) #write to csv 

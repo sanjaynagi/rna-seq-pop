@@ -84,7 +84,7 @@ rule pca_variantdensity:
     input:
         vcf=expand("results/variants/annot.variants.{chrom}.vcf.gz", chrom=config['chroms'])
     output:
-        pcafig=expand("results/variants/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset'])
+        pcafig=expand("results/variants/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset']),
         snpdensityfig=expand("results/variants/{dataset}_SNPdensity_{chrom}.png", chrom=config['chroms'], dataset=config['dataset'])
     log:
         "logs/pca/pca.log"
