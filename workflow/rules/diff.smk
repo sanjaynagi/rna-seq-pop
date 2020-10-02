@@ -32,10 +32,10 @@ rule DifferentialGeneExpression:
 	input:
 		samples = config['samples'],
 		gene_names= config['ref']['genenames'],
+		DEcontrasts="resources/DE.contrast.list",
 		counts=expand("results/quant/{sample}", sample=samples)
 	output:
-		"results/diff/RNA-Seq_diff.xlsx",
-		DEcomparisons="resources/DE.comparison.list"
+		"results/diff/RNA-Seq_diff.xlsx"
 	conda:
 		"../envs/diffexp.yaml"
 	log:
@@ -47,7 +47,8 @@ rule DifferentialIsoformExpression:
 	input:
 		samples = config['samples'],
 		gene_names= config['ref']['genenames'],
-		counts=expand("results/quant/{sample}", sample=samples),
+		DEcontrasts="resources/DE.contrast.list",
+		counts=expand("results/quant/{sample}", sample=samples)
 	output:
 		"results/isoformdiff/RNA-Seq_isoformdiff.xlsx"
 	conda:

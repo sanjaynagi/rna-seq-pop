@@ -62,7 +62,7 @@ rule DifferentialSNPs:
     input:
         samples=config['samples'],
         gff=config['ref']['gff'],
-        DEcomparisons="resources/DE.comparison.list",
+        DEcontrasts="resources/DE.contrast.list",
         geneNames = "resources/gene_names.tsv",
     output:
         expand("results/variants/snptesting/{name}.sig.kissDE.tsv", name = config['contrasts']),
@@ -101,7 +101,7 @@ rule Fst_PBS_TajimaD_SeqDiv_per_gene:
     input:
         samples=config['samples'],
         gff=config['ref']['gff'],
-        DEcomparisons="resources/DE.comparison.list",
+        DEcontrasts="resources/DE.contrast.list",
         geneNames = "resources/gene_names.tsv",
         vcf=expand("results/variants/annot.variants.{chrom}.vcf.gz", chrom=config['chroms'])
     output:
@@ -114,7 +114,7 @@ rule Fst_PBS_TajimaD_SeqDiv_per_gene:
         "logs/variants/fst_pbs.log"
     params:
         pbs = config['pbs']['activate'],
-        pbscomps = config['pbs']['comparisons'],
+        pbscomps = config['pbs']['contrasts'],
         chroms = config['chroms'],
         ploidy = config['ploidy'],
         missingprop = 0.66,
