@@ -20,9 +20,13 @@ ref:
 # Chromosome names for the appropriate species. Should correspond to the reference fasta/gff files. 
 chroms: ['1', '2', '3']
 
-contrasts: [['ContAngola_FenAngola'], ['NewOrleans_ContAngola'], ['Rockefeller_ContAngola']]
+# List of contrasts to do DE and Fst analysis on. Should correspond to the 'treatment' columns of the samples.tsv file, and be separated by an underscore "_". i.e ['control_case'], or ['Kisumu_Tiassale'].
+contrasts:
+      - 'ContAngola_FenAngola'
+      - 'NewOrleans_ContAngola'
+      - 'Rockefeller_ContAngola'
 
-# ploidy level for freebayes, as generally we are using pooled samples.
+# Ploidy level for freebayes to call at. (Generally we are using pooled samples)
 ploidy: 10
 
 # If activate:True, creates allele balance .xlsx reports on IR mutations of choice
@@ -32,5 +36,9 @@ IRmutations:
 
 # Do we want to run pbs (Needs three conditions, two more closely related and a slight outgroup)
 pbs:
-      comparisons: [['FenAngola', 'ContAngola', 'NewOrleans'], ['FenAngola', 'ContAngola', 'Rockefeller']]
+      contrasts: [['FenAngola', 'ContAngola', 'NewOrleans'], ['FenAngola', 'ContAngola', 'Rockefeller']]
+      activate: True
+
+# For Anopheles gambiae s.l only - run Ancestry Informative Marker analysis.
+AIMs:
       activate: True

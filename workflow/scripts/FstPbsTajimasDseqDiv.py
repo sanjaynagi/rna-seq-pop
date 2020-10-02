@@ -34,13 +34,13 @@ comparisons = pd.read_csv(comparisons_path, header=None)
 comparisons.columns = ['contrast']
 comparisons = comparisons.contrast.str.split("_", expand=True)
 comparisons.columns = ['sus', 'res']
-
 comparisons = [list(row) for i,row in comparisons.iterrows()]
+
 print(f"The pairwise comparisons for Fst are {comparisons}")
 
-fstpbsbychrom=dict()
-tajdbychrom=dict()
-gdivbychrom = dict()
+fstpbsbychrom={}
+tajdbychrom={}
+gdivbychrom = {}
 
 for chrom in chroms:
     
@@ -56,18 +56,18 @@ for chrom in chroms:
     genes = gff[gff.seqid == f"{gffchromprefix}{chrom}"].sort_values('start').reset_index(drop=True)
 
     ### Average Fst, pbs, tajima d for each gene 
-    fst_per_comp = dict()
-    fst_per_gene = dict()
-    pbs_per_gene = dict()
-    pbs_per_comp = dict()
-    tajd_per_pop = dict()
-    tajd_per_gene = dict()
-    gdiv_per_pop = dict()
-    gdiv_per_gene = dict()
-    se_per_comp = dict()
-    se_per_gene = dict()
-    pos_dict = dict()
-    n_dict = dict()
+    fst_per_comp = {}
+    fst_per_gene = {}
+    pbs_per_gene = {}
+    pbs_per_comp = {}
+    tajd_per_pop = {}
+    tajd_per_gene = {}
+    gdiv_per_pop = {}
+    gdiv_per_gene = {}
+    se_per_comp = {}
+    se_per_gene = {}
+    pos_dict = {}
+    n_dict = {}
 
     #loop through each gene and calculate fst, pbs, tajimas d, or sequence diversity for each comparison
     for i, gene in genes.iterrows():
@@ -138,8 +138,8 @@ for chrom in chroms:
     posdf.columns = ['GeneID', 'Gene_midpoint']
 
     #make dataframe of fst for each comparison
-    fst_dfs = dict()
-    se_dfs = dict()
+    fst_dfs = {}
+    se_dfs = {}
     for comp1,comp2 in comparisons:
         name = comp1 + "_" + comp2
         fst_df = pd.DataFrame.from_dict(fst_per_gene[name], orient='index').reset_index(drop=False)
@@ -156,8 +156,8 @@ for chrom in chroms:
     fst_allcomparisons = reduce(my_reduce, [fst_allcomparisons, se_allcomparisons])
     fst_allcomparisons['chrom'] = chrom
 
-    tajd_dfs = dict()
-    gdiv_dfs = dict()
+    tajd_dfs = {}
+    gdiv_dfs = {}
     #store sequence diversityt and tajimas d for each gene and each subpop 
     for subpop in subpops:
         tajd_df = pd.DataFrame.from_dict(tajd_per_gene[subpop], orient='index').reset_index(drop=False)
@@ -175,7 +175,7 @@ for chrom in chroms:
 
     if pbs is True:
         #pbs store as dataframes
-        pbs_dfs = dict()
+        pbs_dfs = {}
         for pbscomp in pbscomps:
             name = pbscomp[0] + "_" + pbscomp[1] + "_" + pbscomp[2]
             pbs_df = pd.DataFrame.from_dict(pbs_per_gene[name], orient='index').reset_index(drop=False)

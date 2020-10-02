@@ -16,7 +16,7 @@ samples = metadata.samples
 mutationdata = pd.read_csv(config['IRmutations']['path'], sep="\t")
 mutations = mutationdata.Name[:3]
 
-#include: "rules/common.smk"
+include: "rules/common.smk"
 include: "rules/qc.smk"
 include: "rules/diff.smk"
 include: "rules/variant_calling.smk"
@@ -29,20 +29,20 @@ rule all:
         #expand("resources/reads/qc/{sample}_{n}_fastqc.html", sample=samples, n=[1,2]),
         "results/diff/RNA-Seq_diff.xlsx",
 #        "results/isoformdiff/RNA-Seq_isoformdiff.xlsx",
-        "results/variants/Fst_PBS.tsv"
+        #"results/variants/Fst_PBS.tsv"
 
 
-rule all_variants:
-    input:
+#rule all_variants:
+#    input:
         #"results/allele_balance/allele_balance.xlsx",
         #expand("results/variants/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
         #expand("results/variants/alleleTable/{sample}.chr{chrom}.allele.table", sample=samples, chrom=config['chroms']),
         #expand("results/variants/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset']),
-        "results/variants/Fst_PBS.tsv",
+        #"results/variants/Fst_PBS.tsv",
         #expand("results/variants/snptesting/{name}.sig.kissDE.tsv", name = config['contrasts']),
         #expand("results/variants/snptesting/{name}.kissDE.tsv", name = config['contrasts']),
         #expand("results/variants/snptesting/{name}.normcounts.tsv", name = config['contrasts'])
 
-rule all_lncRNA:
-    input:
-        #"results/transcript_assembly/merged.gtf",
+#rule all_lncRNA:
+#    input:
+#        #"results/transcript_assembly/merged.gtf",
