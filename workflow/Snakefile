@@ -27,8 +27,8 @@ rule all:
         # The first rule should define the default target files
         # Subsequent target rules can be specified below. They should start with all_*.
         #expand("resources/reads/qc/{sample}_{n}_fastqc.html", sample=samples, n=[1,2]),
-        "results/diff/RNA-Seq_diff.xlsx",
-#        "results/isoformdiff/RNA-Seq_isoformdiff.xlsx",
+        "results/genediff/RNA-Seq_diff.xlsx",
+        "results/isoformdiff/RNA-Seq_isoformdiff.xlsx",
         "results/variants/Fst_PBS.tsv"
 
 

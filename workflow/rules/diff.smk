@@ -9,6 +9,7 @@ rule KallistoIndex:
 		fasta=config['ref']['transcriptome']
 	output:
 		index="resources/reference/kallisto.idx"
+	group:"diffexp"
 	log:
 		"logs/kallisto/index.log"
 	wrapper:
@@ -20,6 +21,7 @@ rule KallistoQuant:
 		index="resources/reference/kallisto.idx"
 	output:
 		directory("results/quant/{sample}")
+	group:"diffexp"
 	log:
 		"logs/kallisto/quant_{sample}.log"
 	params:
@@ -35,7 +37,10 @@ rule DifferentialGeneExpression:
 		DEcontrasts="resources/DE.contrast.list",
 		counts=expand("results/quant/{sample}", sample=samples)
 	output:
-		"results/diff/RNA-Seq_diff.xlsx"
+		"results/genediff/RNA-Seq_diff.xlsx",
+		"results/genediff/PCA.pdf"
+	group:"diffexp"
+	priority: 10
 	conda:
 		"../envs/diffexp.yaml"
 	log:
@@ -51,6 +56,8 @@ rule DifferentialIsoformExpression:
 		counts=expand("results/quant/{sample}", sample=samples)
 	output:
 		"results/isoformdiff/RNA-Seq_isoformdiff.xlsx"
+	group:"diffexp"
+	priority: 10
 	conda:
 		"../envs/sleuth.yaml"
 	log:

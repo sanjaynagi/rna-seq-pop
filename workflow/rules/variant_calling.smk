@@ -27,21 +27,23 @@ rule HISAT2index:
 	output:
 		directory("resources/reference/ht2index/")
 	log:
-		"logs/hisat2/build_index.log"
+		"logs/hisat2/index.log"
+	conda:
+	    "../envs/variants.yaml"
 	params:
 		ss="--ss {input.splice_sites}",
 		exon="--exon {input.exons}",
 		prefix="resources/reference/ht2index/"
 	threads:8
-	wrapper:
-		"0.65.0/bio/hisat2/index"
+	shell:
+		"hisat2-build -p {threads} --ss {input.splice_sites} --exon {input.exons} {input.fasta} {params.prefix}  2> {log}"
 	
 rule HISAT2align:
 	input:
 		reads=["resources/reads/{sample}_1.fastq.gz", "resources/reads/{sample}_2.fastq.gz"],
 		idx="resources/reference/ht2index/"
 	output:
-		pipe("resources/alignments/{sample}.temp.bam")
+		temp("temp/{sample}.bam")
 	log:
 		"logs/hisat2/{sample}_align.log"
 	params:
@@ -56,7 +58,7 @@ rule HISAT2align:
 
 rule SortBams:
     input:
-        "resources/alignments/{sample}.temp.bam"
+        "temp/{sample}.bam"
     output:
         "resources/alignments/{sample}.bam"
     log:
