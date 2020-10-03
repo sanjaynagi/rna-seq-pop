@@ -1,0 +1,13 @@
+samples	treatment	species	strain	cohort	insecticide	lab
+ContAngola1	ContAngola	aegypti	Angola	control	none	FALSE
+ContAngola2	ContAngola	aegypti	Angola	control	none	FALSE
+ContAngola3	ContAngola	aegypti	Angola	control	none	FALSE
+FenAngola1	FenAngola	aegypti	Angola	case	Fenitrothion	FALSE
+FenAngola2	FenAngola	aegypti	Angola	case	Fenitrothion	FALSE
+FenAngola3	FenAngola	aegypti	Angola	case	Fenitrothion	FALSE
+NewOrleans1	NewOrleans	aegypti	NewOrleans	control	none	TRUE
+NewOrleans2	NewOrleans	aegypti	NewOrleans	control	none	TRUE
+NewOrleans3	NewOrleans	aegypti	NewOrleans	control	none	TRUE
+Rockefeller1	Rockefeller	aegypti	Rockefeller	control	none	TRUE
+Rockefeller2	Rockefeller	aegypti	Rockefeller	control	none	TRUE
+Rockefeller3	Rockefeller	aegypti	Rockefeller	control	none	TRUE
