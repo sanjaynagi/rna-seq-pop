@@ -193,14 +193,14 @@ for (cont in contrasts){
   
   #join DE results with normal gene names
   results_list[[cont]] = unique(left_join(results, gene_names))
-  fwrite(results_list[[cont]], glue("results/diff/{cont}.csv")) #write to csv 
+  fwrite(results_list[[cont]], glue("results/genediff/{cont}.csv")) #write to csv 
   
   #store names of comparisons for xlsx report sheets
   names_list[[cont]] = cont
   
   #volcano plot for each comparison, first filter to remove very lowly expressed genes 
   a=results_list[[cont]] %>% filter(`baseMean` > 20)
-  pdf(glue("results/diff/Volcano_plot_{cont}.pdf"))
+  pdf(glue("results/genediff/Volcano_plot_{cont}.pdf"))
   print(ggplot(a, aes(x=log2FoldChange, y=-log10(padj))) + geom_point() +
           geom_hline(yintercept = (-log10(0.05)), linetype='dashed') +
           geom_vline(xintercept = (log2(2)), linetype='dashed') + 
@@ -221,5 +221,5 @@ for (i in 1:length(sheets)){
   writeData(wb, sheets[i], results_list[[i]], rowNames = FALSE, colNames = TRUE)
 }
 #### save workbook to disk once all worksheets and data have been added ####
-saveWorkbook(wb,file="results/diff/RNA-Seq_diff.xlsx", overwrite = TRUE)
+saveWorkbook(wb,file="results/genediff/RNA-Seq_diff.xlsx", overwrite = TRUE)
 
