@@ -25,7 +25,7 @@ rule HISAT2index:
 		splice_sites="resources/reference/splice-sites.gtf",
 		exons="resources/reference/exon-sites.gtf"
 	output:
-		touch("resources/reference/ht.index")
+		directory("resources/reference/ht2index/")
 	log:
 		"logs/hisat2/build_index.log"
 	params:
@@ -59,8 +59,6 @@ rule SortBams:
         "resources/alignments/{sample}.temp.bam"
     output:
         "resources/alignments/{sample}.bam"
-    wildcard_constraints:
-        sample="^[A-Z]\d$"
     log:
         "logs/samtools/sortbams/{sample}.log"
     wrapper:
@@ -79,7 +77,8 @@ rule IndexBams:
 rule GenerateParamsFreebayes:
 	input:
 		ref_idx=config['ref']['genome'],
-		metadata="resources/samples.tsv"
+		metadata=config['samples'],
+		bams = expand("resources/alignments/{sample}.bam", sample=samples)
 	output:
 		bamlist="resources/bam.list",
 		pops="resources/populations.tsv"
