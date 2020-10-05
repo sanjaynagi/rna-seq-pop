@@ -131,56 +131,10 @@ for (i in 1:nrow(comparisons)){
                           nomatch = 0L)
   #write to file
   print(glue("Writing {name} results to results/variants/snptesting/"))
-  fwrite(results, glue("results/variants/snptesting/{name}.normcounts.tsv"), sep="\t", row.names=FALSE)
-  fwrite(de_variants, glue("results/variants/snptesting/{name}.kissDE.tsv"), sep="\t", row.names=FALSE)
+  results %>% rename("GeneID" = "ID") %>% fwrite(., glue("results/variants/snptesting/{name}.normcounts.tsv"), sep="\t", row.names=FALSE)
+  de_variants %>% rename("GeneID" = "ID") %>% fwrite(., glue("results/variants/snptesting/{name}.kissDE.tsv"), sep="\t", row.names=FALSE)
   
   de_variants %>% 
     filter(Adjusted_pvalue <= pval) %>% 
     fwrite(., glue("results/variants/snptesting/{name}.sig.kissDE.tsv"), sep="\t", row.names=FALSE)
 }
-
-      
-      # sig = results %>% filter(Adjusted_pvalue <= 0.05) %>% arrange(Adjusted_pvalue)
-# 
-# 
-# sig = de_variants %>% 
-#   filter(Adjusted_pvalue <= 0.05) %>% arrange(Adjusted_pvalue)
-# 
-# sigsnpspergene = as.data.frame(table(sig$ID, sig$Adjusted_pvalue <= 0.05))
-# 
-# #for each gene, how many (filtered snps) are signif and non-signif
-# head(addmargins(table(de_variants$ID, de_variants$Adjusted_pvalue <= 0.05)))
-# 
-# #Run kissde algorithm to find differentially expressed variants
-# de_Vars = diffExpressedVariants(counts, conditions = conditionsde)                    
-# results  = de_Vars[[1]]
-# 
-# #really sig ones
-# sig = results[results$Adjusted_pvalue < 0.0001,]  
-#   
-# a = sig %>% separate(ID, into = c("chrom", "pos", "REF>ALT"), sep="_") %>% 
-#   mutate("pos" = as.numeric(pos), "chrom" = as.numeric(str_remove(chrom, "chr"))) %>% 
-#   arrange(chrom, pos)
-# 
-# ############ intersect (data.table::foverlap) gff and results to get gene names and descriptions of snps #######
-# bed = a %>% 
-#   select(chrom, pos, Adjusted_pvalue, `Deltaf/DeltaPSI`) %>% 
-#   mutate("chrom" = as.character(chrom), "start" = as.numeric(pos) -1, "end" = as.numeric(pos)) %>% 
-#   select(chrom, start, end, Adjusted_pvalue, `Deltaf/DeltaPSI`, -pos) %>% 
-#   as.data.table()
-# 
-#   
-# colnames(bed)
-# colnames(gff)
-# str(bed)
-# str(gff)
-# setkey(gff, chrom, start, end)
-# 
-# #data table fast overlaps, useful to find intersections and join  
-# de_variants = foverlaps(bed, gff, 
-#           by.x=c("chrom", "start", "end"), 
-#           by.y=c("chrom", "start", "end"),
-#           type = "within",
-#           nomatch = 0L) 
-# 
-# ### write to file ###
