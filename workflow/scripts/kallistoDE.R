@@ -132,6 +132,10 @@ pdf("results/heatmap_correlations.pdf")
 pheatmap(correlations)
 garbage = dev.off()
 
+if(!("lab" %in% colnames(samples)))
+{
+  samples$lab = 'FALSE'
+}
 
 ######### subset data and run DESeq for each combo we need, store in xlsx ########
 results_list = list()
@@ -148,7 +152,7 @@ for (sp in unique(samples$species)){
     
     #if the strain has both case and control (i.e. exposed v unexposed)
     if (length(unique(ai_list[[st]]$cohort)) > 1){
-      cat(glue("\n Running PCA for all {st} samples"))
+      cat(glue("\n Running PCA for all {st} samples \n"))
       #do a pca for each strain 
       subcounts = counts[colnames(counts) %in% ai_list[[st]]$samples]
       #perform PCA on the data at strain level
@@ -208,7 +212,7 @@ for (cont in contrasts){
           geom_text_repel(data=subset(results_list[[cont]], abs(log2FoldChange) > 2 & padj < 0.0000001), aes(label=Gene_name)) +
           theme_light())
   garbage = dev.off()
-  print(glue("{cont} complete!"))
+  cat(glue("{cont} complete! \n"))
 }
 
 
