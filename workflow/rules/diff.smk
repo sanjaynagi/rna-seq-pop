@@ -25,7 +25,7 @@ rule KallistoQuant:
 	log:
 		"logs/kallisto/quant_{sample}.log"
 	params:
-		bootstrap="-b 100"
+		extra="-b 100"
 	threads:24
 	wrapper:
 		"0.65.0/bio/kallisto/quant"
@@ -38,7 +38,7 @@ rule DifferentialGeneExpression:
 		counts=expand("results/quant/{sample}", sample=samples)
 	output:
 		"results/genediff/RNA-Seq_diff.xlsx",
-		"results/genediff/PCA.pdf"
+		"results/PCA.pdf"
 	group:"diffexp"
 	priority: 10
 	conda:

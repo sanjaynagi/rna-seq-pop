@@ -2,10 +2,10 @@ import pandas as pd
 
 rule DElist:
     output:
-        "resources/DE.contrast.list"
+        DElist="resources/DE.contrast.list"
     params:
         contrasts = config['contrasts']
     run:
-        df = pd.DataFrame(snakemake.params[0])
+        df = pd.DataFrame(params.contrasts)
         df.columns = ['contrast']
-        df.to_csv(snakemake.output[0], sep="\t", index=None)
+        df.to_csv(output.DElist, sep="\t", index=None)

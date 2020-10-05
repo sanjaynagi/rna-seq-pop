@@ -47,7 +47,6 @@ for (cont in contrasts){
   cases = which(samples$treatment %in% case)
   
   ##subset to subcounts of our contrast
-  subcounts = counts[,c(controls, cases)]
   subsamples = samples[c(controls, cases),]
   
   #make treatment a factor with the 'susceptible' as reference
@@ -95,7 +94,7 @@ for (i in 1:length(sheets)){
   writeData(wb, sheets[i], results_list[[i]], rowNames = FALSE, colNames = TRUE)
 }
 #### save workbook to disk once all worksheets and data have been added ####
-saveWorkbook(wb,file="results/isoformdiff/RNA-Seq_isoformdiff.xlsx", overwrite = TRUE)
+saveWorkbook(wb,file=snakemake@output[[1]], overwrite = TRUE)
   
 
 
