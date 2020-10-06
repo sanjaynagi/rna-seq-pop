@@ -3,13 +3,8 @@ log <- file(snakemake@log[[1]], open="wt")
 sink(log)
 sink(log, type="message")
 
-args = commandArgs(trailingOnly=TRUE)
-.libPaths(c("/home/snagi/miniconda3/lib/R/library", "~/R/x86_64-conda_cos6-linux-gnu-library/3.6", "/home/sanj/R/x86_64-pc-linux-gnu-library/3.6", 
-          "/usr/local/lib/R/site-library", "/usr/lib/R/site-library",  "/usr/lib/R/library"))
-
 ## Differential expression
 library(sleuth)
-library(dplyr)
 library(tidyverse)
 library(data.table)
 library(ggrepel)
@@ -19,7 +14,6 @@ library(RColorBrewer)
 
 print("------------- Kallisto - Sleuth - RNASeq isoform Differential expression ---------")
 #### read data ####
-print("Reading metadata file...")
 
 samples = fread(snakemake@input[[1]], sep="\t") %>% 
   as.data.frame() %>% 

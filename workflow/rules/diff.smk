@@ -28,7 +28,7 @@ rule KallistoQuant:
 		extra="-b 100"
 	threads:24
 	wrapper:
-		"0.65.0/bio/kallisto/quant"
+		"0.66.0/bio/kallisto/quant"
 
 rule DifferentialGeneExpression:
 	input:
