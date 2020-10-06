@@ -30,8 +30,7 @@ gene_names.columns = ['GeneID' if x=='Gene_stable_ID' else x for x in gene_names
 
 ### main ####
 # Read in list of contrasts
-comparisons = pd.read_csv(comparisons_path, header=None)
-comparisons.columns = ['contrast']
+comparisons = pd.read_csv(comparisons_path)
 comparisons = comparisons.contrast.str.split("_", expand=True)
 comparisons.columns = ['sus', 'res']
 comparisons = [list(row) for i,row in comparisons.iterrows()]

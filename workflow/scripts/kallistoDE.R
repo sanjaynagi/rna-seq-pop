@@ -220,6 +220,6 @@ for (i in 1:length(sheets)){
   writeData(wb, sheets[i], results_list[[i]], rowNames = FALSE, colNames = TRUE)
 }
 #### save workbook to disk once all worksheets and data have been added ####
-saveWorkbook(wb,file="results/genediff/RNA-Seq_diff.xlsx", overwrite = TRUE)
+saveWorkbook(wb,file=snakemake@output[[1]], overwrite = TRUE)
 
 sessionInfo()

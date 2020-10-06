@@ -30,7 +30,7 @@ rule alleleBalanceIR:
         allele_balance = "results/allele_balance/allele_balance.xlsx",
         mean_allele_balance = "results/allele_balance/mean_allele_balance.xlsx"
     conda:
-        "../envs/r-rnaseq.yaml"
+        "../envs/alleleBalance.yaml"
     log:
         "logs/AlleleBalance.log"
     script:
@@ -64,6 +64,7 @@ rule DifferentialSNPs:
         gff=config['ref']['gff'],
         DEcontrasts="resources/DE.contrast.list",
         geneNames = "resources/gene_names.tsv",
+        tables=expand("results/variants/alleleTables/{sample}.chr{chrom}.allele.table", sample=samples, chrom=config['chroms'])
     output:
         expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts']),
         expand("results/variants/diffsnps/{name}.kissDE.tsv", name = config['contrasts']),
@@ -76,7 +77,8 @@ rule DifferentialSNPs:
         chroms = config['chroms'],
         gffchromprefix="AaegL5_", # in case like the aedes genome, there is an annoying prefix before each chromosome
         mincounts = 100,
-        pval_flt = 0.001 # pvalues already adjusted but way want extra filter for sig file
+        pval_flt = 0.001, # pvalues already adjusted but way want extra filter for sig file
+        prefix = "AaegL5_"
     script:
         "../scripts/differentialSNPs.R"
 
