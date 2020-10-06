@@ -1,6 +1,7 @@
-log <- file(snakemake@log[[1]], open="wt")
-sink(log)
-sink(log, type="message")
+#! /usr/bin/env RScript
+#log <- file(snakemake@log[[1]], open="wt")
+#sink(log)
+#sink(log, type="message")
 
 library(data.table)
 library(kissDE)
@@ -10,11 +11,12 @@ library(rtracklayer)
 
 ######## parse files #############
 chroms = snakemake@params[[1]]
-metadata = fread(snakemake@input[[2]])
-names = fread(snakemake@input[[3]], header = FALSE) 
-comparisons = names %>% separate(V1, into = c("control", "case"), sep = "_")
+metadata = fread(snakemake@input[[1]])
+contrasts = fread(snakemake@input[[3]], header = TRUE) 
+comparisons = contrasts %>% separate(contrast, into = c("control", "case"), sep = "_")
 mincounts = snakemake@params[[3]]
 pval = snakemake@params[[4]]
+gffchromprefix = snakemake@params[[5]]
 
 gffpath = snakemake@input[[2]]
 #load gff with rtracklayer and filter to genes only 
@@ -22,7 +24,7 @@ gff = rtracklayer::import(gffpath) %>%
   as.data.frame() %>% 
   filter(type == 'gene') %>% 
   select(-c(source, score, phase, strand, width, Parent, Note, protein_source_id, Ontology_term)) %>% 
-  rename("chrom" = "seqnames") %>% 
+  dplyr::rename("chrom" = 'seqnames') %>% 
   arrange(chrom, start) %>% 
   as.data.table()
 #remove prefix for chrom column, so it matches the bed file 
@@ -31,7 +33,7 @@ gff$chrom = str_remove(gff$chrom, gffchromprefix) #could be snakemake param if n
 
 #for each contrast/comparison, perform differential SNP analysis 
 for (i in 1:nrow(comparisons)){
-  name = names[i,]
+  name = contrasts[i,]
   control = comparisons$control[i]
   case = comparisons$case[i]
   
@@ -44,7 +46,7 @@ for (i in 1:nrow(comparisons)){
     chrom_list = list()
     for (chrom in chroms){
       #read in data 
-      alleles  = fread(glue("results/variants/alleleTable/{sample}.chr{chrom}.allele.table"))
+      alleles  = fread(glue("results/variants/alleleTables/{sample}.chr{chrom}.allele.table"))
       #sum lowercase and uppercase alleles, make new column (refcount)
       chrom_list[[chrom]] = alleles %>% 
         mutate("A" = A+a,"T" = T+t,"G" = G+g,"C" = C+c) %>% 
@@ -77,7 +79,7 @@ for (i in 1:nrow(comparisons)){
   }
   #merge all counts across samples 
   counts = sample_list %>% 
-    reduce(full_join, by=c("eventsName", "type")) %>% 
+    purrr::reduce(full_join, by=c("eventsName", "type")) %>% 
     mutate("eventsLength" = 1) %>% 
     replace(is.na(.), 0) %>% 
     select(-type) %>% 
@@ -131,8 +133,8 @@ for (i in 1:nrow(comparisons)){
                           nomatch = 0L)
   #write to file
   print(glue("Writing {name} results to results/variants/diffsnps/"))
-  results %>% rename("GeneID" = "ID") %>% fwrite(., glue("results/variants/diffsnps/{name}.normcounts.tsv"), sep="\t", row.names=FALSE)
-  de_variants %>% rename("GeneID" = "ID") %>% fwrite(., glue("results/variants/diffsnps/{name}.kissDE.tsv"), sep="\t", row.names=FALSE)
+  results %>% fwrite(., glue("results/variants/diffsnps/{name}.normcounts.tsv"), sep="\t", row.names=FALSE)
+  de_variants %>% dplyr::rename("GeneID" = "ID") %>% fwrite(., glue("results/variants/diffsnps/{name}.kissDE.tsv"), sep="\t", row.names=FALSE)
       
   de_variants %>% 
     filter(Adjusted_pvalue <= pval) %>% 

@@ -29,7 +29,8 @@ rule all:
         #expand("resources/reads/qc/{sample}_{n}_fastqc.html", sample=samples, n=[1,2]),
         "results/genediff/RNA-Seq_diff.xlsx",
         "results/isoformdiff/RNA-Seq_isoformdiff.xlsx",
-        #"results/variants/Fst_PBS.tsv"
+        "results/variants/Fst_PBS.tsv",
+        expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts'])
 
 
 #rule all_variants:

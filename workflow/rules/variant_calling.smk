@@ -141,7 +141,7 @@ rule MissenseAndQualFilter:
     input:
         vcf="results/variants/annot.variants.{chrom}.vcf.gz"
     output:
-        "results/variants/annot.missense.{chrom}.vcf.gz"
+        "results/variants/annot.missense.{chrom}.vcf"
     log:
         "logs/snpSift/missense_vcf_{chrom}.log"
     params:
