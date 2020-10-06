@@ -1,11 +1,7 @@
 #!/usr/bin/env Rscript
-#log <- file(snakemake@log[[1]], open="wt")
-#sink(log)
-#sink(log, type="message")
-
-args = commandArgs(trailingOnly=TRUE)
-.libPaths(c("/home/snagi/miniconda3/lib/R/library", "~/R/x86_64-conda_cos6-linux-gnu-library/3.6", "/home/sanj/R/x86_64-pc-linux-gnu-library/3.6", 
-          "/usr/local/lib/R/site-library", "/usr/lib/R/site-library",  "/usr/lib/R/library", "/home/snagi/miniconda3/envs/RNAg/lib/R/library"))
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
 
 ## Differential expression
 library(DESeq2)
@@ -63,9 +59,8 @@ vst_pca = function(counts, samples, colourvar, name="PCA_", st="", comparison=""
 
 
 #### main ####
-print("------------- Kallisto - DESeq2 - RNASeq Differential expression ---------")
+cat("\n", "------------- Kallisto - DESeq2 - RNASeq Differential expression ---------")
 #### read data ####
-print("Reading metadata file...")
 
 #Read counts for each sample
 df = list()
@@ -212,7 +207,7 @@ for (cont in contrasts){
           geom_text_repel(data=subset(results_list[[cont]], abs(log2FoldChange) > 2 & padj < 0.0000001), aes(label=Gene_name)) +
           theme_light())
   garbage = dev.off()
-  cat(glue("{cont} complete! \n"))
+  cat(glue("{cont} complete!"), "\n")
 }
 
 
@@ -227,3 +222,4 @@ for (i in 1:length(sheets)){
 #### save workbook to disk once all worksheets and data have been added ####
 saveWorkbook(wb,file="results/genediff/RNA-Seq_diff.xlsx", overwrite = TRUE)
 
+sessionInfo()
