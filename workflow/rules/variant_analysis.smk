@@ -65,9 +65,9 @@ rule DifferentialSNPs:
         DEcontrasts="resources/DE.contrast.list",
         geneNames = "resources/gene_names.tsv",
     output:
-        expand("results/variants/snptesting/{name}.sig.kissDE.tsv", name = config['contrasts']),
-        expand("results/variants/snptesting/{name}.kissDE.tsv", name = config['contrasts']),
-        expand("results/variants/snptesting/{name}.normcounts.tsv", name = config['contrasts'])
+        expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts']),
+        expand("results/variants/diffsnps/{name}.kissDE.tsv", name = config['contrasts']),
+        expand("results/variants/diffsnps/{name}.normcounts.tsv", name = config['contrasts'])
     conda:
         "../envs/diffsnps.yaml"
     log:
@@ -121,3 +121,11 @@ rule Fst_PBS_TajimaD_SeqDiv_per_gene:
         gffchromprefix="AaegL5_" #in case like the aedes genome, there is an annoying before each chromosome
     script:
         "../scripts/FstPbsTajimasDseqDiv.py"
+
+rule Venn:
+   input:
+   output:
+   log:
+   params:
+   script:
+       "../scripts/venn.py"
