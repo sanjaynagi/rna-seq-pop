@@ -105,7 +105,7 @@ for (i in 1:nrow(comparisons)){
   
   #run kissde quality control
   print(glue("Running kissDE QC for {name}"))
-  qualityControl(counts, conditionsde, storeFigs = glue("results/variants/snptesting/kissDEfigs_{name}"))
+  qualityControl(counts, conditionsde, storeFigs = glue("results/variants/diffsnps/kissDEfigs_{name}"))
   
   #Run kissde algorithm to find differentially expressed variants
   de_Vars = diffExpressedVariants(counts, conditions = conditionsde)                    
@@ -130,11 +130,11 @@ for (i in 1:nrow(comparisons)){
                           type = "within",
                           nomatch = 0L)
   #write to file
-  print(glue("Writing {name} results to results/variants/snptesting/"))
-  results %>% rename("GeneID" = "ID") %>% fwrite(., glue("results/variants/snptesting/{name}.normcounts.tsv"), sep="\t", row.names=FALSE)
-  de_variants %>% rename("GeneID" = "ID") %>% fwrite(., glue("results/variants/snptesting/{name}.kissDE.tsv"), sep="\t", row.names=FALSE)
-  
+  print(glue("Writing {name} results to results/variants/diffsnps/"))
+  results %>% rename("GeneID" = "ID") %>% fwrite(., glue("results/variants/diffsnps/{name}.normcounts.tsv"), sep="\t", row.names=FALSE)
+  de_variants %>% rename("GeneID" = "ID") %>% fwrite(., glue("results/variants/diffsnps/{name}.kissDE.tsv"), sep="\t", row.names=FALSE)
+      
   de_variants %>% 
     filter(Adjusted_pvalue <= pval) %>% 
-    fwrite(., glue("results/variants/snptesting/{name}.sig.kissDE.tsv"), sep="\t", row.names=FALSE)
+    fwrite(., glue("results/variants/diffsnps/{name}.sig.kissDE.tsv"), sep="\t", row.names=FALSE)
 }
