@@ -64,6 +64,7 @@ rule SortBams:
     wrapper:
         "0.65.0/bio/samtools/sort"
 
+
 rule IndexBams:
     input:
         "resources/alignments/{sample}.bam"
@@ -73,6 +74,7 @@ rule IndexBams:
         "logs/samtools/indexbams/{sample}.log"
     wrapper:
         "0.65.0/bio/samtools/index"
+
 
 rule GenerateParamsFreebayes:
 	input:
@@ -88,23 +90,48 @@ rule GenerateParamsFreebayes:
 		cut -f 4,7 {input.metadata} | tail -n +2 > {output.pops}
 		"""
 
+rule makeRegions:
+    input:
+        index=lambda wildcards: config['ref']['genome'] + ".fai"
+    output:
+        expand("resources/regions/genome.{chrom}.region.{i}.bed", chrom=config['chroms'], i = [1,2,3,4,5])
+    params:
+        chroms=config['chroms']
+    script:
+        "../scripts/makeRegions.R"
+
+
 rule VariantCallingFreebayes:
 	input:
 		bams=expand("resources/alignments/{sample}.bam", sample=samples),
 		index=expand("resources/alignments/{sample}.bam.bai", sample=samples),
 		ref=config['ref']['genome'],
-	        samples="resources/bam.list"
+	        samples="resources/bam.list",
+                regions="resources/regions/genome.{chrom}.region.{i}.bed"
 	output:
-		"results/variants/variants.{chrom}.vcf"
+		"results/variants/variants.{chrom}.{i}.vcf"
 	log:
-		"logs/freebayes/{chrom}.log"
+		"logs/freebayes/{chrom}.{i}.log"
 	params:
 		ploidy=config['ploidy'],
 		pops="resources/populations.tsv"
 	conda:
 		"../envs/variants.yaml"
 	threads:1
-	shell:	"freebayes -f {input.ref} -r {wildcards.chrom} --ploidy {params.ploidy} --populations {params.pops} --pooled-discrete --use-best-n-alleles 5 -L {input.samples} > {output} 2> {log}"
+	shell:	"freebayes -f {input.ref} -t {input.regions} --ploidy {params.ploidy} --populations {params.pops} --pooled-discrete --use-best-n-alleles 5 -L {input.samples} > {output} 2> {log}"
+
+rule bcftoolsconcat:
+        input:
+                expand("results/variants/variants.{chrom}.{i}.vcf", chrom=config['chroms'], i=[1,2,3,4,5])
+        output:
+                "results/variants/variants.{chrom}.vcf"
+        log:
+                "logs/bcftools/{chrom}.log"
+        conda:
+                "../envs/variants.yaml"
+        threads:4
+        shell:  "bcftools concat -o {output} {input} --threads {threads}"
+
 
 rule snpEffDbDownload:
     output:
