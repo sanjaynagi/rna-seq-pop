@@ -28,11 +28,11 @@ examplePathways
 ############## GSEA ################
 
 samples = fread("config/samples.tsv") %>% as.data.frame()
-comparisons = fread("resources/DE.comparison.list", header = FALSE)
+comparisons = fread("resources/DE.contrast.list", header = FALSE)
 
-de = fread("../RNA_Seq_Ag/analysis/diff/ContAbo_MalaAbo.csv")
+de = fread("../rna-seq-abo-tiass/results/genediff/ContTia_DeltTia.csv")
 de = de[order(log2FoldChange)]
-rank = de[,c('Gene_stable_ID', 'log2FoldChange')] %>% column_to_rownames('Gene_stable_ID')
+rank = de[,c('GeneID', 'log2FoldChange')] %>% column_to_rownames('GeneID')
 ######
 rownames(rank) = rownames(rank) %>% str_replace("AGAP", "AgaP_AGAP")
 head(rank)
@@ -46,7 +46,8 @@ kg.aga
 kegg_enrich <- gage(rank, gsets=kg.aga.gs)
 kegg_enrich
 
-keggdf = as.data.frame(kegg_enrich$greater)
+keggup = as.data.frame(kegg_enrich$greater)
+keggdown = as.data.frame(kegg_enrich$less)
 
 kegg_sig<-sigGeneSet(kegg_enrich, outname="aga.gage")
 fwrite(rbind(kegg_enrich$greater, kegg_enrich$less), file = "aga.kegg.tsv", sep = "\t")
