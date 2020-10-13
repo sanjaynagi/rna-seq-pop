@@ -26,11 +26,14 @@ rule all:
     input:
         # The first rule should define the default target files
         # Subsequent target rules can be specified below. They should start with all_*.
-        #expand("resources/reads/qc/{sample}_{n}_fastqc.html", sample=samples, n=[1,2]),
+        expand("resources/reads/qc/{sample}_{n}_fastqc.html", sample=samples, n=[1,2]),
         "results/genediff/RNA-Seq_diff.xlsx",
         "results/isoformdiff/RNA-Seq_isoformdiff.xlsx",
+        expand("results/variants/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
         "results/variants/Fst_PBS.tsv",
-        expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts'])
+        expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts']),
+        expand("results/variants/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset'])
+
 
 
 #rule all_variants:
