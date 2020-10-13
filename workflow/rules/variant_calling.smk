@@ -11,6 +11,8 @@ rule HISAT2splicesites:
 	output:
 		splice_sites="resources/reference/splice-sites.gtf",
 		exons="resources/reference/exon-sites.gtf"
+	conda:
+		"../envs/variants.yaml"
 	log:
 		"logs/hisat2/splice_sites.log"
 	shell:
@@ -47,11 +49,7 @@ rule HISAT2align:
 	log:
 		"logs/hisat2/{sample}_align.log"
 	params:
-		ref=config['ref']['genome'],
-		dta="--dta",
-		q="-q",
-		rgid="--rg-id {sample}",
-		rg="--rg SM:{sample}"
+		extra="--dta -q --rg-id {sample} --rg SM:{sample}"
 	threads:12
 	wrapper:
 		"0.65.0/bio/hisat2/align"
@@ -95,20 +93,18 @@ rule VariantCallingFreebayes:
 		bams=expand("resources/alignments/{sample}.bam", sample=samples),
 		index=expand("resources/alignments/{sample}.bam.bai", sample=samples),
 		ref=config['ref']['genome'],
-		samples="resources/bam.list"
+	        samples="resources/bam.list"
 	output:
 		"results/variants/variants.{chrom}.vcf"
 	log:
 		"logs/freebayes/{chrom}.log"
 	params:
-		ploidy="--ploidy " + str(config['ploidy']),
-		chrom="-r {chrom}",
-		pooled="--pooled-discrete",
-		bestn="--use-best-n-alleles 5",
-		pops="--populations resources/populations.tsv"
+		ploidy=config['ploidy'],
+		pops="resources/populations.tsv"
+	conda:
+		"../envs/variants.yaml"
 	threads:1
-	wrapper:
-		"0.65.0/bio/freebayes"
+	shell:	"freebayes -f {input.ref} -r {wildcards.chrom} --ploidy {params.ploidy} --populations {params.pops} --pooled-discrete --use-best-n-alleles 5 -L {input.samples} > {output} 2> {log}"
 
 rule snpEffDbDownload:
     output:

@@ -59,7 +59,7 @@ vst_pca = function(counts, samples, colourvar, name="PCA_", st="", comparison=""
 
 
 #### main ####
-cat("\n", "------------- Kallisto - DESeq2 - RNASeq Differential expression ---------")
+cat("\n", "------------- Kallisto - DESeq2 - RNASeq Differential expression ---------", "\n")
 #### read data ####
 
 #Read counts for each sample
@@ -166,11 +166,11 @@ for (cont in contrasts){
   ##subset to subcounts
   subcounts = counts[,c(controls, cases)]
   subsamples = samples[c(controls, cases),]
-  
+
   #make treatment a factor with the 'susceptible' as reference
   subsamples$treatment = as.factor(as.character(subsamples$treatment))
   subsamples$treatment = relevel(subsamples$treatment, control)
-  cat(glue("\n--- Running DESeq2 differential expression analysis on {cont} ---\n"))
+  cat("\n", glue("--- Running DESeq2 differential expression analysis on {cont} ---"), "\n")
   
   dds = vst_pca(subcounts, subsamples, colourvar='treatment', "PCA_", comparison=cont)[[2]]
   #set pvalue threshold and perform  DE with each comparison
@@ -181,11 +181,8 @@ for (cont in contrasts){
   results = results %>% rownames_to_column("GeneID") %>% mutate("FC" = (2^log2FoldChange))
   
   ###absolute difference
-  #### remove _ and digits from columns in order to sum them. then get difference of counts and join with DE results
-  readdiff = subcounts 
-  colnames(readdiff) = str_replace(colnames(readdiff), "_", "") # remove digits from column names
-  colnames(readdiff) = str_replace(colnames(readdiff), "[:digit:]+", "") # remove digits from column names        
-  readdiff = data.frame(t(rowsum(t(readdiff), group = colnames(readdiff), na.rm = T))) #transpose and get rowsums for each group
+  #### Get rowsums of counts, grouping by case/control. Then get difference of counts and join with DE results
+  readdiff = data.frame(t(rowsum(t(subcounts), group = subsamples$treatment, na.rm = T))) #transpose and get rowsums for each group
   readdiff$absolute_diff = readdiff[,case] - readdiff[,control] #get difference
   readdiff = data.frame(readdiff) %>% rownames_to_column('GeneID')
   results = unique(left_join(results, readdiff[,c('GeneID','absolute_diff')]))
@@ -207,7 +204,7 @@ for (cont in contrasts){
           geom_text_repel(data=subset(results_list[[cont]], abs(log2FoldChange) > 2 & padj < 0.0000001), aes(label=Gene_name)) +
           theme_light())
   garbage = dev.off()
-  cat(glue("{cont} complete!"), "\n")
+  cat("\n", glue("{cont} complete!"), "\n")
 }
 
 
