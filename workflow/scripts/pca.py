@@ -5,6 +5,7 @@ A script to perform Principal components analysis on genotype data from RNA-Seq
 """
 
 import matplotlib
+matplotlib.use('Agg')
 import sys
 from tools import *
 
