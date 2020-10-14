@@ -109,7 +109,7 @@ rule VariantCallingFreebayes:
 	        samples="resources/bam.list",
                 regions="resources/regions/genome.{chrom}.region.{i}.bed"
 	output:
-		"results/variants/variants.{chrom}.{i}.vcf"
+		temp("results/variants/variants.{chrom}.{i}.vcf")
 	log:
 		"logs/freebayes/{chrom}.{i}.log"
 	params:
@@ -120,9 +120,9 @@ rule VariantCallingFreebayes:
 	threads:1
 	shell:	"freebayes -f {input.ref} -t {input.regions} --ploidy {params.ploidy} --populations {params.pops} --pooled-discrete --use-best-n-alleles 5 -L {input.samples} > {output} 2> {log}"
 
-rule bcftoolsconcat:
+rule ConcatVCFs:
         input:
-                expand("results/variants/variants.{chrom}.{i}.vcf", chrom=config['chroms'], i=[1,2,3,4,5])
+                expand("results/variants/variants.{{chrom}}.{i}.vcf", i=[1,2,3,4,5])
         output:
                 "results/variants/variants.{chrom}.vcf"
         log:
@@ -174,14 +174,16 @@ rule MissenseAndQualFilter:
         java -jar workflow/scripts/snpEff/SnpSift.jar filter "{params.expression}" {input.vcf} > {output} 2> {log}
         """
 
-rule MakeBedOfMissense:
+rule MakeBedOfPositions:
     input:
-        vcf="results/variants/annot.missense.{chrom}.vcf",
+        expand(vcf="results/variants/annot.missense.{chrom}.vcf", chrom=config['chroms'])
     output:
-        "results/variants/missense.pos.{chrom}.bed",
+        "resources/regions/missense.pos.{chrom}.bed",
     conda:
-        "../envs/variants.yaml"
+        "../envs/fstpca.yaml"
     log:
         "logs/allelicdepth/makebed.{chrom}.log"
-    shell:
-        "vcf2bed < {input.vcf} | cut -f 1-3 > {output} 2> {log}"
+    params:
+        chroms=config['chroms']
+    script:
+        "../scripts/extractBedVCF.py"
