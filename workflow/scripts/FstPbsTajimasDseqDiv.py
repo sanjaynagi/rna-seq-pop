@@ -24,7 +24,7 @@ gffchromprefix= snakemake.params[5]
 features = allel.gff3_to_dataframe(gffpath,
                        attributes=["ID", "description"])
 gff = features[features.type == 'gene']
-# gene names file, rename 
+# gene names file, rename
 gene_names = pd.read_csv(snakemake.input[3], sep="\t")
 gene_names.columns = ['GeneID' if x=='Gene_stable_ID' else x for x in gene_names.columns]
 
@@ -42,19 +42,19 @@ tajdbychrom={}
 gdivbychrom = {}
 
 for chrom in chroms:
-    
+
     #path to vcf
     path = f"results/variants/annot.variants.{chrom}.vcf.gz"
     #function to read in vcfs and associated SNP data
-    vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops =  readAndFilterVcf(path=path, 
-                                                               chrom=chrom, 
+    vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops =  readAndFilterVcf(path=path,
+                                                               chrom=chrom,
                                                                qualflt=30,
-                                                               missingfltprop=missingprop, 
+                                                               missingfltprop=missingprop,
                                                                plot=False)
     #subset gff to appropriate chrom
     genes = gff[gff.seqid == f"{gffchromprefix}{chrom}"].sort_values('start').reset_index(drop=True)
 
-    ### Average Fst, pbs, tajima d for each gene 
+    ### Average Fst, pbs, tajima d for each gene
     fst_per_comp = {}
     fst_per_gene = {}
     pbs_per_gene = {}
@@ -90,7 +90,7 @@ for chrom in chroms:
             ac1 = acsubpops[comp1].compress(gene_bool, axis=0)
             ac2 = acsubpops[comp2].compress(gene_bool, axis=0)
 
-            fst_per_comp[name], se_per_comp[name],_,_= allel.average_hudson_fst(ac1, ac2, blen=1)   
+            fst_per_comp[name], se_per_comp[name],_,_= allel.average_hudson_fst(ac1, ac2, blen=1)
 
         #tajimas d and sequence diversity per gene for each subpop(i.e treatment)
         for subpop in subpops:
@@ -104,8 +104,8 @@ for chrom in chroms:
             for pbscomp in pbscomps:
                 name = pbscomp[0] + "_" + pbscomp[1] + "_" + pbscomp[2]
                 pbs_per_comp[name],se,_,_ = meanPBS(acsubpops[pbscomp[0]].compress(gene_bool, axis=0),
-                                          acsubpops[pbscomp[1]].compress(gene_bool, axis=0), 
-                                          acsubpops[pbscomp[2]].compress(gene_bool, axis=0), 
+                                          acsubpops[pbscomp[1]].compress(gene_bool, axis=0),
+                                          acsubpops[pbscomp[2]].compress(gene_bool, axis=0),
                                                      window_size=1,
                                                     normalise=True)
         #store inner dict in outer dicts
@@ -114,7 +114,7 @@ for chrom in chroms:
         if pbs is True : pbs_per_gene[ID] = dict(pbs_per_comp)
         tajd_per_gene[ID] = dict(tajd_per_pop)
         gdiv_per_gene[ID] = dict(gdiv_per_pop)
-    
+
     #reverse the dicts so the comparisons/subpops are on the outer dict
     fst_per_gene = flip_dict(fst_per_gene)
     se_per_gene = flip_dict(se_per_gene)
@@ -124,7 +124,7 @@ for chrom in chroms:
 
     print(f"Chromosome {chrom} complete...\n")
     for comp1,comp2 in comparisons:
-        name = comp1 + "_" + comp2 
+        name = comp1 + "_" + comp2
         a = np.array(list(fst_per_gene[name].values()))
         print(f"Overall Fst for chromosome {chrom} between {name} is {np.nanmean(a)}")
 
@@ -148,7 +148,7 @@ for chrom in chroms:
         se_df = pd.DataFrame.from_dict(se_per_gene[name], orient='index').reset_index(drop=False)
         se_df.columns = ['GeneID', (name + '_SE')]
         se_dfs[name] = se_df
-    
+
     my_reduce = partial(pd.merge, on='GeneID', how='outer')
     fst_allcomparisons = reduce(my_reduce, fst_dfs.values())
     se_allcomparisons = reduce(my_reduce, se_dfs.values())
@@ -157,7 +157,7 @@ for chrom in chroms:
 
     tajd_dfs = {}
     gdiv_dfs = {}
-    #store sequence diversityt and tajimas d for each gene and each subpop 
+    #store sequence diversityt and tajimas d for each gene and each subpop
     for subpop in subpops:
         tajd_df = pd.DataFrame.from_dict(tajd_per_gene[subpop], orient='index').reset_index(drop=False)
         tajd_df.columns = ['GeneID', (subpop+"_Tajima_d")]
@@ -167,7 +167,7 @@ for chrom in chroms:
         gdiv_dfs[subpop] = gdiv_df
 
     #combine tajimas d and sequence diversity for each sample
-    tajdall = reduce(my_reduce, tajd_dfs.values())  
+    tajdall = reduce(my_reduce, tajd_dfs.values())
     gdivall = reduce(my_reduce, gdiv_dfs.values())
     tajdall['chrom'] = chrom
     gdivall['chrom'] = chrom
@@ -181,11 +181,11 @@ for chrom in chroms:
             pbs_df.columns = ['GeneID', (name+"PBS")]
             pbs_dfs[name] = pbs_df
 
-        pbs_allcomparisons = reduce(my_reduce, pbs_dfs.values())  
+        pbs_allcomparisons = reduce(my_reduce, pbs_dfs.values())
         dfs = [fst_allcomparisons,pbs_allcomparisons, gene_names, ndf, posdf]
 
     dfs = [fst_allcomparisons, gene_names, ndf, posdf]
-    
+
     tajdbychrom[chrom] = reduce(lambda  left,right: pd.merge(left,right,on=['GeneID'],
                                                 how='inner'), [tajdall, gene_names, ndf,posdf])
     gdivbychrom[chrom] = reduce(lambda  left,right: pd.merge(left,right,on=['GeneID'],

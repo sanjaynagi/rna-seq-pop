@@ -64,4 +64,5 @@ for chrom in chroms:
     pca(geno, chrom, dataset, populations, prune=True, scaler=None)
 
     ### variant density 
-    plot_density(pos, 500000, f"Variant Density chromosome {chrom}", title=None, path="results/variants/{dataset}_SNPdensity_{chrom}.png")
+    plot_density(pos, window_size=500000, title=f"Variant Density chromosome {chrom}", path=f"results/variants/{dataset}_SNPdensity_{chrom}.png")
+

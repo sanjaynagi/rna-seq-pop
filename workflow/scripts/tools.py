@@ -58,10 +58,17 @@ def readAndFilterVcf(path, chrom, qualflt=30, missingfltprop=0.6, plot=True):
                       numbers=numbers,
                      fields=['calldata/*', 'variants/*', 'samples'])
     
+    samples = pd.read_csv("config/samples.tsv", sep="\t")
     #get sample names and indices
     samplenames = vcf['samples']
-    samplenames = pd.Series(samplenames).str.replace("\d", "")
-    subpops = dict(list_duplicates(samplenames))
+    ind = defaultdict(list)
+
+    for s,names in enumerate(samplenames):
+        idx = np.where(np.isin(samples.samples,names))[0][0]
+        t = samples.treatment[idx]
+        ind[t].append(s)
+        subpops = dict(ind)
+
     print(subpops, "\n")
     
     print(f"------- Filtering VCF at QUAL={qualflt} and missingness proportion of {missingfltprop} -------")
@@ -131,7 +138,7 @@ def plot_ld(gn, title):
     ax = allel.plot_pairwise_ld(m)
     ax.set_title(title)
 
-def plot_density(pos, window_size=100000, title=None, path="../../results/variants/SNPdensity_chr{chrom}.png"):
+def plot_density(pos, window_size, title, path):
     
     fig, ax = plt.subplots(figsize=(30, 10))
     sns.despine(ax=ax, offset=5)

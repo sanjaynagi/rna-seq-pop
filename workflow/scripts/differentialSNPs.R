@@ -23,7 +23,7 @@ gffpath = snakemake@input[[2]]
 gff = rtracklayer::import(gffpath) %>% 
   as.data.frame() %>% 
   filter(type == 'gene') %>% 
-  select(-c(source, score, phase, strand, width, Parent, Note, protein_source_id, Ontology_term)) %>% 
+  select(seqnames, start, end, ID) %>% 
   dplyr::rename("chrom" = 'seqnames') %>% 
   arrange(chrom, start) %>% 
   as.data.table()
