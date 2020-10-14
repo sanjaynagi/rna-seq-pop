@@ -176,13 +176,13 @@ rule MissenseAndQualFilter:
 
 rule MakeBedOfPositions:
     input:
-        expand(vcf="results/variants/annot.missense.{chrom}.vcf", chrom=config['chroms'])
+        vcf=expand("results/variants/annot.missense.{chrom}.vcf", chrom=config['chroms'])
     output:
-        "resources/regions/missense.pos.{chrom}.bed",
+        bed=expand("resources/regions/missense.pos.{chrom}.bed", chrom=config['chroms'])
     conda:
         "../envs/fstpca.yaml"
     log:
-        "logs/allelicdepth/makebed.{chrom}.log"
+        "logs/allelicdepth/makebeds.log"
     params:
         chroms=config['chroms']
     script:
