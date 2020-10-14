@@ -39,8 +39,8 @@ rule alleleBalanceIR:
 rule alleleTables:
     input:
         bam="resources/alignments/{sample}.bam",
-        bed="results/variants/missense.pos.{chrom}.bed",
-        ref= config['ref']['genome']
+        bed="resources/regions/missense.pos.{chrom}.bed",
+        ref=config['ref']['genome']
     output:
         "results/variants/alleleTables/{sample}.chr{chrom}.allele.table"
     conda:
