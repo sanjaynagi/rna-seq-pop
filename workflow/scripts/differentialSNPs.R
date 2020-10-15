@@ -30,7 +30,6 @@ gff = rtracklayer::import(gffpath) %>%
 #remove prefix for chrom column, so it matches the bed file 
 gff$chrom = str_remove(gff$chrom, gffchromprefix) #could be snakemake param if needed
 
-
 #for each contrast/comparison, perform differential SNP analysis 
 for (i in 1:nrow(comparisons)){
   name = contrasts[i,]
@@ -104,7 +103,6 @@ for (i in 1:nrow(comparisons)){
     str_replace("1", "rep1") %>% 
     str_replace("2", "rep2") %>% 
     str_replace("3", "rep3")
-  
   #run kissde quality control
   print(glue("Running kissDE QC for {name}"))
   qualityControl(counts, conditionsde, storeFigs = glue("results/variants/diffsnps/kissDEfigs_{name}"))
@@ -114,10 +112,10 @@ for (i in 1:nrow(comparisons)){
 
   #parse results to more readable, filterable form 
   results = de_Vars[[1]] %>% separate(ID, into = c("chrom", "pos", "REF>ALT"), sep="_") %>% 
-    mutate("pos" = as.numeric(pos), "chrom" = as.numeric(str_remove(chrom, "chr"))) %>% 
+    mutate("pos" = as.numeric(pos), "chrom" = str_remove(chrom, "chr")) %>% 
     arrange(chrom, pos)
   
-  ############ intersect (data.table::foverlap) gff and results to get gene names and descriptions of snps #######
+  ##### intersect (data.table::foverlap) gff and results to get gene names and descriptions of snps #######
   bed = results %>% 
     select(chrom, pos, Adjusted_pvalue, `Deltaf/DeltaPSI`, `REF>ALT`) %>% 
     mutate("chrom" = as.character(chrom), "start" = as.numeric(pos) -1, "end" = as.numeric(pos)) %>% 
@@ -131,6 +129,7 @@ for (i in 1:nrow(comparisons)){
                           by.y=c("chrom", "start", "end"),
                           type = "within",
                           nomatch = 0L)
+
   #write to file
   print(glue("Writing {name} results to results/variants/diffsnps/"))
   results %>% fwrite(., glue("results/variants/diffsnps/{name}.normcounts.tsv"), sep="\t", row.names=FALSE)

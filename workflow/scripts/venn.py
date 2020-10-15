@@ -4,7 +4,8 @@
 A script to get the intersections of Differential expression results, Fst, PBS and differential SNPs analysis.
 Draws Venn diagrams and adds columns to RNA-seq-diff.xlsx, whether the gene has high Fst/PBS/diffsnps. 
 """
-
+import matplotlib
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from matplotlib_venn import *
 import pandas as pd
@@ -20,7 +21,7 @@ def plotvenn2(name, group1, group2, nboth,stat="DE_PBS", group1name='Significant
           alpha = 0.5);
     venn2_circles(subsets = (group1, group2, nboth))
     plt.title(f"{name}")
-    plt.savefig(f"../../results/venn/{name}_{stat}.venn.png")
+    plt.savefig(f"results/venn/{name}_{stat}.venn.png")
     plt.close()
     
 def intersect2(one, two, df, write=True, path=None):
@@ -34,7 +35,7 @@ def intersect2(one, two, df, write=True, path=None):
 
 def add_columns_xlsx(name, fst, highfst, diffsnps):
     
-    rnaxlsx = pd.read_excel("../../results/genediff/RNA-Seq_diff.xlsx", 
+    rnaxlsx = pd.read_excel("results/genediff/RNA-Seq_diff.xlsx", 
                        sheet_name=name)
     
     highfst_bool = de.GeneID.isin(highfst.GeneID).astype(str)
@@ -62,15 +63,15 @@ percentile = snakemake.params[2]
 
 
 # Create a Pandas Excel writer using XlsxWriter as the engine.
-writer = pd.ExcelWriter('../../results/RNA-Seq-full.xlsx', engine='xlsxwriter')
+writer = pd.ExcelWriter('results/RNA-Seq-full.xlsx', engine='xlsxwriter')
 
 #### Differential expression v Fst venn diagram
 for comp1,comp2 in comparisons:
     name = comp1 + "_" + comp2
     print(f"\n-------------- Venn Diagram for {name} --------------")
-    de = pd.read_csv(f"../../results/genediff/{name}.csv")
-    fst = pd.read_csv("../../results/variants/Fst_PBS.tsv", sep="\t")
-    diffsnps = pd.read_csv(f"../../results/variants/diffsnps/{name}.sig.kissDE.tsv", sep="\t")
+    de = pd.read_csv(f"results/genediff/{name}.csv")
+    fst = pd.read_csv("results/variants/Fst_PBS.tsv", sep="\t")
+    diffsnps = pd.read_csv(f"results/variants/diffsnps/{name}.sig.kissDE.tsv", sep="\t")
     #compare sig DE genes and top 5% fst genes?
     #get sig up and down diffexp genes
     sigde = de[de['padj'] < 0.05]
@@ -92,7 +93,7 @@ for comp1,comp2 in comparisons:
                highfst, 
                de, 
                write=True, 
-               path=f"../../results/venn/{name}.DE.Fst.intersection.tsv")
+               path=f"results/venn/{name}.DE.Fst.intersection.tsv")
     
     plotvenn2(name, nde_up, nfst, nboth,stat="DE.Fst", group1name='Significant up DE genes', group2name='High Fst')
     
@@ -110,8 +111,8 @@ if pbs is True:
         name = pbscomp[0] + "_" + pbscomp[1] + "_" + pbscomp[2]
         name2 = pbscomp[2]+ "_" + pbscomp[1]
 
-        de = pd.read_csv(f"../../results/genediff/{name2}.csv")
-        pbs = pd.read_csv("../../results/variants/Fst_PBS.tsv", sep="\t")
+        de = pd.read_csv(f"results/genediff/{name2}.csv")
+        pbs = pd.read_csv("results/variants/Fst_PBS.tsv", sep="\t")
 
         # compare sig DE genes and top 5% fst/pbs genes?
         # get sig up and down diffexp genes
@@ -136,7 +137,7 @@ if pbs is True:
         nbothdefst, _ = intersect2(sigde_up, highfst, de, write=False)
         nbothdepbs, _ = intersect2(sigde_up, highpbs, de, write=False)
         nbothfstpbs, _ = intersect2(highfst, highpbs, de, write=True, 
-                                    path=f"../../results/venn/{name2}.Fst.PBS.intersection.tsv")
+                                    path=f"results/venn/{name2}.Fst.PBS.intersection.tsv")
         
         # plot venns, DEvPBS and FSTvPBS
         plotvenn2(name, nde_up, npbs, nbothdepbs,stat="DEup.PBS", group1name='Significant up DE genes', group2name='High PBS')
@@ -146,7 +147,7 @@ if pbs is True:
         threesets = list(set(sigde_up.GeneID).intersection(highfst.GeneID, highpbs.GeneID))
         de_intersected3 = de[de.GeneID.isin(threesets)]
         nall = de_intersected3.shape[0]
-        de_intersected3.to_csv(f"../../results/venn/{name2}_DE.Fst.PBS.intersection.tsv", sep="\t")
+        de_intersected3.to_csv(f"results/venn/{name2}_DE.Fst.PBS.intersection.tsv", sep="\t")
 
         # three way venn diagram
         venn3(subsets = (nde_up, nfst,nbothdefst , npbs, nbothdepbs , nbothfstpbs, nall), 
@@ -154,5 +155,5 @@ if pbs is True:
               alpha = 0.5)
         venn3_circles(subsets = (nde_up, nfst,nbothdefst , npbs, nbothdepbs , nbothfstpbs, nall))
         plt.title(f"{name}")
-        plt.savefig(f"../../results/venn/{name}_DE_Fst_PBS.venn.png")
+        plt.savefig(f"results/venn/{name}_DE_Fst_PBS.venn.png")
         plt.close()
