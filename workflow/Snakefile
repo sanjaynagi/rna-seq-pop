@@ -12,7 +12,7 @@ metadata = pd.read_csv(config['samples'], sep="\t")
 validate(metadata, schema="schemas/samples.schema.yaml")
 samples = metadata.samples
 
-# IR allele balance mutations file 		
+# IR allele balance mutations file
 mutationdata = pd.read_csv(config['IRmutations']['path'], sep="\t")
 mutations = mutationdata.Name[:3]
 
@@ -32,7 +32,8 @@ rule all:
         expand("results/variants/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
         "results/variants/Fst_PBS.tsv",
         expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts']),
-        expand("results/variants/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset'])
+        expand("results/variants/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset']),
+        "results/RNA-Seq-full.xlsx"
 
 
 

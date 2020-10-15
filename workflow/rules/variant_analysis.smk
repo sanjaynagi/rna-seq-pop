@@ -126,8 +126,20 @@ rule Fst_PBS_TajimaD_SeqDiv_per_gene:
 
 rule Venn:
    input:
+        DEcontrasts="resources/DE.contrast.list",
+        DE="results/genediff/RNA-Seq_diff.xlsx",
+        FST="results/variants/Fst_PBS.tsv",
+        diffsnps=expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts'])
    output:
+        "results/RNA-Seq-full.xlsx",
+        expand("results/venn/{name}_DE.Fst.venn.png", name=config['contrasts'])
+   conda:
+        "../envs/fstpca.yaml"
    log:
+        "logs/venn.log"
    params:
+        pbs=config['pbs']['activate'],
+        pbscomps=config['pbs']['contrasts'],
+        percentile=0.05
    script:
        "../scripts/venn.py"
