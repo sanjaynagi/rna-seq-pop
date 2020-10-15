@@ -173,7 +173,7 @@ for chrom in chroms:
     gdivall['chrom'] = chrom
 
     if pbs is True:
-        #pbs store as dataframes
+        #pbs store as dataframes 
         pbs_dfs = {}
         for pbscomp in pbscomps:
             name = pbscomp[0] + "_" + pbscomp[1] + "_" + pbscomp[2]
@@ -183,8 +183,8 @@ for chrom in chroms:
 
         pbs_allcomparisons = reduce(my_reduce, pbs_dfs.values())
         dfs = [fst_allcomparisons,pbs_allcomparisons, gene_names, ndf, posdf]
-
-    dfs = [fst_allcomparisons, gene_names, ndf, posdf]
+    else:
+        dfs = [fst_allcomparisons, gene_names, ndf, posdf]
 
     tajdbychrom[chrom] = reduce(lambda  left,right: pd.merge(left,right,on=['GeneID'],
                                                 how='inner'), [tajdall, gene_names, ndf,posdf])
