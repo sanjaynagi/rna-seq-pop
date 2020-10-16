@@ -137,5 +137,6 @@ for (i in 1:nrow(comparisons)){
       
   de_variants %>% 
     filter(Adjusted_pvalue <= pval) %>% 
+    dplyr::rename("GeneID" = "ID") %>%
     fwrite(., glue("results/variants/diffsnps/{name}.sig.kissDE.tsv"), sep="\t", row.names=FALSE)
 }

@@ -120,7 +120,7 @@ rule Fst_PBS_TajimaD_SeqDiv_per_gene:
         chroms = config['chroms'],
         ploidy = config['ploidy'],
         missingprop = 0.66,
-        gffchromprefix="" #in case like the aedes genome, there is an annoying before each chromosome
+        gffchromprefix=config['ref']['str_remove'] #in case like the aedes genome, there is an annoying before each chromosome
     script:
         "../scripts/FstPbsTajimasDseqDiv.py"
 
