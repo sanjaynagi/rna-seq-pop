@@ -57,12 +57,10 @@ vst_pca = function(counts, samples, colourvar, name="PCA_", st="", comparison=""
 }
 
 
-
 #### main ####
 cat("\n", "------------- Kallisto - DESeq2 - RNASeq Differential expression ---------", "\n")
 #### read data ####
-
-#Read counts for each sample
+#### Read counts for each sample
 df = list()
 for (sample in samples$samples){
   df[[sample]]= fread(glue("results/quant/{sample}/abundance.tsv"), sep = "\t")
@@ -84,22 +82,18 @@ counts = counts %>% group_by(GeneID) %>% summarise_all(sum)
 
 ### count total reads counted
 counts = counts %>% column_to_rownames('GeneID')
-samples$total_reads_ag = colSums(counts)
-
-#make cohort a factor with 'control' as reference
-samples$cohort = as.factor(as.character(samples$cohort))
-samples$cohort = relevel(samples$cohort, "control")
-
-#### get totals and plot ####
-tot_counts = apply(counts, 2, sum) %>% 
-  as.data.frame() %>% 
-  rownames_to_column('sample')
-
-colnames(tot_counts) = c("sample", "total_reads")
+#### get count statistics for each sample and plot ####
+count_stats = apply(counts, 2, sum) %>% enframe(name="Sample", value="total_counts") # total counts
+ngenes = nrow(counts)
+count_stats$genes_zerocounts = apply(counts, 2, function(x){sum(x==0)}) # genes with zero counts 
+count_stats$genes_lessthan10counts = apply(counts, 2, function(x){sum(x<10)}) # genes with less than 10 counts
+count_stats = count_stats %>% mutate("proportion_zero" = genes_zerocounts/ngenes,
+                                     "proportion_low" = genes_lessthan10counts/ngenes)
+count_stats %>% fwrite(., "results/quant/count_statistics.tsv",sep="\t")
 
 print("Counting and plotting total reads per sample...")
 pdf("results/quant/total_reads_counted.pdf")
-ggplot(tot_counts, aes(x=sample, y=total_reads, fill=samples$treatment)) + 
+ggplot(counts_stats, aes(x=sample, y=total_counts, fill=samples$treatment)) + 
   geom_bar(stat='identity') + 
   theme_light() +
   ggtitle("Total reads counted (mapped to Ag transcriptome (PEST))") +
