@@ -38,7 +38,7 @@ rule DifferentialGeneExpression:
 		counts=expand("results/quant/{sample}", sample=samples)
 	output:
 		"results/genediff/RNA-Seq_diff.xlsx",
-		"results/PCA.pdf",
+		"results/plots/PCA.pdf",
 		"results/quant/count_statistics.tsv"
 	group:"diffexp"
 	priority: 10
