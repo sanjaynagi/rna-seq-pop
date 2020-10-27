@@ -47,7 +47,7 @@ def pca(geno, chrom, dataset, populations, prune=True, scaler=None):
         
     coords1, model1 = allel.pca(gn, n_components=10, scaler=scaler)
     
-    fig_pca(coords1, model1, f"PCA-{chrom}-{dataset}", f"results/variants/PCA-{chrom}-{dataset}", sample_population=populations)
+    fig_pca(coords1, model1, f"PCA-{chrom}-{dataset}", f"results/variants/plots/PCA-{chrom}-{dataset}", sample_population=populations)
 
 for chrom in chroms:
     path = f"results/variants/annot.variants.{chrom}.vcf.gz"
@@ -64,5 +64,5 @@ for chrom in chroms:
     pca(geno, chrom, dataset, populations, prune=True, scaler=None)
 
     ### variant density 
-    plot_density(pos, window_size=500000, title=f"Variant Density chromosome {chrom}", path=f"results/variants/{dataset}_SNPdensity_{chrom}.png")
+    plot_density(pos, window_size=500000, title=f"Variant Density chromosome {chrom}", path=f"results/variants/plots/{dataset}_SNPdensity_{chrom}.png")
 

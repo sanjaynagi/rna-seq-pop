@@ -47,7 +47,7 @@ vst_pca = function(counts, samples, colourvar, name="PCA_", st="", comparison=""
   conds=as.factor(as.character(samples[,colourvar]))
   cond_colours = brewer.pal(length(levels(conds)),"Set2")[conds]
   names(cond_colours)=samples[,colourvar]
-  pdf(glue("results/{name}{st}{comparison}.pdf"))
+  pdf(glue("results/plots/{name}{st}{comparison}.pdf"))
   pca2=prcomp(t(vstcounts),center=TRUE)
   plot(pca2$x, col=cond_colours,  pch=19, cex=2, main=glue("{name}{st}{comparison} (VST)"))
   text(pca2$x, as.vector(colnames(counts)), pos=3, cex=0.4)
@@ -117,7 +117,7 @@ counts %>% rownames_to_column("GeneID") %>% fwrite(., "results/quant/rawcounts.t
 normcounts %>% as.data.frame() %>% rownames_to_column("GeneID") %>% round_df(., 1) %>% fwrite(., "results/quant/normcounts.tsv", sep="\t", row.names = FALSE)
 
 #### 
-pdf("results/heatmap_correlations.pdf")
+pdf("results/plots/heatmap_correlations.pdf")
 pheatmap(correlations)
 garbage = dev.off()
 
