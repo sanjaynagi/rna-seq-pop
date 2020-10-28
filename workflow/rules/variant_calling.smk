@@ -1,7 +1,15 @@
-################ 	Variant calling 	##################
-# HISAT2 (Kim et al., 2019)                                              		
-# samtools mpileup (Li et al., 2009)                                             
-# FreeBayes (Kim et al., 2018)                                                    
+# This .smk rule file performs the following tasks:
+
+# Extracts exons and splice sites from the reference files (HISAT2)
+# Builds HISAT2 index (HISAT2)
+# Aligns reads to genome ---> .bam file (HISAT2)
+# Sorts .bam, indexes (samtools)
+# Generates parameters for freebayes (R)
+# Runs freebayes in parallel, splitting the genome into chunks (freebayes)
+# concatenates resulting vcfs (bcftools)
+# estimates impact of SNPs (snpEff)
+# filters VCFs (snpSift)
+# extracts bed file of VCF snp-sites (Python)
 
 
 rule HISAT2splicesites:
@@ -64,7 +72,6 @@ rule SortBams:
     wrapper:
         "0.65.0/bio/samtools/sort"
 
-
 rule IndexBams:
     input:
         "resources/alignments/{sample}.bam"
@@ -76,61 +83,55 @@ rule IndexBams:
         "0.65.0/bio/samtools/index"
 
 
-rule GenerateParamsFreebayes:
-	input:
-		ref_idx=config['ref']['genome'],
-		metadata=config['samples'],
-		bams = expand("resources/alignments/{sample}.bam", sample=samples)
-	output:
-		bamlist="resources/bam.list",
-		pops="resources/populations.tsv"
-	shell:
-		"""
-		ls resources/alignments/*bam > {output.bamlist}
-		cut -f 4,7 {input.metadata} | tail -n +2 > {output.pops}
-		"""
-
-rule makeRegions:
+rule GenerateFreebayesParams:
     input:
-        index=lambda wildcards: config['ref']['genome'] + ".fai"
+        ref_idx = config['ref']['genome'],
+        index = lambda wildcards: config['ref']['genome'] + ".fai"
+        bams = expand("resources/alignments/{sample}.bam", sample=samples)
     output:
-        expand("resources/regions/genome.{chrom}.region.{i}.bed", chrom=config['chroms'], i = [1,2,3,4,5])
+        bamlist = "resources/bam.list",
+        pops = "resources/populations.tsv",
+        regions = expand("resources/regions/genome.{chrom}.region.{i}.bed", chrom=config['chroms'], i = np.arange(config['chunks']))
     params:
-        chroms=config['chroms']
+        metadata = config['samples'],
+        chroms = config['chroms'],
+        chunks = config['chunks']
+    conda:
+        "../envs/diffsnps.yaml"
     script:
-        "../scripts/makeRegions.R"
-
+        "../scripts/generateFreebayesParams.R"
 
 rule VariantCallingFreebayes:
 	input:
-		bams=expand("resources/alignments/{sample}.bam", sample=samples),
-		index=expand("resources/alignments/{sample}.bam.bai", sample=samples),
-		ref=config['ref']['genome'],
-	        samples="resources/bam.list",
-                regions="resources/regions/genome.{chrom}.region.{i}.bed"
+		bams = expand("resources/alignments/{sample}.bam", sample=samples),
+		index = expand("resources/alignments/{sample}.bam.bai", sample=samples),
+		ref = config['ref']['genome'],
+	    samples = "resources/bam.list",
+        regions = "resources/regions/genome.{chrom}.region.{i}.bed"
 	output:
 		temp("results/variants/variants.{chrom}.{i}.vcf")
 	log:
 		"logs/freebayes/{chrom}.{i}.log"
 	params:
-		ploidy=config['ploidy'],
-		pops="resources/populations.tsv"
+		ploidy = config['ploidy'],
+		pops = "resources/populations.tsv"
 	conda:
 		"../envs/variants.yaml"
 	threads:1
 	shell:	"freebayes -f {input.ref} -t {input.regions} --ploidy {params.ploidy} --populations {params.pops} --pooled-discrete --use-best-n-alleles 5 -L {input.samples} > {output} 2> {log}"
 
 rule ConcatVCFs:
-        input:
-                expand("results/variants/variants.{{chrom}}.{i}.vcf", i=[1,2,3,4,5])
-        output:
-                "results/variants/variants.{chrom}.vcf"
-        log:
-                "logs/bcftools/{chrom}.log"
-        conda:
-                "../envs/variants.yaml"
-        threads:4
-        shell:  "bcftools concat -o {output} {input} --threads {threads}"
+    input:
+        calls = expand("results/variants/variants.{{chrom}}.{i}.vcf", i=np.arange(config['chunks']))
+    output:
+        "results/variants/variants.{chrom}.vcf"
+    log:
+        "logs/bcftools/{chrom}.log"
+    conda:
+        "../envs/variants.yaml"
+    threads:4
+    wrapper:  
+        "0.65.0/bio/bcftools/concat"
 
 
 rule snpEffDbDownload:
@@ -139,21 +140,21 @@ rule snpEffDbDownload:
     log:
         "logs/snpEff/snpeff_download.log"
     params:
-        reference=config['ref']['snpeffdb']
+        ref = config['ref']['snpeffdb']
     shell:
-        "java -jar workflow/scripts/snpEff/snpEff.jar download {params.reference} 2> {log}"
+        "java -jar workflow/scripts/snpEff/snpEff.jar download {params.ref} 2> {log}"
 
 rule snpEff:
     input:
-        calls="results/variants/variants.{chrom}.vcf",
-        touch="workflow/scripts/snpeff/db.dl"
+        calls = "results/variants/variants.{chrom}.vcf",
+        "workflow/scripts/snpeff/db.dl"
     output:
-        calls="results/variants/annot.variants.{chrom}.vcf.gz",
+        calls = "results/variants/annot.variants.{chrom}.vcf.gz",
     log:
         "logs/snpEff/snpeff_{chrom}.log"
     params:
-        db=config['ref']['snpeffdb'],
-        prefix="results/variants/annot.variants.{chrom}.vcf"
+        db = config['ref']['snpeffdb'],
+        prefix = "results/variants/annot.variants.{chrom}.vcf"
     shell:
         """
         java -jar workflow/scripts/snpEff/snpEff.jar eff {params.db} {input.calls} > {params.prefix}
@@ -162,13 +163,13 @@ rule snpEff:
 
 rule MissenseAndQualFilter:
     input:
-        vcf="results/variants/annot.variants.{chrom}.vcf.gz"
+        vcf = "results/variants/annot.variants.{chrom}.vcf.gz"
     output:
         "results/variants/annot.missense.{chrom}.vcf"
     log:
         "logs/snpSift/missense_vcf_{chrom}.log"
     params:
-        expression="(ANN[*].EFFECT has 'missense_variant') & (QUAL >= 30)"
+        expression = "(ANN[*].EFFECT has 'missense_variant') & (QUAL >= 30)"
     shell:
         """
         java -jar workflow/scripts/snpEff/SnpSift.jar filter "{params.expression}" {input.vcf} > {output} 2> {log}
@@ -176,14 +177,14 @@ rule MissenseAndQualFilter:
 
 rule MakeBedOfPositions:
     input:
-        vcf=expand("results/variants/annot.missense.{chrom}.vcf", chrom=config['chroms'])
+        vcf = expand("results/variants/annot.missense.{chrom}.vcf", chrom=config['chroms'])
     output:
-        bed=expand("resources/regions/missense.pos.{chrom}.bed", chrom=config['chroms'])
+        bed = expand("resources/regions/missense.pos.{chrom}.bed", chrom=config['chroms'])
     conda:
         "../envs/fstpca.yaml"
     log:
         "logs/allelicdepth/makebeds.log"
     params:
-        chroms=config['chroms']
+        chroms = config['chroms']
     script:
         "../scripts/extractBedVCF.py"
