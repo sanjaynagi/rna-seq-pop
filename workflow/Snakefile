@@ -6,6 +6,7 @@ report: "report/workflow.rst"
 #singularity: "docker://continuumio/miniconda3"
 from snakemake.utils import validate
 import pandas as pd
+import numpy as np
 configfile:"config/config.yaml"
 
 metadata = pd.read_csv(config['samples'], sep="\t")

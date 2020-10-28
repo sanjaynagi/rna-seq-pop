@@ -5,8 +5,8 @@
 
 rule mpileupIR:
     input:
-        bam="resources/alignments/{sample}.bam",
-        index="resources/alignments/{sample}.bam.bai"
+        bam = "resources/alignments/{sample}.bam",
+        index = "resources/alignments/{sample}.bam.bai"
     output:
         "results/allele_balance/counts/{sample}_{mut}_allele_counts.tsv"
     conda:
@@ -38,9 +38,9 @@ rule alleleBalanceIR:
 
 rule alleleTables:
     input:
-        bam="resources/alignments/{sample}.bam",
-        bed="resources/regions/missense.pos.{chrom}.bed",
-        ref=config['ref']['genome']
+        bam = "resources/alignments/{sample}.bam",
+        bed = "resources/regions/missense.pos.{chrom}.bed",
+        ref = config['ref']['genome']
     output:
         "results/variants/alleleTables/{sample}.chr{chrom}.allele.table"
     conda:
@@ -60,11 +60,11 @@ rule alleleTables:
 
 rule DifferentialSNPs:
     input:
-        samples=config['samples'],
-        gff=config['ref']['gff'],
-        DEcontrasts="resources/DE.contrast.list",
+        samples = config['samples'],
+        gff = config['ref']['gff'],
+        DEcontrasts = "resources/DE.contrast.list",
         geneNames = "resources/gene_names.tsv",
-        tables=expand("results/variants/alleleTables/{sample}.chr{chrom}.allele.table", sample=samples, chrom=config['chroms'])
+        tables = expand("results/variants/alleleTables/{sample}.chr{chrom}.allele.table", sample=samples, chrom=config['chroms'])
     output:
         expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts']),
         expand("results/variants/diffsnps/{name}.kissDE.tsv", name = config['contrasts']),
@@ -75,19 +75,18 @@ rule DifferentialSNPs:
         "logs/variants/kissDE.log"
     params:
         chroms = config['chroms'],
-        gffchromprefix="AaegL5_", # in case like the aedes genome, there is an annoying prefix before each chromosome
+        gffchromprefix = config['ref']['str_remove'], # in case like the aedes genome, there is an annoying prefix before each chromosome
         mincounts = 100,
         pval_flt = 0.001, # pvalues already adjusted but way want extra filter for sig file
-        prefix = "AaegL5_"
     script:
         "../scripts/differentialSNPs.R"
 
 rule pca_variantdensity:
     input:
-        vcf=expand("results/variants/annot.variants.{chrom}.vcf.gz", chrom=config['chroms'])
+        vcf = expand("results/variants/annot.variants.{chrom}.vcf.gz", chrom=config['chroms'])
     output:
-        pcafig=expand("results/variants/plots/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset']),
-        snpdensityfig=expand("results/variants/plots/{dataset}_SNPdensity_{chrom}.png", chrom=config['chroms'], dataset=config['dataset'])
+        pcafig = expand("results/variants/plots/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset']),
+        snpdensityfig = expand("results/variants/plots/{dataset}_SNPdensity_{chrom}.png", chrom=config['chroms'], dataset=config['dataset'])
     log:
         "logs/pca/pca.log"
     conda:
@@ -101,11 +100,11 @@ rule pca_variantdensity:
 
 rule Fst_PBS_TajimaD_SeqDiv_per_gene:
     input:
-        samples=config['samples'],
-        gff=config['ref']['gff'],
-        DEcontrasts="resources/DE.contrast.list",
+        samples = config['samples'],
+        gff = config['ref']['gff'],
+        DEcontrasts = "resources/DE.contrast.list",
         geneNames = "resources/gene_names.tsv",
-        vcf=expand("results/variants/annot.variants.{chrom}.vcf.gz", chrom=config['chroms'])
+        vcf = expand("results/variants/annot.variants.{chrom}.vcf.gz", chrom=config['chroms'])
     output:
         "results/variants/Fst_PBS.tsv",
         "results/variants/tajimas_d.tsv",
@@ -126,10 +125,10 @@ rule Fst_PBS_TajimaD_SeqDiv_per_gene:
 
 rule Venn:
    input:
-        DEcontrasts="resources/DE.contrast.list",
-        DE="results/genediff/RNA-Seq_diff.xlsx",
-        FST="results/variants/Fst_PBS.tsv",
-        diffsnps=expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts'])
+        DEcontrasts = "resources/DE.contrast.list",
+        DE = "results/genediff/RNA-Seq_diff.xlsx",
+        Fst = "results/variants/Fst_PBS.tsv",
+        diffsnps = expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts'])
    output:
         "results/RNA-Seq-full.xlsx",
         expand("results/venn/{name}_DE.Fst.venn.png", name=config['contrasts'])

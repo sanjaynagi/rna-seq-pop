@@ -6,9 +6,9 @@
 
 rule KallistoIndex:
 	input:
-		fasta=config['ref']['transcriptome']
+		fasta = config['ref']['transcriptome']
 	output:
-		index="resources/reference/kallisto.idx"
+		index = "resources/reference/kallisto.idx"
 	group:"diffexp"
 	log:
 		"logs/kallisto/index.log"
@@ -17,15 +17,15 @@ rule KallistoIndex:
 
 rule KallistoQuant:
 	input:
-		fastq=expand("resources/reads/{{sample}}_{n}.fastq.gz", n=[1,2]),
-		index="resources/reference/kallisto.idx"
+		fastq = expand("resources/reads/{{sample}}_{n}.fastq.gz", n=[1,2]),
+		index = "resources/reference/kallisto.idx"
 	output:
 		directory("results/quant/{sample}")
 	group:"diffexp"
 	log:
 		"logs/kallisto/quant_{sample}.log"
 	params:
-		extra="-b 100"
+		extra = "-b 100"
 	threads:24
 	wrapper:
 		"0.66.0/bio/kallisto/quant"
@@ -33,9 +33,9 @@ rule KallistoQuant:
 rule DifferentialGeneExpression:
 	input:
 		samples = config['samples'],
-		gene_names= config['ref']['genenames'],
-		DEcontrasts="resources/DE.contrast.list",
-		counts=expand("results/quant/{sample}", sample=samples)
+		gene_names = config['ref']['genenames'],
+		DEcontrasts = "resources/DE.contrast.list",
+		counts = expand("results/quant/{sample}", sample=samples)
 	output:
 		"results/genediff/RNA-Seq_diff.xlsx",
 		"results/plots/PCA.pdf",
@@ -52,9 +52,9 @@ rule DifferentialGeneExpression:
 rule DifferentialIsoformExpression:
 	input:
 		samples = config['samples'],
-		gene_names= config['ref']['genenames'],
-		DEcontrasts="resources/DE.contrast.list",
-		counts=expand("results/quant/{sample}", sample=samples)
+		gene_names = config['ref']['genenames'],
+		DEcontrasts = "resources/DE.contrast.list",
+		counts = expand("results/quant/{sample}", sample=samples)
 	output:
 		"results/isoformdiff/RNA-Seq_isoformdiff.xlsx"
 	group:"diffexp"
