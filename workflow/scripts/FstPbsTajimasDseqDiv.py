@@ -5,8 +5,9 @@ A script to perform Fst and population branch statistic analysis by gene on geno
 """
 
 from tools import *
+from scipy import stats
 import warnings
-warnings.filterwarnings('ignore') # suppress numpy runtime warnings
+warnings.filterwarnings('ignore') # suppress numpy runtime warnings, this is a bit dangerous, should be removed for release or resolve source of warnings
 
 # snakemake inputs and params
 metadata_path = snakemake.input[0]
@@ -20,7 +21,7 @@ ploidy = snakemake.params[3]
 missingprop = snakemake.params[4]
 gffchromprefix= snakemake.params[5]
 
-#gff
+# gff
 features = allel.gff3_to_dataframe(gffpath,
                        attributes=["ID", "description"])
 gff = features[features.type == 'gene']
@@ -43,15 +44,15 @@ gdivbychrom = {}
 
 for chrom in chroms:
 
-    #path to vcf
-    path = f"results/variants/annot.variants.{chrom}.vcf.gz"
-    #function to read in vcfs and associated SNP data
+    # path to vcf
+    path = f"results/variants/vcfs/annot.variants.{chrom}.vcf.gz"
+    # function to read in vcfs and associated SNP data
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops =  readAndFilterVcf(path=path,
                                                                chrom=chrom,
                                                                qualflt=30,
                                                                missingfltprop=missingprop,
                                                                plot=False)
-    #subset gff to appropriate chrom
+    # subset gff to appropriate chrom
     genes = gff[gff.seqid == f"{gffchromprefix}{chrom}"].sort_values('start').reset_index(drop=True)
 
     ### Average Fst, pbs, tajima d for each gene
@@ -68,38 +69,39 @@ for chrom in chroms:
     pos_dict = {}
     n_dict = {}
 
-    #loop through each gene and calculate fst, pbs, tajimas d, or sequence diversity for each comparison
+    # loop through each gene and calculate fst, pbs, tajimas d, or sequence diversity for each comparison
     for i, gene in genes.iterrows():
         ID = gene.ID
-        #locate_ranges() to get a boolean, needed as locate_range() will throw errors if no snps found in gene
+        # locate_ranges() to get a boolean, needed as locate_range() will throw errors if no snps found in gene
         gene_bool = pos.locate_ranges([gene['start']], [gene['end']], strict=False)
         nsnps = gene_bool.sum()
 
-        #if there are less than 3 snps in this gene then skip to next in loop
+        # if there are less than 3 snps in this gene then skip to next in loop
         if nsnps < 3:
             continue
 
-        #store number of snps per gene
+        # store number of snps per gene
         n_dict[ID] = nsnps
-        #store midpoint positions of gene
+        # store midpoint positions of gene
         pos_dict[ID] = (gene['start'] + gene['end'])/2
 
-        #fst per gene between each comparison
+        # fst per gene between each comparison
         for comp1,comp2 in comparisons:
             name = comp1 + "_" + comp2
             ac1 = acsubpops[comp1].compress(gene_bool, axis=0)
             ac2 = acsubpops[comp2].compress(gene_bool, axis=0)
 
             fst_per_comp[name], se_per_comp[name],_,_= allel.average_hudson_fst(ac1, ac2, blen=1)
+            fst_per_comp[name] = stats.zscore(fst_per_comp[name], nan_policy='omit')
 
-        #tajimas d and sequence diversity per gene for each subpop(i.e treatment)
+        # tajimas d and sequence diversity per gene for each subpop(i.e treatment)
         for subpop in subpops:
             ac = acsubpops[subpop].compress(gene_bool)
             genepos = pos[gene_bool]
             tajd_per_pop[subpop] = allel.tajima_d(ac=ac, pos=genepos)
             gdiv_per_pop[subpop] = allel.sequence_diversity(ac=ac, pos=genepos)
 
-        #pbs for each gene for each pbc comparison as defined in config.yaml
+        # pbs for each gene for each pbc comparison as defined in config.yaml
         if pbs is True:
             for pbscomp in pbscomps:
                 name = pbscomp[0] + "_" + pbscomp[1] + "_" + pbscomp[2]
@@ -108,7 +110,7 @@ for chrom in chroms:
                                           acsubpops[pbscomp[2]].compress(gene_bool, axis=0),
                                                      window_size=1,
                                                     normalise=True)
-        #store inner dict in outer dicts
+        # store inner dict in outer dicts
         fst_per_gene[ID] = dict(fst_per_comp)
         se_per_gene[ID] = dict(se_per_comp)
         if pbs is True : pbs_per_gene[ID] = dict(pbs_per_comp)
@@ -142,7 +144,7 @@ for chrom in chroms:
     for comp1,comp2 in comparisons:
         name = comp1 + "_" + comp2
         fst_df = pd.DataFrame.from_dict(fst_per_gene[name], orient='index').reset_index(drop=False)
-        fst_df.columns = ['GeneID', (name + '_Fst')]
+        fst_df.columns = ['GeneID', (name + '_zFst')]
         fst_dfs[name] = fst_df
 
         se_df = pd.DataFrame.from_dict(se_per_gene[name], orient='index').reset_index(drop=False)
@@ -182,22 +184,30 @@ for chrom in chroms:
             pbs_dfs[name] = pbs_df
 
         pbs_allcomparisons = reduce(my_reduce, pbs_dfs.values())
-        dfs = [fst_allcomparisons,pbs_allcomparisons, gene_names, ndf, posdf]
-    else:
-        dfs = [fst_allcomparisons, gene_names, ndf, posdf]
+        pbs_allcomparisons['chrom'] = chrom
 
+    fstbychrom[chrom] = reduce(lambda  left,right: pd.merge(left,right,on=['GeneID'],
+                                                how='inner'), [fst_allcomparisons, gene_names, ndf, posdf])
     tajdbychrom[chrom] = reduce(lambda  left,right: pd.merge(left,right,on=['GeneID'],
                                                 how='inner'), [tajdall, gene_names, ndf,posdf])
     gdivbychrom[chrom] = reduce(lambda  left,right: pd.merge(left,right,on=['GeneID'],
                                                 how='inner'), [gdivall, gene_names, ndf, posdf])
-    fstpbsbychrom[chrom] = reduce(lambda  left,right: pd.merge(left,right,on=['GeneID'],
-                                                how='inner'), dfs)
+    if pbs is True:
+        pbsbychrom[chrom] = reduce(lambda  left,right: pd.merge(left,right,on=['GeneID'],
+                                                    how='inner'), [pbs_allcomparisons, gene_names, ndf, posdf])
+    
 
-fstpbsall = pd.concat(fstpbsbychrom.values(), ignore_index=True)
+
+
+fstall = pd.concat(fstbychrom.values(), ignore_index=True)
 tajdall = pd.concat(tajdbychrom.values(), ignore_index=True)
 gdivall = pd.concat(gdivbychrom.values(), ignore_index=True)
 
 #write to csv
-fstpbsall.to_csv(f"results/variants/Fst_PBS.tsv", index=False, sep="\t")
-tajdall.to_csv(f"results/variants/tajimas_d.tsv", index=False, sep="\t")
-gdivall.to_csv(f"results/variants/sequence_div.tsv", index=False, sep="\t")
+fstall.to_csv(f"results/variants/Fst.tsv", index=False, sep="\t")
+tajdall.to_csv(f"results/variants/TajimasD.tsv", index=False, sep="\t")
+gdivall.to_csv(f"results/variants/SequenceDiv.tsv", index=False, sep="\t")
+
+if pbs is True:
+    pbsall = pd.concat(pbsbychrom.values(), ignore_index=True)
+    pbsall.to_csv(f"results/variants/PBS.tsv", index=False, sep="\t")

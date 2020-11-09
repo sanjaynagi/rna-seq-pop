@@ -72,7 +72,7 @@ rule DifferentialSNPs:
     conda:
         "../envs/diffsnps.yaml"
     log:
-        "logs/variants/kissDE.log"
+        "logs/variants/diffsnps.log"
     params:
         chroms = config['chroms'],
         gffchromprefix = config['ref']['str_remove'], # in case like the aedes genome, there is an annoying prefix before each chromosome
@@ -81,12 +81,18 @@ rule DifferentialSNPs:
     script:
         "../scripts/differentialSNPs.R"
 
-rule pca_variantdensity:
+rule WindowedStatisticsAndPCA:
     input:
-        vcf = expand("results/variants/annot.variants.{chrom}.vcf.gz", chrom=config['chroms'])
+        vcf = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms'])
+        samples = config['samples']
     output:
-        pcafig = expand("results/variants/plots/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset']),
-        snpdensityfig = expand("results/variants/plots/{dataset}_SNPdensity_{chrom}.png", chrom=config['chroms'], dataset=config['dataset'])
+        PCAfig = expand("results/variants/plots/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset']),
+        SNPdensityFig = expand("results/variants/plots/{dataset}_SNPdensity_{chrom}.png", chrom=config['chroms'], dataset=config['dataset'])
+        inbreedingCoef = "results/variants/stats/inbreedingCoef.tsv"
+        inbreedingCoefMean = "results/variants/stats/inbreedingCoef.mean.tsv"
+        SequenceDiversity = "results/variants/stats/SeqeunceDiversity.tsv"
+        LD = "results/variants/stats/LD.tsv"
+        LDmean = "results/variants/stats/LD.mean.tsv"
     log:
         "logs/pca/pca.log"
     conda:
@@ -94,9 +100,13 @@ rule pca_variantdensity:
     params:
         dataset = config['dataset'],
         chroms = config['chroms'],
+        comparisons = config['contrasts']
+        pbs = config['pbs']['activate']
+        pbscomps = config['pbs']['contrasts']
         missingprop = 0.98
+        qualflt = 0.30
     script:
-        "../scripts/pca.py"
+        "../scripts/WindowedStatsAndPCA.py"
 
 rule Fst_PBS_TajimaD_SeqDiv_per_gene:
     input:
@@ -104,24 +114,24 @@ rule Fst_PBS_TajimaD_SeqDiv_per_gene:
         gff = config['ref']['gff'],
         DEcontrasts = "resources/DE.contrast.list",
         geneNames = "resources/gene_names.tsv",
-        vcf = expand("results/variants/annot.variants.{chrom}.vcf.gz", chrom=config['chroms'])
+        vcf = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms'])
     output:
-        "results/variants/Fst_PBS.tsv",
-        "results/variants/tajimas_d.tsv",
-        "results/variants/sequence_div.tsv"
+        "results/variants/Fst.tsv",
+        "results/variants/TajimasD.tsv",
+        "results/variants/SequenceDiv.tsv"
     conda:
         "../envs/fstpca.yaml"
     log:
-        "logs/variants/fst_pbs.log"
+        "logs/variants/FstPBSTajimasDseqDiv.log"
     params:
         pbs = config['pbs']['activate'],
         pbscomps = config['pbs']['contrasts'],
         chroms = config['chroms'],
         ploidy = config['ploidy'],
-        missingprop = 0.66,
+        missingprop = config['fst']['missingness'],
         gffchromprefix=config['ref']['str_remove'] #in case like the aedes genome, there is an annoying before each chromosome
     script:
-        "../scripts/FstPbsTajimasDseqDiv.py"
+        "../scripts/FstPBSTajimasDseqDiv.py"
 
 rule Venn:
    input:
