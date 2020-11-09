@@ -83,10 +83,18 @@ rule IndexBams:
         "0.65.0/bio/samtools/index"
 
 
+
+rule GenomeIndex:
+    input:
+         ref = config['ref']['genome']
+    output:
+         idx = config['ref']['genome'] + ".fai"
+    shell: "samtools faidx {input.ref}"
+
 rule GenerateFreebayesParams:
     input:
         ref_idx = config['ref']['genome'],
-        index = lambda wildcards: config['ref']['genome'] + ".fai"
+        index = config['ref']['genome'] + ".fai",
         bams = expand("resources/alignments/{sample}.bam", sample=samples)
     output:
         bamlist = "resources/bam.list",
@@ -106,8 +114,8 @@ rule VariantCallingFreebayes:
 		bams = expand("resources/alignments/{sample}.bam", sample=samples),
 		index = expand("resources/alignments/{sample}.bam.bai", sample=samples),
 		ref = config['ref']['genome'],
-	    samples = "resources/bam.list",
-        regions = "resources/regions/genome.{chrom}.region.{i}.bed"
+		samples = "resources/bam.list",
+		regions = "resources/regions/genome.{chrom}.region.{i}.bed"
 	output:
 		temp("results/variants/vcfs/variants.{chrom}.{i}.vcf")
 	log:
@@ -146,14 +154,14 @@ rule snpEffDbDownload:
 rule snpEff:
     input:
         calls = "results/variants/vcfs/variants.{chrom}.vcf",
-        "workflow/scripts/snpeff/db.dl"
+        dl = "workflow/scripts/snpeff/db.dl"
     output:
-        calls = "results/variants/annot.variants.{chrom}.vcf.gz",
+        calls = "results/variants/vcfs/annot.variants.{chrom}.vcf.gz",
     log:
         "logs/snpEff/snpeff_{chrom}.log"
     params:
         db = config['ref']['snpeffdb'],
-        prefix = "results/variants/annot.variants.{chrom}.vcf"
+        prefix = "results/variants/vcfs/annot.variants.{chrom}.vcf"
     shell:
         """
         java -jar workflow/scripts/snpEff/snpEff.jar eff {params.db} {input.calls} > {params.prefix}
