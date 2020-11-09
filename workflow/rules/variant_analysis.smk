@@ -79,19 +79,19 @@ rule DifferentialSNPs:
         mincounts = 100,
         pval_flt = 0.001, # pvalues already adjusted but way want extra filter for sig file
     script:
-        "../scripts/differentialSNPs.R"
+         "../scripts/differentialSNPs.R"
 
 rule WindowedStatisticsAndPCA:
     input:
-        vcf = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms'])
+        vcf = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
         samples = config['samples']
     output:
         PCAfig = expand("results/variants/plots/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset']),
-        SNPdensityFig = expand("results/variants/plots/{dataset}_SNPdensity_{chrom}.png", chrom=config['chroms'], dataset=config['dataset'])
-        inbreedingCoef = "results/variants/stats/inbreedingCoef.tsv"
-        inbreedingCoefMean = "results/variants/stats/inbreedingCoef.mean.tsv"
-        SequenceDiversity = "results/variants/stats/SeqeunceDiversity.tsv"
-        LD = "results/variants/stats/LD.tsv"
+        SNPdensityFig = expand("results/variants/plots/{dataset}_SNPdensity_{chrom}.png", chrom=config['chroms'], dataset=config['dataset']),
+        inbreedingCoef = "results/variants/stats/inbreedingCoef.tsv",
+        inbreedingCoefMean = "results/variants/stats/inbreedingCoef.mean.tsv",
+        SequenceDiversity = "results/variants/stats/SeqeunceDiversity.tsv",
+        LD = "results/variants/stats/LD.tsv",
         LDmean = "results/variants/stats/LD.mean.tsv"
     log:
         "logs/pca/pca.log"
@@ -100,10 +100,10 @@ rule WindowedStatisticsAndPCA:
     params:
         dataset = config['dataset'],
         chroms = config['chroms'],
-        comparisons = config['contrasts']
-        pbs = config['pbs']['activate']
-        pbscomps = config['pbs']['contrasts']
-        missingprop = 0.98
+        comparisons = config['contrasts'],
+        pbs = config['pbs']['activate'],
+        pbscomps = config['pbs']['contrasts'],
+        missingprop = 0.98,
         qualflt = 0.30
     script:
         "../scripts/WindowedStatsAndPCA.py"
@@ -128,7 +128,7 @@ rule Fst_PBS_TajimaD_SeqDiv_per_gene:
         pbscomps = config['pbs']['contrasts'],
         chroms = config['chroms'],
         ploidy = config['ploidy'],
-        missingprop = config['fst']['missingness'],
+        missingprop = 0.8,
         gffchromprefix=config['ref']['str_remove'] #in case like the aedes genome, there is an annoying before each chromosome
     script:
         "../scripts/FstPBSTajimasDseqDiv.py"
@@ -137,7 +137,7 @@ rule Venn:
    input:
         DEcontrasts = "resources/DE.contrast.list",
         DE = "results/genediff/RNA-Seq_diff.xlsx",
-        Fst = "results/variants/Fst_PBS.tsv",
+        Fst = "results/variants/Fst.tsv",
         diffsnps = expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts'])
    output:
         "results/RNA-Seq-full.xlsx",
