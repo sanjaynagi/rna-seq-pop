@@ -109,7 +109,7 @@ rule VariantCallingFreebayes:
 	    samples = "resources/bam.list",
         regions = "resources/regions/genome.{chrom}.region.{i}.bed"
 	output:
-		temp("results/variants/variants.{chrom}.{i}.vcf")
+		temp("results/variants/vcfs/variants.{chrom}.{i}.vcf")
 	log:
 		"logs/freebayes/{chrom}.{i}.log"
 	params:
@@ -122,17 +122,16 @@ rule VariantCallingFreebayes:
 
 rule ConcatVCFs:
     input:
-        calls = expand("results/variants/variants.{{chrom}}.{i}.vcf", i=np.arange(config['chunks']))
+        calls = expand("results/variants/vcfs/variants.{{chrom}}.{i}.vcf", i=np.arange(config['chunks']))
     output:
-        "results/variants/variants.{chrom}.vcf"
+        "results/variants/vcfs/variants.{chrom}.vcf"
     log:
         "logs/bcftools/{chrom}.log"
     conda:
         "../envs/variants.yaml"
     threads:4
-    wrapper:  
-        "0.65.0/bio/bcftools/concat"
-
+    shell:  
+        "bcftools concat {input.calls} | vcfuniq > {output} 2> {log}"
 
 rule snpEffDbDownload:
     output:
@@ -146,7 +145,7 @@ rule snpEffDbDownload:
 
 rule snpEff:
     input:
-        calls = "results/variants/variants.{chrom}.vcf",
+        calls = "results/variants/vcfs/variants.{chrom}.vcf",
         "workflow/scripts/snpeff/db.dl"
     output:
         calls = "results/variants/annot.variants.{chrom}.vcf.gz",
@@ -163,9 +162,9 @@ rule snpEff:
 
 rule MissenseAndQualFilter:
     input:
-        vcf = "results/variants/annot.variants.{chrom}.vcf.gz"
+        vcf = "results/variants/vcfs/annot.variants.{chrom}.vcf.gz"
     output:
-        "results/variants/annot.missense.{chrom}.vcf"
+        "results/variants/vcfs/annot.missense.{chrom}.vcf"
     log:
         "logs/snpSift/missense_vcf_{chrom}.log"
     params:
@@ -177,13 +176,13 @@ rule MissenseAndQualFilter:
 
 rule MakeBedOfPositions:
     input:
-        vcf = expand("results/variants/annot.missense.{chrom}.vcf", chrom=config['chroms'])
+        vcf = expand("results/variants/vcfs/annot.missense.{chrom}.vcf", chrom=config['chroms'])
     output:
         bed = expand("resources/regions/missense.pos.{chrom}.bed", chrom=config['chroms'])
     conda:
         "../envs/fstpca.yaml"
     log:
-        "logs/allelicdepth/makebeds.log"
+        "logs/allelicdepth/extractBedVCF.log"
     params:
         chroms = config['chroms']
     script:

@@ -50,7 +50,7 @@ def pca(geno, chrom, dataset, populations, prune=True, scaler=None):
     fig_pca(coords1, model1, f"PCA-{chrom}-{dataset}", f"results/variants/plots/PCA-{chrom}-{dataset}", sample_population=populations)
 
 for chrom in chroms:
-    path = f"results/variants/annot.variants.{chrom}.vcf.gz"
+    path = f"results/variants/vcfs/annot.variants.{chrom}.vcf.gz"
     #function to read in vcfs and associated SNP data
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, populations =  readAndFilterVcf(path=path, 
                                                             chrom=chrom, 

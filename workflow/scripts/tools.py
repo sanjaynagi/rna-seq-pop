@@ -16,6 +16,25 @@ def list_duplicates(seq):
         tally[item].append(i)
     return (tally)
 
+def replace_with_dict2_generic(ar, dic, assume_all_present=False):
+    # Extract out keys and values
+    k = np.array(list(dic.keys()))
+    v = np.array(list(dic.values()))
+
+    # Get argsort indices
+    sidx = k.argsort()
+
+    ks = k[sidx]
+    vs = v[sidx]
+    idx = np.searchsorted(ks,ar)
+
+    if assume_all_present==0:
+        idx[idx==len(vs)] = 0
+        mask = ks[idx] == ar
+        return np.where(mask, vs[idx], ar)
+    else:
+        return vs[idx]
+        
 def get_colour_dict(populations, palette="Set1"):
 
     cmap = plt.get_cmap(palette, len(np.unique(populations)))    # PiYG
@@ -51,25 +70,24 @@ numbers = {
     'calldata/MQ': 1,
 }
 
-def readAndFilterVcf(path, chrom, qualflt=30, missingfltprop=0.6, plot=True):
+def readAndFilterVcf(path, chrom, samples, qualflt=30, missingfltprop=0.6, plot=True, verbose=False):
     
     print(f"\n-------------- Reading VCF for chromosome {chrom} --------------")
     vcf = allel.read_vcf(path, 
                       numbers=numbers,
                      fields=['calldata/*', 'variants/*', 'samples'])
     
-    samples = pd.read_csv("config/samples.tsv", sep="\t")
     #get sample names and indices
     samplenames = vcf['samples']
     ind = defaultdict(list)
 
     for s,names in enumerate(samplenames):
-        idx = np.where(np.isin(samples.samples,names))[0][0]
+        idx = np.where(np.isin(samples['samples'],names))[0][0]
         t = samples.treatment[idx]
         ind[t].append(s)
         subpops = dict(ind)
 
-    print(subpops, "\n")
+    if verbose: print(subpops, "\n")
     
     print(f"------- Filtering VCF at QUAL={qualflt} and missingness proportion of {missingfltprop} -------")
     #apply quality filters
@@ -79,18 +97,11 @@ def readAndFilterVcf(path, chrom, qualflt=30, missingfltprop=0.6, plot=True):
     pos = allel.SortedIndex(vcf['variants/POS'].compress(passfilter, axis=0))
     depth = vcf['variants/DP'].compress(passfilter, axis=0)
     print(f"After QUAL filter, {passfilter.sum()} SNPs retained out of {passfilter.shape[0]} for chromosome {chrom}")
-    
-    #plot histogram of QUAL values
-    if plot is True:
-        print("Plotting histogram of QUAL scores, with extreme outliers removed")
-        fltqual = qual[~is_outlier(qual)]
-        plt = sns.distplot(fltqual)
-        plt.figure.savefig(f"../../results/variants/qc/qual.{chrom}.hist.png")
-    
+      
     #missingness filters 
     ac = geno.count_alleles()
     snpcounts = ac.sum(axis=1)
-    missingflt = snpcounts.max()*missingfltprop # must have at least 2/3rds alleles present
+    missingflt = snpcounts.max()*missingfltprop # must have at least 1/p alleles present
     missingness_flt = snpcounts >= missingflt
     geno = geno.compress(missingness_flt, axis=0)
     pos = pos[missingness_flt]
@@ -160,3 +171,78 @@ def meanPBS(ac1, ac2, ac3, window_size, normalise):
     _, se, stats = allel.stats.misc.jackknife(pbs, statistic=lambda n: np.mean(n))
     
     return(meanpbs, se, pbs, stats)
+
+def plot_pca_coords(coords, model, pc1, pc2, ax, sample_population):
+        sns.despine(ax=ax, offset=5)
+        x = coords[:, pc1]
+        y = coords[:, pc2]
+        for pop in populations:
+            flt = (sample_population == pop)
+            ax.plot(x[flt], y[flt], marker='o', linestyle=' ', color=pop_colours[pop], 
+                    label=pop, markersize=6, mec='k', mew=.5)
+        ax.set_xlabel('PC%s (%.1f%%)' % (pc1+1, model.explained_variance_ratio_[pc1]*100))
+        ax.set_ylabel('PC%s (%.1f%%)' % (pc2+1, model.explained_variance_ratio_[pc2]*100))
+
+def fig_pca(coords, model, title,path, sample_population=None):
+        if sample_population is None:
+            sample_population = samples.samples.values
+        # plot coords for PCs 1 vs 2, 3 vs 4
+        fig = plt.figure(figsize=(10, 5))
+        ax = fig.add_subplot(1, 2, 1)
+        plot_pca_coords(coords, model, 0, 1, ax, sample_population)
+        ax = fig.add_subplot(1, 2, 2)
+        plot_pca_coords(coords, model, 2, 3, ax, sample_population)
+        ax.legend(bbox_to_anchor=(1, 1))
+        fig.suptitle(title, y=1.02)
+        
+        fig.savefig(path, bbox_inches='tight', dpi=300)
+
+def pca(geno, chrom, dataset, populations, prune=True, scaler=None):
+    if prune is True:
+        geno = geno.to_n_alt()
+        gn = ld_prune(geno, size=500, step=200,threshold=0.2)
+    else:
+        gn = geno.to_n_alt()
+        
+    coords1, model1 = allel.pca(gn, n_components=10, scaler=scaler)
+
+    fig_pca(coords1, model1, f"PCA-{chrom}-{dataset}", f"results/variants/plots/PCA-{chrom}-{dataset}", sample_population=populations)
+
+
+
+#### Garuds G12 ####
+# Instead of haps.discrete_frequencies() in allel.garuds_h() which does not allow for differences between multi-locus genotypes
+
+def cluster_G12(gnalt, cut_height=0.1, metric='euclidean'):
+    
+    #cluster the genotypes in the window
+    dist = scipy.spatial.distance.pdist(gnalt.T, metric=metric)
+    if metric in {'hamming', 'jaccard'}:
+        # convert distance to number of SNPs, easier to interpret
+        dist *= gnalt.shape[0]
+
+    Z = scipy.cluster.hierarchy.linkage(dist, method='single')
+
+    cut = scipy.cluster.hierarchy.cut_tree(Z, height=cut_height)[:, 0]
+    cluster_sizes = np.bincount(cut)
+    clusters = [np.nonzero(cut == i)[0] for i in range(cut.max() + 1)]
+    
+    #get freq of clusters and sort by largest freq
+    f = cluster_sizes/gnalt.shape[1]
+    f = np.sort(f)[::-1]
+    
+    #calculate g12
+    g12 = np.sum(f[:2])**2 + np.sum(f[2:]**2)
+    
+    return(g12)
+
+def garuds_G12(gnalt, pos, cut_height=10, window_size=1000, save=False, name=None, metric='euclidean'):
+    
+    g12 = allel.moving_statistic(gnalt, cluster_G12, size=window_size, metric=metric, cut_height=cut_height)
+    midpoint = allel.moving_statistic(pos, np.median, size=window_size)
+    
+    plt.figure(figsize=[20,10])
+    sns.scatterplot(midpoint, g12)
+    plt.title("G12 clustered BFgam")
+    plt.show()
+    if save: plt.savefig(f"{name}.png")
