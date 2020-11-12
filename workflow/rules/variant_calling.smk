@@ -99,7 +99,7 @@ rule GenerateFreebayesParams:
     output:
         bamlist = "resources/bam.list",
         pops = "resources/populations.tsv",
-        regions = expand("resources/regions/genome.{chrom}.region.{i}.bed", chrom=config['chroms'], i = np.arange(config['chunks']))
+        regions = expand("resources/regions/genome.{chrom}.region.{i}.bed", chrom=config['chroms'], i = chunks)
     params:
         metadata = config['samples'],
         chroms = config['chroms'],
@@ -117,7 +117,9 @@ rule VariantCallingFreebayes:
 		samples = "resources/bam.list",
 		regions = "resources/regions/genome.{chrom}.region.{i}.bed"
 	output:
-		temp("results/variants/vcfs/variants.{chrom}.{i}.vcf")
+		temp("results/variants/vcfs/{chrom}/variants.{i}.vcf")
+#	wildcard_constraints: 
+#		i = "\d{1,2}"
 	log:
 		"logs/freebayes/{chrom}.{i}.log"
 	params:
@@ -130,7 +132,7 @@ rule VariantCallingFreebayes:
 
 rule ConcatVCFs:
     input:
-        calls = expand("results/variants/vcfs/variants.{{chrom}}.{i}.vcf", i=np.arange(config['chunks']))
+        calls = expand("results/variants/vcfs/{{chrom}}/variants.{i}.vcf", i=chunks)
     output:
         "results/variants/vcfs/variants.{chrom}.vcf"
     log:
