@@ -13,3 +13,18 @@ rule FastQC:
 		outdir="--outdir resources/reads/qc"
 	wrapper:
 		"0.65.0/bio/fastqc"
+
+rule Coverage:
+    input:
+	     "resources/alignments/{sample}.bam"
+    output:
+	     "resources/alignments/coverage/{sample}.mosdepth.summary.txt"
+    log:
+	     "logs/mosdepth/{sample}.log"
+    conda:
+	     "../envs/variants.yaml"
+    params:
+	     prefix = "resources/alignments/coverage/{sample}"
+	threads:4
+    shell:
+	     "mosdepth --threads {threads} --fast-mode --no-per-base {params.prefix} {input}"
