@@ -30,6 +30,7 @@ rule all:
 #        expand("resources/reads/qc/{sample}_{n}_fastqc.html", sample=samples, n=[1,2]),
         "results/genediff/RNA-Seq_diff.xlsx",
         "results/isoformdiff/RNA-Seq_isoformdiff.xlsx",
+        expand("resources/alignments/coverage/{sample}.mosdepth.summary.txt", sample=samples)
         expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
         "results/variants/Fst.tsv",
         expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts']),
