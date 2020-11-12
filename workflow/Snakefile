@@ -33,7 +33,7 @@ rule all:
         expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
         "results/variants/Fst.tsv",
         expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts']),
-        expand("results/variants/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset']),
+        expand("results/variants/plots/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset']),
         "results/RNA-Seq-full.xlsx"
 
 
