@@ -30,12 +30,12 @@ rule all:
 #        expand("resources/reads/qc/{sample}_{n}_fastqc.html", sample=samples, n=[1,2]),
         DiffExp = "results/genediff/RNA-Seq_diff.xlsx",
         DiffExpIsoform = "results/isoformdiff/RNA-Seq_isoformdiff.xlsx",
-        Coverage = expand("resources/alignments/coverage/{sample}.mosdepth.summary.txt", sample=samples)
+        Coverage = expand("resources/alignments/coverage/{sample}.mosdepth.summary.txt", sample=samples),
         annotatedVCFs = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
         Fst = "results/variants/Fst.tsv",
         diffSNPs = expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts']),
         variantPCA = expand("results/variants/plots/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset']),
-        AIMs = "results/variants/AIMs/AIMs_summary.tsv" if config['AIMs']['activate'],
+        AIMs = "results/variants/AIMs/AIMs_summary.tsv",
         Fullxlsx = "results/RNA-Seq-full.xlsx"
 
 

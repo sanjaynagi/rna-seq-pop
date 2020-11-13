@@ -82,14 +82,15 @@ rule IndexBams:
     wrapper:
         "0.65.0/bio/samtools/index"
 
-
-
 rule GenomeIndex:
     input:
          ref = config['ref']['genome']
     output:
          idx = config['ref']['genome'] + ".fai"
     shell: "samtools faidx {input.ref}"
+
+chunks = np.arange(1, config['chunks'])
+
 
 rule GenerateFreebayesParams:
     input:
@@ -118,8 +119,6 @@ rule VariantCallingFreebayes:
 		regions = "resources/regions/genome.{chrom}.region.{i}.bed"
 	output:
 		temp("results/variants/vcfs/{chrom}/variants.{i}.vcf")
-#	wildcard_constraints: 
-#		i = "\d{1,2}"
 	log:
 		"logs/freebayes/{chrom}.{i}.log"
 	params:
