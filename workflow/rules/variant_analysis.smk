@@ -152,3 +152,24 @@ rule Venn:
         percentile=0.05
    script:
        "../scripts/venn.py"
+
+if config['AIMs']['activate']:
+    rule AIMs:
+        input:
+            vcf = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
+            samples = config['samples']
+        output:
+            AIMs = "results/variants/AIMs/AIMs_summary.tsv",
+            AIMs_fig = "results/variants/AIMs/AIM_fraction_overall.png",
+            AIMs_gamb = "results/variants/AIMs/AIMs_gambiae.tsv",
+            AIMs_colu = "results/variants/AIMs/AIMs_coluzzii.tsv"
+        log:
+            "logs/AIMs/AIMs.log"
+        conda:
+            "../envs/fstpca.yaml"
+        params:
+            chroms = config['chroms'],
+            missingprop = 0.5,
+            qualflt = 0.30
+        script:
+            "../scripts/AncestryInformativeMarkers.py"

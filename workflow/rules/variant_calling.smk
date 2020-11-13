@@ -145,7 +145,7 @@ rule ConcatVCFs:
 
 rule snpEffDbDownload:
     output:
-        touch("workflow/scripts/snpeff/db.dl")
+        touch("workflow/scripts/snpEff/db.dl")
     log:
         "logs/snpEff/snpeff_download.log"
     params:
