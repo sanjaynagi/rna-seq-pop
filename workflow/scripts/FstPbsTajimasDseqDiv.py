@@ -38,7 +38,8 @@ comparisons = [list(row) for i,row in comparisons.iterrows()]
 
 print(f"The pairwise comparisons for Fst are {comparisons}")
 
-fstpbsbychrom={}
+fstbychrom={}
+if pbs: pbsbychrom={}
 tajdbychrom={}
 gdivbychrom = {}
 
@@ -48,7 +49,7 @@ for chrom in chroms:
     path = f"results/variants/vcfs/annot.variants.{chrom}.vcf.gz"
     # function to read in vcfs and associated SNP data
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops =  readAndFilterVcf(path=path,
-                                                               chrom=chrom,
+                                                               chrom=chrom, samples=samples,
                                                                qualflt=30,
                                                                missingfltprop=missingprop,
                                                                plot=False)
@@ -77,7 +78,7 @@ for chrom in chroms:
         nsnps = gene_bool.sum()
 
         # if there are less than 3 snps in this gene then skip to next in loop
-        if nsnps < 3:
+        if nsnps < 2:
             continue
 
         # store number of snps per gene
@@ -92,7 +93,7 @@ for chrom in chroms:
             ac2 = acsubpops[comp2].compress(gene_bool, axis=0)
 
             fst_per_comp[name], se_per_comp[name],_,_= allel.average_hudson_fst(ac1, ac2, blen=1)
-            fst_per_comp[name] = stats.zscore(fst_per_comp[name], nan_policy='omit')
+         #  fst_per_comp[name] = stats.zscore(fst_per_comp[name], nan_policy='omit') Need to implement z-score transformation
 
         # tajimas d and sequence diversity per gene for each subpop(i.e treatment)
         for subpop in subpops:
