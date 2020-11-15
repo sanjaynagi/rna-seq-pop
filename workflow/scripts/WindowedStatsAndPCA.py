@@ -4,21 +4,13 @@
 A script to calculate various windowed population genetic statistics and PCA 
 """
 
-import pandas as pd
-import numpy as np
-import allel
-from scipy import stats
-import seaborn as sns
-import zarr
-import matplotlib
-import matplotlib.pyplot as plt
 from tools import *
 
 dataset = snakemake.params['dataset']
 samples = pd.read_csv(snakemake.input['samples'], sep="\t")
 samples = samples.sort_values(by='species')
 chroms = snakemake.params['chroms']
-comparisons_path = snakemake.input['comparisons']
+comparisons_path = snakemake.input['DEcontrasts']
 pbs = snakemake.params['pbs']
 pbscomps = snakemake.params['pbscomps']
 qualflt = snakemake.params['qualflt']
@@ -51,7 +43,7 @@ snpeff = {}
 
 for chrom in chroms:
 
-    path = f"results/variants/annot.variants.{chrom}.vcf.gz"
+    path = f"results/variants/vcfs/annot.variants.{chrom}.vcf.gz"
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, populations = readAndFilterVcf(path=path,
                                                            chrom=chrom,
                                                            samples=samples,
@@ -72,7 +64,7 @@ for chrom in chroms:
 
     for sample in samples['samples']:
 
-        bool_ = sample == pops
+        bool_ = sample == populations
         gn = geno.compress(bool_, axis=1)
 
         res = map(isnotmissing, gn[:,0])
@@ -126,7 +118,7 @@ for chrom in chroms:
     #### PCA #####
     d={}
     for name, inds in subpops.items():
-        for n in range(4):
+        for n in range(len(list(subpops.values())[0])):
             p = inds[n]
             d[p] = name
 
@@ -135,9 +127,8 @@ for chrom in chroms:
     treatment_indices = treatment_indices.rename(columns = {'index':'sample_index', 0:"name"})
 
     pop_colours = get_colour_dict(treatment_indices['name'], "viridis")
-
     print(f"\n Performing PCA on {dataset} chromosome {chrom}")
-    pca(geno, chrom, dataset, treatment_indices, prune=True, scaler=None)
+    pca(geno, chrom, dataset, populations, samples, pop_colours, prune=True, scaler=None)
 
     ######## Variant density ####
     plot_density(pos, window_size=100000, title=f"Variant Density chromosome {chrom}", path=f"results/variants/plots/{dataset}_SNPdensity_{chrom}.png")
@@ -177,7 +168,7 @@ for chrom in chroms:
 
 
         print(f"\n{pop}, {chrom}, inbreeding coef = ", np.mean(coef))
-        print(f"{pop},{chrom}, ld (rogers huff r2) = ", ld, "\n")
+        print(f"{pop},{chrom}, ld (rogers huff r2) = ", np.nanmean(ld), "\n")
         print(f"{pop},{chrom}, sequence diversity = ", seqdiv, "\n")
 
     coefdictchrom[chrom] = dict(coefdict)

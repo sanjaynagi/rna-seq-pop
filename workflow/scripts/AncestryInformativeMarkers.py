@@ -4,14 +4,6 @@
 A script to determine the proportion of Anopheles gambiae/coluzzii alleles at Ancestry Informative Markers across the genome
 """
 
-import pandas as pd
-import numpy as np
-import allel
-from scipy import stats
-import seaborn as sns
-import zarr
-import matplotlib
-import matplotlib.pyplot as plt
 from tools import *
 
 
@@ -32,7 +24,7 @@ all_colu = defaultdict(list)
 for chrom in chroms:
 
     # read in and filter data
-    path = f"results/variants/annot.variants.{chrom}.vcf.gz"
+    path = f"results/variants/vcfs/annot.variants.{chrom}.vcf.gz"
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops =  readAndFilterVcf(path=path,
                                                                chrom=chrom,
                                                                samples=samples,
@@ -133,9 +125,13 @@ df = df1.merge(df2, left_index=True, right_index=True)
 df.to_csv(f"results/variants/AIMs/AIMs_summary.tsv", sep="\t", index=True)
 
 
+
+
 #### Seaborn stacked barplots, overall AIM fraction ####
 sns.set_style("white")
 sns.set_context({"figure.figsize":(24,10)})
+
+total = df['AIM_fraction_coluzzii'] + df['AIM_fraction_gambiae']
 
 sns.barplot(x = df.index, y=total, color="Red")
 bottom_plot = sns.barplot(x = df.index, y =df['AIM_fraction_gambiae'], color = "#0000A3")

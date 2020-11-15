@@ -1,9 +1,11 @@
 #tools.py
 import allel
+import zarr
 import numpy as np
-import pandas as pd 
+from scipy import stats
+import pandas as pd
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 from functools import partial, reduce
@@ -172,32 +174,33 @@ def meanPBS(ac1, ac2, ac3, window_size, normalise):
     
     return(meanpbs, se, pbs, stats)
 
-def plot_pca_coords(coords, model, pc1, pc2, ax, sample_population):
+def plot_pca_coords(coords, model, pc1, pc2, ax, sample_population, samples, pop_colours):
         sns.despine(ax=ax, offset=5)
         x = coords[:, pc1]
         y = coords[:, pc2]
-        for pop in populations:
+        for pop in sample_population:
+            treatment = samples[samples['samples'] == pop]['treatment'].values[0]
             flt = (sample_population == pop)
-            ax.plot(x[flt], y[flt], marker='o', linestyle=' ', color=pop_colours[pop], 
-                    label=pop, markersize=6, mec='k', mew=.5)
+            ax.plot(x[flt], y[flt], marker='o', linestyle=' ', color=pop_colours[treatment], 
+                    label=treatment, markersize=6, mec='k', mew=.5)
         ax.set_xlabel('PC%s (%.1f%%)' % (pc1+1, model.explained_variance_ratio_[pc1]*100))
         ax.set_ylabel('PC%s (%.1f%%)' % (pc2+1, model.explained_variance_ratio_[pc2]*100))
 
-def fig_pca(coords, model, title,path, sample_population=None):
+def fig_pca(coords, model, title, path, samples, pop_colours,sample_population=None):
         if sample_population is None:
             sample_population = samples.samples.values
         # plot coords for PCs 1 vs 2, 3 vs 4
         fig = plt.figure(figsize=(10, 5))
         ax = fig.add_subplot(1, 2, 1)
-        plot_pca_coords(coords, model, 0, 1, ax, sample_population)
+        plot_pca_coords(coords, model, 0, 1, ax, sample_population, samples, pop_colours)
         ax = fig.add_subplot(1, 2, 2)
-        plot_pca_coords(coords, model, 2, 3, ax, sample_population)
+        plot_pca_coords(coords, model, 2, 3, ax, sample_population, samples, pop_colours)
         ax.legend(bbox_to_anchor=(1, 1))
         fig.suptitle(title, y=1.02)
         
         fig.savefig(path, bbox_inches='tight', dpi=300)
 
-def pca(geno, chrom, dataset, populations, prune=True, scaler=None):
+def pca(geno, chrom, dataset, populations, samples, pop_colours, prune=True, scaler=None):
     if prune is True:
         geno = geno.to_n_alt()
         gn = ld_prune(geno, size=500, step=200,threshold=0.2)
@@ -206,7 +209,7 @@ def pca(geno, chrom, dataset, populations, prune=True, scaler=None):
         
     coords1, model1 = allel.pca(gn, n_components=10, scaler=scaler)
 
-    fig_pca(coords1, model1, f"PCA-{chrom}-{dataset}", f"results/variants/plots/PCA-{chrom}-{dataset}", sample_population=populations)
+    fig_pca(coords1, model1, f"PCA-{chrom}-{dataset}", f"results/variants/plots/PCA-{chrom}-{dataset}", samples, pop_colours, sample_population=populations)
 
 
 

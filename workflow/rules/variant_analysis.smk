@@ -81,26 +81,28 @@ rule DifferentialSNPs:
     script:
          "../scripts/differentialSNPs.R"
 
+
 rule WindowedStatisticsAndPCA:
     input:
         vcf = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
-        samples = config['samples']
+        samples = config['samples'],
+        DEcontrasts = "resources/DE.contrast.list", 
+        gff = config['ref']['gff']
     output:
         PCAfig = expand("results/variants/plots/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset']),
         SNPdensityFig = expand("results/variants/plots/{dataset}_SNPdensity_{chrom}.png", chrom=config['chroms'], dataset=config['dataset']),
         inbreedingCoef = "results/variants/stats/inbreedingCoef.tsv",
         inbreedingCoefMean = "results/variants/stats/inbreedingCoef.mean.tsv",
-        SequenceDiversity = "results/variants/stats/SeqeunceDiversity.tsv",
+        SequenceDiversity = "results/variants/stats/SequenceDiversity.tsv",
         LD = "results/variants/stats/LD.tsv",
         LDmean = "results/variants/stats/LD.mean.tsv"
     log:
-        "logs/pca/pca.log"
+        "logs/variantStatistics/stats.log"
     conda:
         "../envs/fstpca.yaml"
     params:
         dataset = config['dataset'],
         chroms = config['chroms'],
-        comparisons = config['contrasts'],
         pbs = config['pbs']['activate'],
         pbscomps = config['pbs']['contrasts'],
         missingprop = 0.98,
@@ -157,7 +159,8 @@ if config['AIMs']['activate']:
     rule AIMs:
         input:
             vcf = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
-            samples = config['samples']
+            samples = config['samples'],
+            aims_zarr = config['AIMs']['path'],
         output:
             AIMs = "results/variants/AIMs/AIMs_summary.tsv",
             AIMs_fig = "results/variants/AIMs/AIM_fraction_overall.png",
