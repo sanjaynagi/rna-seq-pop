@@ -1,8 +1,6 @@
 channels:
   - bioconda
   - conda-forge
+  - anaconda
 dependencies:
-  - hisat2
-  - samtools
-  - freebayes
-  - bcftools
+  - mosdepth=0.3.1
