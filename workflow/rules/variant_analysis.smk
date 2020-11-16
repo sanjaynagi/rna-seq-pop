@@ -110,7 +110,7 @@ rule WindowedStatisticsAndPCA:
     script:
         "../scripts/WindowedStatsAndPCA.py"
 
-rule Fst_PBS_TajimaD_SeqDiv_per_gene:
+rule FstPbsTajimasDSeqDivPerGene:
     input:
         samples = config['samples'],
         gff = config['ref']['gff'],
@@ -160,7 +160,8 @@ if config['AIMs']['activate']:
         input:
             vcf = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
             samples = config['samples'],
-            aims_zarr = config['AIMs']['path'],
+            aims_zarr_gambcolu = config['AIMs']['gambcolu'],
+            aims_zarr_arab = config['AIMs']['arab']
         output:
             AIMs = "results/variants/AIMs/AIMs_summary.tsv",
             AIMs_fig = "results/variants/AIMs/AIM_fraction_overall.png",
