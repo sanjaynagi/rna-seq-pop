@@ -39,9 +39,9 @@ def isnotmissing(gn):
 #initialise dicts
 total_snps_per_chrom = {}
 snps_per_gene_allchroms = {}
-snpefflist = []
+snpeffdict = {}
 
-for chrom in chroms:
+for i,chrom in enumerate(chroms):
 
     path = f"results/variants/vcfs/annot.variants.{chrom}.vcf.gz"
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, populations = readAndFilterVcf(path=path,
@@ -51,7 +51,7 @@ for chrom in chroms:
                                                            missingfltprop=missingprop)
     
     total_snps_per_chrom[chrom] = geno.shape[0]
-    snpefflist[chrom] = snpeff[1].value_counts(normalize=True)
+    snpeffdict[chrom] = snpeff[1].value_counts(normalize=True)
 
     ######## SNP counts per gene ########
     # subset gff to appropriate chrom
@@ -206,5 +206,5 @@ genesNoSNPs = pd.DataFrame((snpcountsdf == 0).sum(axis=0), columns=['Genes with 
 genesNoSNPs.to_csv("results/variants/stats/nGenesZeroSNPs.tsv", sep="\t", index=True)
 
 # snpEff
-snpeffdf = pd.concat(snpeff)
+snpeffdf = pd.concat(snpeffdict)
 snpeffdf.to_csv("results/variants/stats/snpEffProportions.tsv", sep="\t", index=True)
