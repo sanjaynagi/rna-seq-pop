@@ -22,7 +22,7 @@ rule Coverage:
     log:
         "logs/mosdepth/{sample}.log"
     conda:
-        "../envs/variants.yaml"
+        "../envs/depth.yaml"
     params:
         prefix = "resources/alignments/coverage/{sample}"
     threads:4
