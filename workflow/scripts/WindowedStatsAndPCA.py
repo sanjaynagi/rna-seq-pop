@@ -39,7 +39,7 @@ def isnotmissing(gn):
 #initialise dicts
 total_snps_per_chrom = {}
 snps_per_gene_allchroms = {}
-snpeff = {}
+snpefflist = []
 
 for chrom in chroms:
 
@@ -51,7 +51,7 @@ for chrom in chroms:
                                                            missingfltprop=missingprop)
     
     total_snps_per_chrom[chrom] = geno.shape[0]
-    snpeff[chrom] = snpeff[1].value_counts(normalize=True)
+    snpefflist[chrom] = snpeff[1].value_counts(normalize=True)
 
     ######## SNP counts per gene ########
     # subset gff to appropriate chrom
