@@ -133,7 +133,7 @@ rule FstPbsTajimasDSeqDivPerGene:
         missingprop = 0.8,
         gffchromprefix=config['ref']['str_remove'] #in case like the aedes genome, there is an annoying before each chromosome
     script:
-        "../scripts/FstPBSTajimasDseqDiv.py"
+        "../scripts/FstPbsTajimasDseqDiv.py"
 
 rule Venn:
    input:
@@ -174,6 +174,6 @@ if config['AIMs']['activate']:
         params:
             chroms = config['chroms'],
             missingprop = 0.5,
-            qualflt = 0.30
+            qualflt = 30
         script:
             "../scripts/AncestryInformativeMarkers.py"
