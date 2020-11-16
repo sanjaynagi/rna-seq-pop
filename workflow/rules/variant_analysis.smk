@@ -1,5 +1,5 @@
-################ 	Variant analysis 	##################
-# Scikit-allel () ,                                               		
+################ Variant analysis ##################
+# Scikit-allel () ,                                      
 # samtools mpileup (Li et al., 2009)                                             
 # kissDE (Kim et al., 2018)   
 
@@ -105,7 +105,7 @@ rule WindowedStatisticsAndPCA:
         chroms = config['chroms'],
         pbs = config['pbs']['activate'],
         pbscomps = config['pbs']['contrasts'],
-        missingprop = 0.98,
+        missingprop = 0.8,
         qualflt = 30
     script:
         "../scripts/WindowedStatsAndPCA.py"

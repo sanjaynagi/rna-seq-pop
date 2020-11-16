@@ -41,6 +41,10 @@ total_snps_per_chrom = {}
 snps_per_gene_allchroms = {}
 snpeffdict = {}
 
+coefdictchrom= {}
+seqdivdictchrom = {}
+ldictchrom = {}
+
 for i,chrom in enumerate(chroms):
 
     path = f"results/variants/vcfs/annot.variants.{chrom}.vcf.gz"
@@ -49,7 +53,7 @@ for i,chrom in enumerate(chroms):
                                                            samples=samples,
                                                            qualflt=qualflt,
                                                            missingfltprop=missingprop)
-    
+
     total_snps_per_chrom[chrom] = geno.shape[0]
     snpeffdict[chrom] = snpeff[1].value_counts(normalize=True)
 
@@ -82,9 +86,9 @@ for i,chrom in enumerate(chroms):
             snps_per_sample[sample] = presentSNPs.sum()
 
         snps_per_gene[ID] = dict(snps_per_sample)
-  
+
     snps_per_gene_allchroms[chrom] = pd.DataFrame.from_dict(flip_dict(snps_per_gene))
-    
+
     ######## pbs windowed ########
     if pbs:
         for pbscomp in pbscomps:
@@ -113,7 +117,6 @@ for i,chrom in enumerate(chroms):
     #pattersonf3(acsubpops['gambiaeCont'], acsubpops['coluzziiCont'], acsubpops['coluzziiDelta'], pos, f"gambcont_{chrom}")
     #pattersonf3(acsubpops['gambiaeDelta'], acsubpops['coluzziiCont'], acsubpops['coluzziiDelta'], pos, f"gambdelta_{chrom}")
     #pattersonf3(acsubpops['coluzziiDelta'], acsubpops['gambiaeCont'], acsubpops['gambiaeDelta'], pos, f"coludelta_{chrom}")
-    
 
     #### PCA #####
     d={}
@@ -138,18 +141,15 @@ for i,chrom in enumerate(chroms):
     seqdivdict = {}
     ldict = {}
 
-    coefdictchrom= {}
-    seqdivdictchrom = {}
-    ldictchrom = {}
     allcoef = defaultdict(list)
     allld = defaultdict(list)
 
     for pop in samples.treatment.unique():
-        
+
         gn = geno.take(subpops[pop], axis=1)
         bial_ = acsubpops[pop].is_biallelic()
         gnalt = gn.compress(bial_, axis=0).to_n_alt()
-        
+
         # inbreeding coefficient
         coef = allel.moving_statistic(gn,statistic=allel.inbreeding_coefficient, 
                                             size=1000, step=100)
@@ -159,17 +159,19 @@ for i,chrom in enumerate(chroms):
 
         # linkage
         ld = allel.rogers_huff_r(gnalt)
-        ldict[pop] = np.mean(ld)
         allld[pop].append(ld)
+	# remove nan and infs to calculate average LD
+        ld = ld[~np.logical_or(np.isinf(ld),
+                               np.isnan(ld))]
+        ldict[pop] = np.nanmean(ld)
 
-        # sequence diversity 
+        # sequence diversity
         seqdiv = allel.sequence_diversity(pos, acsubpops[pop])
         seqdivdict[pop] = seqdiv
 
-
-        print(f"\n{pop}, {chrom}, inbreeding coef = ", np.mean(coef))
-        print(f"{pop},{chrom}, ld (rogers huff r2) = ", np.nanmean(ld), "\n")
-        print(f"{pop},{chrom}, sequence diversity = ", seqdiv, "\n")
+        print("\n", f"{pop}, {chrom}, inbreeding coef = ", np.mean(coef))
+        print(f"{pop},{chrom}, ld (rogers huff r2) = ", np.nanmean(ld))
+        print(f"{pop},{chrom}, sequence diversity = ", seqdiv)
 
     coefdictchrom[chrom] = dict(coefdict)
     seqdivdictchrom[chrom] = dict(seqdivdict)
