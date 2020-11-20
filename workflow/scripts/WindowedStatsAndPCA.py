@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-A script to calculate various windowed population genetic statistics and PCA 
+A script to calculate various windowed population genetic statistics and PCA
 """
 
 from tools import *
@@ -16,7 +16,7 @@ pbscomps = snakemake.params['pbscomps']
 qualflt = snakemake.params['qualflt']
 missingprop = snakemake.params['missingprop']
 gffpath = snakemake.input['gff']
-
+linkage = snakemake.params['LD']
 
 # Read in list of contrasts
 comparisons = pd.read_csv(comparisons_path)
@@ -96,14 +96,14 @@ for i,chrom in enumerate(chroms):
 
             print(f"Calculating PBS values in sliding window for {name}\n")
 
-            pbs = allel.pbs(acsubpops[pbscomp[0]], 
+            pbsArray = allel.pbs(acsubpops[pbscomp[0]], 
                             acsubpops[pbscomp[1]], 
                             acsubpops[pbscomp[2]], 
                             window_size=1000, window_step=100, normed=True)
             midpoint = allel.moving_statistic(pos, np.mean, 1000, step=100)
 
             plt.figure(figsize=[20,8])
-            sns.lineplot(midpoint, pbs)
+            sns.lineplot(midpoint, pbsArray)
             plt.title(f"PBS {chrom} {name}")
             plt.savefig(f"results/variants/plots/PBS_{name}.{chrom}.line.png")
             plt.close()
@@ -158,43 +158,46 @@ for i,chrom in enumerate(chroms):
         allcoef[pop].append(np.array(coef))
 
         # linkage
-        ld = allel.rogers_huff_r(gnalt)
-        allld[pop].append(ld)
-	# remove nan and infs to calculate average LD
-        ld = ld[~np.logical_or(np.isinf(ld),
+        if linkage is True:
+            ld = allel.rogers_huff_r(gnalt)
+            allld[pop].append(ld)
+	    # remove nan and infs to calculate average LD
+            ld = ld[~np.logical_or(np.isinf(ld),
                                np.isnan(ld))]
-        ldict[pop] = np.nanmean(ld)
+            ldict[pop] = np.nanmean(ld)
 
         # sequence diversity
         seqdiv = allel.sequence_diversity(pos, acsubpops[pop])
         seqdivdict[pop] = seqdiv
 
         print("\n", f"{pop}, {chrom}, inbreeding coef = ", np.mean(coef))
-        print(f"{pop},{chrom}, ld (rogers huff r2) = ", np.nanmean(ld))
+        if linkage is True: print(f"{pop},{chrom}, ld (rogers huff r2) = ", np.nanmean(ld))
         print(f"{pop},{chrom}, sequence diversity = ", seqdiv)
 
     coefdictchrom[chrom] = dict(coefdict)
     seqdivdictchrom[chrom] = dict(seqdivdict)
-    ldictchrom[chrom] = dict(ldict)
+    if linkage is True: ldictchrom[chrom] = dict(ldict)
 
 coefdictchrom = flip_dict(coefdictchrom)
 seqdivdictchrom= flip_dict(seqdivdictchrom)
-ldictchrom = flip_dict(ldictchrom)
+if linkage is True:
+    ldictchrom = flip_dict(ldictchrom)
+    pd.DataFrame.from_dict(ldictchrom).to_csv("results/variants/stats/LD.tsv", sep="\t", index=True)
 
 #get AIM fractions per chromosome
 pd.DataFrame.from_dict(coefdictchrom).to_csv("results/variants/stats/inbreedingCoef.tsv", sep="\t", index=True)
 pd.DataFrame.from_dict(seqdivdictchrom).to_csv("results/variants/stats/SequenceDiversity.tsv", sep="\t", index=True)
-pd.DataFrame.from_dict(ldictchrom).to_csv("results/variants/stats/LD.tsv", sep="\t", index=True)
 
 # get genome wide average AIM fractions
 for k in allcoef.keys():
     allld[k] = np.nanmean(allld[k])
     allcoef[k] = np.nanmean(allcoef[k])
 
-df1 = pd.DataFrame.from_dict(allld, orient='index',columns=['LinkageDisequilibrium'])
-df2 = pd.DataFrame.from_dict(allcoef, orient='index', columns=['InbreedingCoefficient'])
+if linkage is True:
+    df1 = pd.DataFrame.from_dict(allld, orient='index',columns=['LinkageDisequilibrium'])
+    df1.to_csv(f"results/variants/stats/LD.mean.tsv", sep="\t", index=True)
 
-df1.to_csv(f"results/variants/stats/LD.mean.tsv", sep="\t", index=True)
+df2 = pd.DataFrame.from_dict(allcoef, orient='index', columns=['InbreedingCoefficient'])
 df2.to_csv(f"results/variants/stats/inbreedingCoef.mean.tsv", sep="\t", index=True)
 
 ### Total SNPs per chrom, all samples
