@@ -70,7 +70,7 @@ for comp1,comp2 in comparisons:
     name = comp1 + "_" + comp2
     print(f"\n-------------- Venn Diagram for {name} --------------")
     de = pd.read_csv(f"results/genediff/{name}.csv")
-    fst = pd.read_csv("results/variants/Fst_PBS.tsv", sep="\t")
+    fst = pd.read_csv("results/variants/Fst.tsv", sep="\t")
     diffsnps = pd.read_csv(f"results/variants/diffsnps/{name}.sig.kissDE.tsv", sep="\t")
     #compare sig DE genes and top 5% fst genes?
     #get sig up and down diffexp genes
@@ -79,7 +79,7 @@ for comp1,comp2 in comparisons:
     sigde_down = sigde[sigde['FC'] < 1]
 
     #take top 5% of fst genes
-    highfst = fst.nlargest(int(fst.shape[0]*percentile),f"{name}_Fst")
+    highfst = fst.nlargest(int(fst.shape[0]*percentile),f"{name}_zFst")
 
     #how many fst? how many sig de up and down?
     nfst = highfst.shape[0]
@@ -112,7 +112,8 @@ if pbs is True:
         name2 = pbscomp[2]+ "_" + pbscomp[1]
 
         de = pd.read_csv(f"results/genediff/{name2}.csv")
-        pbs = pd.read_csv("results/variants/Fst_PBS.tsv", sep="\t")
+        fst = pd.read_csv(f"results/variants/Fst.tsv", s="\t")
+        pbs = pd.read_csv("results/variants/PBS.tsv", sep="\t")
 
         # compare sig DE genes and top 5% fst/pbs genes?
         # get sig up and down diffexp genes
@@ -122,7 +123,7 @@ if pbs is True:
 
         # take top 5% of fst genes
         highpbs = pbs.nlargest(int(pbs.shape[0]*percentile),f"{name}PBS")
-        highfst = pbs.nlargest(int(pbs.shape[0]*percentile),f"{name2}_Fst")
+        highfst = pbs.nlargest(int(pbs.shape[0]*percentile),f"{name2}_zFst")
 
         # how many fst? how many sig de up and down?
         nfst = highfst.shape[0]
