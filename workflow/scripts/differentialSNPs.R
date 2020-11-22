@@ -16,7 +16,6 @@ contrasts = fread(snakemake@input[[3]], header = TRUE)
 comparisons = contrasts %>% separate(contrast, into = c("control", "case"), sep = "_")
 mincounts = snakemake@params[[3]]
 pval = snakemake@params[[4]]
-gffchromprefix = snakemake@params[[5]]
 
 gffpath = snakemake@input[[2]]
 #load gff with rtracklayer and filter to genes only 
@@ -28,7 +27,6 @@ gff = rtracklayer::import(gffpath) %>%
   arrange(chrom, start) %>% 
   as.data.table()
 #remove prefix for chrom column, so it matches the bed file 
-gff$chrom = str_remove(gff$chrom, gffchromprefix) #could be snakemake param if needed
 
 #for each contrast/comparison, perform differential SNP analysis 
 for (i in 1:nrow(comparisons)){
@@ -36,12 +34,15 @@ for (i in 1:nrow(comparisons)){
   control = comparisons$control[i]
   case = comparisons$case[i]
   
+  nrepscontrol =  sum(metadata$treatment %in% control)
+  nrepscase = sum(metadata$treatment %in% case)
+  
   samples = metadata[metadata$treatment %in% c(case, control)]$samples
   print(glue("Extracting allele tables for {case}, {control}"))
   
   sample_list = list()
   for (sample in samples){
-
+    
     chrom_list = list()
     for (chrom in chroms){
       #read in data 
@@ -97,19 +98,19 @@ for (i in 1:nrow(comparisons)){
   #remove snps that have a count across samples less than mincounts(100)
   counts = counts[counts$eventsName %in% summed$eventsName,]
   
-  conditionsde = c(rep(control, 3), rep(case,3))
+  conditionsde = c(rep(control, nrepscontrol), rep(case, nrepscase))
   #rename counts columns for kissde
-  colnames(counts) = colnames(counts) %>% 
-    str_replace("1", "rep1") %>% 
-    str_replace("2", "rep2") %>% 
-    str_replace("3", "rep3")
+  #colnames(counts) = colnames(counts) %>% 
+  #  str_replace("1", "rep1") %>% 
+  #  str_replace("2", "rep2") %>% 
+  #  str_replace("3", "rep3")
   #run kissde quality control
   print(glue("Running kissDE QC for {name}"))
   qualityControl(counts, conditionsde, storeFigs = glue("results/variants/diffsnps/kissDEfigs_{name}"))
   
   #Run kissde algorithm to find differentially expressed variants
   de_Vars = diffExpressedVariants(counts, conditions = conditionsde)                    
-
+  
   #parse results to more readable, filterable form 
   results = de_Vars[[1]] %>% separate(ID, into = c("chrom", "pos", "REF>ALT"), sep="_") %>% 
     mutate("pos" = as.numeric(pos), "chrom" = str_remove(chrom, "chr")) %>% 
@@ -129,12 +130,12 @@ for (i in 1:nrow(comparisons)){
                           by.y=c("chrom", "start", "end"),
                           type = "within",
                           nomatch = 0L)
-
+  
   #write to file
   print(glue("Writing {name} results to results/variants/diffsnps/"))
   results %>% fwrite(., glue("results/variants/diffsnps/{name}.normcounts.tsv"), sep="\t", row.names=FALSE)
   de_variants %>% dplyr::rename("GeneID" = "ID") %>% fwrite(., glue("results/variants/diffsnps/{name}.kissDE.tsv"), sep="\t", row.names=FALSE)
-      
+  
   de_variants %>% 
     filter(Adjusted_pvalue <= pval) %>% 
     dplyr::rename("GeneID" = "ID") %>%
