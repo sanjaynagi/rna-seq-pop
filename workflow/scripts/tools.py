@@ -1,4 +1,4 @@
-#tools.py
+# tools.py
 import allel
 import zarr
 import numpy as np
@@ -11,14 +11,20 @@ import seaborn as sns
 from functools import partial, reduce
 from collections import defaultdict
 
-#get indices of duplicate names
+# get indices of duplicate names
 def list_duplicates(seq):
+    """
+    This function will find duplicate records and record their index 
+    """
     tally = defaultdict(list)
     for i,item in enumerate(seq):
         tally[item].append(i)
     return (tally)
 
 def replace_with_dict2_generic(ar, dic, assume_all_present=False):
+    """
+    This function replaces values in a numpy array depending on a supplied dictionary
+    """
     # Extract out keys and values
     k = np.array(list(dic.keys()))
     v = np.array(list(dic.values()))
@@ -38,6 +44,9 @@ def replace_with_dict2_generic(ar, dic, assume_all_present=False):
         return vs[idx]
         
 def get_colour_dict(populations, palette="Set1"):
+    """
+    This function creates a colour palette for a provided list, returning a dict
+    """
 
     cmap = plt.get_cmap(palette, len(np.unique(populations)))    # PiYG
     colors = []
@@ -73,6 +82,10 @@ numbers = {
 }
 
 def readAndFilterVcf(path, chrom, samples, qualflt=30, missingfltprop=0.6, plot=True, verbose=False):
+
+    """
+    This function reads a VCF file, and filters it to a given quality and missingness proportion
+    """
     
     print(f"\n-------------- Reading VCF for chromosome {chrom} --------------")
     vcf = allel.read_vcf(path, 
@@ -131,6 +144,9 @@ def meanPBS(ac1, ac2, ac3, window_size, normalise):
     return(meanpbs, se, pbs, stats)
 
 def flip_dict(dict_):
+    """
+    Inverts a nested dictionary
+    """
     flipped = defaultdict(dict)
     for key, val in dict_.items():
         for subkey, subval in val.items():
@@ -138,6 +154,9 @@ def flip_dict(dict_):
     return(flipped)
 
 def ld_prune(gn, size, step, threshold=.1, n_iter=1):
+    """
+    Performs LD pruning, originally from Alistair Miles' blog. 
+    """
     for i in range(n_iter):
         loc_unlinked = allel.locate_unlinked(gn, size=size, step=step, threshold=threshold)
         n = np.count_nonzero(loc_unlinked)
@@ -165,14 +184,19 @@ def plot_density(pos, window_size, title, path):
     fig.savefig(path)
 
 def meanPBS(ac1, ac2, ac3, window_size, normalise):
-    #pbs per variant
+    # pbs per variant
     pbs = allel.pbs(ac1, ac2, ac3, window_size=window_size, normed=normalise)
-    #get average of all pbs values (will be per gene)
+    # get average of all pbs values (will be per gene)
     meanpbs = np.nanmean(pbs)
     
     _, se, stats = allel.stats.misc.jackknife(pbs, statistic=lambda n: np.mean(n))
     
     return(meanpbs, se, pbs, stats)
+
+def legend_without_duplicate_labels(ax, **kwargs):
+    handles, labels = ax.get_legend_handles_labels()
+    unique = [(h, l) for i, (h, l) in enumerate(zip(handles, labels)) if l not in labels[:i]]
+    ax.legend(*zip(*unique), **kwargs)
 
 def plot_pca_coords(coords, model, pc1, pc2, ax, sample_population, samples, pop_colours):
         sns.despine(ax=ax, offset=5)
@@ -182,7 +206,7 @@ def plot_pca_coords(coords, model, pc1, pc2, ax, sample_population, samples, pop
             treatment = samples[samples['samples'] == pop]['treatment'].values[0]
             flt = (sample_population == pop)
             ax.plot(x[flt], y[flt], marker='o', linestyle=' ', color=pop_colours[treatment], 
-                    label=treatment, markersize=6, mec='k', mew=.5)
+                    label=treatment, markersize=14, mec='k', mew=.5)
         ax.set_xlabel('PC%s (%.1f%%)' % (pc1+1, model.explained_variance_ratio_[pc1]*100))
         ax.set_ylabel('PC%s (%.1f%%)' % (pc2+1, model.explained_variance_ratio_[pc2]*100))
 
@@ -195,7 +219,7 @@ def fig_pca(coords, model, title, path, samples, pop_colours,sample_population=N
         plot_pca_coords(coords, model, 0, 1, ax, sample_population, samples, pop_colours)
         ax = fig.add_subplot(1, 2, 2)
         plot_pca_coords(coords, model, 2, 3, ax, sample_population, samples, pop_colours)
-        ax.legend(bbox_to_anchor=(1, 1))
+        legend_without_duplicate_labels(ax)
         fig.suptitle(title, y=1.02)
         
         fig.savefig(path, bbox_inches='tight', dpi=300)
