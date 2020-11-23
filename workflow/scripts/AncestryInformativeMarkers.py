@@ -8,7 +8,7 @@ from tools import *
 
 ### AIMS ###
 samples = pd.read_csv(snakemake.input['samples'], sep="\t")
-samples = samples.sort_values(by='species')
+samples = samples.sort_values(by='species').reset_index(drop=True)
 chroms = snakemake.params['chroms']
 qualflt = snakemake.params['qualflt']
 missingprop = snakemake.params['missingprop']

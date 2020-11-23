@@ -28,10 +28,17 @@ rule all:
         # The first rule should define the default target files
         # Subsequent target rules can be specified below. They should start with all_*.
 #        expand("resources/reads/qc/{sample}_{n}_fastqc.html", sample=samples, n=[1,2]),
+<<<<<<< HEAD
 #        DiffExp = "results/genediff/RNA-Seq_diff.xlsx",
 #        DiffExpIsoform = "results/isoformdiff/RNA-Seq_isoformdiff.xlsx",
 #        Coverage = expand("resources/alignments/coverage/{sample}.mosdepth.summary.txt", sample=samples),
 #        annotatedVCFs = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
+=======
+        DiffExp = "results/genediff/RNA-Seq_diff.xlsx",
+        DiffExpIsoform = "results/isoformdiff/RNA-Seq_isoformdiff.xlsx",
+#        Coverage = expand("resources/alignments/coverage/{sample}.mosdepth.summary.txt", sample=samples),
+        annotatedVCFs = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
+>>>>>>> c88ea68e9fe9a6cea3b13a3cea1485ee26dde2e7
         Fst = "results/variants/Fst.tsv",
         diffSNPs = expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts']),
         variantPCA = expand("results/variants/plots/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset']),
