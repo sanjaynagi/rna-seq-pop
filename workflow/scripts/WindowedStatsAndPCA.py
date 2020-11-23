@@ -16,7 +16,7 @@ pbscomps = snakemake.params['pbscomps']
 qualflt = snakemake.params['qualflt']
 missingprop = snakemake.params['missingprop']
 gffpath = snakemake.input['gff']
-
+linkage = snakemake.params['linkage']
 
 # Read in list of contrasts
 comparisons = pd.read_csv(comparisons_path)
@@ -158,12 +158,13 @@ for i,chrom in enumerate(chroms):
         allcoef[pop].append(np.array(coef))
 
         # linkage
-        ld = allel.rogers_huff_r(gnalt)
-        allld[pop].append(ld)
+        if linkage:
+            ld = allel.rogers_huff_r(gnalt)
+            allld[pop].append(ld)
 	# remove nan and infs to calculate average LD
-        ld = ld[~np.logical_or(np.isinf(ld),
+            ld = ld[~np.logical_or(np.isinf(ld),
                                np.isnan(ld))]
-        ldict[pop] = np.nanmean(ld)
+            ldict[pop] = np.nanmean(ld)
 
         # sequence diversity
         seqdiv = allel.sequence_diversity(pos, acsubpops[pop])
@@ -175,26 +176,27 @@ for i,chrom in enumerate(chroms):
 
     coefdictchrom[chrom] = dict(coefdict)
     seqdivdictchrom[chrom] = dict(seqdivdict)
-    ldictchrom[chrom] = dict(ldict)
+    if linkage: ldictchrom[chrom] = dict(ldict)
 
 coefdictchrom = flip_dict(coefdictchrom)
 seqdivdictchrom= flip_dict(seqdivdictchrom)
-ldictchrom = flip_dict(ldictchrom)
+if linkage: ldictchrom = flip_dict(ldictchrom)
 
 #get AIM fractions per chromosome
 pd.DataFrame.from_dict(coefdictchrom).to_csv("results/variants/stats/inbreedingCoef.tsv", sep="\t", index=True)
 pd.DataFrame.from_dict(seqdivdictchrom).to_csv("results/variants/stats/SequenceDiversity.tsv", sep="\t", index=True)
-pd.DataFrame.from_dict(ldictchrom).to_csv("results/variants/stats/LD.tsv", sep="\t", index=True)
+if linkage: pd.DataFrame.from_dict(ldictchrom).to_csv("results/variants/stats/LD.tsv", sep="\t", index=True)
 
 # get genome wide average AIM fractions
 for k in allcoef.keys():
     allld[k] = np.nanmean(allld[k])
     allcoef[k] = np.nanmean(allcoef[k])
 
-df1 = pd.DataFrame.from_dict(allld, orient='index',columns=['LinkageDisequilibrium'])
-df2 = pd.DataFrame.from_dict(allcoef, orient='index', columns=['InbreedingCoefficient'])
+if linkage:
+    df1 = pd.DataFrame.from_dict(allld, orient='index',columns=['LinkageDisequilibrium'])
+    df1.to_csv(f"results/variants/stats/LD.mean.tsv", sep="\t", index=True)
 
-df1.to_csv(f"results/variants/stats/LD.mean.tsv", sep="\t", index=True)
+df2 = pd.DataFrame.from_dict(allcoef, orient='index', columns=['InbreedingCoefficient'])
 df2.to_csv(f"results/variants/stats/inbreedingCoef.mean.tsv", sep="\t", index=True)
 
 ### Total SNPs per chrom, all samples
