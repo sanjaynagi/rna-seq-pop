@@ -94,8 +94,8 @@ rule WindowedStatisticsAndPCA:
         inbreedingCoef = "results/variants/stats/inbreedingCoef.tsv",
         inbreedingCoefMean = "results/variants/stats/inbreedingCoef.mean.tsv",
         SequenceDiversity = "results/variants/stats/SequenceDiversity.tsv",
-        LD = "results/variants/stats/LD.tsv",
-        LDmean = "results/variants/stats/LD.mean.tsv"
+       # LD = "results/variants/stats/LD.tsv",
+       # LDmean = "results/variants/stats/LD.mean.tsv"
     log:
         "logs/variantStatistics/stats.log"
     conda:
@@ -105,6 +105,7 @@ rule WindowedStatisticsAndPCA:
         chroms = config['chroms'],
         pbs = config['pbs']['activate'],
         pbscomps = config['pbs']['contrasts'],
+        LD = 'False',
         missingprop = 0.8,
         qualflt = 30,
         linkage = 'False'
