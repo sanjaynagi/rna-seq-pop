@@ -108,7 +108,7 @@ rule WindowedStatisticsAndPCA:
         LD = 'False',
         missingprop = 0.8,
         qualflt = 30,
-        linkage = 'False'
+        linkage = False
     script:
         "../scripts/WindowedStatsAndPCA.py"
 
