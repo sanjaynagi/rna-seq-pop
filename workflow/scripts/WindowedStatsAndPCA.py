@@ -16,11 +16,7 @@ pbscomps = snakemake.params['pbscomps']
 qualflt = snakemake.params['qualflt']
 missingprop = snakemake.params['missingprop']
 gffpath = snakemake.input['gff']
-<<<<<<< HEAD
 linkage = snakemake.params['linkage']
-=======
-linkage = snakemake.params['LD']
->>>>>>> c88ea68e9fe9a6cea3b13a3cea1485ee26dde2e7
 
 # Read in list of contrasts
 comparisons = pd.read_csv(comparisons_path)
@@ -112,7 +108,7 @@ for i,chrom in enumerate(chroms):
             plt.savefig(f"results/variants/plots/PBS_{name}.{chrom}.line.png")
             plt.close()
             plt.figure()
-            sns.scatterplot(midpoint, pbs)
+            sns.scatterplot(midpoint, pbsArray)
             plt.title(f"PBS {chrom} {name}")
             plt.savefig(f"results/variants/plots/PBS_{name}.{chrom}.scatter.png")
 
@@ -162,17 +158,10 @@ for i,chrom in enumerate(chroms):
         allcoef[pop].append(np.array(coef))
 
         # linkage
-<<<<<<< HEAD
         if linkage:
             ld = allel.rogers_huff_r(gnalt)
             allld[pop].append(ld)
 	# remove nan and infs to calculate average LD
-=======
-        if linkage is True:
-            ld = allel.rogers_huff_r(gnalt)
-            allld[pop].append(ld)
-	    # remove nan and infs to calculate average LD
->>>>>>> c88ea68e9fe9a6cea3b13a3cea1485ee26dde2e7
             ld = ld[~np.logical_or(np.isinf(ld),
                                np.isnan(ld))]
             ldict[pop] = np.nanmean(ld)
@@ -187,40 +176,23 @@ for i,chrom in enumerate(chroms):
 
     coefdictchrom[chrom] = dict(coefdict)
     seqdivdictchrom[chrom] = dict(seqdivdict)
-<<<<<<< HEAD
     if linkage: ldictchrom[chrom] = dict(ldict)
 
 coefdictchrom = flip_dict(coefdictchrom)
 seqdivdictchrom= flip_dict(seqdivdictchrom)
 if linkage: ldictchrom = flip_dict(ldictchrom)
-=======
-    if linkage is True: ldictchrom[chrom] = dict(ldict)
-
-coefdictchrom = flip_dict(coefdictchrom)
-seqdivdictchrom= flip_dict(seqdivdictchrom)
-if linkage is True:
-    ldictchrom = flip_dict(ldictchrom)
-    pd.DataFrame.from_dict(ldictchrom).to_csv("results/variants/stats/LD.tsv", sep="\t", index=True)
->>>>>>> c88ea68e9fe9a6cea3b13a3cea1485ee26dde2e7
 
 #get AIM fractions per chromosome
 pd.DataFrame.from_dict(coefdictchrom).to_csv("results/variants/stats/inbreedingCoef.tsv", sep="\t", index=True)
 pd.DataFrame.from_dict(seqdivdictchrom).to_csv("results/variants/stats/SequenceDiversity.tsv", sep="\t", index=True)
-<<<<<<< HEAD
 if linkage: pd.DataFrame.from_dict(ldictchrom).to_csv("results/variants/stats/LD.tsv", sep="\t", index=True)
-=======
->>>>>>> c88ea68e9fe9a6cea3b13a3cea1485ee26dde2e7
 
 # get genome wide average AIM fractions
 for k in allcoef.keys():
     allld[k] = np.nanmean(allld[k])
     allcoef[k] = np.nanmean(allcoef[k])
 
-<<<<<<< HEAD
 if linkage:
-=======
-if linkage is True:
->>>>>>> c88ea68e9fe9a6cea3b13a3cea1485ee26dde2e7
     df1 = pd.DataFrame.from_dict(allld, orient='index',columns=['LinkageDisequilibrium'])
     df1.to_csv(f"results/variants/stats/LD.mean.tsv", sep="\t", index=True)
 
