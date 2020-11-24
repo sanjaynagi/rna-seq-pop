@@ -134,12 +134,12 @@ sns.set_context({"figure.figsize":(24,10)})
 
 total = df['AIM_fraction_coluzzii'] + df['AIM_fraction_gambiae']
 
-sns.barplot(x = df.index, y=total, color="Red")
-bottom_plot = sns.barplot(x = df.index, y =df['AIM_fraction_gambiae'], color = "#0000A3")
+sns.barplot(x = df.index, y=total, color="#e84c3d")
+bottom_plot = sns.barplot(x = df.index, y =df['AIM_fraction_gambiae'], color = "#3598db")
 
-topbar = plt.Rectangle((0,0),1,1,fc="red", edgecolor = 'none')
-bottombar = plt.Rectangle((0,0),1,1,fc='#0000A3',  edgecolor = 'none')
-l = plt.legend([bottombar, topbar], ['An. gambiae', 'An. coluzzii'], loc=1, ncol = 2, prop={'size':16})
+topbar = plt.Rectangle((0,0),1,1,fc="#e84c3d", edgecolor = 'none')
+bottombar = plt.Rectangle((0,0),1,1,fc='#3598db',  edgecolor = 'none')
+l = plt.legend([bottombar, topbar], ['An. gambiae', 'An. coluzzii'], loc=1, ncol = 2, prop={'size':20})
 l.draw_frame(True)
 
 #Optional code - Make plot look nicer
@@ -148,8 +148,8 @@ bottom_plot.set_xlabel("Sample")
 
 #Set fonts to consistent 16pt size
 for item in ([bottom_plot.xaxis.label, bottom_plot.yaxis.label] +
-             bottom_plot.get_xticklabels() + bottom_plot.get_yticklabels()):
-    item.set_fontsize(16)
+         bottom_plot.get_xticklabels() + bottom_plot.get_yticklabels()):
+    item.set_fontsize(22)
 
 plt.savefig(f"results/variants/AIMs/AIM_fraction_overall.png")
 
@@ -278,21 +278,23 @@ if samples['species'].isin(['arabiensis'].any():
 
     total = df['AIM_fraction_arabiensis'] + df['AIM_fraction_gambiae']
 
-    sns.barplot(x = df.index, y=total, color="Red")
-    bottom_plot = sns.barplot(x = df.index, y =df['AIM_fraction_gambiae'], color = "#0000A3")
+    sns.barplot(x = df.index, y=total, color="#8de686")
+    bottom_plot = sns.barplot(x = df.index, y =df['AIM_fraction_gambiae'], color = "#3598db")
 
-    topbar = plt.Rectangle((0,0),1,1,fc="red", edgecolor = 'none')
-    bottombar = plt.Rectangle((0,0),1,1,fc='#0000A3',  edgecolor = 'none')
+
+    topbar = plt.Rectangle((0,0),1,1,fc="#8de686", edgecolor = 'none')
+    bottombar = plt.Rectangle((0,0),1,1,fc='#3598db',  edgecolor = 'none')
     l = plt.legend([bottombar, topbar], ['An. gamb/colu', 'An. arabiensis'], loc=1, ncol = 2, prop={'size':16})
     l.draw_frame(True)
 
+    #Optional code - Make plot look nicer
     #Optional code - Make plot look nicer
     bottom_plot.set_ylabel("AIM fraction")
     bottom_plot.set_xlabel("Sample")
 
     #Set fonts to consistent 16pt size
     for item in ([bottom_plot.xaxis.label, bottom_plot.yaxis.label] +
-                bottom_plot.get_xticklabels() + bottom_plot.get_yticklabels()):
-        item.set_fontsize(16)
+            bottom_plot.get_xticklabels() + bottom_plot.get_yticklabels()):
+        item.set_fontsize(22)
 
     plt.savefig(f"results/variants/AIMs/AIM_fraction_Arab_overall.png")
