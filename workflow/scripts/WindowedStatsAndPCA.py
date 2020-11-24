@@ -100,8 +100,8 @@ for i,chrom in enumerate(chroms):
             pbsArray = allel.pbs(acsubpops[pbscomp[0]], 
                             acsubpops[pbscomp[1]], 
                             acsubpops[pbscomp[2]], 
-                            window_size=1000, window_step=100, normed=True)
-            midpoint = allel.moving_statistic(pos, np.mean, 1000, step=100)
+                            window_size=1000, window_step=500, normed=True)
+            midpoint = allel.moving_statistic(pos, np.mean, 1000, step=500)
 
             plt.figure(figsize=[20,8])
             sns.lineplot(midpoint, pbsArray)
