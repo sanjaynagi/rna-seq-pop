@@ -41,8 +41,9 @@ total_snps_per_chrom = {}
 snps_per_gene_allchroms = {}
 snpeffdict = {}
 
-coefdictchrom= {}
 seqdivdictchrom = {}
+thetadictchrom = {}
+coefdictchrom= {}
 ldictchrom = {}
 
 for i,chrom in enumerate(chroms):
@@ -137,8 +138,9 @@ for i,chrom in enumerate(chroms):
     plot_density(pos, window_size=100000, title=f"Variant Density chromosome {chrom}", path=f"results/variants/plots/{dataset}_SNPdensity_{chrom}.png")
 
     #### genome-wide mean statistics (seqDiv, LD, inbreeding coefficient) ####
-    coefdict= {}
     seqdivdict = {}
+    thetadict = {}
+    coefdict= {}
     ldict = {}
 
     allcoef = defaultdict(list)
@@ -149,6 +151,14 @@ for i,chrom in enumerate(chroms):
         gn = geno.take(subpops[pop], axis=1)
         bial_ = acsubpops[pop].is_biallelic()
         gnalt = gn.compress(bial_, axis=0).to_n_alt()
+
+        # sequence diversity 
+        seqdiv = allel.sequence_diversity(pos, acsubpops[pop])
+        seqdivdict[pop] = seqdiv
+        
+        # wattersons theta
+        theta = allel.watterson_theta(pos, acsubpops[pop])
+        thetadict[pop] = theta
 
         # inbreeding coefficient
         coef = allel.moving_statistic(gn,statistic=allel.inbreeding_coefficient, 
@@ -161,33 +171,31 @@ for i,chrom in enumerate(chroms):
         if linkage:
             ld = allel.rogers_huff_r(gnalt)
             allld[pop].append(ld)
-	# remove nan and infs to calculate average LD
-            ld = ld[~np.logical_or(np.isinf(ld),
-                               np.isnan(ld))]
+	    # remove nan and infs to calculate average LD
+            ld = ld[~np.logical_or(np.isinf(ld), np.isnan(ld))]
             ldict[pop] = np.nanmean(ld)
-
-        # sequence diversity
-        seqdiv = allel.sequence_diversity(pos, acsubpops[pop])
-        seqdivdict[pop] = seqdiv
 
         print("\n", f"{pop}, {chrom}, inbreeding coef = ", np.mean(coef))
         if linkage is True: print(f"{pop},{chrom}, ld (rogers huff r2) = ", np.nanmean(ld))
         print(f"{pop},{chrom}, sequence diversity = ", seqdiv)
 
-    coefdictchrom[chrom] = dict(coefdict)
     seqdivdictchrom[chrom] = dict(seqdivdict)
+    thetadictchrom[chrom] = dict(thetadict)
+    coefdictchrom[chrom] = dict(coefdict)
     if linkage: ldictchrom[chrom] = dict(ldict)
 
-coefdictchrom = flip_dict(coefdictchrom)
 seqdivdictchrom= flip_dict(seqdivdictchrom)
+thetadictchrom = flip_dict(thetadictchrom)
+coefdictchrom = flip_dict(coefdictchrom)
 if linkage: ldictchrom = flip_dict(ldictchrom)
 
-#get AIM fractions per chromosome
-pd.DataFrame.from_dict(coefdictchrom).to_csv("results/variants/stats/inbreedingCoef.tsv", sep="\t", index=True)
+#get stats per chromosome
 pd.DataFrame.from_dict(seqdivdictchrom).to_csv("results/variants/stats/SequenceDiversity.tsv", sep="\t", index=True)
+pd.DataFrame.from_dict(thetadictchrom).to_csv("results/variants/stats/WattersonsTheta.tsv", sep="\t", index=True)
+pd.DataFrame.from_dict(coefdictchrom).to_csv("results/variants/stats/inbreedingCoef.tsv", sep="\t", index=True)
 if linkage: pd.DataFrame.from_dict(ldictchrom).to_csv("results/variants/stats/LD.tsv", sep="\t", index=True)
 
-# get genome wide average AIM fractions
+# get genome wide average stats
 for k in allcoef.keys():
     allld[k] = np.nanmean(allld[k])
     allcoef[k] = np.nanmean(allcoef[k])
