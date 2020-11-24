@@ -175,9 +175,10 @@ for i,chrom in enumerate(chroms):
             ld = ld[~np.logical_or(np.isinf(ld), np.isnan(ld))]
             ldict[pop] = np.nanmean(ld)
 
-        print("\n", f"{pop}, {chrom}, inbreeding coef = ", np.mean(coef))
-        if linkage is True: print(f"{pop},{chrom}, ld (rogers huff r2) = ", np.nanmean(ld))
-        print(f"{pop},{chrom}, sequence diversity = ", seqdiv)
+        print(f"{pop},{chrom}, Sequence Diversity = ", seqdiv)
+        print(f"{pop},{chrom}, Wattersons Theta = ", theta)
+        print("\n", f"{pop}, {chrom}, Inbreeding Coef = ", np.mean(coef))
+        if linkage is True: print(f"{pop},{chrom}, LD (rogers huff r2) = ", np.nanmean(ld))
 
     seqdivdictchrom[chrom] = dict(seqdivdict)
     thetadictchrom[chrom] = dict(thetadict)
