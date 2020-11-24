@@ -107,7 +107,8 @@ rule WindowedStatisticsAndPCA:
         pbscomps = config['pbs']['contrasts'],
         LD = 'False',
         missingprop = 0.8,
-        qualflt = 30
+        qualflt = 30,
+        linkage = False
     script:
         "../scripts/WindowedStatsAndPCA.py"
 

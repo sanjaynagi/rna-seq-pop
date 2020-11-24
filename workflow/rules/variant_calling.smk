@@ -115,8 +115,8 @@ rule VariantCallingFreebayes:
 		bams = expand("resources/alignments/{sample}.bam", sample=samples),
 		index = expand("resources/alignments/{sample}.bam.bai", sample=samples),
 		ref = config['ref']['genome'],
-		samples = "resources/bam.list",
-		regions = "resources/regions/genome.{chrom}.region.{i}.bed"
+		samples = ancient("resources/bam.list"),
+		regions = ancient("resources/regions/genome.{chrom}.region.{i}.bed")
 	output:
 		temp("results/variants/vcfs/{chrom}/variants.{i}.vcf")
 	log:
