@@ -65,3 +65,21 @@ rule DifferentialIsoformExpression:
 		"logs/sleuth/isoformDE.log"
 	script:
 	    "../scripts/sleuthIsoformsDE.R"
+
+
+rule intersectDE:
+	input:
+		"results/genediff/RNA-Seq_diff.xlsx",
+		"results/isoformdiff/RNA-Seq_isoformdiff.xlsx"
+	output:
+	    touch("results/genediff/intersect.complete")
+	params:
+	    samples = config['samples'],
+	    pbscomps = config['pbs']['contrasts']
+	conda:
+	    "../envs/sleuth.yaml"
+	log:
+	    "logs/intersectDE.log"
+	script:
+	    "../scripts/intersectDE.R"
+
