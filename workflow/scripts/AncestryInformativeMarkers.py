@@ -159,7 +159,7 @@ plt.savefig(f"results/variants/AIMs/AIM_fraction_overall.png")
 ########### The same but for arabiensis v gambiae/coluzzii 
 # script should be modularised but no time atm, isnt necessary
 
-if 'arabiensis' in samples['species']:
+if samples['species'].isin(['arabiensis'].any():
 
     aims = zarr.open(snakemake.input['aims_zarr_arab'], mode='r')
 
