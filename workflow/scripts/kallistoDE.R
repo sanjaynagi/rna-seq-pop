@@ -56,7 +56,7 @@ vst_pca = function(counts, samples, colourvar, name="PCA_", st="", comparison=""
   return(list(vstcounts, dds, normcounts))
 }
 
-
+?counts
 #### main ####
 cat("\n", "------------- Kallisto - DESeq2 - RNASeq Differential expression ---------", "\n")
 #### read data ####
@@ -93,7 +93,7 @@ count_stats %>% fwrite(., "results/quant/count_statistics.tsv",sep="\t")
 
 print("Counting and plotting total reads per sample...")
 pdf("results/quant/total_reads_counted.pdf")
-ggplot(count_stats, aes(x=sample, y=total_counts, fill=samples$treatment)) + 
+ggplot(count_stats, aes(x=Sample, y=total_counts, fill=samples$treatment)) + 
   geom_bar(stat='identity') + 
   theme_light() +
   ggtitle("Total reads counted (mapped to Ag transcriptome (PEST))") +
