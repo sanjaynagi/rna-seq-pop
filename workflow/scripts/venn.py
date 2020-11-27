@@ -109,10 +109,10 @@ writer.save()
 if pbs is True:
     for pbscomp in pbscomps:
         name = pbscomp[0] + "_" + pbscomp[1] + "_" + pbscomp[2]
-        name2 = pbscomp[2]+ "_" + pbscomp[1]
+        name2 = pbscomp[2]+ "_" + pbscomp[0]
 
         de = pd.read_csv(f"results/genediff/{name2}.csv")
-        fst = pd.read_csv(f"results/variants/Fst.tsv", s="\t")
+        fst = pd.read_csv(f"results/variants/Fst.tsv", sep="\t")
         pbs = pd.read_csv("results/variants/PBS.tsv", sep="\t")
 
         # compare sig DE genes and top 5% fst/pbs genes?
@@ -123,7 +123,7 @@ if pbs is True:
 
         # take top 5% of fst genes
         highpbs = pbs.nlargest(int(pbs.shape[0]*percentile),f"{name}PBS")
-        highfst = pbs.nlargest(int(pbs.shape[0]*percentile),f"{name2}_zFst")
+        highfst = fst.nlargest(int(fst.shape[0]*percentile),f"{name2}_zFst")
 
         # how many fst? how many sig de up and down?
         nfst = highfst.shape[0]
