@@ -153,12 +153,10 @@ for i,chrom in enumerate(chroms):
         gnalt = gn.compress(bial_, axis=0).to_n_alt()
 
         # sequence diversity 
-        seqdiv = allel.sequence_diversity(pos, acsubpops[pop])
-        seqdivdict[pop] = seqdiv
+        seqdivdict[pop] = allel.sequence_diversity(pos, acsubpops[pop])
         
         # wattersons theta
-        theta = allel.watterson_theta(pos, acsubpops[pop])
-        thetadict[pop] = theta
+        thetadict[pop] = allel.watterson_theta(pos, acsubpops[pop])
 
         # inbreeding coefficient
         coef = allel.moving_statistic(gn,statistic=allel.inbreeding_coefficient, 
@@ -175,8 +173,8 @@ for i,chrom in enumerate(chroms):
             ld = ld[~np.logical_or(np.isinf(ld), np.isnan(ld))]
             ldict[pop] = np.nanmean(ld)
 
-        print(f"{pop},{chrom}, Sequence Diversity = ", seqdiv)
-        print(f"{pop},{chrom}, Wattersons Theta = ", theta)
+        print(f"{pop},{chrom}, Sequence Diversity = ", seqdivdict[pop])
+        print(f"{pop},{chrom}, Wattersons Theta = ", thetadict[pop])
         print("\n", f"{pop}, {chrom}, Inbreeding Coef = ", np.mean(coef))
         if linkage is True: print(f"{pop},{chrom}, LD (rogers huff r2) = ", np.nanmean(ld))
 
