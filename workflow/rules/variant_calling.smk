@@ -155,7 +155,7 @@ rule snpEffDbDownload:
 rule snpEff:
     input:
         calls = "results/variants/vcfs/variants.{chrom}.vcf",
-        dl = "workflow/scripts/snpeff/db.dl"
+        dl = "workflow/scripts/snpEff/db.dl"
     output:
         calls = "results/variants/vcfs/annot.variants.{chrom}.vcf.gz",
     log:
