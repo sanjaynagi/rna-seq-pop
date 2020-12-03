@@ -30,7 +30,7 @@ rule alleleBalanceIR:
         allele_balance = "results/allele_balance/allele_balance.xlsx",
         mean_allele_balance = "results/allele_balance/mean_allele_balance.xlsx"
     conda:
-        "../envs/alleleBalance.yaml"
+        "../envs/diffsnps.yaml"
     log:
         "logs/AlleleBalance.log"
     script:
