@@ -11,5 +11,5 @@ dependencies:
   - r-openxlsx
   - r-glue
   - r-rcolorbrewer
-  - bioconductor-deseq2
   - r-pheatmap
+  - bioconductor-enhancedvolcano

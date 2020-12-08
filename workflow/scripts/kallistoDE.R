@@ -12,6 +12,7 @@ library(ggrepel)
 library(openxlsx)
 library(glue)
 library(RColorBrewer)
+library(EnhancedVolcano)
 
 #read metadata and get contrasts
 samples = fread(snakemake@input[[1]], sep="\t") %>% as.data.frame()
@@ -56,7 +57,6 @@ vst_pca = function(counts, samples, colourvar, name="PCA_", st="", comparison=""
   return(list(vstcounts, dds, normcounts))
 }
 
-?counts
 #### main ####
 cat("\n", "------------- Kallisto - DESeq2 - RNASeq Differential expression ---------", "\n")
 #### read data ####
@@ -101,6 +101,7 @@ ggplot(count_stats, aes(x=Sample, y=total_counts, fill=samples$treatment)) +
   theme(plot.title = element_text(hjust = 0.5))
 null = dev.off() 
  
+# round numbers to be whole
 counts = counts %>% rownames_to_column('GeneID') %>% 
   mutate_if(is.numeric, round) %>% column_to_rownames('GeneID')
 
@@ -191,12 +192,11 @@ for (cont in contrasts){
   #volcano plot for each comparison, first filter to remove very lowly expressed genes 
   a=results_list[[cont]] %>% filter(`baseMean` > 20)
   pdf(glue("results/genediff/Volcano_plot_{cont}.pdf"))
-  print(ggplot(a, aes(x=log2FoldChange, y=-log10(padj))) + geom_point() +
-          geom_hline(yintercept = (-log10(0.05)), linetype='dashed') +
-          geom_vline(xintercept = (log2(2)), linetype='dashed') + 
-          geom_vline(xintercept = log2(0.5), linetype='dashed') + 
-          geom_text_repel(data=subset(results_list[[cont]], abs(log2FoldChange) > 2 & padj < 0.0000001), aes(label=Gene_name)) +
-          theme_light())
+  EnhancedVolcano(results,
+                  lab=results$Gene_name,
+                  x='log2FoldChange',
+                  y='pvalue',
+                  title = cont)
   garbage = dev.off()
   cat("\n", glue("{cont} complete!"), "\n")
 }
