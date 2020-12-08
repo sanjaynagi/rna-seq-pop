@@ -15,7 +15,7 @@ samples = metadata.samples
 
 # IR allele balance mutations file
 mutationdata = pd.read_csv(config['IRmutations']['path'], sep="\t")
-mutations = mutationdata.Name[:3]
+mutations = mutationdata.Name
 
 include: "rules/common.smk"
 include: "rules/qc.smk"
