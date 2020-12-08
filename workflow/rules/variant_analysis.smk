@@ -27,10 +27,11 @@ rule alleleBalanceIR:
         samples = config['samples'],
         mutations = config['IRmutations']['path']
     output:
+        expand("results/allele_balance/csvs/{mut}_allele_balance.csv", mut=mutations),
         allele_balance = "results/allele_balance/allele_balance.xlsx",
         mean_allele_balance = "results/allele_balance/mean_allele_balance.xlsx"
     conda:
-        "../envs/diffsnps.yaml"
+        "../envs/diffexp.yaml"
     log:
         "logs/AlleleBalance.log"
     script:
