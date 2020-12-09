@@ -53,7 +53,7 @@ vst_pca = function(counts, samples, colourvar, name="PCA ", st="", comparison=""
   pc = data.frame(pca2$x) %>% rownames_to_column("samples")
   pc = left_join(pc, samples)
   
-  ggplot(data=pc,aes(x=PC1, y=PC2, colour=treatment)) + 
+  print(ggplot(data=pc,aes(x=PC1, y=PC2, colour=treatment)) + 
     geom_point(size=6, alpha=0.8) + 
     geom_text_repel(aes(label=samples), colour="black") + 
     theme_light() + 
@@ -67,8 +67,8 @@ vst_pca = function(counts, samples, colourvar, name="PCA ", st="", comparison=""
           panel.background = element_blank(),
           plot.title = element_text(hjust = 0.5),
           axis.text.x = element_text(colour="black", size=18),
-          axis.text.y = element_text(colour="black", size=18))
-  dev.off()
+          axis.text.y = element_text(colour="black", size=18)))
+  garbage = dev.off()
   
   return(list(vstcounts, dds, normcounts))
 }
@@ -208,11 +208,11 @@ for (cont in contrasts){
   #volcano plot for each comparison, first filter to remove very lowly expressed genes 
   a=results_list[[cont]] %>% filter(`baseMean` > 20)
   pdf(glue("results/genediff/Volcano_plot_{cont}.pdf"))
-  EnhancedVolcano(results,
+  print(EnhancedVolcano(results,
                   lab=results$Gene_name,
                   x='log2FoldChange',
                   y='pvalue',
-                  title = cont)
+                  title = cont))
   garbage = dev.off()
   cat("\n", glue("{cont} complete!"), "\n")
 }
