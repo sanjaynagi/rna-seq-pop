@@ -29,7 +29,7 @@ round_df <- function(df, digits) {
   (df)
 }
 
-vst_pca = function(counts, samples, colourvar, name="PCA_", st="", comparison=""){
+vst_pca = function(counts, samples, colourvar, name="PCA ", st="", comparison=""){
  
   #make DESeq dataset
   dds = DESeqDataSetFromMatrix(countData = counts, 
@@ -50,8 +50,24 @@ vst_pca = function(counts, samples, colourvar, name="PCA_", st="", comparison=""
   names(cond_colours)=samples[,colourvar]
   pdf(glue("results/plots/{name}{st}{comparison}.pdf"))
   pca2=prcomp(t(vstcounts),center=TRUE)
-  plot(pca2$x, col=cond_colours,  pch=19, cex=2, main=glue("{name}{st}{comparison} (VST)"))
-  text(pca2$x, as.vector(colnames(counts)), pos=3, cex=0.4)
+  pc = data.frame(pca2$x) %>% rownames_to_column("samples")
+  pc = left_join(pc, samples)
+  
+  ggplot(data=pc,aes(x=PC1, y=PC2, colour=treatment)) + 
+    geom_point(size=6, alpha=0.8) + 
+    geom_text_repel(aes(label=samples), colour="black") + 
+    theme_light() + 
+    labs(title=glue("{name}{st}{comparison}"),
+         x=glue("PC1 - Variance explained - {round(summary(pca2)$importance[2,][1], 3)}"),
+         y=glue("PC2 - Variance explained - {round(summary(pca2)$importance[2,][2], 3)}"))  + 
+    theme(legend.position = c(0.1,0.1),
+          legend.title = element_blank(),
+          legend.background=element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(),
+          plot.title = element_text(hjust = 0.5),
+          axis.text.x = element_text(colour="black", size=18),
+          axis.text.y = element_text(colour="black", size=18))
   dev.off()
   
   return(list(vstcounts, dds, normcounts))
