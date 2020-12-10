@@ -22,10 +22,12 @@ gene_names = fread(snakemake@input[[2]], sep="\t") %>%
 contrastsdf = fread(snakemake@input[[3]])
 contrasts = contrastsdf$contrast
 
-##### functions ######
-round_df <- function(df, digits) {
-  nums <- vapply(df, is.numeric, FUN.VALUE = logical(1))
-  df[,nums] <- round(df[,nums], digits = digits)
+##### define functions ######
+round_df = function(df, digits) {
+  
+  #' This function rounds all the numeric columns of a data.frame
+  nums = vapply(df, is.numeric, FUN.VALUE = logical(1))
+  df[,nums] = round(df[,nums], digits = digits)
   (df)
 }
 
@@ -210,10 +212,14 @@ for (cont in contrasts){
   # store names of comparisons for xlsx report sheets
   names_list[[cont]] = cont
   
-  # volcano plot for each comparison, first filter to remove very lowly expressed genes 
+  # volcano plot for each comparison, using EnhancedVolcano. First make vector of labels which is AGAPs unless a gene name exists
+  labels = results[[cont]] %>% mutate("Gene_name" = case_when(Gene_name == "" ~ GeneID,
+                                                      Gene_name == NA ~ GeneID,
+                                                      TRUE ~ Gene_name)) %>% select(Gene_name) %>% deframe()
+  
   pdf(glue("results/genediff/Volcano_plot_{cont}.pdf"))
   print(EnhancedVolcano(results_list[[cont]],
-                  lab=results_list[[cont]]$Gene_name,
+                  lab=labels,
                   x='log2FoldChange',
                   y='pvalue',
                   title = cont))
