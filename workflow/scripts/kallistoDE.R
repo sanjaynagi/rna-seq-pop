@@ -29,20 +29,23 @@ round_df <- function(df, digits) {
   (df)
 }
 
-vst_pca = function(counts, samples, colourvar, name="PCA ", st="", comparison=""){
- 
-  #make DESeq dataset
+vst_pca = function(counts, samples, colourvar, name="PCA", st="", comparison=""){
+  
+  #' This function takes counts and sample metadata as input and builds a DESeq2 dataset
+  #' Returning normalised and variance-stabilised counts, and performs PCA on the data
+  #' Plotting and saving to pdf
+
+  # make DESeq dataset
   dds = DESeqDataSetFromMatrix(countData = counts, 
                                colData = samples, 
                                design = ~ treatment)
-
   ###### estimate paramters and normalise 
   dds = estimateSizeFactors(dds)
   dds = estimateDispersions(dds)
   vsd = varianceStabilizingTransformation(dds)
   normcounts = counts(dds, normalized=TRUE)
   vstcounts = assay(vsd)
-  vstcounts = vstcounts[order(apply(vstcounts,1,sum),decreasing =TRUE),]
+  vstcounts = vstcounts[order(apply(vstcounts,1,sum),decreasing=TRUE),]
   
   #### write pca of samples to pdf
   pca2=prcomp(t(vstcounts),center=TRUE)
@@ -54,10 +57,10 @@ vst_pca = function(counts, samples, colourvar, name="PCA ", st="", comparison=""
     geom_point(size=6, alpha=0.8) + 
     geom_text_repel(aes(label=samples), colour="black") + 
     theme_light() + 
-    labs(title=glue("{name}{st}{comparison}"),
+    labs(title=glue("{name} {st} {comparison}"),
          x=glue("PC1 - Variance explained - {round(summary(pca2)$importance[2,][1], 3)}"),
          y=glue("PC2 - Variance explained - {round(summary(pca2)$importance[2,][2], 3)}"))  + 
-    theme(legend.position = c(0.1,0.1),
+    theme(legend.position = "bottom",
           legend.title = element_blank(),
           legend.background=element_blank(),
           panel.grid.minor = element_blank(),
@@ -65,21 +68,22 @@ vst_pca = function(counts, samples, colourvar, name="PCA ", st="", comparison=""
           plot.title = element_text(hjust = 0.5),
           axis.text.x = element_text(colour="black", size=18),
           axis.text.y = element_text(colour="black", size=18)))
-  garbage = dev.off()
+  null = dev.off()
   
   return(list(vstcounts, dds, normcounts))
 }
 
+
 #### main ####
 cat("\n", "------------- Kallisto - DESeq2 - RNASeq Differential expression ---------", "\n")
-#### read data ####
+
 #### Read counts for each sample
 df = list()
 for (sample in samples$samples){
   df[[sample]]= fread(glue("results/quant/{sample}/abundance.tsv"), sep = "\t")
 }
 
-counts = data.frame('Geneid' = df[[1]]$target_id)
+counts = data.frame('GeneID' = df[[1]]$target_id)
 #get read counts for each gene and fill table
 for (sample in samples$samples){
   reads = df[[sample]]$est_counts
@@ -110,107 +114,110 @@ ggplot(count_stats, aes(x=Sample, y=total_counts, fill=samples$treatment)) +
   geom_bar(stat='identity') + 
   theme_light() +
   ggtitle("Total reads counted (mapped to Ag transcriptome (PEST))") +
-  theme(axis.text.x = element_text(angle=45)) +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(axis.text.x = element_text(angle=45),
+        plot.title = element_text(hjust = 0.5))
 null = dev.off() 
  
-# round numbers to be whole
+# round numbers to be whole, they are not due averaging across transcripts
 counts = counts %>% rownames_to_column('GeneID') %>% 
   mutate_if(is.numeric, round) %>% column_to_rownames('GeneID')
 
-############ Plots with all data ########################
+############ Plots PCA with all data, and performs DESeq2 normalisation ########################
 res = vst_pca(counts, samples, colourvar = 'strain', name="PCA")
 vstcounts = res[[1]]
+dds = res[[2]]
 normcounts = res[[3]]
 
-#calculate correlations between samples based on the count data 
-correlations = cor(vstcounts)
-
 ### write out raw and normalised counts 
-counts %>% rownames_to_column("GeneID") %>% fwrite(., "results/quant/rawcounts.tsv", sep="\t", row.names = FALSE)
-normcounts %>% as.data.frame() %>% rownames_to_column("GeneID") %>% round_df(., 1) %>% fwrite(., "results/quant/normcounts.tsv", sep="\t", row.names = FALSE)
+counts %>% 
+  rownames_to_column("GeneID") %>% 
+  fwrite(., "results/quant/rawcounts.tsv", sep="\t", row.names = FALSE)
 
-#### 
+normcounts %>% 
+  as.data.frame() %>% 
+  rownames_to_column("GeneID") %>% 
+  round_df(., 1) %>% 
+  fwrite(., "results/quant/normcounts.tsv", sep="\t", row.names = FALSE)
+
+# calculate correlations between samples based on the count data, and plot heatmap
+correlations = cor(vstcounts)
 pdf("results/plots/heatmap_correlations.pdf")
 pheatmap(correlations)
 garbage = dev.off()
 
+# add column if it doesnt exist
 if(!("lab" %in% colnames(samples)))
 {
   samples$lab = 'FALSE'
 }
 
-######### subset data and run DESeq for each combo we need, store in xlsx ########
-results_list = list()
-names_list = list()
-# for each strain in the dataset, make PCA plot 
+# for each strain in the dataset, do a PCA plot
 # analysis of case v control with DESEq2 and make PCAs and volcano plots.
-for (sp in unique(samples$species)){
-  df_samples = samples %>% filter(species == sp)
-  df_samples = df_samples %>% filter(lab == 'FALSE') #remove lab samples
-  #print(lab_samples)
-  for (st in unique(df_samples$strain)){
-    ai_list = list()
-    ai_list[[st]] = df_samples[df_samples$strain == st,]
-    
-    #if the strain has both case and control (i.e. exposed v unexposed)
-    if (length(unique(ai_list[[st]]$cohort)) > 1){
-      cat(glue("\n Running PCA for all {st} samples \n"))
-      #do a pca for each strain 
-      subcounts = counts[colnames(counts) %in% ai_list[[st]]$samples]
-      #perform PCA on the data at strain level
-      vstcounts = vst_pca(subcounts, ai_list[[st]], 'treatment', "PCA_", st=st)[[1]]
+if ("strain" %in% colnames(samples)){
+  for (sp in unique(samples$species)){
+    df_samples = samples %>% filter(species == sp)
+    df_samples = df_samples %>% filter(lab == 'FALSE') #remove lab samples
+    for (st in unique(df_samples$strain)){
+      ai_list = list()
+      ai_list[[st]] = df_samples[df_samples$strain == st,]
+      # if the strain has both case and control (i.e. exposed v unexposed)
+      if (length(unique(ai_list[[st]]$cohort)) > 1){
+        cat(glue("\n Running PCA for all {st} samples \n"))
+        # subset counts data to our strains of interest
+        subcounts = counts[colnames(counts) %in% ai_list[[st]]$samples]
+        # perform PCA on the data at strain level
+        vstcounts = vst_pca(subcounts, ai_list[[st]], 'treatment', "PCA_", st=st)[[1]]
+      }
     }
   }
 }
 
-
+results_list = list()
+names_list = list()
+######### subset data and run DESeq for each combo we need, store in xlsx ########
 for (cont in contrasts){
-  control = str_split(cont, "_")[[1]][1] #get first of string, which is control 
-  case = str_split(cont, "_")[[1]][2] #get case 
+  control = str_split(cont, "_")[[1]][1] # get first of string, which is control 
+  case = str_split(cont, "_")[[1]][2] # get case 
   controls = which(samples$treatment %in% control)
   cases = which(samples$treatment %in% case)
   
-  ##subset to subcounts
+  ## Perform PCA for each comparison
   subcounts = counts[,c(controls, cases)]
   subsamples = samples[c(controls, cases),]
-
-  #make treatment a factor with the 'susceptible' as reference
+  # make treatment a factor with the 'susceptible' as reference
   subsamples$treatment = as.factor(as.character(subsamples$treatment))
   subsamples$treatment = relevel(subsamples$treatment, control)
-  cat("\n", glue("--- Running DESeq2 differential expression analysis on {cont} ---"), "\n")
+  null = vst_pca(subcounts, subsamples, colourvar='treatment', "PCA_", comparison=cont)[[]]
   
-  dds = vst_pca(subcounts, subsamples, colourvar='treatment', "PCA_", comparison=cont)[[2]]
-  #set pvalue threshold and perform  DE with each comparison
-  p_threshold=0.05
+  # perform DE with each comparison, using DESeq dataset (dds) from whole library
+  cat("\n", glue("--- Running DESeq2 differential expression analysis on {cont} ---"), "\n")
   cds = nbinomWaldTest(dds)
-  results = results(cds) %>% as.data.frame() 
+  results = results(cds, contrast = c("treatment", control, case)) %>% as.data.frame() 
   results = results[order(results$padj),] #order by pvalue 
   results = results %>% rownames_to_column("GeneID") %>% mutate("FC" = (2^log2FoldChange))
   
-  ###absolute difference
+  ### absolute difference
   #### Get rowsums of counts, grouping by case/control. Then get difference of counts and join with DE results
   readdiff = data.frame(t(rowsum(t(subcounts), group = subsamples$treatment, na.rm = T))) #transpose and get rowsums for each group
   readdiff$absolute_diff = readdiff[,case] - readdiff[,control] #get difference
   readdiff = data.frame(readdiff) %>% rownames_to_column('GeneID')
   results = unique(left_join(results, readdiff[,c('GeneID','absolute_diff')]))
   
-  #join DE results with normal gene names
+  # join DE results with normal gene names
   results_list[[cont]] = unique(left_join(results, gene_names))
   fwrite(results_list[[cont]], glue("results/genediff/{cont}.csv")) #write to csv 
   
-  #store names of comparisons for xlsx report sheets
+  # store names of comparisons for xlsx report sheets
   names_list[[cont]] = cont
   
-  #volcano plot for each comparison, first filter to remove very lowly expressed genes 
-  a=results_list[[cont]] %>% filter(`baseMean` > 20)
+  # volcano plot for each comparison, first filter to remove very lowly expressed genes 
   pdf(glue("results/genediff/Volcano_plot_{cont}.pdf"))
   print(EnhancedVolcano(results_list[[cont]],
                   lab=results_list[[cont]]$Gene_name,
                   x='log2FoldChange',
                   y='pvalue',
                   title = cont))
-  garbage = dev.off()
+  null = dev.off()
   cat("\n", glue("{cont} complete!"), "\n")
 }
 
