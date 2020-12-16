@@ -11,6 +11,8 @@ library(ggrepel)
 library(openxlsx)
 library(glue)
 library(RColorBrewer)
+library(EnhancedVolcano)
+
 
 print("------------- Kallisto - Sleuth - RNASeq isoform Differential expression ---------")
 #### read data ####
@@ -60,21 +62,24 @@ for (cont in contrasts){
     rename("GeneID" = "target_id") %>% 
     mutate("FC" = (2^b))
   
-  #join DE results with normal gene names
-  results_list[[cont]] = unique(left_join(results, gene_names))
-  fwrite(results_list[[cont]], glue("results/isoformdiff/{cont}.csv")) #write to csv 
-  
-  #store names of conts for xlsx report sheets
+  # Join DE results with normal gene names
+  results = unique(left_join(results, gene_names))
+  fwrite(results, glue("results/isoformdiff/{cont}.csv")) # write to csv 
+
+  # Store names of contrasts and results tables for xlsx report sheets
+  results_list[[cont]] = results
   names_list[[cont]] = cont
   
-  #volcano plot for each comparison, first filter to remove very lowly expressed genes 
+    # volcano plot for each comparison, using EnhancedVolcano. First make vector of labels which is AGAPs unless a gene name exists
+  labels = results %>% mutate("Gene_name" = case_when(Gene_name == "" ~ GeneID,
+                                     Gene_name == NA ~ GeneID,
+                                     TRUE ~ Gene_name)) %>% select(Gene_name) %>% deframe()
   pdf(glue("results/isoformdiff/Volcano_plot_{cont}.pdf"))
-  print(ggplot(results_list[[cont]], aes(x=b, y=-log10(qval))) + geom_point() +
-          geom_hline(yintercept = (-log10(0.05)), linetype='dashed') +
-          geom_vline(xintercept = (log2(2)), linetype='dashed') + 
-          geom_vline(xintercept = log2(0.5), linetype='dashed') + 
-          geom_text_repel(data=subset(results_list[[cont]], abs(FC) > 2 & qval < 0.0000001), aes(label=Gene_name)) +
-          theme_light())
+  print(EnhancedVolcano(results_list[[cont]],
+                  lab=labels,
+                  x='b',
+                  y='pval',
+                  title = cont))
   garbage = dev.off()
   print(glue("{cont} complete!"))
 }
