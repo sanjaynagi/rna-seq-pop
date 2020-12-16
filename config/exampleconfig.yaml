@@ -1,33 +1,47 @@
 samples: config/samples.tsv
 units: config/units.tsv
 
-dataset: 'Angola_aegypti'
+dataset: 'Ag_TiassAbo'
 
 ref:
   genome:
-        "resources/reference/aedes-aegypti-lvpagwg_chromosomes.l5.fa"
+        "resources/reference/Anopheles-gambiae-PEST_CHROMOSOMES_AgamP4.fa"
   transcriptome:
-        "resources/reference/aedes-aegypti-lvpagwg_transcripts.l5.fa"
+        "resources/reference/Anopheles-gambiae-PEST_TRANSCRIPTS_AgamP4.12.fa"
   gtf: 
-        "resources/reference/Aedes-aegypti-LVP_AGWG_BASEFEATURES_AaegL5.2.gtf"
+        "resources/reference/Anopheles-gambiae-PEST_BASEFEATURES_AgamP4.12.gtf"
   gff:
-        "resources/reference/VectorBase-48_AaegyptiLVP_AGWG.gff"
+        "resources/reference/Anopheles-gambiae-PEST_BASEFEATURES_AgamP4.12.gff3"
+  str_remove:
+        ""
   snpeffdb:
-        "Aedes_aegypti_lvpagwg"
+        "Anopheles_gambiae"
   genenames:
         "resources/gene_names.tsv"
 
 # Chromosome names for the appropriate species. Should correspond to the reference fasta/gff files. 
-chroms: ['1', '2', '3']
+chroms: ['2L', '2R', '3L', '3R', 'X']
+
+qc:
+      activate: True
 
 # List of contrasts to do DE and Fst analysis on. Should correspond to the 'treatment' columns of the samples.tsv file, and be separated by an underscore "_". i.e ['control_case'], or ['Kisumu_Tiassale'].
+# The treatment names themselves must not contain underscores
 contrasts:
-      - 'ContAngola_FenAngola'
-      - 'NewOrleans_ContAngola'
-      - 'Rockefeller_ContAngola'
+      - 'ContAbo_DeltAbo'
+      - 'ContAbo_MalaAbo'
+      - 'ContAbo_PiriAbo'
+      - 'ContTia_DeltTia'
+      - 'ContTia_MalaTia'
+      - 'ContTia_PiriTia'
+
+progressiveGenes:
+      activate: False
+      groups: #"ContTia_DeltTia_MalaTia"
 
 # Ploidy level for freebayes to call at. (Generally we are using pooled samples)
 ploidy: 10
+chunks: 9
 
 # If activate:True, creates allele balance .xlsx reports on IR mutations of choice
 IRmutations: 
@@ -36,9 +50,11 @@ IRmutations:
 
 # Do we want to run pbs (Needs three conditions, two more closely related and a slight outgroup)
 pbs:
-      contrasts: [['FenAngola', 'ContAngola', 'NewOrleans'], ['FenAngola', 'ContAngola', 'Rockefeller']]
+      contrasts: [['DeltAbo', 'ContAbo', 'ContTia'], ['DeltTia', 'ContTia', 'ContAbo']]
       activate: True
 
 # For Anopheles gambiae s.l only - run Ancestry Informative Marker analysis.
 AIMs:
       activate: True
+      gambcolu: "resources/gamb_vs_colu.zarr"
+      arab: "resources/gambcolu_vs_arab.zarr"
