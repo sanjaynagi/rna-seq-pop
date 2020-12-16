@@ -67,19 +67,19 @@ rule DifferentialIsoformExpression:
 	    "../scripts/sleuthIsoformsDE.R"
 
 
-rule intersectDE:
+rule progressiveGenesDE:
 	input:
 		"results/genediff/RNA-Seq_diff.xlsx",
 		"results/isoformdiff/RNA-Seq_isoformdiff.xlsx"
 	output:
-	    touch("results/genediff/intersect.complete")
+		expand("results/genediff/{name}.{direction}.progressive.tsv", name=config['progressiveGenes']['groups'], direction=["up", "down"]),
+		expand("results/isoformdiff/{name}.{direction}.progressive.tsv", name=config['progressiveGenes']['groups'], direction=["up", "down"])
 	params:
 	    samples = config['samples'],
-	    pbscomps = config['pbs']['contrasts']
+	    comps = config['progressiveGenes']['groups']
 	conda:
 	    "../envs/sleuth.yaml"
 	log:
-	    "logs/intersectDE.log"
+	    "logs/progressiveDE.log"
 	script:
-	    "../scripts/intersectDE.R"
-
+	    "../scripts/progressiveDE.R"

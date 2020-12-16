@@ -1,6 +1,6 @@
 # The main entry point of your workflow.
 # After configuring, running snakemake -n in a clone of this repository should successfully execute a dry-run of the workflow.
-report: "report/workflow.rst"
+#report: "report/workflow.rst"
 
 # Allow users to fix the underlying OS via singularity.
 #singularity: "docker://continuumio/miniconda3"
@@ -26,21 +26,5 @@ include: "rules/variant_analysis.smk"
 rule all:
     input:
         # The first rule should define the default target files
-        # Subsequent target rules can be specified below. They should start with all_*.
-#        expand("resources/reads/qc/{sample}_{n}_fastqc.html", sample=samples, n=[1,2]),
-        DiffExp = "results/genediff/RNA-Seq_diff.xlsx",
-        DiffExpIsoform = "results/isoformdiff/RNA-Seq_isoformdiff.xlsx",
-#        Coverage = expand("resources/alignments/coverage/{sample}.mosdepth.summary.txt", sample=samples),
-        annotatedVCFs = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
-        Fst = "results/variants/Fst.tsv",
-#        diffSNPs = expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts']),
-        variantPCA = expand("results/variants/plots/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset']),
-        AIMs = "results/variants/AIMs/AIMs_summary.tsv",
-#        intersect = "results/genediff/intersect.complete",
-#        Fullxlsx = "results/RNA-Seq-full.xlsx",
-        balance = "results/allele_balance/allele_balance.xlsx",
-
-
-#rule all_lncRNA:
-#    input:
-#        #"results/transcript_assembly/merged.gtf",
+        # The below function (defined in rules/common.smk) will read the config file and determine desired output files
+        get_desired_outputs

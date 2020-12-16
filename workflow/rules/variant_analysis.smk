@@ -1,7 +1,4 @@
 ################ Variant analysis ##################
-# Scikit-allel () ,                                      
-# samtools mpileup (Li et al., 2009)                                             
-# kissDE (Kim et al., 2018)   
 
 rule mpileupIR:
     input:

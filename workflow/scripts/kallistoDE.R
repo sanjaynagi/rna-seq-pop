@@ -194,10 +194,10 @@ for (cont in contrasts){
   # perform DE with each comparison, using DESeq dataset (dds) from whole library
   cat("\n", glue("--- Running DESeq2 differential expression analysis on {cont} ---"), "\n")
   cds = nbinomWaldTest(dds)
-  results = results(cds, contrast = c("treatment", control, case)) %>% as.data.frame() 
+  results = results(cds, contrast = c("treatment", case, control)) %>% as.data.frame() 
   results = results[order(results$padj),] #order by pvalue 
   results = results %>% rownames_to_column("GeneID") %>% mutate("FC" = (2^log2FoldChange))
-  
+    
   ### absolute difference
   #### Get rowsums of counts, grouping by case/control. Then get difference of counts and join with DE results
   readdiff = data.frame(t(rowsum(t(subcounts), group = subsamples$treatment, na.rm = T))) #transpose and get rowsums for each group
@@ -206,23 +206,23 @@ for (cont in contrasts){
   results = unique(left_join(results, readdiff[,c('GeneID','absolute_diff')]))
   
   # join DE results with normal gene names
-  results_list[[cont]] = unique(left_join(results, gene_names))
-  fwrite(results_list[[cont]], glue("results/genediff/{cont}.csv")) #write to csv 
-  
-  # store names of comparisons for xlsx report sheets
-  names_list[[cont]] = cont
-  
+  results = unique(left_join(results, gene_names))
+  fwrite(results, glue("results/genediff/{cont}.csv")) #write to csv 
   # volcano plot for each comparison, using EnhancedVolcano. First make vector of labels which is AGAPs unless a gene name exists
-  labels = results[[cont]] %>% mutate("Gene_name" = case_when(Gene_name == "" ~ GeneID,
-                                                      Gene_name == NA ~ GeneID,
-                                                      TRUE ~ Gene_name)) %>% select(Gene_name) %>% deframe()
+  labels = results %>% mutate("Gene_name" = case_when(Gene_name == "" ~ GeneID,
+                                     Gene_name == NA ~ GeneID,
+                                     TRUE ~ Gene_name)) %>% select(Gene_name) %>% deframe()
+
+  # store names of comparisons for xlsx report sheets
+  results_list[[cont]] = results
+  names_list[[cont]] = cont
   
   pdf(glue("results/genediff/Volcano_plot_{cont}.pdf"))
   print(EnhancedVolcano(results_list[[cont]],
-                  lab=labels,
-                  x='log2FoldChange',
-                  y='pvalue',
-                  title = cont))
+                        lab=labels,
+                        x='log2FoldChange',
+                        y='pvalue',
+                        title = cont))
   null = dev.off()
   cat("\n", glue("{cont} complete!"), "\n")
 }
