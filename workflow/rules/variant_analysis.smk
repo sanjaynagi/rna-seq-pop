@@ -73,7 +73,7 @@ rule DifferentialSNPs:
         "logs/variants/diffsnps.log"
     params:
         chroms = config['chroms'],
-        gffchromprefix = config['ref']['str_remove'], # in case like the aedes genome, there is an annoying prefix before each chromosome
+#        gffchromprefix = config['ref']['str_remove'], # in case like the aedes genome, there is an annoying prefix before each chromosome
         mincounts = 100,
         pval_flt = 0.001, # pvalues already adjusted but way want extra filter for sig file
     script:
@@ -131,7 +131,6 @@ rule FstPbsTajimasDSeqDivPerGene:
         chroms = config['chroms'],
         ploidy = config['ploidy'],
         missingprop = 0.8,
-        gffchromprefix=config['ref']['str_remove'] #in case like the aedes genome, there is an annoying before each chromosome
     script:
         "../scripts/FstPbsTajimasDseqDiv.py"
 
@@ -155,25 +154,24 @@ rule Venn:
    script:
        "../scripts/venn.py"
 
-if config['AIMs']['activate']:
-    rule AIMs:
-        input:
-            vcf = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
-            samples = config['samples'],
-            aims_zarr_gambcolu = config['AIMs']['gambcolu'],
-            aims_zarr_arab = config['AIMs']['arab']
-        output:
-            AIMs = "results/variants/AIMs/AIMs_summary.tsv",
-            AIMs_fig = "results/variants/AIMs/AIM_fraction_overall.png",
-            AIMs_gamb = "results/variants/AIMs/AIMs_gambiae.tsv",
-            AIMs_colu = "results/variants/AIMs/AIMs_coluzzii.tsv"
-        log:
-            "logs/AIMs/AIMs.log"
-        conda:
-            "../envs/fstpca.yaml"
-        params:
-            chroms = config['chroms'],
-            missingprop = 0.5,
-            qualflt = 30
-        script:
-            "../scripts/AncestryInformativeMarkers.py"
+rule AIMs:
+    input:
+        vcf = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
+        samples = config['samples'],
+        aims_zarr_gambcolu = config['AIMs']['gambcolu'],
+        aims_zarr_arab = config['AIMs']['arab']
+    output:
+        AIMs = "results/variants/AIMs/AIMs_summary.tsv",
+        AIMs_fig = "results/variants/AIMs/AIM_fraction_overall.png",
+        AIMs_gamb = "results/variants/AIMs/AIMs_gambiae.tsv",
+        AIMs_colu = "results/variants/AIMs/AIMs_coluzzii.tsv"
+    log:
+        "logs/AIMs/AIMs.log"
+    conda:
+        "../envs/fstpca.yaml"
+    params:
+        chroms = config['chroms'],
+        missingprop = 0.5,
+        qualflt = 30
+    script:
+        "../scripts/AncestryInformativeMarkers.py"

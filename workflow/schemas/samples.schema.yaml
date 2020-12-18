@@ -13,9 +13,6 @@ properties:
   species:
     type: string
     description: Name of species.
-  cohort:
-    type: string
-    description: i.e. "case" or "control". Unexposed strains = "control", exposed = "case". If there are no exposed strains, and only comparison to lab-susceptible, then the resistant strain should be "case".
   insecticide:
     type: string
     description: Name of insecticide, necessary in case of a dataset with multiple different insecticides.
@@ -28,8 +25,5 @@ properties:
 required:
   - samples
   - treatment
-  - cohort
   - species
   - strain
-  - insecticide 
-  - lab
