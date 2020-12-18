@@ -16,7 +16,8 @@ rule FastQC:
 
 rule Coverage:
     input:
-        "resources/alignments/{sample}.bam"
+        bam = "resources/alignments/{sample}.bam",
+        idx = "resources/alignments/{sample}.bam.bai"
     output:
         "resources/alignments/coverage/{sample}.mosdepth.summary.txt"
     log:
@@ -26,4 +27,4 @@ rule Coverage:
     params:
         prefix = "resources/alignments/coverage/{sample}"
     threads:4
-    shell: "mosdepth --threads {threads} --fast-mode --no-per-base {params.prefix} {input}"
+    shell: "mosdepth --threads {threads} --fast-mode --no-per-base {params.prefix} {input.bam}"
