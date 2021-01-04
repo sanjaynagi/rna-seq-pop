@@ -10,23 +10,22 @@ import warnings
 warnings.filterwarnings('ignore') # suppress numpy runtime warnings, this is a bit dangerous, should be removed for release or resolve source of warnings
 
 # snakemake inputs and params
-metadata_path = snakemake.input[0]
+metadata_path = snakemake.input['samples']
 samples = pd.read_csv(metadata_path, sep="\s+")
-gffpath = snakemake.input[1]
-comparisons_path = snakemake.input[2]
-pbs = snakemake.params[0]
-pbscomps = snakemake.params[1]
-chroms = snakemake.params[2]
-ploidy = snakemake.params[3]
-missingprop = snakemake.params[4]
-gffchromprefix= snakemake.params[5]
+gffpath = snakemake.input['gff']
+comparisons_path = snakemake.input['DEcontrasts']
+pbs = snakemake.params['pbs']
+pbscomps = snakemake.params['pbscomps']
+chroms = snakemake.params['chroms']
+ploidy = snakemake.params['ploidy']
+missingprop = snakemake.params['missingprop']
 
 # gff
 features = allel.gff3_to_dataframe(gffpath,
                        attributes=["ID", "description"])
 gff = features[features.type == 'gene']
 # gene names file, rename
-gene_names = pd.read_csv(snakemake.input[3], sep="\t")
+gene_names = pd.read_csv(snakemake.input['geneNames'], sep="\t")
 gene_names.columns = ['GeneID' if x=='Gene_stable_ID' else x for x in gene_names.columns]
 
 ### main ####

@@ -1,7 +1,9 @@
+#!/usr/bin/env Rscript
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
+
 #GSEA RNA-Seq Ag
-BiocManager::install("clusterProfiler")
-BiocManager::install("gage")
-BiocManager::install("KEGGREST")
 
 library(gage)
 library(KEGGREST)
@@ -81,4 +83,4 @@ plotGseaTable(examplePathways[topPathways], exampleRanks, fgseaRes,
               gseaParam=0.5)
 
 
-
+sessionInfo()

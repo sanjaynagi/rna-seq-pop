@@ -42,3 +42,5 @@ metadata %>%
 metadata %>% 
    select(bams) %>% 
    fwrite(.,snakemake@output[['bamlist']], sep="\t", row.names = FALSE, col.names = FALSE)
+
+sessionInfo()

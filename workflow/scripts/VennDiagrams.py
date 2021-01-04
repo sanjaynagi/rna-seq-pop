@@ -53,13 +53,13 @@ def add_columns_xlsx(name, fst, highfst, diffsnps):
 
 #### Main ####
 # Read contrasts in and other snakemake params
-comparisons = pd.read_csv(snakemake.input[0])
+comparisons = pd.read_csv(snakemake.input['DEcontrasts'])
 comparisons = comparisons.contrast.str.split("_", expand=True)
 comparisons = [list(row) for i,row in comparisons.iterrows()]
 
-pbs = snakemake.params[0]
-pbscomps = snakemake.params[1]
-percentile = snakemake.params[2]
+pbs = snakemake.params['pbs']
+pbscomps = snakemake.params['pbscomps']
+percentile = snakemake.params['percentile']
 
 
 # Create a Pandas Excel writer using XlsxWriter as the engine.

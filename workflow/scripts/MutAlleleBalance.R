@@ -3,18 +3,16 @@ log <- file(snakemake@log[[1]], open="wt")
 sink(log)
 sink(log, type="message")
 
-.libPaths(c("/home/snagi/miniconda3/lib/R/library", "~/R/x86_64-conda_cos6-linux-gnu-library/3.6", "/home/sanj/R/x86_64-pc-linux-gnu-library/3.6", 
-            "/usr/local/lib/R/site-library", "/usr/lib/R/site-library",  "/usr/lib/R/library"))
 library(tidyverse)
 library(data.table)
 library(glue)
 library(openxlsx)
 
 #### allele imbalance ####
-metadata = fread(snakemake@input[[2]], sep="\t")
+metadata = fread(snakemake@input[['samples']], sep="\t")
 samples = metadata$samples
 # Read IR mutation data 
-mutation_data = fread(snakemake@input[[3]], sep="\t")
+mutation_data = fread(snakemake@input[['mutations']], sep="\t")
 
 all_list = list()
 mean_list = list()
@@ -83,3 +81,4 @@ for (i in 1:length(sheets)){
 #### save workbook to disk once all worksheets and data have been added ####
 saveWorkbook(wb,file=snakemake@output[['mean_allele_balance']], overwrite = TRUE)
 
+sessionInfo()

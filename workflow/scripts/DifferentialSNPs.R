@@ -1,7 +1,7 @@
 #! /usr/bin/env RScript
-#log <- file(snakemake@log[[1]], open="wt")
-#sink(log)
-#sink(log, type="message")
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
 
 library(data.table)
 library(kissDE)
@@ -10,14 +10,14 @@ library(tidyverse)
 library(rtracklayer)
 
 ######## parse files #############
-chroms = snakemake@params[[1]]
-metadata = fread(snakemake@input[[1]])
-contrasts = fread(snakemake@input[[3]], header = TRUE) 
+chroms = snakemake@params[['chroms']]
+metadata = fread(snakemake@input[['samples']])
+contrasts = fread(snakemake@input[['DEcontrasts']], header = TRUE) 
 comparisons = contrasts %>% separate(contrast, into = c("control", "case"), sep = "_")
-mincounts = snakemake@params[[3]]
-pval = snakemake@params[[4]]
+mincounts = snakemake@params[['mincounts']]
+pval = snakemake@params[['pval_flt']]
 
-gffpath = snakemake@input[[2]]
+gffpath = snakemake@input[['gff']]
 #load gff with rtracklayer and filter to genes only 
 gff = rtracklayer::import(gffpath) %>% 
   as.data.frame() %>% 
@@ -141,3 +141,5 @@ for (i in 1:nrow(comparisons)){
     dplyr::rename("GeneID" = "ID") %>%
     fwrite(., glue("results/variants/diffsnps/{name}.sig.kissDE.tsv"), sep="\t", row.names=FALSE)
 }
+
+sessionInfo()
