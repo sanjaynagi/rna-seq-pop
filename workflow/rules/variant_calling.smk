@@ -22,7 +22,7 @@ rule HISAT2splicesites:
 	conda:
 		"../envs/variants.yaml"
 	log:
-		"logs/hisat2/splice_sites.log"
+		"logs/HISAT2/HISAT2splicesites.log"
 	shell:
 		"""
 		hisat2_extract_splice_sites.py {input.gtf} > {output.splice_sites} 2> {log}
@@ -37,7 +37,7 @@ rule HISAT2index:
 	output:
 		directory("resources/reference/ht2index/")
 	log:
-		"logs/hisat2/index.log"
+		"logs/HISAT2/HISAT2index.log"
 	conda:
 	    "../envs/variants.yaml"
 	params:
@@ -55,7 +55,7 @@ rule HISAT2align:
 	output:
 		temp("temp/{sample}.bam")
 	log:
-		"logs/hisat2/{sample}_align.log"
+		"logs/HISAT2/{sample}_HISAT2align.log"
 	params:
 		extra="--dta -q --rg-id {sample} --rg SM:{sample}"
 	threads:12
@@ -68,7 +68,7 @@ rule SortBams:
     output:
         "resources/alignments/{sample}.bam"
     log:
-        "logs/samtools/sortbams/{sample}.log"
+        "logs/SortBams/{sample}.log"
     wrapper:
         "0.65.0/bio/samtools/sort"
 
@@ -78,7 +78,7 @@ rule IndexBams:
     output:
         "resources/alignments/{sample}.bam.bai"
     log:
-        "logs/samtools/indexbams/{sample}.log"
+        "logs/IndexBams/{sample}.log"
     wrapper:
         "0.65.0/bio/samtools/index"
 
@@ -91,7 +91,6 @@ rule GenomeIndex:
 
 chunks = np.arange(1, config['chunks'])
 
-
 rule GenerateFreebayesParams:
     input:
         ref_idx = config['ref']['genome'],
@@ -101,6 +100,8 @@ rule GenerateFreebayesParams:
         bamlist = "resources/bam.list",
         pops = "resources/populations.tsv",
         regions = expand("resources/regions/genome.{chrom}.region.{i}.bed", chrom=config['chroms'], i = chunks)
+    log:
+        "logs/GenerateFreebayesParams.log"
     params:
         metadata = config['samples'],
         chroms = config['chroms'],
@@ -108,7 +109,7 @@ rule GenerateFreebayesParams:
     conda:
         "../envs/diffsnps.yaml"
     script:
-        "../scripts/generateFreebayesParams.R"
+        "../scripts/GenerateFreebayesParams.R"
 
 rule VariantCallingFreebayes:
 	input:
@@ -120,7 +121,7 @@ rule VariantCallingFreebayes:
 	output:
 		temp("results/variants/vcfs/{chrom}/variants.{i}.vcf")
 	log:
-		"logs/freebayes/{chrom}.{i}.log"
+		"logs/VariantCallingFreebayes/{chrom}.{i}.log"
 	params:
 		ploidy = config['ploidy'],
 		pops = "resources/populations.tsv"
@@ -135,7 +136,7 @@ rule ConcatVCFs:
     output:
         "results/variants/vcfs/variants.{chrom}.vcf"
     log:
-        "logs/bcftools/{chrom}.log"
+        "logs/ConcatVCFs/{chrom}.log"
     conda:
         "../envs/variants.yaml"
     threads:4
@@ -146,7 +147,7 @@ rule snpEffDbDownload:
     output:
         touch("workflow/scripts/snpEff/db.dl")
     log:
-        "logs/snpEff/snpeff_download.log"
+        "logs/snpEff/snpEffDbDownload.log"
     params:
         ref = config['ref']['snpeffdb']
     shell:
@@ -159,7 +160,7 @@ rule snpEff:
     output:
         calls = "results/variants/vcfs/annot.variants.{chrom}.vcf.gz",
     log:
-        "logs/snpEff/snpeff_{chrom}.log"
+        "logs/snpEff/snpEff.{chrom}.log"
     params:
         db = config['ref']['snpeffdb'],
         prefix = "results/variants/vcfs/annot.variants.{chrom}.vcf"
@@ -183,7 +184,7 @@ rule MissenseAndQualFilter:
         java -jar workflow/scripts/snpEff/SnpSift.jar filter "{params.expression}" {input.vcf} > {output} 2> {log}
         """
 
-rule MakeBedOfPositions:
+rule ExtractBedVCF:
     input:
         vcf = expand("results/variants/vcfs/annot.missense.{chrom}.vcf", chrom=config['chroms'])
     output:
@@ -191,8 +192,8 @@ rule MakeBedOfPositions:
     conda:
         "../envs/fstpca.yaml"
     log:
-        "logs/allelicdepth/extractBedVCF.log"
+        "logs/ExtractBedVCF.log"
     params:
         chroms = config['chroms']
     script:
-        "../scripts/extractBedVCF.py"
+        "../scripts/ExtractBedVCF.py"

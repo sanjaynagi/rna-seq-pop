@@ -45,9 +45,9 @@ rule DifferentialGeneExpression:
 	conda:
 		"../envs/diffexp.yaml"
 	log:
-		"logs/DESeq2/geneDE.log"
+		"logs/DifferentialGeneExpression.log"
 	script:
-		"../scripts/kallistoDE.R"
+		"../scripts/DeseqGeneDE.R"
 
 rule DifferentialIsoformExpression:
 	input:
@@ -62,9 +62,9 @@ rule DifferentialIsoformExpression:
 	conda:
 		"../envs/sleuth.yaml"
 	log:
-		"logs/sleuth/isoformDE.log"
+		"logs/DifferentialIsoformExpression.log"
 	script:
-	    "../scripts/sleuthIsoformsDE.R"
+	    "../scripts/SleuthIsoformsDE.R"
 
 
 rule progressiveGenesDE:
@@ -80,6 +80,6 @@ rule progressiveGenesDE:
 	conda:
 	    "../envs/sleuth.yaml"
 	log:
-	    "logs/progressiveDE.log"
+	    "logs/progressiveGenesDE.log"
 	script:
-	    "../scripts/progressiveDE.R"
+	    "../scripts/ProgressiveDE.R"

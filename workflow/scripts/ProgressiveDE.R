@@ -1,3 +1,8 @@
+#!/usr/bin/env Rscript
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
+
 library(data.table)
 library(tidyverse)
 library(glue)
@@ -45,11 +50,4 @@ for (cont in comps){
 }
 
 
-
-
-
-
-
-
-
-
+sessionInfo()

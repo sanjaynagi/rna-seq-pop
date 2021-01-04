@@ -1,11 +1,10 @@
 import pandas as pd
 
-
 def get_desired_outputs(wildcards): 
 
     """
     Function that returns a list of the desired outputs for the rule all, depending on the config.yaml
-    configuration file
+    configuration file. As of V0.1 Does not list every single output, but will mean all rules and outputs are created.
     """
 
     wanted_input = []
@@ -141,8 +140,3 @@ rule DElist:
         df = pd.DataFrame(params.contrasts)
         df.columns = ['contrast']
         df.to_csv(output.DElist, sep="\t", index=None)
-
-#def get_bioc_species_pkg(wildcards):
- #   """Get the package bioconductor package name for the the species in config.yaml"""
-  #  species_letters = config["resources"]["ref"]["species"][0:2].capitalize()
-   # return "org.{species}.eg.db".format(species=species_letters)

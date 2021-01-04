@@ -13,11 +13,10 @@ library(glue)
 library(RColorBrewer)
 library(EnhancedVolcano)
 
-
 print("------------- Kallisto - Sleuth - RNASeq isoform Differential expression ---------")
 #### read data ####
 
-samples = fread(snakemake@input[[1]], sep="\t") %>% 
+samples = fread(snakemake@input[['samples']], sep="\t") %>% 
   as.data.frame() %>% 
   rename('sample' = "samples")
 
@@ -25,11 +24,11 @@ samples = fread(snakemake@input[[1]], sep="\t") %>%
 samples$path = paste0("results/quant/",samples$sample)
 
 #read metadata and get contrasts
-gene_names = fread(snakemake@input[[2]], sep="\t") %>% 
+gene_names = fread(snakemake@input[['gene_names']], sep="\t") %>% 
   rename("GeneID" = "Gene_stable_ID")
 
 #contrasts
-contrastsdf = fread(snakemake@input[[3]])
+contrastsdf = fread(snakemake@input[['DEcontrasts']])
 contrasts = contrastsdf$contrast
 
 ######### subset data and run DESeq for each combo we need, store in xlsx ########
@@ -95,7 +94,4 @@ for (i in 1:length(sheets)){
 #### save workbook to disk once all worksheets and data have been added ####
 saveWorkbook(wb,file=snakemake@output[[1]], overwrite = TRUE)
   
-
-
-
 sessionInfo()

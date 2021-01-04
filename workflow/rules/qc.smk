@@ -8,7 +8,7 @@ rule FastQC:
 		html="resources/reads/qc/{sample}_{n}_fastqc.html",
 		zip="resources/reads/qc/{sample}_{n}_fastqc.zip"
 	log:
-		"logs/fastqc/{sample}_{n}_QC.log"
+		"logs/FastQC/{sample}_{n}_QC.log"
 	params:
 		outdir="--outdir resources/reads/qc"
 	wrapper:
@@ -21,7 +21,7 @@ rule Coverage:
     output:
         "resources/alignments/coverage/{sample}.mosdepth.summary.txt"
     log:
-        "logs/mosdepth/{sample}.log"
+        "logs/Coverage/{sample}.log"
     conda:
         "../envs/depth.yaml"
     params:

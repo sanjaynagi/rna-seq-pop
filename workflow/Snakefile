@@ -1,9 +1,9 @@
 # The main entry point of your workflow.
 # After configuring, running snakemake -n in a clone of this repository should successfully execute a dry-run of the workflow.
-#report: "report/workflow.rst"
+# report: "report/workflow.rst"
 
 # Allow users to fix the underlying OS via singularity.
-#singularity: "docker://continuumio/miniconda3"
+# singularity: "docker://continuumio/miniconda3"
 from snakemake.utils import validate
 import pandas as pd
 import numpy as np

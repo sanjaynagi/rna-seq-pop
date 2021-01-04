@@ -9,16 +9,16 @@ rule mpileupIR:
     conda:
         "../envs/variants.yaml"
     log:
-        "logs/mpileup/{sample}_{mut}.log"
+        "logs/mpileupIR/{sample}_{mut}.log"
     params:
         region = lambda wildcards: mutationdata[mutationdata.Name == wildcards.mut].Location.tolist(),
         ref = config['ref']['genome']
     shell:
         """
-        samtools mpileup {input.bam} -r {params.region} -f {params.ref} | python2 workflow/scripts/baseParser.py > {output}
+        samtools mpileup {input.bam} -r {params.region} -f {params.ref} | python2 workflow/scripts/BaseParser.py > {output}
         """
 
-rule alleleBalanceIR:
+rule AlleleBalanceIR:
     input:
         counts = expand("results/allele_balance/counts/{sample}_{mut}_allele_counts.tsv", sample=samples, mut=mutations),
         samples = config['samples'],
@@ -30,11 +30,11 @@ rule alleleBalanceIR:
     conda:
         "../envs/diffexp.yaml"
     log:
-        "logs/AlleleBalance.log"
+        "logs/AlleleBalanceIR.log"
     script:
-        "../scripts/AlleleBalance.R"
+        "../scripts/MutAlleleBalance.R"
 
-rule alleleTables:
+rule AlleleTables:
     input:
         bam = "resources/alignments/{sample}.bam",
         bed = "resources/regions/missense.pos.{chrom}.bed",
@@ -44,7 +44,7 @@ rule alleleTables:
     conda:
         "../envs/variants.yaml"
     log:
-        "logs/mpileup/{sample}.{chrom}.log"
+        "logs/AlleleTables/{sample}.{chrom}.log"
     params:
         ignore_indels='false',
         baseflt=-5,
@@ -70,14 +70,13 @@ rule DifferentialSNPs:
     conda:
         "../envs/diffsnps.yaml"
     log:
-        "logs/variants/diffsnps.log"
+        "logs/DifferentialSNPs.log"
     params:
         chroms = config['chroms'],
-#        gffchromprefix = config['ref']['str_remove'], # in case like the aedes genome, there is an annoying prefix before each chromosome
         mincounts = 100,
         pval_flt = 0.001, # pvalues already adjusted but way want extra filter for sig file
     script:
-         "../scripts/differentialSNPs.R"
+         "../scripts/DifferentialSNPs.R"
 
 
 rule WindowedStatisticsAndPCA:
@@ -95,7 +94,7 @@ rule WindowedStatisticsAndPCA:
        # LD = "results/variants/stats/LD.tsv",
        # LDmean = "results/variants/stats/LD.mean.tsv"
     log:
-        "logs/variantStatistics/stats.log"
+        "logs/WindowedStatisticsAndPCA.log"
     conda:
         "../envs/fstpca.yaml"
     params:
@@ -110,7 +109,7 @@ rule WindowedStatisticsAndPCA:
     script:
         "../scripts/WindowedStatsAndPCA.py"
 
-rule FstPbsTajimasDSeqDivPerGene:
+rule FstPbsPerGene:
     input:
         samples = config['samples'],
         gff = config['ref']['gff'],
@@ -124,7 +123,7 @@ rule FstPbsTajimasDSeqDivPerGene:
     conda:
         "../envs/fstpca.yaml"
     log:
-        "logs/variants/FstPBSTajimasDseqDiv.log"
+        "logs/FstPbsPerGene.log"
     params:
         pbs = config['pbs']['activate'],
         pbscomps = config['pbs']['contrasts'],
@@ -132,29 +131,10 @@ rule FstPbsTajimasDSeqDivPerGene:
         ploidy = config['ploidy'],
         missingprop = 0.8,
     script:
-        "../scripts/FstPbsTajimasDseqDiv.py"
+        "../scripts/FstPbsPerGene.py"
 
-rule Venn:
-   input:
-        DEcontrasts = "resources/DE.contrast.list",
-        DE = "results/genediff/RNA-Seq_diff.xlsx",
-        Fst = "results/variants/Fst.tsv",
-        diffsnps = expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts'])
-   output:
-        "results/RNA-Seq-full.xlsx",
-        expand("results/venn/{name}_DE.Fst.venn.png", name=config['contrasts'])
-   conda:
-        "../envs/fstpca.yaml"
-   log:
-        "logs/venn.log"
-   params:
-        pbs=config['pbs']['activate'],
-        pbscomps=config['pbs']['contrasts'],
-        percentile=0.05
-   script:
-       "../scripts/venn.py"
 
-rule AIMs:
+rule AncestryInformativeMarkers:
     input:
         vcf = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
         samples = config['samples'],
@@ -166,7 +146,7 @@ rule AIMs:
         AIMs_gamb = "results/variants/AIMs/AIMs_gambiae.tsv",
         AIMs_colu = "results/variants/AIMs/AIMs_coluzzii.tsv"
     log:
-        "logs/AIMs/AIMs.log"
+        "logs/AncestryInformativeMarkers.log"
     conda:
         "../envs/fstpca.yaml"
     params:
@@ -175,3 +155,23 @@ rule AIMs:
         qualflt = 30
     script:
         "../scripts/AncestryInformativeMarkers.py"
+
+rule VennDiagrams:
+   input:
+        DEcontrasts = "resources/DE.contrast.list",
+        DE = "results/genediff/RNA-Seq_diff.xlsx",
+        Fst = "results/variants/Fst.tsv",
+        diffsnps = expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts'])
+   output:
+        "results/RNA-Seq-full.xlsx",
+        expand("results/venn/{name}_DE.Fst.venn.png", name=config['contrasts'])
+   conda:
+        "../envs/fstpca.yaml"
+   log:
+        "logs/VennDiagrams.log"
+   params:
+        pbs=config['pbs']['activate'],
+        pbscomps=config['pbs']['contrasts'],
+        percentile=0.05
+   script:
+       "../scripts/VennDiagrams.py"
