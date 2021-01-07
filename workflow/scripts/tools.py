@@ -5,7 +5,7 @@ import numpy as np
 from scipy import stats
 import pandas as pd
 import matplotlib
-matplotlib.use('agg')
+#matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 from functools import partial, reduce
@@ -237,7 +237,70 @@ def pca(geno, chrom, dataset, populations, samples, pop_colours, prune=True, sca
 
 
 
-#### Garuds G12 ####
+
+
+
+### AIMs plotting###
+
+def plot_aims(df, n_aims, species1="coluzzii", species2="gambiae", figtitle="AIM_fraction_overall", total=True):
+    
+    # if we are plotting the total genome wide AIM fraction, sum the number of obs for each chrom
+    if total:
+        n_aims = n_aims.sum(axis=0)
+    else:
+        n_aims = n_aims['n_AIMs']
+    totalaims = ["n=" + str(t) for t in n_aims]
+
+    #### Seaborn stacked barplots, overall AIM fraction ####
+    sns.set_style("white")
+    sns.set_context({"figure.figsize":(24,10)})
+
+    total = df[f'AIM_fraction_{species1}'] + df[f'AIM_fraction_{species2}']
+
+    sns.barplot(x = df.index, y=total, color="#e84c3d")
+    bottom_plot = sns.barplot(x = df.index, y = df[f'AIM_fraction_{species2}'], color = "#3598db")
+
+    box = bottom_plot.get_position()
+    bottom_plot.set_position([box.x0, box.y0, box.width * 0.95, box.height])
+
+    # Legend
+    topbar = plt.Rectangle((0,0),1,1,fc="#e84c3d", edgecolor = 'none')
+    bottombar = plt.Rectangle((0,0),1,1,fc='#3598db',  edgecolor = 'none')
+    l = plt.legend([bottombar, topbar], 
+                   [f'An. {species2}', f'An. {species1}'],
+                   loc='right', bbox_to_anchor=(1.18, 0.5),
+              ncol=1, fancybox=True, shadow=True, prop={'size':20})
+    l.draw_frame(True)
+
+    # label the bars with n_obs
+    pos = range(len(totalaims))
+    for tick,label in zip(pos, bottom_plot.get_xticklabels()):
+        bottom_plot.text(pos[tick], 0.75, totalaims[tick], 
+                horizontalalignment='center', size=15, color="k")
+
+    # Label axes
+    bottom_plot.set_ylabel("AIM fraction")
+    bottom_plot.set_xlabel("Population")
+
+    #Set fonts to consistent 16pt size
+    for item in ([bottom_plot.xaxis.label, bottom_plot.yaxis.label] +
+             bottom_plot.get_xticklabels() + bottom_plot.get_yticklabels()):
+        item.set_fontsize(22)
+    
+    # add title and save figure
+    plt.title(f"{figtitle}", fontsize=22)
+    plt.savefig(f"results/variants/AIMs/{figtitle}.png")
+    plt.close()    
+
+
+
+
+
+
+
+
+### NOT USED IN PIPELINE ###
+#### Garuds G12 #### 
 # Instead of haps.discrete_frequencies() in allel.garuds_h() which does not allow for differences between multi-locus genotypes
 
 def cluster_G12(gnalt, cut_height=0.1, metric='euclidean'):
