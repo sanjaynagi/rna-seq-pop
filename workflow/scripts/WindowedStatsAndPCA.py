@@ -10,6 +10,7 @@ dataset = snakemake.params['dataset']
 samples = pd.read_csv(snakemake.input['samples'], sep="\t")
 samples = samples.sort_values(by='species')
 chroms = snakemake.params['chroms']
+ploidy = snakemake.params['ploidy']
 comparisons_path = snakemake.input['DEcontrasts']
 pbs = snakemake.params['pbs']
 pbscomps = snakemake.params['pbscomps']

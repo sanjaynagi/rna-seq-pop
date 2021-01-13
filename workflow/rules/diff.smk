@@ -83,3 +83,30 @@ rule progressiveGenesDE:
 	    "logs/progressiveGenesDE.log"
 	script:
 	    "../scripts/ProgressiveDE.R"
+
+
+rule GeneSetEnrichment:
+	input:
+		samples = config['samples'],
+		DEcontrasts = "resources/DE.contrast.list",
+		gaf = config['ref']['gaf'],
+		DEresults = expand("results/genediff/{comp}.csv", comp=config['contrasts']),
+		diffsnps = expand("results/variants/diffsnps/{comp}.kissDE.tsv", comp=config['contrasts']),
+		Fst = "results/variants/Fst.tsv",
+		PBS = "results/variants/PBS.tsv"
+	output:
+		expand("results/gsea/genediff/{comp}.DE.csv", comp = config['contrasts']),
+		expand("results/gsea/fst/{comp}.FST.csv", comp = config['contrasts']),
+		expand("results/gsea/diffsnps/{comp}.diffsnps.csv", comp = config['contrasts']),
+		expand("results/gsea/pbs/{pbscomp}.PBS.csv", pbscomp = config['pbs']['contrasts'])
+	params:
+		pbs = config['pbs']['activate'],
+		pbscomps = config['pbs']['contrasts'],
+		replaceStringKegg = config['GSEA']['replaceString'],
+		KeggSpeciesID = config['GSEA']['KeggSpeciesID']
+	conda:
+		"../envs/gsea.yaml"
+	log:
+		"logs/GSEA/GeneSetEnrichment_.log"
+	script:
+		"../scripts/GeneSetEnrichment.R"

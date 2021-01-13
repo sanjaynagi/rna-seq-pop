@@ -100,6 +100,7 @@ rule WindowedStatisticsAndPCA:
     params:
         dataset = config['dataset'],
         chroms = config['chroms'],
+        ploidy = config['ploidy'],
         pbs = config['pbs']['activate'],
         pbscomps = config['pbs']['contrasts'],
         LD = 'False',
@@ -151,6 +152,7 @@ rule AncestryInformativeMarkers:
         "../envs/fstpca.yaml"
     params:
         chroms = config['chroms'],
+        ploidy = config['ploidy'],
         missingprop = 0.5,
         qualflt = 30
     script:
@@ -170,8 +172,8 @@ rule VennDiagrams:
    log:
         "logs/VennDiagrams.log"
    params:
-        pbs=config['pbs']['activate'],
-        pbscomps=config['pbs']['contrasts'],
-        percentile=0.05
+        pbs = config['pbs']['activate'],
+        pbscomps = config['pbs']['contrasts'],
+        percentile = 0.05
    script:
        "../scripts/VennDiagrams.py"

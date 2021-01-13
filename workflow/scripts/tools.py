@@ -57,7 +57,9 @@ def get_colour_dict(populations, palette="Set1"):
     pop_colours = {A: B for A, B in zip(np.unique(populations), colors)}
     return(pop_colours)
 
-ploidy=10
+# Ploidy needs a value so give it NA, ploidy will then be reassigned later.
+# Important to first import tools.py and then after assign ploidy from config.yaml
+ploidy = float("NaN")
 numbers = {
     'samples':1,
     'variants/CHROM': 1,

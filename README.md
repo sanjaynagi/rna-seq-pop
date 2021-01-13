@@ -10,7 +10,7 @@ This workflow performs various analyses of illumina paired-end RNA-Sequencing da
 * Allele balance reports of pre-specified loci of choice. 
 * Variant calling with freebayes, and a gene-based Fst and Population branch statistic (PBS) analysis.
 * Differential SNP testing with the R package 'kissDE', which accounts for allele-specific expression.
-* Enrichment analyses and Venn diagrams. (To be implemented) 
+* Enrichment analyses and Venn diagrams.
 
 The workflow is still in construction, and not yet ready for release.
 

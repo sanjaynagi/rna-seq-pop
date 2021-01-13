@@ -75,7 +75,21 @@ def get_desired_outputs(wildcards):
     if config['IRmutations']['activate']:
         wanted_input.extend(["results/allele_balance/allele_balance.xlsx"])
     
-    return wanted_input
+
+    if config['GSEA']['activate']:
+       wanted_input.extend(
+           expand(
+                [
+                    "results/gsea/genediff/{comp}.DE.csv",
+                    "results/gsea/fst/{comp}.FST.csv",
+                    "results/gsea/diffsnps/{comp}.diffsnps.csv",
+                    "results/gsea/pbs/{pbscomp}.PBS.csv",
+                ],
+                comp = config['contrasts'],
+                pbscomp = config['pbs']['contrasts'])
+        )
+
+    return(wanted_input)
 
 
 
