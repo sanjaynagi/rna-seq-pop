@@ -11,6 +11,7 @@ samples = pd.read_csv(snakemake.input['samples'], sep="\t")
 samples = samples.sort_values(by='species').reset_index(drop=True)
 chroms = snakemake.params['chroms']
 ploidy = snakemake.params['ploidy']
+numbers = get_numbers_dict(ploidy)
 qualflt = snakemake.params['qualflt']
 missingprop = snakemake.params['missingprop']
 
@@ -31,6 +32,7 @@ for chrom in chroms:
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops =  readAndFilterVcf(path=path,
                                                                chrom=chrom,
                                                                samples=samples,
+                                                               numbers=numbers,
                                                                qualflt=qualflt,
                                                                missingfltprop=missingprop)
     aimspos = aims[chrom]['POS'][:]
@@ -143,7 +145,7 @@ n_aimsdf.to_csv(f"results/variants/AIMs/n_AIMS_per_chrom.tsv", sep="\t", index=T
 df = df1.merge(df2, left_index=True, right_index=True)
 df.to_csv(f"results/variants/AIMs/AIMs_summary.tsv", sep="\t", index=True)
 
-plot_aims(df, n_aimsdf, species1="coluzzii", species2="gambiae", figtitle="AIMs_fraction_whole_genome", total=True)
+plot_aims(df, n_aimsdf, species1="coluzzii", species2="gambiae", figtitle="AIM_fraction_whole_genome", total=True)
 
 
 
@@ -278,4 +280,4 @@ if samples['species'].isin(['arabiensis']).any():
     df = df1.merge(df2, left_index=True, right_index=True)
     df.to_csv(f"results/variants/AIMs/AIMs_summary_arab.tsv", sep="\t", index=True)
 
-    plot_aims(df, n_aimsdf, species1="arabiensis", species2="gambiae", figtitle="AIMs_fraction_whole_genome", total=True)
+    plot_aims(df, n_aimsdf, species1="arabiensis", species2="gambiae", figtitle="AIM_fraction_whole_genome", total=True)

@@ -11,6 +11,7 @@ samples = pd.read_csv(snakemake.input['samples'], sep="\t")
 samples = samples.sort_values(by='species')
 chroms = snakemake.params['chroms']
 ploidy = snakemake.params['ploidy']
+numbers = get_numbers_dict(ploidy)
 comparisons_path = snakemake.input['DEcontrasts']
 pbs = snakemake.params['pbs']
 pbscomps = snakemake.params['pbscomps']
@@ -47,12 +48,13 @@ thetadictchrom = {}
 coefdictchrom= {}
 ldictchrom = {}
 
-for i,chrom in enumerate(chroms):
+for i, chrom in enumerate(chroms):
 
     path = f"results/variants/vcfs/annot.variants.{chrom}.vcf.gz"
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, populations = readAndFilterVcf(path=path,
                                                            chrom=chrom,
                                                            samples=samples,
+                                                           numbers=numbers,
                                                            qualflt=qualflt,
                                                            missingfltprop=missingprop)
 
@@ -91,7 +93,31 @@ for i,chrom in enumerate(chroms):
 
     snps_per_gene_allchroms[chrom] = pd.DataFrame.from_dict(flip_dict(snps_per_gene))
 
-    ######## pbs windowed ########
+
+    ######## Fst in windows ########## 
+    for sus,res in comparisons:
+        name = sus + "_" + res
+
+        print(f"Calculating Fst values in sliding window for {name}\n")
+
+        FstArray = allel.moving_hudson_fst(acsubpops[sus], 
+                        acsubpops[res], 
+                        size=10000, step=1000)
+        midpoint = allel.moving_statistic(pos, np.mean, size=10000, step=1000)
+
+        plt.figure(figsize=[20,8])
+        sns.lineplot(midpoint, FstArray)
+        plt.title(f"Fst {chrom} {name}")
+        plt.savefig(f"results/variants/plots/fst/{name}.{chrom}.fst.line.png")
+        plt.close()
+        #plt.figure()
+        #sns.scatterplot(midpoint, FstArray)
+        #plt.title(f"Fst {chrom} {name}")
+        #plt.savefig(f"results/variants/plots/fst/{name}.{chrom}.fst.scatter.png")
+
+
+
+    ######## Population Branch Statistic (PBS) in windows ########
     if pbs:
         for pbscomp in pbscomps:
             name = pbscomp[0] + "_" + pbscomp[1] + "_" + pbscomp[2]
@@ -107,20 +133,16 @@ for i,chrom in enumerate(chroms):
             plt.figure(figsize=[20,8])
             sns.lineplot(midpoint, pbsArray)
             plt.title(f"PBS {chrom} {name}")
-            plt.savefig(f"results/variants/plots/PBS_{name}.{chrom}.line.png")
+            plt.savefig(f"results/variants/plots/pbs/{name}.{chrom}.pbs.line.png")
             plt.close()
-            plt.figure()
-            sns.scatterplot(midpoint, pbsArray)
-            plt.title(f"PBS {chrom} {name}")
-            plt.savefig(f"results/variants/plots/PBS_{name}.{chrom}.scatter.png")
+            #plt.figure()
+            #sns.scatterplot(midpoint, pbsArray)
+            #plt.title(f"PBS {chrom} {name}")
+            #plt.savefig(f"results/variants/plots/pbs/{name}.{chrom}.pbs.scatter.png")
 
 
-    #### pattersons f3 statistic ####
-    #pattersonf3(acsubpops['gambiaeCont'], acsubpops['coluzziiCont'], acsubpops['coluzziiDelta'], pos, f"gambcont_{chrom}")
-    #pattersonf3(acsubpops['gambiaeDelta'], acsubpops['coluzziiCont'], acsubpops['coluzziiDelta'], pos, f"gambdelta_{chrom}")
-    #pattersonf3(acsubpops['coluzziiDelta'], acsubpops['gambiaeCont'], acsubpops['gambiaeDelta'], pos, f"coludelta_{chrom}")
 
-    #### PCA #####
+    ######## Principal Components Analysis (PCA) ########
     d={}
     for name, inds in subpops.items():
         for n in range(len(list(subpops.values())[0])):
@@ -135,20 +157,20 @@ for i,chrom in enumerate(chroms):
     print(f"\n Performing PCA on {dataset} chromosome {chrom}")
     pca(geno, chrom, dataset, populations, samples, pop_colours, prune=True, scaler=None)
 
-    ######## Variant density ####
+    ######## Variant density over genome ########
     plot_density(pos, window_size=100000, title=f"Variant Density chromosome {chrom}", path=f"results/variants/plots/{dataset}_SNPdensity_{chrom}.png")
 
-    #### genome-wide mean statistics (seqDiv, LD, inbreeding coefficient) ####
+    #### Genome-wide statistics (seqDiv, Wattersons Theta, LD, inbreeding coefficient) ####
     seqdivdict = {}
     thetadict = {}
     coefdict= {}
     ldict = {}
-
     allcoef = defaultdict(list)
     allld = defaultdict(list)
 
     for pop in samples.treatment.unique():
 
+        # subset to each population and filter to biallelic markers for LD calculation
         gn = geno.take(subpops[pop], axis=1)
         bial_ = acsubpops[pop].is_biallelic()
         gnalt = gn.compress(bial_, axis=0).to_n_alt()
