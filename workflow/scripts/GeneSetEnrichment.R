@@ -41,14 +41,14 @@ comparisons = fread(snakemake@input['DEcontrasts'])
 gaffile = snakemake@input['gaf']
 pbs = snakemake@params['pbs']
 pbscomps = snakemake@params['pbscomps']
-replaceString = snakemake@params['replaceString']
+replaceString = snakemake@params['replaceStringKegg']
 speciesID = snakemake@params['KeggSpeciesID']
 
-samples = fread("config/samples.tsv") %>% as.data.frame()
-comparisons = fread("resources/DE.contrast.list")
-pbscomps = c("DeltAbo_ContAbo_ContTia")
-replaceString = "AgaP_"
-speciesID = "aga"
+#samples = fread("config/samples.tsv") %>% as.data.frame()
+##comparisons = fread("resources/DE.contrast.list")
+#pbscomps = c("DeltAbo_ContAbo_ContTia")
+#replaceString = "AgaP_"
+#speciesID = "aga"
   
   
 GeneSetList = list()

@@ -57,33 +57,34 @@ def get_colour_dict(populations, palette="Set1"):
     pop_colours = {A: B for A, B in zip(np.unique(populations), colors)}
     return(pop_colours)
 
-# Ploidy needs a value so give it NA, ploidy will then be reassigned later.
-# Important to first import tools.py and then after assign ploidy from config.yaml
-ploidy = float("NaN")
-numbers = {
-    'samples':1,
-    'variants/CHROM': 1,
-    'variants/POS': 1,
-    'variants/ID': 1,
-    'variants/REF': 1,
-    'variants/ALT': 'A',
-    'variants/QUAL': 1,
-    'variants/DP': 1,
-    'variants/AN': 1,
-    'variants/AC': 'A',
-    'variants/AF': 'A',
-    'variants/MQ': 1,
-    'variants/ANN': 1,
-    'calldata/DP': 1,
-    'calldata/GT': ploidy,
-    'calldata/GQ': 1,
-    'calldata/HQ': 2,
-    'calldata/AD': 'R',
-    'calldata/MQ0': 1,
-    'calldata/MQ': 1,
-}
 
-def readAndFilterVcf(path, chrom, samples, qualflt=30, missingfltprop=0.6, plot=True, verbose=False):
+def get_numbers_dict(ploidy):
+    numbers = {
+        'samples':1,
+        'variants/CHROM': 1,
+        'variants/POS': 1,
+        'variants/ID': 1,
+        'variants/REF': 1,
+        'variants/ALT': 'A',
+        'variants/QUAL': 1,
+        'variants/DP': 1,
+        'variants/AN': 1,
+        'variants/AC': 'A',
+        'variants/AF': 'A',
+        'variants/MQ': 1,
+        'variants/ANN': 1,
+        'calldata/DP': 1,
+        'calldata/GT': ploidy,
+        'calldata/GQ': 1,
+        'calldata/HQ': 2,
+        'calldata/AD': 'R',
+        'calldata/MQ0': 1,
+        'calldata/MQ': 1,
+        }
+    return(numbers)
+
+
+def readAndFilterVcf(path, chrom, samples, numbers, qualflt=30, missingfltprop=0.6, plot=True, verbose=False):
 
     """
     This function reads a VCF file, and filters it to a given quality and missingness proportion

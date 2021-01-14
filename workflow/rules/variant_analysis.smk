@@ -88,11 +88,12 @@ rule WindowedStatisticsAndPCA:
     output:
         PCAfig = expand("results/variants/plots/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset']),
         SNPdensityFig = expand("results/variants/plots/{dataset}_SNPdensity_{chrom}.png", chrom=config['chroms'], dataset=config['dataset']),
+        Fst = expand("results/variants/plots/fst/{comp}.{chrom}.fst.line.png", comp=config['contrasts'], chrom=config['chroms']),
+#        PBS = expand("results/variants/plots/pbs/{pbscomp}.{chrom}.pbs.line.png", pbscomp=config['pbs']['contrasts'], chrom=config['chroms']),
         inbreedingCoef = "results/variants/stats/inbreedingCoef.tsv",
         inbreedingCoefMean = "results/variants/stats/inbreedingCoef.mean.tsv",
         SequenceDiversity = "results/variants/stats/SequenceDiversity.tsv",
-       # LD = "results/variants/stats/LD.tsv",
-       # LDmean = "results/variants/stats/LD.mean.tsv"
+        #LD = "results/variants/stats/LD.tsv"
     log:
         "logs/WindowedStatisticsAndPCA.log"
     conda:
@@ -143,9 +144,9 @@ rule AncestryInformativeMarkers:
         aims_zarr_arab = config['AIMs']['arab']
     output:
         AIMs = "results/variants/AIMs/AIMs_summary.tsv",
-        AIMs_fig = "results/variants/AIMs/AIM_fraction_overall.png",
-        AIMs_gamb = "results/variants/AIMs/AIMs_gambiae.tsv",
-        AIMs_colu = "results/variants/AIMs/AIMs_coluzzii.tsv"
+        AIMs_fig = "results/variants/AIMs/AIM_fraction_whole_genome.png",
+        n_AIMs = "results/variants/AIMs/n_AIMS_per_chrom.tsv",
+        AIMs_chroms = expand("results/variants/AIMs/AIM_fraction_{chrom}.tsv", chrom=config['chroms'])
     log:
         "logs/AncestryInformativeMarkers.log"
     conda:
@@ -153,7 +154,7 @@ rule AncestryInformativeMarkers:
     params:
         chroms = config['chroms'],
         ploidy = config['ploidy'],
-        missingprop = 0.5,
+        missingprop = config['AIMs']['missingness'],
         qualflt = 30
     script:
         "../scripts/AncestryInformativeMarkers.py"

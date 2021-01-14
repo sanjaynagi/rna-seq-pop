@@ -18,6 +18,7 @@ pbs = snakemake.params['pbs']
 pbscomps = snakemake.params['pbscomps']
 chroms = snakemake.params['chroms']
 ploidy = snakemake.params['ploidy']
+numbers = get_numbers_dict(ploidy)
 missingprop = snakemake.params['missingprop']
 
 # gff
@@ -49,11 +50,12 @@ for chrom in chroms:
     # function to read in vcfs and associated SNP data
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops =  readAndFilterVcf(path=path,
                                                                chrom=chrom, samples=samples,
+                                                               numbers=numbers,
                                                                qualflt=30,
                                                                missingfltprop=missingprop,
                                                                plot=False)
     # subset gff to appropriate chrom
-    genes = gff[gff.seqid == f"{gffchromprefix}{chrom}"].sort_values('start').reset_index(drop=True)
+    genes = gff[gff.seqid == chrom].sort_values('start').reset_index(drop=True)
 
     ### Average Fst, pbs, tajima d for each gene
     fst_per_comp = {}

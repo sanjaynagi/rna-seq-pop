@@ -11,6 +11,7 @@ This workflow performs various analyses of illumina paired-end RNA-Sequencing da
 * Variant calling with freebayes, and a gene-based Fst and Population branch statistic (PBS) analysis.
 * Differential SNP testing with the R package 'kissDE', which accounts for allele-specific expression.
 * Enrichment analyses and Venn diagrams.
+* Analysis of Ancestry Informative Markers (AIMs) (For *Anopheles gambiae/coluzzii/arabiensis* samples)
 
 The workflow is still in construction, and not yet ready for release.
 

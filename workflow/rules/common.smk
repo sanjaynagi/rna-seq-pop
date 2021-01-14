@@ -51,24 +51,33 @@ def get_desired_outputs(wildcards):
                 "results/variants/Fst.tsv",
                 "results/variants/TajimasD.tsv",
                 "results/variants/SequenceDiv.tsv",
+                "results/variants/plots/fst/{comp}.{chrom}.fst.line.png",
+        #        "results/variants/plots/pbs/{pbscomp}.{chrom}.pbs.line.png",
                 "results/RNA-Seq-full.xlsx",
                 "results/venn/{name}_DE.Fst.venn.png",
                 ],
                 name = config['contrasts'],
                 chrom = config['chroms'],
-                dataset = config['dataset']
+                dataset = config['dataset'],
+                stat = ['fst', 'pbs'],
+                comp = config['contrasts'],
+        #        pbscomp = config['pbs']['contrasts'],
+                plot = ['line', 'scatter']
             )
         )
 
     # Ancestry Informative Markers
     if config['AIMs']['activate']:
         wanted_input.extend(
-            [
-                "results/variants/AIMs/AIMs_summary.tsv",
-                "results/variants/AIMs/AIM_fraction_overall.png",
-                "results/variants/AIMs/AIMs_gambiae.tsv",
-                "results/variants/AIMs/AIMs_coluzzii.tsv"
-            ]
+            expand(
+                [
+                    "results/variants/AIMs/AIMs_summary.tsv",
+                    "results/variants/AIMs/AIM_fraction_whole_genome.png",
+                    "results/variants/AIMs/n_AIMS_per_chrom.tsv",
+                    "results/variants/AIMs/AIM_fraction_{chrom}.tsv",
+                ],
+                chrom=config['chroms'],
+            )
         )
 
     #IRmutations
