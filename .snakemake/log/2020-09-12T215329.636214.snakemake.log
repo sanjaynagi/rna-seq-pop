@@ -1,4 +1,0 @@
-Building DAG of jobs...
-WildcardError in line 154 of /home/snagi/lstm_data/rna-seq-ir/workflow/rules/variants.smk:
-Wildcards in input files cannot be determined from output files:
-'reference'

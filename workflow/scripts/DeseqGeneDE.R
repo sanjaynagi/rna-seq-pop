@@ -15,11 +15,11 @@ library(RColorBrewer)
 library(EnhancedVolcano)
 
 #read metadata and get contrasts
-samples = fread(snakemake@input[[1]], sep="\t") %>% as.data.frame()
-gene_names = fread(snakemake@input[[2]], sep="\t") %>% 
+samples = fread(snakemake@input[['samples']], sep="\t") %>% as.data.frame()
+gene_names = fread(snakemake@input[['gene_names']], sep="\t") %>% 
   rename("GeneID" = "Gene_stable_ID")
 
-contrastsdf = fread(snakemake@input[[3]])
+contrastsdf = fread(snakemake@input[['DEcontrasts']])
 contrasts = contrastsdf$contrast
 
 ##### define functions ######
@@ -237,6 +237,6 @@ for (i in 1:length(sheets)){
   writeData(wb, sheets[i], results_list[[i]], rowNames = FALSE, colNames = TRUE)
 }
 #### save workbook to disk once all worksheets and data have been added ####
-saveWorkbook(wb,file=snakemake@output[[1]], overwrite = TRUE)
+saveWorkbook(wb,file=snakemake@output[['xlsx']], overwrite = TRUE)
 
 sessionInfo()

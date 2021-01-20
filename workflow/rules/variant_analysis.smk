@@ -8,6 +8,7 @@ rule mpileupIR:
         "results/allele_balance/counts/{sample}_{mut}_allele_counts.tsv"
     conda:
         "../envs/variants.yaml"
+    priority: 10
     log:
         "logs/mpileupIR/{sample}_{mut}.log"
     params:
@@ -29,6 +30,7 @@ rule AlleleBalanceIR:
         mean_allele_balance = "results/allele_balance/mean_allele_balance.xlsx"
     conda:
         "../envs/diffexp.yaml"
+    priority: 10
     log:
         "logs/AlleleBalanceIR.log"
     script:
@@ -67,8 +69,8 @@ rule DifferentialSNPs:
         expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts']),
         expand("results/variants/diffsnps/{name}.kissDE.tsv", name = config['contrasts']),
         expand("results/variants/diffsnps/{name}.normcounts.tsv", name = config['contrasts'])
-    conda:
-        "../envs/diffsnps.yaml"
+#    conda:
+#        "../envs/diffsnps.yaml"
     log:
         "logs/DifferentialSNPs.log"
     params:
@@ -178,3 +180,4 @@ rule VennDiagrams:
         percentile = 0.05
    script:
        "../scripts/VennDiagrams.py"
+

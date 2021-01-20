@@ -24,12 +24,17 @@ def get_desired_outputs(wildcards):
 
     # Differential Expression outputs
     wanted_input.extend(
+            expand(
                 [
+                    "results/genediff/{comp}.csv",
                     "results/genediff/RNA-Seq_diff.xlsx",
+                    "results/isoformdiff/{comp}.csv",
                     "results/isoformdiff/RNA-Seq_isoformdiff.xlsx",
                     "results/plots/PCA.pdf",
                     "results/quant/count_statistics.tsv"
                 ],
+             comp = config['contrasts']
+            )
         )
 
     # Progressive changes in expression - e.g Kisumu < control field < resistant field
@@ -42,7 +47,7 @@ def get_desired_outputs(wildcards):
     wanted_input.extend(
         expand(
             [
-                "results/variants/diffsnps/{name}.sig.kissDE.tsv",
+ #               "results/variants/diffsnps/{name}.sig.kissDE.tsv",
                 "results/variants/plots/PCA-{chrom}-{dataset}.png",
                 "results/variants/plots/{dataset}_SNPdensity_{chrom}.png",
                 "results/variants/stats/inbreedingCoef.tsv",
@@ -53,8 +58,8 @@ def get_desired_outputs(wildcards):
                 "results/variants/SequenceDiv.tsv",
                 "results/variants/plots/fst/{comp}.{chrom}.fst.line.png",
         #        "results/variants/plots/pbs/{pbscomp}.{chrom}.pbs.line.png",
-                "results/RNA-Seq-full.xlsx",
-                "results/venn/{name}_DE.Fst.venn.png",
+#                "results/RNA-Seq-full.xlsx",
+#                "results/venn/{name}_DE.Fst.venn.png",
                 ],
                 name = config['contrasts'],
                 chrom = config['chroms'],
@@ -65,6 +70,15 @@ def get_desired_outputs(wildcards):
                 plot = ['line', 'scatter']
             )
         )
+
+#    if config['pbs']['activate']:
+ #       wanted_input.extend(
+  #           [
+   #               "results/variants/PBS.tsv"
+    #         ]
+     #   )
+
+
 
     # Ancestry Informative Markers
     if config['AIMs']['activate']:
@@ -91,12 +105,11 @@ def get_desired_outputs(wildcards):
                 [
                     "results/gsea/genediff/{comp}.DE.csv",
                     "results/gsea/fst/{comp}.FST.csv",
-                    "results/gsea/diffsnps/{comp}.diffsnps.csv",
-                    "results/gsea/pbs/{pbscomp}.PBS.csv",
+#                    "results/gsea/diffsnps/{comp}.diffsnps.csv",
                 ],
                 comp = config['contrasts'],
-                pbscomp = config['pbs']['contrasts'])
-        )
+                )
+	)
 
     return(wanted_input)
 
@@ -155,6 +168,8 @@ def get_desired_outputs(wildcards):
 
 
 rule DElist:
+    input:
+        "config/config.yaml" # so that if we change the config, start again 
     output:
         DElist="resources/DE.contrast.list"
     params:

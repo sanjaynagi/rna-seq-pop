@@ -7,12 +7,13 @@ This workflow performs various analyses of illumina paired-end RNA-Sequencing da
 
 * Quality control with FASTQC and RSeqQC
 * Differential expression analysis with Kallisto at the gene level (DESeq2) and transcript level (Sleuth)
-* Allele balance reports of pre-specified loci of choice. 
 * Variant calling with freebayes, and a gene-based Fst and Population branch statistic (PBS) analysis.
 * Differential SNP testing with the R package 'kissDE', which accounts for allele-specific expression.
 * Enrichment analyses and Venn diagrams.
+* Allele balance reports of pre-specified loci of choice.
 * Analysis of Ancestry Informative Markers (AIMs) (For *Anopheles gambiae/coluzzii/arabiensis* samples)
 
+The workflow is generalised, and will function with any trimmed Illumina paired-end RNA-sequencing. However, certain modules, such as the AIMs analysis, are only appropriate for specific species. These can be activated in the configuration file (config.yaml). 
 The workflow is still in construction, and not yet ready for release.
 
 ## Authors

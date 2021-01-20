@@ -35,7 +35,8 @@ rule HISAT2index:
 		splice_sites="resources/reference/splice-sites.gtf",
 		exons="resources/reference/exon-sites.gtf"
 	output:
-		directory("resources/reference/ht2index/")
+		"resources/reference/ht2index/idx.1.ht2",
+                touch("resources/reference/ht2index/.complete")
 	log:
 		"logs/HISAT2/HISAT2index.log"
 	conda:
@@ -43,7 +44,7 @@ rule HISAT2index:
 	params:
 		ss="--ss {input.splice_sites}",
 		exon="--exon {input.exons}",
-		prefix="resources/reference/ht2index/"
+		prefix="resources/reference/ht2index/idx"
 	threads:8
 	shell:
 		"hisat2-build -p {threads} --ss {input.splice_sites} --exon {input.exons} {input.fasta} {params.prefix}  2> {log}"
@@ -51,16 +52,17 @@ rule HISAT2index:
 rule HISAT2align:
 	input:
 		reads=["resources/reads/{sample}_1.fastq.gz", "resources/reads/{sample}_2.fastq.gz"],
-		idx="resources/reference/ht2index/"
+		idxmarker="resources/reference/ht2index/.complete"             
 	output:
 		temp("temp/{sample}.bam")
 	log:
 		"logs/HISAT2/{sample}_HISAT2align.log"
 	params:
-		extra="--dta -q --rg-id {sample} --rg SM:{sample}"
+		extra="--dta -q --rg-id {sample} --rg SM:{sample}",
+		idx="resources/reference/ht2index/idx"     
 	threads:12
 	wrapper:
-		"0.65.0/bio/hisat2/align"
+		"v0.69.0/bio/hisat2/align"
 
 rule SortBams:
     input:
@@ -107,7 +109,7 @@ rule GenerateFreebayesParams:
         chroms = config['chroms'],
         chunks = config['chunks']
     conda:
-        "../envs/diffsnps.yaml"
+        "../envs/diffexp.yaml"
     script:
         "../scripts/GenerateFreebayesParams.R"
 
