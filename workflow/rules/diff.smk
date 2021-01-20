@@ -37,9 +37,10 @@ rule DifferentialGeneExpression:
 		DEcontrasts = "resources/DE.contrast.list",
 		counts = expand("results/quant/{sample}", sample=samples)
 	output:
-		"results/genediff/RNA-Seq_diff.xlsx",
-		"results/plots/PCA.pdf",
-		"results/quant/count_statistics.tsv"
+		csvs = expand("results/genediff/{comp}.csv", comp=config['contrasts']),
+		xlsx = "results/genediff/RNA-Seq_diff.xlsx",
+		pca = "results/plots/PCA.pdf",
+		countstats = "results/quant/count_statistics.tsv"
 	group:"diffexp"
 	priority: 10
 	conda:
@@ -56,7 +57,8 @@ rule DifferentialIsoformExpression:
 		DEcontrasts = "resources/DE.contrast.list",
 		counts = expand("results/quant/{sample}", sample=samples)
 	output:
-		"results/isoformdiff/RNA-Seq_isoformdiff.xlsx"
+                csvs = expand("results/isoformdiff/{comp}.csv", comp=config['contrasts']),
+		xlsx = "results/isoformdiff/RNA-Seq_isoformdiff.xlsx"
 	group:"diffexp"
 	priority: 10
 	conda:
@@ -93,12 +95,12 @@ rule GeneSetEnrichment:
 		DEresults = expand("results/genediff/{comp}.csv", comp=config['contrasts']),
 		diffsnps = expand("results/variants/diffsnps/{comp}.kissDE.tsv", comp=config['contrasts']),
 		Fst = "results/variants/Fst.tsv",
-		PBS = "results/variants/PBS.tsv"
+#		PBS = "results/variants/PBS.tsv"
 	output:
 		expand("results/gsea/genediff/{comp}.DE.csv", comp = config['contrasts']),
 		expand("results/gsea/fst/{comp}.FST.csv", comp = config['contrasts']),
 		expand("results/gsea/diffsnps/{comp}.diffsnps.csv", comp = config['contrasts']),
-		expand("results/gsea/pbs/{pbscomp}.PBS.csv", pbscomp = config['pbs']['contrasts'])
+#		expand("results/gsea/pbs/{pbscomp}.PBS.csv", pbscomp = config['pbs']['contrasts'])
 	params:
 		pbs = config['pbs']['activate'],
 		pbscomps = config['pbs']['contrasts'],

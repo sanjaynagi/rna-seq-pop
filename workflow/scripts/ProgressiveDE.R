@@ -9,15 +9,14 @@ library(glue)
 
 #read metadata and get contrasts
 comps = snakemake@params['comps']
-comps = c(paste0(comps[[1]][1:3], collapse = "_"), paste0(comps[[1]][4:6], collapse = "_"))
 
+#comps = c(paste0(comps[[1]][1:3], collapse = "_"), paste0(comps[[1]][4:6], collapse = "_"))
 ####
 for (cont in comps){
-  print(cont)
-  res = str_split(cont, "_")[[1]][2] #get first of string, which is control 
-  intermediate = str_split(cont, "_")[[1]][1] #get case 
-  sus = str_split(cont, "_")[[1]][3]
-  print(res, intermediate, sus)
+  res = str_split(cont, "_")[[1]][3] #get first of string, which is control 
+  intermediate = str_split(cont, "_")[[1]][2] #get case 
+  sus = str_split(cont, "_")[[1]][1]
+
   #### Gene diff ####
   one = fread(glue("results/genediff/{intermediate}_{res}.csv"))
   up1  = one %>% filter(FC > 1, padj < 0.05)

@@ -1,4 +1,0 @@
-WorkflowError in line 145 of /home/snagi/lstm_data/rna-seq-ir/workflow/rules/variants.smk:
-Flags in file patterns given to expand() are invalid. Flags (e.g. temp(), directory()) have to be applied outside of expand (e.g. 'temp(expand("plots/{sample}.pdf", sample=SAMPLES))').
-  File "/home/snagi/lstm_data/rna-seq-ir/workflow/Snakefile", line 25, in <module>
-  File "/home/snagi/lstm_data/rna-seq-ir/workflow/rules/variants.smk", line 145, in <module>
