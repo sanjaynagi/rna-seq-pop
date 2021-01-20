@@ -69,8 +69,8 @@ rule DifferentialSNPs:
         expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts']),
         expand("results/variants/diffsnps/{name}.kissDE.tsv", name = config['contrasts']),
         expand("results/variants/diffsnps/{name}.normcounts.tsv", name = config['contrasts'])
-#    conda:
-#        "../envs/diffsnps.yaml"
+    conda:
+        "../envs/diffsnps.yaml"
     log:
         "logs/DifferentialSNPs.log"
     params:

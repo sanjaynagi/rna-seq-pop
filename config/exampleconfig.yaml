@@ -1,8 +1,10 @@
 samples: config/samples.tsv
 units: config/units.tsv
 
+# Dataset name
 dataset: 'Ag_TiassAbo'
 
+# Paths for reference files 
 ref:
   genome:
         "resources/reference/Anopheles-gambiae-PEST_CHROMOSOMES_AgamP4.fa"
@@ -12,8 +14,8 @@ ref:
         "resources/reference/Anopheles-gambiae-PEST_BASEFEATURES_AgamP4.12.gtf"
   gff:
         "resources/reference/Anopheles-gambiae-PEST_BASEFEATURES_AgamP4.12.gff3"
-  str_remove:
-        ""
+  gaf:
+        "resources/reference/VectorBase-50_AgambiaePEST_GO.gaf"
   snpeffdb:
         "Anopheles_gambiae"
   genenames:
@@ -23,7 +25,7 @@ ref:
 chroms: ['2L', '2R', '3L', '3R', 'X']
 
 qc:
-      activate: True
+      activate: False
 
 # List of contrasts to do DE and Fst analysis on. Should correspond to the 'treatment' columns of the samples.tsv file, and be separated by an underscore "_". i.e ['control_case'], or ['Kisumu_Tiassale'].
 # The treatment names themselves must not contain underscores
@@ -39,9 +41,15 @@ progressiveGenes:
       activate: False
       groups: #"ContTia_DeltTia_MalaTia"
 
+GSEA:
+      activate: True
+      KeggSpeciesID: "aga" # 3 letter KEGG species identifier
+      replaceString: "AgaP_"
+
+
 # Ploidy level for freebayes to call at. (Generally we are using pooled samples)
 ploidy: 10
-chunks: 9
+chunks: 9 # Number of chunks to split the genome into when parallelising freebayes
 
 # If activate:True, creates allele balance .xlsx reports on IR mutations of choice
 IRmutations: 
@@ -56,5 +64,6 @@ pbs:
 # For Anopheles gambiae s.l only - run Ancestry Informative Marker analysis.
 AIMs:
       activate: True
-      gambcolu: "resources/gamb_vs_colu.zarr"
-      arab: "resources/gambcolu_vs_arab.zarr"
+      missingness: 0.5                                # proportion between 0 and 1 
+      gambcolu: "resources/gamb_vs_colu.zarr"         # path to gambcolu AIMs
+      arab: "resources/gambcolu_vs_arab.zarr"         # path to arab AIMs
