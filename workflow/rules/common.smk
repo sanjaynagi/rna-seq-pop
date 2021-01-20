@@ -174,6 +174,8 @@ rule DElist:
         DElist="resources/DE.contrast.list"
     params:
         contrasts = config['contrasts']
+    log:
+        "logs/DElist.log"
     run:
         df = pd.DataFrame(params.contrasts)
         df.columns = ['contrast']
