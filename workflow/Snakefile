@@ -6,6 +6,7 @@
 from snakemake.utils import validate
 import pandas as pd
 import numpy as np
+import os
 configfile:"config/config.yaml"
 
 metadata = pd.read_csv(config['samples'], sep="\t")
@@ -13,8 +14,8 @@ validate(metadata, schema="schemas/samples.schema.yaml")
 samples = metadata.samples
 
 # IR allele balance mutations file
-mutationdata = pd.read_csv(config['IRmutations']['path'], sep="\t")
-mutations = mutationdata.Name
+mutationData = pd.read_csv(config['IRmutations']['path'], sep="\t")
+mutations = mutationData.Name
 
 include: "rules/common.smk"
 include: "rules/qc.smk"
@@ -27,3 +28,19 @@ rule all:
         # The first rule should define the default target files
         # The below function (defined in rules/common.smk) will read the config file and determine desired output files
         get_desired_outputs
+
+## This rule produces a table with all the desired contrasts between treatment groups. If the config file is updated, it will re-run the analysis (because new contrasts may have been added)
+## To update the config file, but not re-run already completed rules, use the --touch directive at the command line, to update the timestamps of created files 
+rule DElist:
+    input:
+        "config/config.yaml"
+    output:
+        DElist = "resources/DE.contrast.list"
+    params:
+        contrasts = config['contrasts']
+    log: 
+        "logs/DElist.log"
+    run:
+        df = pd.DataFrame(params.contrasts)
+        df.columns = ['contrast']
+        df.to_csv(output.DElist, sep="\t", index=None)

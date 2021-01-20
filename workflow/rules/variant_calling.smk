@@ -30,24 +30,24 @@ rule HISAT2splicesites:
 		"""
 
 rule HISAT2index:
-	input:
-		fasta = config['ref']['genome'],
-		splice_sites="resources/reference/splice-sites.gtf",
-		exons="resources/reference/exon-sites.gtf"
-	output:
-		"resources/reference/ht2index/idx.1.ht2",
-                touch("resources/reference/ht2index/.complete")
-	log:
-		"logs/HISAT2/HISAT2index.log"
-	conda:
-	    "../envs/variants.yaml"
-	params:
-		ss="--ss {input.splice_sites}",
-		exon="--exon {input.exons}",
-		prefix="resources/reference/ht2index/idx"
-	threads:8
-	shell:
-		"hisat2-build -p {threads} --ss {input.splice_sites} --exon {input.exons} {input.fasta} {params.prefix}  2> {log}"
+    input:
+        fasta = config['ref']['genome'],
+        splice_sites="resources/reference/splice-sites.gtf",
+        exons="resources/reference/exon-sites.gtf"
+    output:
+        "resources/reference/ht2index/idx.1.ht2",
+        touch("resources/reference/ht2index/.complete")
+    log:
+        "logs/HISAT2/HISAT2index.log"
+    conda:
+        "../envs/variants.yaml"
+    params:
+        ss = "--ss {input.splice_sites}",
+        exon = "--exon {input.exons}",
+        prefix = lambda w, output: output[0].split(os.extsep)[0]
+    threads:8
+    shell:
+        "hisat2-build -p {threads} --ss {input.splice_sites} --exon {input.exons} {input.fasta} {params.prefix}  2> {log}"
 	
 rule HISAT2align:
 	input:
@@ -86,10 +86,13 @@ rule IndexBams:
 
 rule GenomeIndex:
     input:
-         ref = config['ref']['genome']
+        ref = config['ref']['genome']
     output:
-         idx = config['ref']['genome'] + ".fai"
-    shell: "samtools faidx {input.ref}"
+        idx = config['ref']['genome'] + ".fai"
+    log: 
+        "logs/GenomeIndex.log"
+    wrapper: 
+        "v0.69.0/bio/samtools/faidx"
 
 chunks = np.arange(1, config['chunks'])
 
@@ -165,7 +168,7 @@ rule snpEff:
         "logs/snpEff/snpEff.{chrom}.log"
     params:
         db = config['ref']['snpeffdb'],
-        prefix = "results/variants/vcfs/annot.variants.{chrom}.vcf"
+        prefix = lambda w, output: output[0].split(os.extsep)[0]
     shell:
         """
         java -jar workflow/scripts/snpEff/snpEff.jar eff {params.db} {input.calls} > {params.prefix}
@@ -188,9 +191,9 @@ rule MissenseAndQualFilter:
 
 rule ExtractBedVCF:
     input:
-        vcf = expand("results/variants/vcfs/annot.missense.{chrom}.vcf", chrom=config['chroms'])
+        vcf = expand("results/variants/vcfs/annot.missense.{chrom}.vcf", chrom = config['chroms'])
     output:
-        bed = expand("resources/regions/missense.pos.{chrom}.bed", chrom=config['chroms'])
+        bed = expand("resources/regions/missense.pos.{chrom}.bed", chrom = config['chroms'])
     conda:
         "../envs/fstpca.yaml"
     log:
