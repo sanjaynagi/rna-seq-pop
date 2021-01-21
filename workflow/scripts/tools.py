@@ -5,7 +5,7 @@ import numpy as np
 from scipy import stats
 import pandas as pd
 import matplotlib
-#matplotlib.use('agg')
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 from functools import partial, reduce

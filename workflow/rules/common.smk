@@ -1,5 +1,14 @@
 ################################          Common functions           ##################################
 
+
+## If PBS is activated 
+if config['pbs']:
+    windowedStats = ['fst', 'pbs']
+    pbscomps = ["_".join(s) for s in config['pbs']['contrasts']]
+else:
+    windowedStats = ['fst']
+
+
 def get_desired_outputs(wildcards): 
 
     """
@@ -53,20 +62,18 @@ def get_desired_outputs(wildcards):
                 "results/variants/stats/inbreedingCoef.tsv",
                 "results/variants/stats/inbreedingCoef.mean.tsv",
                 "results/variants/stats/SequenceDiversity.tsv",
-                "results/variants/Fst.tsv",
+                "results/variants/fst.tsv",
                 "results/variants/TajimasD.tsv",
                 "results/variants/SequenceDiv.tsv",
                 "results/variants/plots/fst/{comp}.{chrom}.fst.line.png",
-        #        "results/variants/plots/pbs/{pbscomp}.{chrom}.pbs.line.png",
+#                "results/variants/plots/pbs/{pbscomp}.{chrom}.pbs.line.png",
 #                "results/RNA-Seq-full.xlsx",
 #                "results/venn/{name}_DE.Fst.venn.png",
                 ],
                 name = config['contrasts'],
                 chrom = config['chroms'],
                 dataset = config['dataset'],
-                stat = ['fst', 'pbs'],
                 comp = config['contrasts'],
-        #        pbscomp = config['pbs']['contrasts'],
                 plot = ['line', 'scatter']
             )
         )
