@@ -12,7 +12,7 @@ rule mpileupIR:
     log:
         "logs/mpileupIR/{sample}_{mut}.log"
     params:
-        region = lambda wildcards: mutationdata[mutationdata.Name == wildcards.mut].Location.tolist(),
+        region = lambda wildcards: mutationData[mutationData.Name == wildcards.mut].Location.tolist(),
         ref = config['ref']['genome']
     shell:
         """
