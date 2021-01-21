@@ -49,6 +49,7 @@ rule Coverage:
     conda:
         "../envs/depth.yaml"
     params:
-        prefix = lambda w, output: output[0].split(os.extsep)[0]
+        prefix = lambda w, output: output[0].split(os.extsep)[0],
+        windowsize = 300
     threads:4
-    shell: "mosdepth --threads {threads} --fast-mode --no-per-base {params.prefix} {input.bam}"
+    shell: "mosdepth --threads {threads} --fast-mode --by {params.windowsize} --no-per-base {params.prefix} {input.bam}"
