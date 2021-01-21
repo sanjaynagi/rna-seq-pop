@@ -94,13 +94,13 @@ rule GeneSetEnrichment:
 		gaf = config['ref']['gaf'],
 		DEresults = expand("results/genediff/{comp}.csv", comp=config['contrasts']),
 		diffsnps = expand("results/variants/diffsnps/{comp}.kissDE.tsv", comp=config['contrasts']),
-		Fst = "results/variants/Fst.tsv",
-#		PBS = "results/variants/PBS.tsv"
+		Fst = "results/variants/fst.tsv",
+		PBS = "results/variants/pbs.tsv" if config['pbs']['activate'] else [] 
 	output:
 		expand("results/gsea/genediff/{comp}.DE.csv", comp = config['contrasts']),
 		expand("results/gsea/fst/{comp}.FST.csv", comp = config['contrasts']),
 		expand("results/gsea/diffsnps/{comp}.diffsnps.csv", comp = config['contrasts']),
-#		expand("results/gsea/pbs/{pbscomp}.PBS.csv", pbscomp = config['pbs']['contrasts'])
+		expand("results/gsea/pbs/{pbscomp}.PBS.csv", pbscomp = pbscomps)
 	params:
 		pbs = config['pbs']['activate'],
 		pbscomps = config['pbs']['contrasts'],
