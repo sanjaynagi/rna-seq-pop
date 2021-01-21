@@ -91,7 +91,7 @@ rule WindowedStatisticsAndPCA:
         PCAfig = expand("results/variants/plots/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset']),
         SNPdensityFig = expand("results/variants/plots/{dataset}_SNPdensity_{chrom}.png", chrom=config['chroms'], dataset=config['dataset']),
         Fst = expand("results/variants/plots/fst/{comp}.{chrom}.fst.line.png", comp=config['contrasts'], chrom=config['chroms']),
-#        PBS = expand("results/variants/plots/pbs/{pbscomp}.{chrom}.pbs.line.png", pbscomp=config['pbs']['contrasts'], chrom=config['chroms']),
+        PBS = expand("results/variants/plots/pbs/{pbscomp}.{chrom}.pbs.line.png", pbscomp=pbscomps, chrom=config['chroms']) if config['pbs'] else [], 
         inbreedingCoef = "results/variants/stats/inbreedingCoef.tsv",
         inbreedingCoefMean = "results/variants/stats/inbreedingCoef.mean.tsv",
         SequenceDiversity = "results/variants/stats/SequenceDiversity.tsv",
@@ -121,7 +121,7 @@ rule FstPbsPerGene:
         geneNames = "resources/gene_names.tsv",
         vcf = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms'])
     output:
-        "results/variants/Fst.tsv",
+        expand("results/variants/{stat}.tsv", stat=windowedStats),
         "results/variants/TajimasD.tsv",
         "results/variants/SequenceDiv.tsv"
     conda:
@@ -165,7 +165,7 @@ rule VennDiagrams:
    input:
         DEcontrasts = "resources/DE.contrast.list",
         DE = "results/genediff/RNA-Seq_diff.xlsx",
-        Fst = "results/variants/Fst.tsv",
+        Fst = expand("results/variants/{stat}.tsv", stat=windowedStats),
         diffsnps = expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts'])
    output:
         "results/RNA-Seq-full.xlsx",
