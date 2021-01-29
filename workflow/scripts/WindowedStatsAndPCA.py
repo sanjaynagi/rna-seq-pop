@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 """
-A script to calculate various windowed population genetic statistics and PCA
+A script to calculate various SNP statistics, windowed population genetic statistics (Fst, PBS) and PCA.
+Currently not modularised to reduce the repetition of loading and filtering VCFs (which is slow). 
 """
 
 from tools import *
@@ -19,6 +20,13 @@ qualflt = snakemake.params['qualflt']
 missingprop = snakemake.params['missingprop']
 gffpath = snakemake.input['gff']
 linkage = snakemake.params['linkage']
+
+#Fst/PBS window size
+windowsize = snakemake.params['window_sizes']
+windowstep = snakemake.params['window_steps']
+windownames = snakemake.params['window_names']
+windows = zip(windownames, window_sizes, window_steps)
+
 
 # Read in list of contrasts
 comparisons = pd.read_csv(comparisons_path)
@@ -100,22 +108,17 @@ for i, chrom in enumerate(chroms):
 
         print(f"Calculating Fst values in sliding window for {name}\n")
 
-        FstArray = allel.moving_hudson_fst(acsubpops[sus], 
-                        acsubpops[res], 
-                        size=10000, step=1000)
-        midpoint = allel.moving_statistic(pos, np.mean, size=10000, step=1000)
+        for wname, size, step in windows:
+            FstArray = allel.moving_hudson_fst(acsubpops[sus], 
+                            acsubpops[res], 
+                            size=size, step=step)
+            midpoint = allel.moving_statistic(pos, np.mean, size=size, step=step)
 
-        plt.figure(figsize=[20,8])
-        sns.lineplot(midpoint, FstArray)
-        plt.title(f"Fst {chrom} {name}")
-        plt.savefig(f"results/variants/plots/fst/{name}.{chrom}.fst.line.png")
-        plt.close()
-        #plt.figure()
-        #sns.scatterplot(midpoint, FstArray)
-        #plt.title(f"Fst {chrom} {name}")
-        #plt.savefig(f"results/variants/plots/fst/{name}.{chrom}.fst.scatter.png")
-
-
+            plt.figure(figsize=[20,8])
+            sns.lineplot(midpoint, FstArray)
+            plt.title(f"Fst {chrom} {name}")
+            plt.savefig(f"results/variants/plots/fst/{name}.{chrom}.fst.{wname}.png")
+            plt.close()
 
     ######## Population Branch Statistic (PBS) in windows ########
     if pbs:
@@ -123,23 +126,19 @@ for i, chrom in enumerate(chroms):
             name = pbscomp[0] + "_" + pbscomp[1] + "_" + pbscomp[2]
 
             print(f"Calculating PBS values in sliding window for {name}\n")
-
+        
+        for wname, size, step in windows:
             pbsArray = allel.pbs(acsubpops[pbscomp[0]], 
                             acsubpops[pbscomp[1]], 
                             acsubpops[pbscomp[2]], 
-                            window_size=1000, window_step=500, normed=True)
-            midpoint = allel.moving_statistic(pos, np.mean, 1000, step=500)
+                            window_size=size, window_step=step, normed=True)
+            midpoint = allel.moving_statistic(pos, np.mean, size=size, step=step)
 
             plt.figure(figsize=[20,8])
             sns.lineplot(midpoint, pbsArray)
             plt.title(f"PBS {chrom} {name}")
-            plt.savefig(f"results/variants/plots/pbs/{name}.{chrom}.pbs.line.png")
+            plt.savefig(f"results/variants/plots/pbs/{name}.{chrom}.pbs.{wname}.png")
             plt.close()
-            #plt.figure()
-            #sns.scatterplot(midpoint, pbsArray)
-            #plt.title(f"PBS {chrom} {name}")
-            #plt.savefig(f"results/variants/plots/pbs/{name}.{chrom}.pbs.scatter.png")
-
 
 
     ######## Principal Components Analysis (PCA) ########

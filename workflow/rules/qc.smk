@@ -53,3 +53,16 @@ rule Coverage:
         windowsize = 300
     threads:4
     shell: "mosdepth --threads {threads} --fast-mode --by {params.windowsize} --no-per-base {params.prefix} {input.bam}"
+
+
+rule BamStats:
+    input:
+        bam = "resources/alignments/{sample}.bam",
+        idx = "resources/alignments/{sample}.bam.bai"
+    output:
+        stats = "resources/alignments/bamStats/{sample}.flagstat"
+    log:
+        "logs/BamStats/{sample}.log"
+    wrapper:
+        "0.70.0/bio/samtools/flagstat"
+
