@@ -106,10 +106,12 @@ rule WindowedStatisticsAndPCA:
         ploidy = config['ploidy'],
         pbs = config['pbs']['activate'],
         pbscomps = config['pbs']['contrasts'],
-        LD = 'False',
         missingprop = 0.8,
         qualflt = 30,
         linkage = False
+        window_sizes = config['pbs']['windowsizes'],
+        window_steps = config['pbs']['windowsteps'],
+        window_names = config['pbs']['windownames']
     script:
         "../scripts/WindowedStatsAndPCA.py"
 

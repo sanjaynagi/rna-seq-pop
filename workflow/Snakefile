@@ -32,8 +32,6 @@ rule all:
 ## This rule produces a table with all the desired contrasts between treatment groups. If the config file is updated, it will re-run the analysis (because new contrasts may have been added)
 ## To update the config file, but not re-run already completed rules, use the --touch directive at the command line, to update the timestamps of created files 
 rule DElist:
-    input:
-        "config/config.yaml"
     output:
         DElist = "resources/DE.contrast.list"
     params:
