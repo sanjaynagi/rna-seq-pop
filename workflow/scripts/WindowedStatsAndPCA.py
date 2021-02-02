@@ -123,21 +123,21 @@ for i, chrom in enumerate(chroms):
     ######## Population Branch Statistic (PBS) in windows ########
     if pbs:
         for pbscomp in pbscomps:
-            name = pbscomp[0] + "_" + pbscomp[1] + "_" + pbscomp[2]
+            pop1, pop2, outpop = pbscomp.split("_")
 
-            print(f"Calculating PBS values in sliding window for {name}\n")
+            print(f"Calculating PBS values in sliding window for {pbscomp}\n")
         
         for wname, size, step in windows:
-            pbsArray = allel.pbs(acsubpops[pbscomp[0]], 
-                            acsubpops[pbscomp[1]], 
-                            acsubpops[pbscomp[2]], 
+            pbsArray = allel.pbs(acsubpops[pop1], 
+                            acsubpops[pop2], 
+                            acsubpops[outpop], 
                             window_size=size, window_step=step, normed=True)
             midpoint = allel.moving_statistic(pos, np.mean, size=size, step=step)
 
             plt.figure(figsize=[20,8])
             sns.lineplot(midpoint, pbsArray)
-            plt.title(f"PBS {chrom} {name}")
-            plt.savefig(f"results/variants/plots/pbs/{name}.{chrom}.pbs.{wname}.png")
+            plt.title(f"PBS {chrom} {pbscomp}")
+            plt.savefig(f"results/variants/plots/pbs/{pbscomp}.{chrom}.pbs.{wname}.png")
             plt.close()
 
 

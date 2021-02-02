@@ -3,28 +3,36 @@ log <- file(snakemake@log[[1]], open="wt")
 sink(log)
 sink(log, type="message")
 
+
+#' Finds genes that are differentially expressed in the same direction
+#' Across two DE comparisons. For example, a gene may be significantly 
+#' upregulated in the control v intermediate phenotype comparison. 
+#' And also in the intermediate phenotype vs full phenotype comparison.
+
+
 library(data.table)
 library(tidyverse)
 library(glue)
 
 #read metadata and get contrasts
-comps = snakemake@params['comps']
+comps = snakemake@params['comps'][[1]]
+padj_threshold = snakemake@params['pval']
+upper_fc = snakemake@params['fc']
+lower_fc = 1/as.numeric(upper_fc) # if someone wants a FC threshold of 2, need to have lower threshold of 0.5.
 
-#comps = c(paste0(comps[[1]][1:3], collapse = "_"), paste0(comps[[1]][4:6], collapse = "_"))
-####
 for (cont in comps){
-  res = str_split(cont, "_")[[1]][3] #get first of string, which is control 
-  intermediate = str_split(cont, "_")[[1]][2] #get case 
-  sus = str_split(cont, "_")[[1]][1]
+  sus = str_split(cont, "_")[[1]][1]           # get control/susceptible name (such as Kisumu)
+  intermediate = str_split(cont, "_")[[1]][2]     # get intermediate
+  res = str_split(cont, "_")[[1]][3]              # get last of string, which is resistant/case 
 
   #### Gene diff ####
   one = fread(glue("results/genediff/{intermediate}_{res}.csv"))
-  up1  = one %>% filter(FC > 1, padj < 0.05)
-  down1 = one %>% filter(FC < 1, padj < 0.05)
+  up1  = one %>% filter(FC > upper_fc, padj < padj_threshold)
+  down1 = one %>% filter(FC < lower_fc, padj < padj_threshold)
   
   two = fread(glue("results/genediff/{sus}_{intermediate}.csv"))
-  up2  = two %>% filter(FC > 1, padj < 0.05)
-  down2 = two %>% filter(FC < 1, padj < 0.05)
+  up2  = two %>% filter(FC > upper_fc, padj < padj_threshold)
+  down2 = two %>% filter(FC < lower_fc, padj < padj_threshold)
   
   intersectdown = inner_join(down1, down2, by="GeneID", suffix=c("_field", "_lab"))
   intersectup = inner_join(up1, up2, by="GeneID", suffix=c("_field", "_lab"))
@@ -35,12 +43,12 @@ for (cont in comps){
   #### Isoforms #### 
   
   one = fread(glue("results/isoformdiff/{intermediate}_{res}.csv"))
-  up1  = one %>% filter(FC > 1, qval < 0.05)
-  down1 = one %>% filter(FC < 1, qval < 0.05)
+  up1  = one %>% filter(FC > upper_fc, qval < padj_threshold)
+  down1 = one %>% filter(FC < lower_fc, qval < padj_threshold)
   
   two = fread(glue("results/isoformdiff/{sus}_{intermediate}.csv"))
-  up2  = two %>% filter(FC > 1, qval < 0.05)
-  down2 = two %>% filter(FC < 1, qval < 0.05)
+  up2  = two %>% filter(FC > upper_fc, qval < padj_threshold)
+  down2 = two %>% filter(FC < lower_fc, qval < padj_threshold)
   
   intersectdown = inner_join(down1, down2, by="GeneID", suffix=c("_field", "_lab"))
   intersectup = inner_join(up1, up2, by="GeneID", suffix=c("_field", "_lab"))

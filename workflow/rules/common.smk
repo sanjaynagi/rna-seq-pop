@@ -1,10 +1,8 @@
 ################################          Common functions           ##################################
 
-
 ## If PBS is activated 
 if config['pbs']:
     windowedStats = ['fst', 'pbs']
-    pbscomps = ["_".join(s) for s in config['pbs']['contrasts']]
 else:
     windowedStats = ['fst']
 
@@ -66,9 +64,8 @@ def get_desired_outputs(wildcards):
                 "results/variants/TajimasD.tsv",
                 "results/variants/SequenceDiv.tsv",
                 "results/variants/plots/fst/{comp}.{chrom}.fst.line.png",
-#                "results/variants/plots/pbs/{pbscomp}.{chrom}.pbs.line.png",
-#                "results/RNA-Seq-full.xlsx",
-#                "results/venn/{name}_DE.Fst.venn.png",
+                "results/RNA-Seq-full.xlsx",
+                "results/venn/{name}_DE.Fst.venn.png",
                 ],
                 name = config['contrasts'],
                 chrom = config['chroms'],
@@ -77,15 +74,6 @@ def get_desired_outputs(wildcards):
                 plot = ['line', 'scatter']
             )
         )
-
-#    if config['pbs']['activate']:
- #       wanted_input.extend(
-  #           [
-   #               "results/variants/PBS.tsv"
-    #         ]
-     #   )
-
-
 
     # Ancestry Informative Markers
     if config['AIMs']['activate']:

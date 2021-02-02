@@ -20,8 +20,8 @@ mutations = mutationData.Name
 include: "rules/common.smk"
 include: "rules/qc.smk"
 include: "rules/diff.smk"
-include: "rules/variant_calling.smk"
-include: "rules/variant_analysis.smk"
+include: "rules/variantCalling.smk"
+include: "rules/variantAnalysis.smk"
 
 rule all:
     input:

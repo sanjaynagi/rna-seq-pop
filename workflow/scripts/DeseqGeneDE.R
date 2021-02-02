@@ -3,6 +3,11 @@ log <- file(snakemake@log[[1]], open="wt")
 sink(log)
 sink(log, type="message")
 
+#' This script performs differential expression analysis at the 
+#' gene level using DESeq2. It outputs heatmaps, PCAs, gene counts,
+#' as well as DE results. Final DE results for all contrasts are 
+#' saved in an .xslx report 
+
 ## Differential expression
 library(DESeq2)
 library(tidyverse)

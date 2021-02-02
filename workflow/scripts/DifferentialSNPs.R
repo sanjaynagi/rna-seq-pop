@@ -3,6 +3,12 @@ log <- file(snakemake@log[[1]], open="wt")
 sink(log)
 sink(log, type="message")
 
+
+#' This script reads in tables of allele counts, produced with samtools mpileup.
+#' Using the R package kissDE, it performs a differential SNP testing 
+#' analysis, testing if certain alleles are biased to be found in one 
+#' treatment group 
+
 library(data.table)
 library(kissDE)
 library(glue)
@@ -72,7 +78,7 @@ for (i in 1:nrow(comparisons)){
     alleles = rbindlist(list_) %>% arrange(chr, loc)
     #pivot to get separate rows for refcount and altcount as preferred by kissDE package
     sample_list[[sample]] = alleles %>% select(chr, loc, ref,alt, refcount, altcount) %>% 
-      pivot_longer(c(refcount, altcount),names_to="type", values_to=sample) %>% 
+      dplyr::pivot_longer(c(refcount, altcount),names_to="type", values_to=sample) %>% 
       mutate(eventsName = paste0("chr",chr,"_",loc,"_",ref,">",alt)) %>% 
       select(eventsName,type, sample)
     
