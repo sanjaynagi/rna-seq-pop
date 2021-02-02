@@ -7,7 +7,7 @@ This workflow performs various analyses of illumina paired-end RNA-Sequencing da
 
 * Quality control with [FASTQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
 * Differential expression analysis with [Kallisto](https://pachterlab.github.io/kallisto/) at the gene level ([DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)) and transcript level ([Sleuth](https://github.com/pachterlab/sleuth))
-* Variant calling with [freebayes](https://github.com/freebayes/freebayes), and an Fst and [Population branch statistic (PBS)](https://science.sciencemag.org/content/329/5987/75) analysis, both in windows and at the gene-level ([Scikit allel](https://scikit-allel.readthedocs.io/en/stable/)).
+* Variant calling with [freebayes](https://github.com/freebayes/freebayes), and an Fst and [Population branch statistic (PBS)](https://science.sciencemag.org/content/329/5987/75) analysis, both in windows and at the gene-level ([Scikit-allel](https://scikit-allel.readthedocs.io/en/stable/)).
 * Differential SNP testing with the R package [kissDE](https://bioconductor.org/packages/release/bioc/html/kissDE.html), which accounts for allele-specific expression.
 * Gene Set Enrichment analyses and Venn diagrams.
 * Allele balance reports of pre-specified loci of choice.
