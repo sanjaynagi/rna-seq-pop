@@ -10,11 +10,12 @@ sink(log, type="message")
 
 # GSEA RNA-Seq Ag
 library(GO.db)
-library(KEGGREST)
+library(gage)
 library(fgsea)
 library(data.table)
 library(glue)
 library(tidyverse)
+sessionInfo()
 
 ## functions ##
 runEnrich = function(rankedList, GeneSetList, outName){
@@ -41,21 +42,15 @@ runEnrich = function(rankedList, GeneSetList, outName){
 
 
 ###### configuration - metadata and parameters ######
-samples = fread(snakemake@input['samples']) %>% as.data.frame()
-comparisons = fread(snakemake@input['DEcontrasts'])
-gaffile = snakemake@input['gaf']
-pbs = snakemake@params['pbs']
-pbscomps = snakemake@params['pbscomps']
-replaceString = snakemake@params['replaceStringKegg']
-speciesID = snakemake@params['KeggSpeciesID']
+samples = fread(snakemake@input[['samples']]) %>% as.data.frame()
+comparisons = fread(snakemake@input[['DEcontrasts']])
+gaffile = snakemake@input[['gaf']]
+pbs = snakemake@params[['pbs']]
+pbscomps = snakemake@params[['pbscomps']]
+replaceString = snakemake@params[['replaceStringKegg']]
+speciesID = snakemake@params[['KeggSpeciesID']]
 
-#samples = fread("config/samples.tsv") %>% as.data.frame()
-##comparisons = fread("resources/DE.contrast.list")
-#pbscomps = c("DeltAbo_ContAbo_ContTia")
-#replaceString = "AgaP_"
-#speciesID = "aga"
-  
-  
+ 
 GeneSetList = list()
 ######### GO Terms #########
 # read in gaf file and select to appropriate columns and rename
@@ -94,15 +89,15 @@ for (comp in comparisons$contrast){
 
 ### Fst ####
 for (comp in comparisons$contrast){
-print(glue("Running KEGG and GO enrichment analyses for Fst {comp}"))
-# make ranked list using DE results, rank based on log2foldchange
-rank = fread("results/variants/Fst.tsv") %>% 
-  distinct() %>% 
-  dplyr::select(GeneID, glue("{comp}_zFst")) %>% 
-  deframe()
+  print(glue("Running KEGG and GO enrichment analyses for Fst {comp}"))
+  # make ranked list using DE results, rank based on log2foldchange
+  rank = fread("results/variants/fst.tsv") %>% 
+    distinct() %>% 
+    dplyr::select(GeneID, glue("{comp}_zFst")) %>% 
+    deframe()
 
-rank = rank %>% sort(decreasing = TRUE)
-runEnrich(rankedList = rank, GeneSetList = GeneSetList, outName = glue("/fst/{comp}.FST"))
+  rank = rank %>% sort(decreasing = TRUE)
+  runEnrich(rankedList = rank, GeneSetList = GeneSetList, outName = glue("/fst/{comp}.FST"))
 }
 
 
@@ -111,7 +106,7 @@ if (pbs == TRUE){
   for (comp in pbscomps){
   print(glue("Running KEGG and GO enrichment analyses for PBS {comp}"))
   # make ranked list using DE results, rank based on log2foldchange
-  rank = fread("results/variants/PBS.tsv") %>% 
+  rank = fread("results/variants/pbs.tsv") %>% 
     distinct() %>% 
     drop_na() %>% 
     dplyr::select(GeneID, glue("{comp}PBS")) %>% 
