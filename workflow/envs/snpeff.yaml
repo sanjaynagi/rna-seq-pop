@@ -1,0 +1,5 @@
+channels:
+  - bioconda
+dependencies:
+  - snpeff=5.0
+  - snpsift=4.3.1
