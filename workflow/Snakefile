@@ -17,6 +17,9 @@ samples = metadata.samples
 mutationData = pd.read_csv(config['IRmutations']['path'], sep="\t")
 mutations = mutationData.Name
 
+print(workflow.basedir)
+
+
 include: "rules/common.smk"
 include: "rules/qc.smk"
 include: "rules/diff.smk"

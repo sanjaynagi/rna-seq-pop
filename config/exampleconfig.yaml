@@ -4,6 +4,10 @@ units: config/units.tsv
 ## RNA-Seq-IR
 ## Author - Sanjay Curtis Nagi
 
+## gzipped fastq files should be stored in the resources/reads/ directory.
+## If the sample name is Kisumu1 in the samples.tsv file, the paired-end reads 
+## should be named Kisumu1_1.fastq.gz, and Kisumu1_2.fastq.gz. 
+
 # Dataset name
 dataset: 'Ag_Bouake'
 

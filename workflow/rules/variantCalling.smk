@@ -153,10 +153,12 @@ rule snpEffDbDownload:
         touch("workflow/scripts/snpEff/db.dl")
     log:
         "logs/snpEff/snpEffDbDownload.log"
+    conda:
+         "../envs/snpeff.yaml"
     params:
         ref = config['ref']['snpeffdb']
     shell:
-        "java -jar workflow/scripts/snpEff/snpEff.jar download {params.ref} 2> {log}"
+        "snpEff download {params.ref} 2> {log}"
 
 rule snpEff:
     input:
@@ -166,12 +168,14 @@ rule snpEff:
         calls = "results/variants/vcfs/annot.variants.{chrom}.vcf.gz",
     log:
         "logs/snpEff/snpEff.{chrom}.log"
+    conda:
+         "../envs/snpeff.yaml"
     params:
         db = config['ref']['snpeffdb'],
         prefix = lambda w, output: output[0].split(os.extsep)[0]
     shell:
         """
-        java -jar workflow/scripts/snpEff/snpEff.jar eff {params.db} {input.calls} > {params.prefix}
+        snpEff eff {params.db} {input.calls} > {params.prefix} 2> {log}
         bgzip {params.prefix}
         """
 
@@ -182,11 +186,13 @@ rule MissenseAndQualFilter:
         "results/variants/vcfs/annot.missense.{chrom}.vcf"
     log:
         "logs/snpSift/missense_vcf_{chrom}.log"
+    conda:
+         "../envs/snpeff.yaml"
     params:
         expression = "(ANN[*].EFFECT has 'missense_variant') & (QUAL >= 30)"
     shell:
         """
-        java -jar workflow/scripts/snpEff/SnpSift.jar filter "{params.expression}" {input.vcf} > {output} 2> {log}
+        SnpSift filter "{params.expression}" {input.vcf} > {output} 2> {log}
         """
 
 rule ExtractBedVCF:
