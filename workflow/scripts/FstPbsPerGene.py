@@ -3,6 +3,8 @@
 """
 A script to perform Fst and population branch statistic analysis by gene on genotype data
 """
+import sys
+sys.stderr = open(snakemake.log[0], "w")
 
 from tools import *
 from scipy import stats

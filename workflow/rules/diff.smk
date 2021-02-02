@@ -95,17 +95,18 @@ rule GeneSetEnrichment:
 		DEcontrasts = "resources/DE.contrast.list",
 		gaf = config['GSEA']['gaf'],
 		DEresults = expand("results/genediff/{comp}.csv", comp=config['contrasts']),
-		diffsnps = expand("results/variants/diffsnps/{comp}.kissDE.tsv", comp=config['contrasts']),
+		diffsnps = expand("results/variants/diffsnps/{comp}.kissDE.tsv", comp=config['contrasts']) if config['diffsnps']['activate'] else [],
 		Fst = "results/variants/fst.tsv",
 		PBS = "results/variants/pbs.tsv" if config['pbs']['activate'] else [] 
 	output:
 		expand("results/gsea/genediff/{comp}.DE.{pathway}.tsv", comp = config['contrasts'], pathway=['kegg', 'GO']),
 		expand("results/gsea/fst/{comp}.FST.{pathway}.tsv", comp = config['contrasts'], pathway=['kegg', 'GO']),
-		expand("results/gsea/diffsnps/{comp}.diffsnps.{pathway}.tsv", comp = config['contrasts'], pathway=['kegg', 'GO']),
+		expand("results/gsea/diffsnps/{comp}.diffsnps.{pathway}.tsv", comp = config['contrasts'], pathway=['kegg', 'GO']) if config['diffsnps']['activate'] else [],
 		expand("results/gsea/pbs/{pbscomp}.PBS.{pathway}.tsv", pbscomp = config['pbs']['contrasts'], pathway=['kegg', 'GO'])
 	params:
 		pbs = config['pbs']['activate'],
 		pbscomps = config['pbs']['contrasts'],
+		diffsnps = config['diffsnps']['activate'],
 		replaceStringKegg = config['GSEA']['replaceString'],
 		KeggSpeciesID = config['GSEA']['KeggSpeciesID']
 	conda:

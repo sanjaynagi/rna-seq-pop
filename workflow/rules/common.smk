@@ -23,6 +23,7 @@ def get_desired_outputs(wildcards):
             [
                 "resources/reads/qc/{sample}_{n}_fastqc.html",
                 "resources/alignments/coverage/{sample}.mosdepth.summary.txt",
+                "resources/alignments/bamStats/{sample}.flagstat"
             ],
             sample=samples, 
             n=[1,2]
@@ -54,7 +55,6 @@ def get_desired_outputs(wildcards):
     wanted_input.extend(
         expand(
             [
-                "results/variants/diffsnps/{comp}.sig.kissDE.tsv",
                 "results/variants/plots/PCA-{chrom}-{dataset}.png",
                 "results/variants/plots/{dataset}_SNPdensity_{chrom}.png",
                 "results/variants/stats/inbreedingCoef.tsv",
@@ -63,14 +63,12 @@ def get_desired_outputs(wildcards):
                 "results/variants/fst.tsv",
                 "results/variants/TajimasD.tsv",
                 "results/variants/SequenceDiv.tsv",
-                "results/variants/plots/fst/{comp}.{chrom}.fst.line.png",
-                "results/RNA-Seq-full.xlsx",
-                "results/venn/{comp}_DE.Fst.venn.png",
+                "results/variants/plots/fst/{comp}.{chrom}.fst.{wsize}.png",
                 ],
                 chrom = config['chroms'],
                 dataset = config['dataset'],
                 comp = config['contrasts'],
-                plot = ['line', 'scatter']
+                wsize = config['pbs']['windownames']
             )
         )
 
@@ -99,10 +97,30 @@ def get_desired_outputs(wildcards):
                [
                "results/gsea/genediff/{comp}.DE.{pathway}.tsv",
                "results/gsea/fst/{comp}.FST.{pathway}.tsv",
-               "results/gsea/diffsnps/{comp}.diffsnps.{pathway}.tsv",
                 ],
                 comp = config['contrasts'],
                 pathway=['kegg', 'GO']
+                )
+	)
+
+    if config['diffsnps']['activate']:
+       wanted_input.extend(
+           expand(
+               [
+                "results/variants/diffsnps/{comp}.sig.kissDE.tsv",
+                ],
+                comp = config['contrasts'],
+                )
+	)
+
+    if config['venn']['activate']:
+       wanted_input.extend(
+           expand(
+               [
+                "results/RNA-Seq-full.xlsx",
+                "results/venn/{comp}_DE.Fst.venn.png",
+                ],
+                comp = config['contrasts'],
                 )
 	)
 

@@ -172,7 +172,7 @@ rule snpEff:
          "../envs/snpeff.yaml"
     params:
         db = config['ref']['snpeffdb'],
-        prefix = lambda w, output: output[0].split(os.extsep)[0]
+        prefix = lambda w, output: os.path.splitext(output[0])[0]
     shell:
         """
         snpEff eff {params.db} {input.calls} > {params.prefix} 2> {log}

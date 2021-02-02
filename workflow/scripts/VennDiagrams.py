@@ -4,6 +4,9 @@
 A script to get the intersections of Differential expression results, Fst, PBS and differential SNPs analysis.
 Draws Venn diagrams and adds columns to RNA-seq-diff.xlsx, whether the gene has high Fst/PBS/diffsnps. 
 """
+import sys
+sys.stderr = open(snakemake.log[0], "w")
+
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt

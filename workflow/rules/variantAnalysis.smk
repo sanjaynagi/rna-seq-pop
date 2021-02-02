@@ -24,11 +24,11 @@ rule mpileupIR:
 
 rule AlleleBalanceIR:
     input:
-        counts = expand("results/allele_balance/counts/{sample}_{mut}_allele_counts.tsv", sample=samples, mut=mutations),
+        counts = expand("results/allele_balance/counts/{sample}_{mut}_allele_counts.tsv", sample=samples, mut=mutationData.Name),
         samples = config['samples'],
         mutations = config['IRmutations']['path']
     output:
-        expand("results/allele_balance/csvs/{mut}_allele_balance.csv", mut=mutations),
+        expand("results/allele_balance/csvs/{mut}_allele_balance.csv", mut=mutationData.Name),
         allele_balance = "results/allele_balance/allele_balance.xlsx",
         mean_allele_balance = "results/allele_balance/mean_allele_balance.xlsx"
     conda:
@@ -58,7 +58,7 @@ rule AlleleTables:
     shell:
         """
         samtools mpileup -f {input.ref} -l {input.bed} {input.bam} | 
-        workflow/scripts/mpileup2readcounts/mpileup2readcounts 0 {params.baseflt} {params.ignore_indels} {params.min_alt} {params.min_af} > {output} 2> {log}
+        {workflow.basedir}/scripts/mpileup2readcounts/mpileup2readcounts 0 {params.baseflt} {params.ignore_indels} {params.min_alt} {params.min_af} > {output} 2> {log}
         """
 
 rule DifferentialSNPs:
@@ -88,13 +88,13 @@ rule WindowedStatisticsAndPCA:
     input:
         vcf = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
         samples = config['samples'],
-        DEcontrasts = "resources/DE.contrast.list", 
+        contrasts = "resources/DE.contrast.list",
         gff = config['ref']['gff']
     output:
         PCAfig = expand("results/variants/plots/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset']),
         SNPdensityFig = expand("results/variants/plots/{dataset}_SNPdensity_{chrom}.png", chrom=config['chroms'], dataset=config['dataset']),
-        Fst = expand("results/variants/plots/fst/{comp}.{chrom}.fst.line.png", comp=config['contrasts'], chrom=config['chroms']),
-        PBS = expand("results/variants/plots/pbs/{pbscomp}.{chrom}.pbs.line.png", pbscomp=config['pbs']['contrasts'], chrom=config['chroms']) if config['pbs'] else [], 
+        Fst = expand("results/variants/plots/fst/{comp}.{chrom}.fst.{wsize}.png", comp=config['contrasts'], chrom=config['chroms'], wsize=config['pbs']['windownames']),
+        PBS = expand("results/variants/plots/pbs/{pbscomp}.{chrom}.pbs.{wsize}.png", pbscomp=config['pbs']['contrasts'], chrom=config['chroms'], wsize=config['pbs']['windownames']) if config['pbs'] else [], 
         inbreedingCoef = "results/variants/stats/inbreedingCoef.tsv",
         inbreedingCoefMean = "results/variants/stats/inbreedingCoef.mean.tsv",
         SequenceDiversity = "results/variants/stats/SequenceDiversity.tsv",
@@ -109,12 +109,12 @@ rule WindowedStatisticsAndPCA:
         ploidy = config['ploidy'],
         pbs = config['pbs']['activate'],
         pbscomps = config['pbs']['contrasts'],
-        missingprop = 0.8,
+        missingprop = config['pbs']['missingness'],
         qualflt = 30,
         linkage = False,
-        window_sizes = config['pbs']['windowsizes'],
-        window_steps = config['pbs']['windowsteps'],
-        window_names = config['pbs']['windownames']
+        windowsizes = config['pbs']['windowsizes'],
+        windowsteps = config['pbs']['windowsteps'],
+        windownames = config['pbs']['windownames']
     script:
         "../scripts/WindowedStatsAndPCA.py"
 
@@ -171,7 +171,7 @@ rule VennDiagrams:
         DEcontrasts = "resources/DE.contrast.list",
         DE = "results/genediff/RNA-Seq_diff.xlsx",
         Fst = expand("results/variants/{stat}.tsv", stat=windowedStats),
-        diffsnps = expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts'])
+        diffsnps = expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts']) if config['diffsnps']['activate'] else []
    output:
         "results/RNA-Seq-full.xlsx",
         expand("results/venn/{name}_DE.Fst.venn.png", name=config['contrasts'])

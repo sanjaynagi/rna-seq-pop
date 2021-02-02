@@ -24,8 +24,7 @@ runEnrich = function(rankedList, GeneSetList, outName){
     fgseaRes = fgsea(pathways = GeneSetList[[set]], 
                      stats = na.omit(rankedList),
                      minSize  = 15,
-                     maxSize  = 500,
-                     nperm = 10000)
+                     maxSize  = 500)
     
     fgseaRes %>% arrange(padj) %>% fwrite(., file = glue("results/gsea/{outName}.{set}.tsv"), sep = "\t")
     
@@ -45,6 +44,7 @@ samples = fread(snakemake@input[['samples']]) %>% as.data.frame()
 comparisons = fread(snakemake@input[['DEcontrasts']])
 gaffile = snakemake@input[['gaf']]
 pbs = snakemake@params[['pbs']]
+diffsnps = snakemake@params[['diffsnps']]
 pbscomps = snakemake@params[['pbscomps']]
 replaceString = snakemake@params[['replaceStringKegg']]
 speciesID = snakemake@params[['KeggSpeciesID']]
@@ -53,7 +53,7 @@ speciesID = snakemake@params[['KeggSpeciesID']]
 GeneSetList = list()
 ######### GO Terms #########
 # read in gaf file and select to appropriate columns and rename
-go = fread("resources/reference/VectorBase-50_AgambiaePEST_GO.gaf", sep = "\t", skip = 1, header = FALSE) %>% 
+go = fread(gaffile, sep = "\t", skip = 1, header = FALSE) %>% 
   as_tibble() %>% dplyr::select(c(2,5)) %>% distinct() %>% dplyr::rename("GeneID" = V2, "GO.id" = V5)
 # download GO terms and descriptions as we need descriptions
 goterms = Term(GOTERM) %>% enframe() %>% dplyr::rename("GO.id" = "name", "description" = "value")
@@ -119,7 +119,8 @@ if (pbs == TRUE){
 
 
 #### diff SNPs ####
-for (comp in comparisons$contrast){
+if (diffsnps == TRUE){
+  for (comp in comparisons$contrast){
   print(glue("Running KEGG and GO enrichment analyses for diffSNPs {comp}"))
   # make ranked list using DE results, rank based on log2foldchange
   rank = fread(glue("results/variants/diffsnps/{comp}.kissDE.tsv"), sep="\t") %>% 
@@ -127,10 +128,7 @@ for (comp in comparisons$contrast){
     dplyr::select(c('GeneID', all_of("Deltaf/DeltaPSI"))) %>% 
     deframe()
   runEnrich(rankedList = rank, GeneSetList = GeneSetList, outName = glue("/diffsnps/{comp}.diffsnps"))
+  }
 }
 
-
-
 sessionInfo()
-
-

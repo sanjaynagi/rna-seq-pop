@@ -9,10 +9,10 @@ sink(log, type="message")
 #' analysis, testing if certain alleles are biased to be found in one 
 #' treatment group 
 
+library(tidyverse)
 library(data.table)
 library(kissDE)
 library(glue)
-library(tidyverse)
 library(rtracklayer)
 
 ######## parse inputs #############
