@@ -15,7 +15,6 @@ library(fgsea)
 library(data.table)
 library(glue)
 library(tidyverse)
-sessionInfo()
 
 ## functions ##
 runEnrich = function(rankedList, GeneSetList, outName){
