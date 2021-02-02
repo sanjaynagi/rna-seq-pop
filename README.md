@@ -5,24 +5,26 @@
 
 This workflow performs various analyses of illumina paired-end RNA-Sequencing data:
 
-* Quality control with FASTQC and RSeqQC
-* Differential expression analysis with Kallisto at the gene level (DESeq2) and transcript level (Sleuth)
-* Variant calling with freebayes, and a gene-based Fst and Population branch statistic (PBS) analysis.
-* Differential SNP testing with the R package 'kissDE', which accounts for allele-specific expression.
-* Enrichment analyses and Venn diagrams.
+* Quality control with [FASTQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
+* Differential expression analysis with Kallisto at the gene level ([DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)) and transcript level ([Sleuth](https://github.com/pachterlab/sleuth))
+* Variant calling with freebayes, and an Fst and [Population branch statistic (PBS)](https://science.sciencemag.org/content/329/5987/75) analysis, both in windows and at the gene-level ([Scikit allel](https://scikit-allel.readthedocs.io/en/stable/)).
+* Differential SNP testing with the R package [kissDE](https://bioconductor.org/packages/release/bioc/html/kissDE.html), which accounts for allele-specific expression.
+* Gene Set Enrichment analyses and Venn diagrams.
 * Allele balance reports of pre-specified loci of choice.
-* Analysis of Ancestry Informative Markers (AIMs) (For *Anopheles gambiae/coluzzii/arabiensis* samples)
+* *Anopheles gambiae s.l* - Analysis of Ancestry Informative Markers (AIMs)
+* *Anopheles gambiae s.l* - Reports if DE genes are found underneath known selective sweep signals in the [Ag1000g](https://www.nature.com/articles/nature24995). 
 
 The workflow is generalised, and will function with any trimmed Illumina paired-end RNA-sequencing. However, certain modules, such as the AIMs analysis, are only appropriate for specific species. These can be activated in the configuration file (config.yaml). 
-The workflow is still in construction, and not yet ready for release.
+
+The workflow is still in construction, and not yet ready for release. If you have any feedback on how the workflow may be improved, please get in touch, or feel free to fork the github repo and create a pull request for any additional features you want to implement. 
 
 ## Authors
 
-* Sanjay Curtis Nagi (@sanjaynagi)
+* Sanjay Curtis Nagi (@sanjaynagi) - sanjay.c.nagi@gmail.com
 
 ## Usage
 
-If you use this workflow in a paper, don't forget to give credits to the authors by citing the URL of this (original) repository and, if available, its DOI (see above).
+If you use this workflow in a paper, don't forget to give credits to the author by citing the URL of this (original) repository and, if available, its DOI (see above).
 
 ### Step 1: Obtain a copy of this workflow
 
@@ -70,23 +72,14 @@ If you not only want to fix the software stack but also the underlying OS, use
 in combination with any of the modes above.
 See the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/executable.html) for further details.
 
-### Step 5: Investigate results
-
-After successful execution, you can create a self-contained interactive HTML report with all results via:
-
-    snakemake --report report.html
-
-This report can, e.g., be forwarded to your collaborators.
-An example (using some trivial test data) can be seen [here](https://cdn.rawgit.com/snakemake-workflows/rna-seq-kallisto-sleuth/master/.test/report.html).
-
-### Step 6: Commit changes
+### Step 5: Commit changes
 
 Whenever you change something, don't forget to commit the changes back to your github copy of the repository:
 
     git commit -a
     git push
 
-### Step 7: Obtain updates from upstream
+### Step 6: Obtain updates from upstream
 
 Whenever you want to synchronize your workflow copy with new developments from upstream, do the following.
 
@@ -98,7 +91,7 @@ Whenever you want to synchronize your workflow copy with new developments from u
 6. Carefully check whether you need to update the config files: `git diff HEAD upstream/master config`. If so, do it manually, and only where necessary, since you would otherwise likely overwrite your settings and samples.
 
 
-### Step 8: Contribute back
+### Step 7: Contribute back
 
 In case you have also changed or added steps, please consider contributing them back to the original repository:
 

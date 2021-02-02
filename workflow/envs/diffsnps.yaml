@@ -3,9 +3,10 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
-  - r-base
+  - r-base=3.6.3
   - r-tidyverse
   - r-data.table
   - r-glue
+  - r-tidyr=1.1.0
   - bioconductor-kissde
   - bioconductor-rtracklayer

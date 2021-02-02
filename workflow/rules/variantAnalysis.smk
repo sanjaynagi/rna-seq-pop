@@ -1,4 +1,7 @@
-################ Variant analysis ##################
+################ Variant Analysis ##################
+# samtools
+# scikit-allel (Miles, Harding) 10.5281/zenodo.3935797
+# kiss-de
 
 rule mpileupIR:
     input:
@@ -91,7 +94,7 @@ rule WindowedStatisticsAndPCA:
         PCAfig = expand("results/variants/plots/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset']),
         SNPdensityFig = expand("results/variants/plots/{dataset}_SNPdensity_{chrom}.png", chrom=config['chroms'], dataset=config['dataset']),
         Fst = expand("results/variants/plots/fst/{comp}.{chrom}.fst.line.png", comp=config['contrasts'], chrom=config['chroms']),
-        PBS = expand("results/variants/plots/pbs/{pbscomp}.{chrom}.pbs.line.png", pbscomp=pbscomps, chrom=config['chroms']) if config['pbs'] else [], 
+        PBS = expand("results/variants/plots/pbs/{pbscomp}.{chrom}.pbs.line.png", pbscomp=config['pbs']['contrasts'], chrom=config['chroms']) if config['pbs'] else [], 
         inbreedingCoef = "results/variants/stats/inbreedingCoef.tsv",
         inbreedingCoefMean = "results/variants/stats/inbreedingCoef.mean.tsv",
         SequenceDiversity = "results/variants/stats/SequenceDiversity.tsv",
@@ -108,7 +111,7 @@ rule WindowedStatisticsAndPCA:
         pbscomps = config['pbs']['contrasts'],
         missingprop = 0.8,
         qualflt = 30,
-        linkage = False
+        linkage = False,
         window_sizes = config['pbs']['windowsizes'],
         window_steps = config['pbs']['windowsteps'],
         window_names = config['pbs']['windownames']

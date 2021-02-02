@@ -108,8 +108,8 @@ writer.save()
 
 if pbs is True:
     for pbscomp in pbscomps:
-        name = pbscomp[0] + "_" + pbscomp[1] + "_" + pbscomp[2]
-        name2 = pbscomp[2]+ "_" + pbscomp[0]
+        pop1, pop2, outpop = pbscomp.split("_")
+        name2 = pop2 + "_" + pop1
 
         de = pd.read_csv(f"results/genediff/{name2}.csv")
         fst = pd.read_csv(f"results/variants/Fst.tsv", sep="\t")

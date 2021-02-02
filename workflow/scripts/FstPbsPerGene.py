@@ -106,10 +106,10 @@ for chrom in chroms:
         # pbs for each gene for each pbc comparison as defined in config.yaml
         if pbs is True:
             for pbscomp in pbscomps:
-                name = pbscomp[0] + "_" + pbscomp[1] + "_" + pbscomp[2]
-                pbs_per_comp[name],se,_,_ = meanPBS(acsubpops[pbscomp[0]].compress(gene_bool, axis=0),
-                                          acsubpops[pbscomp[1]].compress(gene_bool, axis=0),
-                                          acsubpops[pbscomp[2]].compress(gene_bool, axis=0),
+                pop1, pop2, outpop = pbscomp.split("_")
+                pbs_per_comp[pbscomp],se,_,_ = meanPBS(acsubpops[pop1].compress(gene_bool, axis=0),
+                                          acsubpops[pop2].compress(gene_bool, axis=0),
+                                          acsubpops[outpop].compress(gene_bool, axis=0),
                                                      window_size=1,
                                                     normalise=True)
         # store inner dict in outer dicts
@@ -180,10 +180,9 @@ for chrom in chroms:
         #pbs store as dataframes 
         pbs_dfs = {}
         for pbscomp in pbscomps:
-            name = pbscomp[0] + "_" + pbscomp[1] + "_" + pbscomp[2]
-            pbs_df = pd.DataFrame.from_dict(pbs_per_gene[name], orient='index').reset_index(drop=False)
-            pbs_df.columns = ['GeneID', (name+"PBS")]
-            pbs_dfs[name] = pbs_df
+            pbs_df = pd.DataFrame.from_dict(pbs_per_gene[pbscomp], orient='index').reset_index(drop=False)
+            pbs_df.columns = ['GeneID', (pbscomp+"PBS")]
+            pbs_dfs[pbscomp] = pbs_df
 
         pbs_allcomparisons = reduce(my_reduce, pbs_dfs.values())
         pbs_allcomparisons['chrom'] = chrom

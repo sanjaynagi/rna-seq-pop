@@ -78,7 +78,9 @@ rule progressiveGenesDE:
 		expand("results/isoformdiff/{name}.{direction}.progressive.tsv", name=config['progressiveGenes']['groups'], direction=["up", "down"])
 	params:
 	    samples = config['samples'],
-	    comps = config['progressiveGenes']['groups']
+	    comps = config['progressiveGenes']['groups'],
+		pval = config['progressiveGenes']['padj_threshold'],
+		fc = config['progressiveGenes']['fc_threshold']
 	conda:
 	    "../envs/sleuth.yaml"
 	log:
@@ -91,7 +93,7 @@ rule GeneSetEnrichment:
 	input:
 		samples = config['samples'],
 		DEcontrasts = "resources/DE.contrast.list",
-		gaf = config['ref']['gaf'],
+		gaf = config['GSEA']['gaf'],
 		DEresults = expand("results/genediff/{comp}.csv", comp=config['contrasts']),
 		diffsnps = expand("results/variants/diffsnps/{comp}.kissDE.tsv", comp=config['contrasts']),
 		Fst = "results/variants/fst.tsv",
@@ -100,7 +102,7 @@ rule GeneSetEnrichment:
 		expand("results/gsea/genediff/{comp}.DE.csv", comp = config['contrasts']),
 		expand("results/gsea/fst/{comp}.FST.csv", comp = config['contrasts']),
 		expand("results/gsea/diffsnps/{comp}.diffsnps.csv", comp = config['contrasts']),
-		expand("results/gsea/pbs/{pbscomp}.PBS.csv", pbscomp = pbscomps)
+		expand("results/gsea/pbs/{pbscomp}.PBS.csv", pbscomp = config['pbs']['contrasts'])
 	params:
 		pbs = config['pbs']['activate'],
 		pbscomps = config['pbs']['contrasts'],

@@ -3,6 +3,11 @@ log <- file(snakemake@log[[1]], open="wt")
 sink(log)
 sink(log, type="message")
 
+
+#' This script uses the sleuth R package to perform differential isoform analysis
+#' This will be performed for each 
+#' Sleuth uses the bootstraps of kallisto to estimate uncertainty 
+
 ## Differential expression
 library(sleuth)
 library(tidyverse)

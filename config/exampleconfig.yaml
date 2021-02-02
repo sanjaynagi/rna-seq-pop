@@ -1,21 +1,26 @@
 samples: config/samples.tsv
 units: config/units.tsv
 
+## RNA-Seq-IR
+## Author - Sanjay Curtis Nagi
+
 # Dataset name
-dataset: 'Ag_TiassAbo'
+dataset: 'Ag_Bouake'
 
 # Paths for reference files 
 ref:
+  # Path to genome reference FASTA file
   genome:
         "resources/reference/Anopheles-gambiae-PEST_CHROMOSOMES_AgamP4.fa"
+  # Path to transcriptome reference FASTA file
   transcriptome:
         "resources/reference/Anopheles-gambiae-PEST_TRANSCRIPTS_AgamP4.12.fa"
+  # Path to GTF annotation file 
   gtf: 
         "resources/reference/Anopheles-gambiae-PEST_BASEFEATURES_AgamP4.12.gtf"
+  # Path to GFF annotation file
   gff:
         "resources/reference/Anopheles-gambiae-PEST_BASEFEATURES_AgamP4.12.gff3"
-  gaf:
-        "resources/reference/VectorBase-50_AgambiaePEST_GO.gaf"
   snpeffdb:
         "Anopheles_gambiae"
   genenames:
@@ -25,43 +30,50 @@ ref:
 chroms: ['2L', '2R', '3L', '3R', 'X']
 
 qc:
-      activate: False
+      activate: True
 
-# List of contrasts to do DE and Fst analysis on. Should correspond to the 'treatment' columns of the samples.tsv file, and be separated by an underscore "_". i.e ['control_case'], or ['Kisumu_Tiassale'].
+# List of contrasts to do Differential Expression and Fst analysis on. 
+# Should correspond to the 'treatment' columns of the samples.tsv file, and be separated by an underscore "_". i.e 'control_case', or 'Kisumu_Tiassale'.
 # The treatment names themselves must not contain underscores
 contrasts:
-      - 'ContAbo_DeltAbo'
-      - 'ContAbo_MalaAbo'
-      - 'ContAbo_PiriAbo'
-      - 'ContTia_DeltTia'
-      - 'ContTia_MalaTia'
-      - 'ContTia_PiriTia'
+      - 'Kisumu_gambiaeCont'
+      - 'gambiaeCont_gambiaePM'
 
+# Will find genes that are consistently up or downregulated across two comparisons. 
+# For example - which genes upregulated in Kisumu v gambiaeCont, are also upregulated in gambiaeCont v gambiaePM
 progressiveGenes:
-      activate: False
-      groups: #"ContTia_DeltTia_MalaTia"
+      activate: True
+      padj_threshold: 0.05
+      FC_threshold: 1
+      groups: "Kisumu_gambiaeCont_gambiaePM"
 
+# Do we want to perform gene set enrichment analysis
 GSEA:
       activate: True
-      KeggSpeciesID: "aga" # 3 letter KEGG species identifier
-      replaceString: "AgaP_"
+      gaf: "resources/reference/VectorBase-50_AgambiaePEST_GO.gaf"
+      KeggSpeciesID: "aga"            # 3 letter KEGG species identifier. "aga" = Anopheles gambiae/coluzzii. 
+      replaceString: "AgaP_"          
 
 
-# Ploidy level for freebayes to call at. (Generally we are using pooled samples)
+# Ploidy level for freebayes to call at (Generally we are using pooled samples).
+# For diploid organisms, this should be 2 * number of individuals in each pool
 ploidy: 10
-chunks: 9 # Number of chunks to split the genome into when parallelising freebayes
+# Number of chunks to split each chromosome into when parallelising freebayes. 9 or less is recommended. 
+chunks: 9 
 
 # If activate:True, creates allele balance .xlsx reports on IR mutations of choice
 IRmutations: 
       activate: True
       path: "resources/IRmutations.tsv"
 
-# Do we want to run pbs (Needs three conditions, two more closely related and a slight outgroup)
+# Do we want to run pbs (Needs three conditions, two closely related and an outgroup)
 pbs:
-      contrasts: [['DeltAbo', 'ContAbo', 'ContTia'], ['DeltTia', 'ContTia', 'ContAbo']]
       activate: True
+      contrasts: 
+            - 'gambiaePM_gambiaeCont_Kisumu'
 
 # For Anopheles gambiae s.l only - run Ancestry Informative Marker analysis.
+# AIMs datasets included in git repo
 AIMs:
       activate: True
       missingness: 0.5                                # proportion between 0 and 1 

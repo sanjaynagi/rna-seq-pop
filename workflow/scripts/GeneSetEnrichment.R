@@ -3,6 +3,11 @@ log <- file(snakemake@log[[1]], open="wt")
 sink(log)
 sink(log, type="message")
 
+
+#' This script runs GSEA analysis on each contrast in the workflow
+#' on gene lists, ranked using fold-change from DE data, Fst, PBS 
+#' (optional) and differential SNPs analysis
+
 # GSEA RNA-Seq Ag
 library(GO.db)
 library(KEGGREST)

@@ -1,25 +1,13 @@
-ID	treatment	samples	cohort	species	strain	insecticide
-Sample_25-AC2	ContAbo	ContAbo2	control	coluzzii 	Aboisso	none
-Sample_26-AC3	ContAbo	ContAbo3	control	coluzzii 	Aboisso	none
-Sample_27-AC4	ContAbo	ContAbo4	control	coluzzii 	Aboisso	none
-Sample_28-AD1	DeltAbo	DeltAbo1	case	coluzzii 	Aboisso	Delta
-Sample_29-AD2	DeltAbo	DeltAbo2	case	coluzzii 	Aboisso	Delta
-Sample_30-AD3	DeltAbo	DeltAbo3	case	coluzzii 	Aboisso	Delta
-Sample_31-AM1	MalaAbo	MalaAbo1	case	coluzzii 	Aboisso	Malathion
-Sample_32-AM2	MalaAbo	MalaAbo2	case	coluzzii 	Aboisso	Malathion
-Sample_33-AM4	MalaAbo	MalaAbo4	case	coluzzii 	Aboisso	Malathion
-Sample_34-AP2	PiriAbo	PiriAbo2	case	coluzzii 	Aboisso	PM
-Sample_35-AP3	PiriAbo	PiriAbo3	case	coluzzii 	Aboisso	PM
-Sample_36-AP5	PiriAbo	PiriAbo5	case	coluzzii 	Aboisso	PM
-Sample_37-TC1	ContTia	ContTia1	control	coluzzii 	Tiassale	none
-Sample_38-TC2	ContTia	ContTia2	control	coluzzii 	Tiassale	none
-Sample_39-TC4	ContTia	ContTia4	control	coluzzii 	Tiassale	none
-Sample_40-TD1	DeltTia	DeltTia1	case	coluzzii 	Tiassale	Delta
-Sample_41-TD2	DeltTia	DeltTia2	case	coluzzii 	Tiassale	Delta
-Sample_42-TD5	DeltTia	DeltTia5	case	coluzzii 	Tiassale	Delta
-Sample_43-TM1	MalaTia	MalaTia1	case	coluzzii 	Tiassale	Malathion
-Sample_44-TM2	MalaTia	MalaTia2	case	coluzzii 	Tiassale	Malathion
-Sample_45-TM4	MalaTia	MalaTia4	case	coluzzii 	Tiassale	Malathion
-Sample_46-TP2	PiriTia	PiriTia2	case	coluzzii 	Tiassale	PM
-Sample_47-TP3	PiriTia	PiriTia3	case	coluzzii 	Tiassale	PM
-Sample_48-TP4	PiriTia	PiriTia4	case	coluzzii 	Tiassale	PM
+samples	treatment	species	strain
+Kisumu1	Kisumu	gambiae	Kisumu
+Kisumu2	Kisumu	gambiae	Kisumu
+Kisumu3	Kisumu	gambiae	Kisumu
+Kisumu4	Kisumu	gambiae	Kisumu
+gambiaeCont1	gambiaeCont	gambiae	Bouake
+gambiaeCont2	gambiaeCont	gambiae	Bouake
+gambiaeCont3	gambiaeCont	gambiae	Bouake
+gambiaeCont4	gambiaeCont	gambiae	Bouake
+gambiaePM1	gambiaePM	gambiae	Bouake
+gambiaePM2	gambiaePM	gambiae	Bouake
+gambiaePM3	gambiaePM	gambiae	Bouake
+gambiaePM4	gambiaePM	gambiae	Bouake
