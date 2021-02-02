@@ -3,6 +3,8 @@
 """
 A script to determine the proportion of Anopheles gambiae/coluzzii alleles at Ancestry Informative Markers across the genome
 """
+import sys
+sys.stderr = open(snakemake.log[0], "w")
 
 from tools import *
 

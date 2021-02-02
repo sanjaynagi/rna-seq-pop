@@ -5,6 +5,9 @@ A script to calculate various SNP statistics, windowed population genetic statis
 Currently not modularised to reduce the repetition of loading and filtering VCFs (which is slow). 
 """
 
+import sys
+sys.stderr = open(snakemake.log[0], "w")
+
 from tools import *
 
 dataset = snakemake.params['dataset']
@@ -13,7 +16,6 @@ samples = samples.sort_values(by='species')
 chroms = snakemake.params['chroms']
 ploidy = snakemake.params['ploidy']
 numbers = get_numbers_dict(ploidy)
-comparisons_path = snakemake.input['DEcontrasts']
 pbs = snakemake.params['pbs']
 pbscomps = snakemake.params['pbscomps']
 qualflt = snakemake.params['qualflt']
@@ -22,14 +24,12 @@ gffpath = snakemake.input['gff']
 linkage = snakemake.params['linkage']
 
 #Fst/PBS window size
-windowsize = snakemake.params['window_sizes']
-windowstep = snakemake.params['window_steps']
-windownames = snakemake.params['window_names']
-windows = zip(windownames, window_sizes, window_steps)
-
+windowsizes = snakemake.params['windowsizes']
+windowsteps = snakemake.params['windowsteps']
+windownames = snakemake.params['windownames']
 
 # Read in list of contrasts
-comparisons = pd.read_csv(comparisons_path)
+comparisons = pd.read_csv(snakemake.input['contrasts'])
 comparisons = comparisons.contrast.str.split("_", expand=True)
 comparisons.columns = ['sus', 'res']
 comparisons = [list(row) for i,row in comparisons.iterrows()]
@@ -101,14 +101,13 @@ for i, chrom in enumerate(chroms):
 
     snps_per_gene_allchroms[chrom] = pd.DataFrame.from_dict(flip_dict(snps_per_gene))
 
-
+    print("comp len:", len(comparisons))
     ######## Fst in windows ########## 
-    for sus,res in comparisons:
+    for sus, res in comparisons:
         name = sus + "_" + res
+        print(f"Calculating Fst values in sliding windows for {name}\n")
 
-        print(f"Calculating Fst values in sliding window for {name}\n")
-
-        for wname, size, step in windows:
+        for wname, size, step in zip(windownames, windowsizes, windowsteps):
             FstArray = allel.moving_hudson_fst(acsubpops[sus], 
                             acsubpops[res], 
                             size=size, step=step)
@@ -119,6 +118,8 @@ for i, chrom in enumerate(chroms):
             plt.title(f"Fst {chrom} {name}")
             plt.savefig(f"results/variants/plots/fst/{name}.{chrom}.fst.{wname}.png")
             plt.close()
+            
+        
 
     ######## Population Branch Statistic (PBS) in windows ########
     if pbs:
@@ -127,18 +128,18 @@ for i, chrom in enumerate(chroms):
 
             print(f"Calculating PBS values in sliding window for {pbscomp}\n")
         
-        for wname, size, step in windows:
-            pbsArray = allel.pbs(acsubpops[pop1], 
-                            acsubpops[pop2], 
-                            acsubpops[outpop], 
-                            window_size=size, window_step=step, normed=True)
-            midpoint = allel.moving_statistic(pos, np.mean, size=size, step=step)
+            for wname, size, step in zip(windownames, windowsizes, windowsteps):
+                pbsArray = allel.pbs(acsubpops[pop1], 
+                                acsubpops[pop2], 
+                                acsubpops[outpop], 
+                                window_size=size, window_step=step, normed=True)
+                midpoint = allel.moving_statistic(pos, np.mean, size=size, step=step)
 
-            plt.figure(figsize=[20,8])
-            sns.lineplot(midpoint, pbsArray)
-            plt.title(f"PBS {chrom} {pbscomp}")
-            plt.savefig(f"results/variants/plots/pbs/{pbscomp}.{chrom}.pbs.{wname}.png")
-            plt.close()
+                plt.figure(figsize=[20,8])
+                sns.lineplot(midpoint, pbsArray)
+                plt.title(f"PBS {chrom} {pbscomp}")
+                plt.savefig(f"results/variants/plots/pbs/{pbscomp}.{chrom}.pbs.{wname}.png")
+                plt.close()
 
 
     ######## Principal Components Analysis (PCA) ########
@@ -153,7 +154,7 @@ for i, chrom in enumerate(chroms):
     treatment_indices = treatment_indices.rename(columns = {'index':'sample_index', 0:"name"})
 
     pop_colours = get_colour_dict(treatment_indices['name'], "viridis")
-    print(f"\n Performing PCA on {dataset} chromosome {chrom}")
+    print(f"Performing PCA on {dataset} chromosome {chrom}")
     pca(geno, chrom, dataset, populations, samples, pop_colours, prune=True, scaler=None)
 
     ######## Variant density over genome ########
@@ -181,7 +182,7 @@ for i, chrom in enumerate(chroms):
         thetadict[pop] = allel.watterson_theta(pos, acsubpops[pop])
 
         # inbreeding coefficient
-        coef = allel.moving_statistic(gn,statistic=allel.inbreeding_coefficient, 
+        coef = allel.moving_statistic(gn, statistic=allel.inbreeding_coefficient, 
                                             size=1000, step=100)
         coef = np.nanmean(coef, axis=1)
         coefdict[pop] = np.mean(coef)
@@ -197,7 +198,7 @@ for i, chrom in enumerate(chroms):
 
         print(f"{pop},{chrom}, Sequence Diversity = ", seqdivdict[pop])
         print(f"{pop},{chrom}, Wattersons Theta = ", thetadict[pop])
-        print("\n", f"{pop}, {chrom}, Inbreeding Coef = ", np.mean(coef))
+        print(f"{pop},{chrom}, Inbreeding Coef = ", np.mean(coef), "\n")
         if linkage is True: print(f"{pop},{chrom}, LD (rogers huff r2) = ", np.nanmean(ld))
 
     seqdivdictchrom[chrom] = dict(seqdivdict)

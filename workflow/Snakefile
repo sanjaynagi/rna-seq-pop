@@ -14,11 +14,12 @@ validate(metadata, schema="schemas/samples.schema.yaml")
 samples = metadata.samples
 
 # IR allele balance mutations file
-mutationData = pd.read_csv(config['IRmutations']['path'], sep="\t")
-mutations = mutationData.Name
+mutationData = pd.read_csv(config['IRmutations']['path'], sep="\t") if config['IRmutations']['activate'] else []
 
-print(workflow.basedir)
-
+print(f"Running RNA-Seq-IR snakemake workflow in {workflow.basedir}")
+print(f"Author: Sanjay Curtis Nagi")
+print(f"Workflow Version: 0.1")
+print(f"Dataset: {config['dataset']}", "\n")
 
 include: "rules/common.smk"
 include: "rules/qc.smk"

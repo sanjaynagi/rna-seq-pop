@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+import sys
+sys.stderr = open(snakemake.log[0], "w")
+
 import numpy as np
 import pandas as pd
 import allel
@@ -10,7 +14,7 @@ for chrom in chroms:
         
     pos = vcf['variants/POS']
     pos1 = pos+1
-
+    
     data = {'chrom':chrom, 
         'start':pos,
         'stop':pos1}
