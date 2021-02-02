@@ -111,6 +111,6 @@ rule GeneSetEnrichment:
 	conda:
 		"../envs/gsea.yaml"
 	log:
-		"logs/GSEA/GeneSetEnrichment_.log"
+		"logs/GeneSetEnrichment.log"
 	script:
 		"../scripts/GeneSetEnrichment.R"

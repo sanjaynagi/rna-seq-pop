@@ -22,20 +22,6 @@ rule mpileupIR:
         samtools mpileup {input.bam} -r {params.region} -f {params.ref} | python2 {workflow.basedir}/scripts/BaseParser.py > {output}
         """
 
-#rule mpileupBaseParser:
-#    input:
- #       "results/allele_balance/mpileup_{sample}_{mut}"
-  #  output:
-   #     "results/allele_balance/counts/{sample}_{mut}_allele_counts.tsv"
-#    log:
- #       "logs/mpileupIR/baseParser_{sample}_{mut}.log"
-  #  priority: 10
-   # conda:
-   #      "../envs/variants.yaml"
-   ## script:
-   #      "../scripts/BaseParser.py"
-
-
 rule AlleleBalanceIR:
     input:
         counts = expand("results/allele_balance/counts/{sample}_{mut}_allele_counts.tsv", sample=samples, mut=mutations),

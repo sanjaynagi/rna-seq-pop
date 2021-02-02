@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from matplotlib_venn import *
 import pandas as pd
 import numpy as np
+from pathlib import Path
 
 def plotvenn2(name, group1, group2, nboth,stat="DE_PBS", group1name='Significant up DE genes', group2name='High PBS'):
     
@@ -70,7 +71,7 @@ for comp1,comp2 in comparisons:
     name = comp1 + "_" + comp2
     print(f"\n-------------- Venn Diagram for {name} --------------")
     de = pd.read_csv(f"results/genediff/{name}.csv")
-    fst = pd.read_csv("results/variants/Fst.tsv", sep="\t")
+    fst = pd.read_csv("results/variants/fst.tsv", sep="\t")
     diffsnps = pd.read_csv(f"results/variants/diffsnps/{name}.sig.kissDE.tsv", sep="\t")
     #compare sig DE genes and top 5% fst genes?
     #get sig up and down diffexp genes
@@ -111,9 +112,13 @@ if pbs is True:
         pop1, pop2, outpop = pbscomp.split("_")
         name2 = pop2 + "_" + pop1
 
-        de = pd.read_csv(f"results/genediff/{name2}.csv")
-        fst = pd.read_csv(f"results/variants/Fst.tsv", sep="\t")
-        pbs = pd.read_csv("results/variants/PBS.tsv", sep="\t")
+        DEfile = Path(f"results/genediff/{name2}.csv")
+        if DEfile.is_file() is False:
+            continue
+            
+        de = pd.read_csv(DEfile)
+        fst = pd.read_csv("results/variants/fst.tsv", sep="\t")
+        pbs = pd.read_csv("results/variants/pbs.tsv", sep="\t")
 
         # compare sig DE genes and top 5% fst/pbs genes?
         # get sig up and down diffexp genes
@@ -122,7 +127,7 @@ if pbs is True:
         sigde_down = sigde[sigde['FC'] < 1]
 
         # take top 5% of fst genes
-        highpbs = pbs.nlargest(int(pbs.shape[0]*percentile),f"{name}PBS")
+        highpbs = pbs.nlargest(int(pbs.shape[0]*percentile),f"{pbscomp}PBS")
         highfst = fst.nlargest(int(fst.shape[0]*percentile),f"{name2}_zFst")
 
         # how many fst? how many sig de up and down?
@@ -141,8 +146,8 @@ if pbs is True:
                                     path=f"results/venn/{name2}.Fst.PBS.intersection.tsv")
         
         # plot venns, DEvPBS and FSTvPBS
-        plotvenn2(name, nde_up, npbs, nbothdepbs,stat="DEup.PBS", group1name='Significant up DE genes', group2name='High PBS')
-        plotvenn2(name, nfst, npbs, nbothfstpbs,stat="Fst.PBS", group1name='High Fst', group2name='High PBS')
+        plotvenn2(pbscomp, nde_up, npbs, nbothdepbs,stat="DEup.PBS", group1name='Significant up DE genes', group2name='High PBS')
+        plotvenn2(pbscomp, nfst, npbs, nbothfstpbs,stat="Fst.PBS", group1name='High Fst', group2name='High PBS')
 
         # get intersection of all three (FST PBS and DE) results 
         threesets = list(set(sigde_up.GeneID).intersection(highfst.GeneID, highpbs.GeneID))
@@ -155,6 +160,6 @@ if pbs is True:
               set_labels = ('Significant DE', 'High Fst', 'High PBS'), 
               alpha = 0.5)
         venn3_circles(subsets = (nde_up, nfst,nbothdefst , npbs, nbothdepbs , nbothfstpbs, nall))
-        plt.title(f"{name}")
+        plt.title(f"{pbscomp}")
         plt.savefig(f"results/venn/{name}_DE_Fst_PBS.venn.png")
         plt.close()

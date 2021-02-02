@@ -15,7 +15,7 @@ library(glue)
 library(tidyverse)
 library(rtracklayer)
 
-######## parse files #############
+######## parse inputs #############
 chroms = snakemake@params[['chroms']]
 metadata = fread(snakemake@input[['samples']])
 contrasts = fread(snakemake@input[['DEcontrasts']], header = TRUE) 
