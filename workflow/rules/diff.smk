@@ -99,10 +99,10 @@ rule GeneSetEnrichment:
 		Fst = "results/variants/fst.tsv",
 		PBS = "results/variants/pbs.tsv" if config['pbs']['activate'] else [] 
 	output:
-		expand("results/gsea/genediff/{comp}.DE.csv", comp = config['contrasts']),
-		expand("results/gsea/fst/{comp}.FST.csv", comp = config['contrasts']),
-		expand("results/gsea/diffsnps/{comp}.diffsnps.csv", comp = config['contrasts']),
-		expand("results/gsea/pbs/{pbscomp}.PBS.csv", pbscomp = config['pbs']['contrasts'])
+		expand("results/gsea/genediff/{comp}.DE.{pathway}.tsv", comp = config['contrasts'], pathway=['kegg', 'GO']),
+		expand("results/gsea/fst/{comp}.FST.{pathway}.tsv", comp = config['contrasts'], pathway=['kegg', 'GO']),
+		expand("results/gsea/diffsnps/{comp}.diffsnps.{pathway}.tsv", comp = config['contrasts'], pathway=['kegg', 'GO']),
+		expand("results/gsea/pbs/{pbscomp}.PBS.{pathway}.tsv", pbscomp = config['pbs']['contrasts'], pathway=['kegg', 'GO'])
 	params:
 		pbs = config['pbs']['activate'],
 		pbscomps = config['pbs']['contrasts'],
