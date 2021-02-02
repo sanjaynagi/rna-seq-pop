@@ -54,7 +54,7 @@ def get_desired_outputs(wildcards):
     wanted_input.extend(
         expand(
             [
- #               "results/variants/diffsnps/{name}.sig.kissDE.tsv",
+                "results/variants/diffsnps/{comp}.sig.kissDE.tsv",
                 "results/variants/plots/PCA-{chrom}-{dataset}.png",
                 "results/variants/plots/{dataset}_SNPdensity_{chrom}.png",
                 "results/variants/stats/inbreedingCoef.tsv",
@@ -65,9 +65,8 @@ def get_desired_outputs(wildcards):
                 "results/variants/SequenceDiv.tsv",
                 "results/variants/plots/fst/{comp}.{chrom}.fst.line.png",
                 "results/RNA-Seq-full.xlsx",
-                "results/venn/{name}_DE.Fst.venn.png",
+                "results/venn/{comp}_DE.Fst.venn.png",
                 ],
-                name = config['contrasts'],
                 chrom = config['chroms'],
                 dataset = config['dataset'],
                 comp = config['contrasts'],
@@ -97,12 +96,13 @@ def get_desired_outputs(wildcards):
     if config['GSEA']['activate']:
        wanted_input.extend(
            expand(
-                [
-                    "results/gsea/genediff/{comp}.DE.csv",
-                    "results/gsea/fst/{comp}.FST.csv",
-#                    "results/gsea/diffsnps/{comp}.diffsnps.csv",
+               [
+               "results/gsea/genediff/{comp}.DE.{pathway}.tsv",
+               "results/gsea/fst/{comp}.FST.{pathway}.tsv",
+               "results/gsea/diffsnps/{comp}.diffsnps.{pathway}.tsv",
                 ],
                 comp = config['contrasts'],
+                pathway=['kegg', 'GO']
                 )
 	)
 
