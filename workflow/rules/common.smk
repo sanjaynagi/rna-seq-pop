@@ -133,7 +133,6 @@ def check_chroms(gffpath, chroms):
             """
             
             gff = allel.gff3_to_dataframe(gffpath)
-            gff['seqid'] = gff['seqid'].str.strip(str_remove)
                 
             assert np.isin(chroms, gff.seqid).all(), f"All provided chromosome names ({chroms}) are not present in GFF file"
     

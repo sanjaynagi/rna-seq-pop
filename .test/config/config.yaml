@@ -24,7 +24,7 @@ chroms: ['X']
 
 
 qc:
-      activate: False
+      activate: True
 
 # List of contrasts to do DE and Fst analysis on. Should correspond to the 'treatment' columns of the samples.tsv file, and be separated by an underscore "_". i.e ['control_case'], or ['Kisumu_Tiassale'].
 # The treatment names themselves must not contain underscores
@@ -33,7 +33,7 @@ contrasts:
       - 'ContTia_PiriTia'
 
 progressiveGenes:
-      activate: False
+      activate: True
       padj_threshold: 0.05
       fc_threshold: 1.5
       groups: "Kisumu_ContTia_PiriTia"
