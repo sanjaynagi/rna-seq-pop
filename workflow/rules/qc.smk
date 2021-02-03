@@ -18,25 +18,24 @@ rule CheckInputs:
                 fqpath = f"resources/reads/{sample}_{n}.fastq.gz"
                 assert os.path.isfile(fqpath), "all sample names in 'samples.tsv' do not match a .fastq.gz file"#
         # check that the chromosomes are present in the gff file 
-        check_chroms(params.gffpath, params.chroms, params.str_remove)
+        check_chroms(params.gffpath, params.chroms)
         # check column names of gene_names.tsv
         gene_names = pd.read_csv(params.gene_names, sep="\t")
         colnames = ['Gene_stable_ID', 'Gene_description', 'Gene_name']
         assert (gene_names.columns == colnames).all(), f"Column names of gene_names.tsv should be {colnames}"
 
 rule FastQC:
-	input:
-		"resources/reads/{sample}_{n}.fastq.gz"
-	output:
-		html="resources/reads/qc/{sample}_{n}_fastqc.html",
-		zip="resources/reads/qc/{sample}_{n}_fastqc.zip"
-	log:
-		"logs/FastQC/{sample}_{n}_QC.log"
-	params:
-		outdir="--outdir resources/reads/qc"
-	wrapper:
-		"0.65.0/bio/fastqc"
-
+    input:
+        "resources/reads/{sample}_{n}.fastq.gz"
+    output:
+        html="resources/reads/qc/{sample}_{n}_fastqc.html",
+        zip="resources/reads/qc/{sample}_{n}_fastqc.zip"
+    log:
+        "logs/FastQC/{sample}_{n}_QC.log"
+    params:
+        outdir="--outdir resources/reads/qc"
+    wrapper:
+        "0.70.0/bio/fastqc"
 
 rule Coverage:
     input:
