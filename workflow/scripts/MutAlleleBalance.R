@@ -35,10 +35,12 @@ for (m in mutation_data$Name){
     allele_list[[sample]]$mutation = m
     allele_list[[sample]]$gene = mutation_data[mutation_data$Name == m]$Gene
     
-    allele_list[[sample]] = allele_list[[sample]] %>% mutate(!!propstring := (!!sym(base))/`cov`) #new column, proportion of As to total.  
+    cover = allele_list[[sample]] %>% select(A,C,G,T) %>% rowSums()
+    print(str(cover))
+    allele_list[[sample]] = allele_list[[sample]] %>% mutate(!!propstring := (!!sym(base))/cover) #new column, proportion of As to total.  
     
     if (!base2 %in% c("", NA)){
-    allele_list[[sample]] = allele_list[[sample]] %>% mutate(!!propstring2 := (!!sym(base2))/`cov`) #new column, proportion of As to total.  
+    allele_list[[sample]] = allele_list[[sample]] %>% mutate(!!propstring2 := (!!sym(base2))/cover) #new column, proportion of As to total.  
     }
   }
   
