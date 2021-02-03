@@ -7,6 +7,7 @@ from snakemake.utils import validate
 import pandas as pd
 import numpy as np
 import os
+import datetime
 configfile:"config/config.yaml"
 
 metadata = pd.read_csv(config['samples'], sep="\t")
@@ -16,10 +17,15 @@ samples = metadata.samples
 # IR allele balance mutations file
 mutationData = pd.read_csv(config['IRmutations']['path'], sep="\t") if config['IRmutations']['activate'] else []
 
-print(f"Running RNA-Seq-IR snakemake workflow in {workflow.basedir}")
-print(f"Author: Sanjay Curtis Nagi")
+print("------------------------------ RNA-Seq-IR -----------------------------")
+print(f"Running RNA-Seq-IR snakemake workflow in {workflow.basedir}\n")
+print(f"Author:   Sanjay Curtis Nagi")
 print(f"Workflow Version: 0.1")
+print("Execution time: ",datetime.datetime.now())
 print(f"Dataset: {config['dataset']}", "\n")
+print(f"Total contrasts: {len(config['contrasts'])}")
+if config['pbs']['activate']: print("PBS activated")
+
 
 include: "rules/common.smk"
 include: "rules/qc.smk"
