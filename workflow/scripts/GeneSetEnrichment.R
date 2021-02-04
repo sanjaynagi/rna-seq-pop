@@ -24,7 +24,8 @@ runEnrich = function(rankedList, GeneSetList, outName){
     fgseaRes = fgsea(pathways = GeneSetList[[set]], 
                      stats = na.omit(rankedList),
                      minSize  = 15,
-                     maxSize  = 500)
+                     maxSize  = 500,
+                     nperm=10000)
     
     fgseaRes %>% arrange(padj) %>% fwrite(., file = glue("results/gsea/{outName}.{set}.tsv"), sep = "\t")
     

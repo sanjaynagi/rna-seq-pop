@@ -102,7 +102,7 @@ rule GeneSetEnrichment:
 		expand("results/gsea/genediff/{comp}.DE.{pathway}.tsv", comp = config['contrasts'], pathway=['kegg', 'GO']),
 		expand("results/gsea/fst/{comp}.FST.{pathway}.tsv", comp = config['contrasts'], pathway=['kegg', 'GO']),
 		expand("results/gsea/diffsnps/{comp}.diffsnps.{pathway}.tsv", comp = config['contrasts'], pathway=['kegg', 'GO']) if config['diffsnps']['activate'] else [],
-		expand("results/gsea/pbs/{pbscomp}.PBS.{pathway}.tsv", pbscomp = config['pbs']['contrasts'], pathway=['kegg', 'GO'])
+		expand("results/gsea/pbs/{pbscomp}.PBS.{pathway}.tsv", pbscomp = config['pbs']['contrasts'], pathway=['kegg', 'GO']) if config['pbs']['activate'] else []
 	params:
 		pbs = config['pbs']['activate'],
 		pbscomps = config['pbs']['contrasts'],
