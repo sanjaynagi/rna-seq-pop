@@ -141,7 +141,7 @@ def check_chroms(gffpath, chroms):
 
 def welcome(version, verbose=False):
 
-    print("---------------------------- RNA-Seq-IR ----------------------------")"
+    print("---------------------------- RNA-Seq-IR ----------------------------")
     print(f"Running RNA-Seq-IR snakemake workflow in {workflow.basedir}\n")
     print(f"Author:   Sanjay Curtis Nagi")
     print(f"Workflow Version: {version}")
