@@ -136,3 +136,45 @@ def check_chroms(gffpath, chroms):
                 
             assert np.isin(chroms, gff.seqid).all(), f"All provided chromosome names ({chroms}) are not present in GFF file"
     
+
+
+
+def welcome(version, verbose=False):
+
+    print("---------------------------- RNA-Seq-IR ----------------------------")"
+    print(f"Running RNA-Seq-IR snakemake workflow in {workflow.basedir}\n")
+    print(f"Author:   Sanjay Curtis Nagi")
+    print(f"Workflow Version: {version}")
+    print("Execution time: ", datetime.datetime.now())
+    print(f"Dataset: {config['dataset']}", "\n")
+    
+    if verbose:
+        print("Modules activated:", "\n")
+            
+        if config['qc']['activate']: 
+            print('QC - FASTQC, mosdepth, samtools flagstat')
+
+        print("Differential Expression - Kallisto, DESeq2, Sleuth")
+        print("Writing results to results/genediff, results/isoformdiff")
+        print(f"contrasts: {config['contrasts']}\n")
+
+        if config['progressiveGenes']['activate']:
+            print("ProgressiveGenes - Checking for DE genes differentially expressed in the same direction")
+            print(f"groups: {config['progressiveGenes']['groups']}\n")
+
+        if config['GSEA']['activate']:
+            print("GSEA")
+
+        if config['IRmutations']['activate']:
+            print(f"IRmutations - reporting raw allele frequencies from loci found in {config['IRmutations']['path']}")
+        
+        if config['pbs']['activate']:
+            print("PBS - Performing population branch statistic analysis")
+            print(f"contrasts: {config['pbs']['contrasts']}", "\n")
+        
+
+        if config['diffsnps']['activate']:
+            print("DifferentialSNPs - Performing differential SNP testing analysis")
+        
+        if config['AIMs']['activate']:
+            print("AIMs - Ancestry informative marker analysis")

@@ -17,17 +17,8 @@ samples = metadata.samples
 # IR allele balance mutations file
 mutationData = pd.read_csv(config['IRmutations']['path'], sep="\t") if config['IRmutations']['activate'] else []
 
-print("------------------------------ RNA-Seq-IR -----------------------------")
-print(f"Running RNA-Seq-IR snakemake workflow in {workflow.basedir}\n")
-print(f"Author:   Sanjay Curtis Nagi")
-print(f"Workflow Version: 0.1")
-print("Execution time: ",datetime.datetime.now())
-print(f"Dataset: {config['dataset']}", "\n")
-print(f"Total contrasts: {len(config['contrasts'])}")
-if config['pbs']['activate']: print("PBS activated")
-
-
 include: "rules/common.smk"
+welcome(version="v0.1.0")
 include: "rules/qc.smk"
 include: "rules/diff.smk"
 include: "rules/variantCalling.smk"
