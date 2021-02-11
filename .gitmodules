@@ -1,3 +1,6 @@
 [submodule "workflow/scripts/mpileup2readcounts"]
 	path = workflow/scripts/mpileup2readcounts
 	url = https://github.com/IARCbioinfo/mpileup2readcounts
+[submodule "workflow/scripts/compkaryo"]
+	path = workflow/scripts/compkaryo
+	url = git@github.com:sanjaynagi/compkaryo.git

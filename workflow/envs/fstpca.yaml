@@ -10,3 +10,4 @@ dependencies:
   - matplotlib-venn=0.11.5
   - xlsxwriter=1.1.5
   - xlrd=1.2.0
+  - bcftools=1.11

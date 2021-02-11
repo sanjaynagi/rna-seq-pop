@@ -6,7 +6,7 @@ if config['pbs']:
 else:
     windowedStats = ['fst']
 
-
+1
 def get_desired_outputs(wildcards): 
 
     """
@@ -124,6 +124,16 @@ def get_desired_outputs(wildcards):
                 )
 	)
 
+    if config['karyotype']['activate']:
+        wanted_input.extend(
+            expand(
+                [
+                "results/karyotype/{karyo}.karyo.txt"
+                ],
+                karyo=config['karyotype']['inversions']
+            )
+        )
+    
     return(wanted_input)
 
 

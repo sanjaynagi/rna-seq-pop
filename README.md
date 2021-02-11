@@ -13,7 +13,8 @@ This workflow performs various analyses of illumina paired-end RNA-Sequencing da
 * Gene Set Enrichment analyses and Venn diagrams.
 * Allele balance reports of pre-specified loci of choice.
 * *Anopheles gambiae s.l* - Analysis of Ancestry Informative Markers (AIMs) to determine relative ancestry. 
-* *Anopheles gambiae s.l* - Reports if DE genes are found underneath known selective sweep signals in the [Ag1000g](https://www.nature.com/articles/nature24995). 
+* *Anopheles gambiae s.l* - Reports if DE genes are found underneath known selective sweep signals in the [Ag1000g](https://www.nature.com/articles/nature24995).
+* *Anopheles gambiae s.l* - Determines Karyotype of chromosome 2 inversions using [compkaryo](https://academic.oup.com/g3journal/article/9/10/3249/6026680) - [Github](https://github.com/sanjaynagi/compkaryo)
 
 The workflow is generalised, and will function with any trimmed Illumina paired-end RNA-sequencing. However, certain modules, such as the AIMs analysis, are only appropriate for specific species. These can be activated in the configuration file (config.yaml). 
 
@@ -31,6 +32,7 @@ If you use this workflow in a paper, don't forget to give credits to the author 
 
 1. Create a new github repository using this workflow [as a template](https://help.github.com/en/articles/creating-a-repository-from-a-template).
 2. [Clone](https://help.github.com/en/articles/cloning-a-repository) the newly created repository to your local system, into the place where you want to perform the data analysis.
+3. As the workflow contains submodules (compkaryo & mpileup2readcounts), `git clone --recursive` should be used to clone the repo. 
 
 ### Step 2: Configure workflow
 
