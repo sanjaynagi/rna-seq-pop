@@ -71,6 +71,19 @@ AIMs:
       gambcolu: "resources/gamb_vs_colu.zarr"         # path to gambcolu AIMs
       arab: "resources/gambcolu_vs_arab.zarr"         # path to arab AIMs
 
+# Run analysis with compkaryo to determine proportion % karyotype
+# Only 2la and 2Rb reliable for now. 
+karyotype:
+        activate: False
+        inversions:
+             - "2La"
+             - "2Rj"
+             - "2Rb"
+             - "2Rc_col"
+             - "2Rc_gam"
+             - "2Rd"
+             - "2Ru"
+
 diffsnps:
         activate: False
 
