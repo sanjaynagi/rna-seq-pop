@@ -83,3 +83,25 @@ AIMs:
       missingness: 0.5                                # proportion between 0 and 1 
       gambcolu: "resources/gamb_vs_colu.zarr"         # path to gambcolu AIMs
       arab: "resources/gambcolu_vs_arab.zarr"         # path to arab AIMs
+
+
+# Run analysis with compkaryo to determine proportion % karyotype
+karyotype:
+        activate: True
+        inversions:
+             - "2La"
+             - "2Rj"
+             - "2Rb"
+             - "2Rc_col"
+             - "2Rc_gam"
+             - "2Rd"
+             - "2Ru"
+
+# Run differential SNPs analysis with kissde
+diffsnps:
+        activate: False
+
+# Run Venn diagram - not working as of v0.1.0
+venn:
+        activate: False
+
