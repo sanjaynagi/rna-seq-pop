@@ -218,9 +218,9 @@ pd.DataFrame.from_dict(coefdictchrom).to_csv("results/variants/stats/inbreedingC
 if linkage: pd.DataFrame.from_dict(ldictchrom).to_csv("results/variants/stats/LD.tsv", sep="\t", index=True)
 
 # get genome wide average stats
-for k in allcoef.keys():
-    allld[k] = np.nanmean(allld[k])
-    allcoef[k] = np.nanmean(allcoef[k])
+for pop in allcoef.keys():
+    allld[pop] = np.nanmean(allld[pop])
+    allcoef[pop] = np.nanmean(allcoef[pop])
 
 if linkage:
     df1 = pd.DataFrame.from_dict(allld, orient='index',columns=['LinkageDisequilibrium'])

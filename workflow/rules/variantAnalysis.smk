@@ -166,6 +166,26 @@ rule AncestryInformativeMarkers:
     script:
         "../scripts/AncestryInformativeMarkers.py"
 
+
+rule Karyotype:
+    input:
+        vcf = lambda wildcards: "results/variants/vcfs/annot.variants.2L.vcf.gz" if wildcards.karyo == "2La" else "results/variants/vcfs/annot.variants.2R.vcf.gz"
+    output:
+        "results/karyotype/{karyo}.karyo.txt"
+    log:
+        "logs/compKaryo/Karyo_{karyo}.log"
+    conda:
+        "../envs/fstpca.yaml"
+    params:
+         ploidy = config['ploidy']
+    shell:
+        """
+        paste <(bcftools query -l {input.vcf}) \
+        <(python {workflow.basedir}/scripts/compkaryo/compkaryo/compkaryo.py {input.vcf} {wildcards.karyo} -p {params.ploidy}) | 
+        column -s $'\\t' -t > {output}
+        """
+
+        
 rule VennDiagrams:
    input:
         DEcontrasts = "resources/DE.contrast.list",
@@ -185,4 +205,3 @@ rule VennDiagrams:
         percentile = 0.05
    script:
        "../scripts/VennDiagrams.py"
-
