@@ -18,7 +18,7 @@ samples = metadata.samples
 mutationData = pd.read_csv(config['IRmutations']['path'], sep="\t") if config['IRmutations']['activate'] else []
 
 include: "rules/common.smk"
-welcome(version="v0.1.0")
+welcome(version="v0.2.0")
 include: "rules/qc.smk"
 include: "rules/diff.smk"
 include: "rules/variantCalling.smk"
