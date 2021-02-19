@@ -134,6 +134,17 @@ def get_desired_outputs(wildcards):
             )
         )
     
+    if config['sweeps']['activate']:
+        wanted_input.extend(
+            expand(
+                [
+                    "results/genediff/ag1000gSweeps/{comp}_swept.tsv",
+                ],
+                comp=config['contrasts']
+            )
+        )
+
+
     return(wanted_input)
 
 

@@ -115,3 +115,20 @@ rule GeneSetEnrichment:
 		"logs/GeneSetEnrichment.log"
 	script:
 		"../scripts/GeneSetEnrichment.R"
+
+
+rule Ag1000gSweepsDE:
+	input:
+		DEresults = expand("results/genediff/{comp}.csv", comp=config['contrasts']),
+		DEcontrasts = "resources/DE.contrast.list"
+	output:
+		expand("results/genediff/ag1000gSweeps/{comp}_swept.tsv", comp=config['contrasts'])
+	log:
+		"logs/Ag1000gSweepsDE.log"
+	conda:
+		"../envs/fstpca.yaml"
+	params:
+		pval = config['sweeps']['padj_threshold'],
+		fc = config['sweeps']['fc_threshold']
+	script:
+		"../scripts/Ag1000gSweepsDE.py"
