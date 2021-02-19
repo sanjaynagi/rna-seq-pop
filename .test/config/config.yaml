@@ -84,6 +84,13 @@ karyotype:
              - "2Rd"
              - "2Ru"
 
+
+sweeps:
+      activate: True
+      padj_threshold: 0.05
+      fc_threshold: 1.5
+
+
 diffsnps:
         activate: False
 
