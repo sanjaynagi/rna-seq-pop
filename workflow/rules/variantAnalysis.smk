@@ -190,7 +190,7 @@ rule VennDiagrams:
    input:
         DEcontrasts = "resources/DE.contrast.list",
         DE = "results/genediff/RNA-Seq_diff.xlsx",
-        Fst = expand("results/variants/{stat}.tsv", stat=windowedStats),
+        Fst = "results/variants/fst.tsv",
         diffsnps = expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts']) if config['diffsnps']['activate'] else []
    output:
         "results/RNA-Seq-full.xlsx",
@@ -200,8 +200,7 @@ rule VennDiagrams:
    log:
         "logs/VennDiagrams.log"
    params:
-        pbs = config['pbs']['activate'],
-        pbscomps = config['pbs']['contrasts'],
+        diffsnps = config['diffsnps']['activate'],
         percentile = 0.05
    script:
        "../scripts/VennDiagrams.py"
