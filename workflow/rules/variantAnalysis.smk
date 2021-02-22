@@ -84,7 +84,7 @@ rule DifferentialSNPs:
          "../scripts/DifferentialSNPs.R"
 
 
-rule WindowedStatisticsAndPCA:
+rule StatisticsAndPCA:
     input:
         vcf = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
         samples = config['samples'],
@@ -93,36 +93,53 @@ rule WindowedStatisticsAndPCA:
     output:
         PCAfig = expand("results/variants/plots/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset']),
         SNPdensityFig = expand("results/variants/plots/{dataset}_SNPdensity_{chrom}.png", chrom=config['chroms'], dataset=config['dataset']),
-        Fst = expand("results/variants/plots/fst/{comp}.{chrom}.fst.{wsize}.png", comp=config['contrasts'], chrom=config['chroms'], wsize=config['pbs']['windownames']),
-        PBS = expand("results/variants/plots/pbs/{pbscomp}.{chrom}.pbs.{wsize}.png", pbscomp=config['pbs']['contrasts'], chrom=config['chroms'], wsize=config['pbs']['windownames']) if config['pbs'] else [], 
         inbreedingCoef = "results/variants/stats/inbreedingCoef.tsv",
         inbreedingCoefMean = "results/variants/stats/inbreedingCoef.mean.tsv",
         SequenceDiversity = "results/variants/stats/SequenceDiversity.tsv",
-        #LD = "results/variants/stats/LD.tsv"
     log:
-        "logs/WindowedStatisticsAndPCA.log"
+        "logs/StatisticsAndPCA.log"
     conda:
         "../envs/fstpca.yaml"
     params:
         dataset = config['dataset'],
         chroms = config['chroms'],
         ploidy = config['ploidy'],
+        missingprop = config['pbs']['missingness'],
+        qualflt = 30
+    script:
+        "../scripts/StatisticsAndPCA.py"
+
+
+rule WindowedFstPBS:
+    input:
+        samples = config['samples'],
+        contrasts = "resources/DE.contrast.list",
+        vcf = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms'])
+    output:
+        Fst = expand("results/variants/plots/fst/{comp}.{chrom}.fst.{wsize}.png", comp=config['contrasts'], chrom=config['chroms'], wsize=config['pbs']['windownames']),
+        PBS = expand("results/variants/plots/pbs/{pbscomp}.{chrom}.pbs.{wsize}.png", pbscomp=config['pbs']['contrasts'], chrom=config['chroms'], wsize=config['pbs']['windownames']) if config['pbs'] else [], 
+    conda:
+        "../envs/fstpca.yaml"
+    log:
+        "logs/WindowedFstPCA.log"
+    params:
         pbs = config['pbs']['activate'],
         pbscomps = config['pbs']['contrasts'],
+        chroms = config['chroms'],
+        ploidy = config['ploidy'],
         missingprop = config['pbs']['missingness'],
         qualflt = 30,
-        linkage = False,
         windowsizes = config['pbs']['windowsizes'],
         windowsteps = config['pbs']['windowsteps'],
         windownames = config['pbs']['windownames']
     script:
-        "../scripts/WindowedStatsAndPCA.py"
+        "../scripts/WindowedFstPBS.py"
 
-rule FstPbsPerGene:
+rule PerGeneFstPBS:
     input:
         samples = config['samples'],
         gff = config['ref']['gff'],
-        DEcontrasts = "resources/DE.contrast.list",
+        contrasts = "resources/DE.contrast.list",
         geneNames = "resources/gene_names.tsv",
         vcf = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms'])
     output:
@@ -132,7 +149,7 @@ rule FstPbsPerGene:
     conda:
         "../envs/fstpca.yaml"
     log:
-        "logs/FstPbsPerGene.log"
+        "logs/PerGeneFstPBS.log"
     params:
         pbs = config['pbs']['activate'],
         pbscomps = config['pbs']['contrasts'],
@@ -140,7 +157,7 @@ rule FstPbsPerGene:
         ploidy = config['ploidy'],
         missingprop = 0.8,
     script:
-        "../scripts/FstPbsPerGene.py"
+        "../scripts/PerGeneFstPBS.py"
 
 
 rule AncestryInformativeMarkers:
@@ -182,9 +199,8 @@ rule Karyotype:
         """
         paste <(bcftools query -l {input.vcf}) \
         <(python {workflow.basedir}/scripts/compkaryo/compkaryo/compkaryo.py {input.vcf} {wildcards.karyo} -p {params.ploidy}) | 
-        column -s $'\\t' -t > {output}
+        column -s $'\\t' -t | sort -k 1 > {output}
         """
-
         
 rule VennDiagrams:
    input:
