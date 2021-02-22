@@ -172,6 +172,7 @@ if samples['species'].isin(['arabiensis']).any():
         vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops =  readAndFilterVcf(path=path,
                                                                 chrom=chrom,
                                                                 samples=samples,
+								numbers=numbers,
                                                                 qualflt=qualflt,
                                                                 missingfltprop=missingprop)
         aimspos = aims[chrom]['POS'][:]
@@ -262,7 +263,7 @@ if samples['species'].isin(['arabiensis']).any():
         perchromdf = gambdf.merge(arabdf, left_index=True, right_index=True)
         aimsperchromdf = pd.DataFrame.from_dict(n_aims_per_sample, orient='index', columns=['n_AIMs'])
 
-        perchromdf.to_csv(f"results/variants/AIMs/AIM_fraction_{chrom}.tsv", sep="\t", index=True)
+        perchromdf.to_csv(f"results/variants/AIMs/AIM_fraction_{chrom}.arab.tsv", sep="\t", index=True)
         plot_aims(perchromdf, aimsperchromdf, species1="arabiensis", species2="gambiae", figtitle=f"AIM_fraction_arab_{chrom}", total=False)
 
     aims_chrom_gamb = flip_dict(aims_chrom_gamb)
