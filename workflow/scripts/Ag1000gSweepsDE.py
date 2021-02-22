@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-A script that checks if DE genes lie underneath known selective sweeeps in the Ag
+A script that checks if DE genes lie underneath known selective sweeeps in the Ag1000g
 """
 
 import sys
@@ -9,30 +9,35 @@ sys.stderr = open(snakemake.log[0], "w")
 
 from tools import *
 
-
+# Read in parameters 
 pval_threshold = snakemake.params['pval']
-fc_threshold = snakemake.params['fc']
+upper_fc = snakemake.params['fc']
+lower_fc = 1/upper_fc # if someone wants a FC threshold of 2, need to have lower threshold of 0.5.
 # Read in list of contrasts
 comparisons = pd.read_csv(snakemake.input['DEcontrasts'])
 
+# Read in .csv file containing selection signals and associated metadata
 signals = pd.read_csv("resources/signals.csv")
 
 for comp in comparisons['contrast']:
     
+    # Load DE results
     DEgenes = pd.read_csv(f"results/genediff/{comp}.csv")
-    sigup = DEgenes[np.logical_and(DEgenes['padj'] < pval_threshold, DEgenes['FC'] > fc_threshold)]
+    # Filter to overexpressed genes
+    sigup = DEgenes[np.logical_and(DEgenes['padj'] < pval_threshold, np.logical_or(DEgenes['FC'] > upper_fc, DEgenes['FC'] < lower_fc))]
     
     sweep = {}
     nswept = {}
 
+    # Loop through each signal, recording if any DE genes are found in one
     for i, cols in signals.iterrows():
 
-        if pd.isnull(cols['overlapping_genes']):
+        if pd.isnull(cols['overlapping_genes']): # Skip signal if no overlapping genes
             continue
 
         sweptgenes = np.array(cols['overlapping_genes'].split(" "))
 
-
+        # Get boolean array - if list of swept genes isin our DE genes
         overlap = np.isin(sweptgenes, sigup['GeneID'])
 
         sweep[cols['uid']] = sweptgenes[overlap]
@@ -44,6 +49,7 @@ for comp in comparisons['contrast']:
     for k,v in sweep.items():
         sweep[k] = ' '.join(v)
 
+    # Build dataframe and add sweep metadata columns
     sweptDE = pd.DataFrame.from_dict(sweep, orient='index', columns=['overlapping_DE_genes'])
     sweptDE = sweptDE.reset_index().rename(columns={'index': 'Ag1000g_sweep'})
     sweptDE['overlapping_genes'] = signals['overlapping_genes'][~pd.isnull(signals['overlapping_genes'])].reset_index(drop=True)
@@ -54,6 +60,8 @@ for comp in comparisons['contrast']:
     wheresweep = defaultdict(dict)
     whatsweep = defaultdict(list)
 
+    # Now loop through each swept gene to find name of sweeps it lies under
+    # And location of sweep
     for gene in genes:
 
         for i, cols in sweptDE.iterrows():
@@ -67,6 +75,7 @@ for comp in comparisons['contrast']:
 
                 whatsweep[gene].append(cols['Ag1000g_sweep'])
 
+    # Join name of sweeps column into a single string, so it fits in one column of data frame
     for k,v in whatsweep.items():
         whatsweep[k] = ' '.join(v)
         

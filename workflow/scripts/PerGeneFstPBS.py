@@ -15,7 +15,7 @@ warnings.filterwarnings('ignore') # suppress numpy runtime warnings, this is a b
 metadata_path = snakemake.input['samples']
 samples = pd.read_csv(metadata_path, sep="\s+")
 gffpath = snakemake.input['gff']
-comparisons_path = snakemake.input['DEcontrasts']
+comparisons_path = snakemake.input['contrasts']
 pbs = snakemake.params['pbs']
 pbscomps = snakemake.params['pbscomps']
 chroms = snakemake.params['chroms']

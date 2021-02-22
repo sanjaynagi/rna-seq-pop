@@ -9,7 +9,6 @@ sink(log, type="message")
 #' upregulated in the control v intermediate phenotype comparison. 
 #' And also in the intermediate phenotype vs full phenotype comparison.
 
-
 library(data.table)
 library(tidyverse)
 library(glue)
