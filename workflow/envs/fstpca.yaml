@@ -11,4 +11,8 @@ dependencies:
   - xlsxwriter=1.1.5
   - xlrd=1.2.0
   - bcftools=1.11
+<<<<<<< HEAD
   - adjusttext
+=======
+  - nbconvert
+>>>>>>> 37c85f9499ca1d7968443f57841e6edd75dd6a2a
