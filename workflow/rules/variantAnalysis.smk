@@ -121,7 +121,8 @@ rule WindowedFstPBS:
     conda:
         "../envs/fstpca.yaml"
     log:
-        "logs/WindowedFstPCA.log"
+        "logs/WindowedFstPCA.log",
+        notebook="results/variants/WindowedFstPBS.ipynb"
     params:
         pbs = config['pbs']['activate'],
         pbscomps = config['pbs']['contrasts'],
@@ -133,7 +134,11 @@ rule WindowedFstPBS:
         windowsteps = config['pbs']['windowsteps'],
         windownames = config['pbs']['windownames']
     notebook:
+<<<<<<< HEAD
         "../scripts/WindowedFstPBS.py"
+=======
+        "../scripts/WindowedFstPBS.py.ipynb"
+>>>>>>> 37c85f9499ca1d7968443f57841e6edd75dd6a2a
 
 rule PerGeneFstPBS:
     input:
