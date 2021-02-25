@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from functools import partial, reduce
 from collections import defaultdict
+from adjustText import adjust_text
 
 # get indices of duplicate names
 def list_duplicates(seq):
@@ -183,7 +184,7 @@ def plot_density(pos, window_size, title, path):
     ax.set_ylabel('Density (bp$^{-1}$)')
     ax.set_xlabel('Position (bp)')
     if title:
-        ax.set_title(title)
+        ax.set_title(title)c
     fig.savefig(path)
 
 def meanPBS(ac1, ac2, ac3, window_size, normalise):
@@ -210,6 +211,10 @@ def plot_pca_coords(coords, model, pc1, pc2, ax, sample_population, samples, pop
             flt = (sample_population == pop)
             ax.plot(x[flt], y[flt], marker='o', linestyle=' ', color=pop_colours[treatment], 
                     label=treatment, markersize=14, mec='k', mew=.5)
+
+        texts = [plt.text(x[i], y[i], pop, fontsize='small', ha='center', va='center') for i, pop in enumerate(sample_population)]
+        adjust_text(texts)
+
         ax.set_xlabel('PC%s (%.1f%%)' % (pc1+1, model.explained_variance_ratio_[pc1]*100))
         ax.set_ylabel('PC%s (%.1f%%)' % (pc2+1, model.explained_variance_ratio_[pc2]*100))
 

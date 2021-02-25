@@ -132,7 +132,7 @@ rule WindowedFstPBS:
         windowsizes = config['pbs']['windowsizes'],
         windowsteps = config['pbs']['windowsteps'],
         windownames = config['pbs']['windownames']
-    script:
+    notebook:
         "../scripts/WindowedFstPBS.py"
 
 rule PerGeneFstPBS:
