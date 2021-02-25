@@ -184,7 +184,7 @@ def plot_density(pos, window_size, title, path):
     ax.set_ylabel('Density (bp$^{-1}$)')
     ax.set_xlabel('Position (bp)')
     if title:
-        ax.set_title(title)c
+        ax.set_title(title)
     fig.savefig(path)
 
 def meanPBS(ac1, ac2, ac3, window_size, normalise):
