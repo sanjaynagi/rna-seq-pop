@@ -68,7 +68,7 @@ rule SortBams:
     input:
         "temp/{sample}.bam"
     output:
-        "resources/alignments/{sample}.bam"
+        temp("resources/alignments/{sample}.bam")
     log:
         "logs/SortBams/{sample}.log"
     wrapper:
@@ -94,13 +94,24 @@ rule GenomeIndex:
     wrapper: 
         "v0.69.0/bio/samtools/faidx"
 
+rule markDups:
+    input:
+        bam = "resources/alignments/{sample}.bam"
+    output:
+        bam = "resources/alignments/{sample}.marked.bam",
+        metrics = "resources/alignments/dedup/{sample}.metrics.txt"
+    log:
+        "logs/markDups/{sample}.log"
+    wrapper:
+        "0.72.0/bio/picard/markduplicates"
+
 chunks = np.arange(1, config['chunks'])
 
 rule GenerateFreebayesParams:
     input:
         ref_idx = config['ref']['genome'],
         index = config['ref']['genome'] + ".fai",
-        bams = expand("resources/alignments/{sample}.bam", sample=samples)
+        bams = expand("resources/alignments/{sample}.marked.bam", sample=samples)
     output:
         bamlist = "resources/bam.list",
         pops = "resources/populations.tsv",
@@ -118,7 +129,7 @@ rule GenerateFreebayesParams:
 
 rule VariantCallingFreebayes:
 	input:
-		bams = expand("resources/alignments/{sample}.bam", sample=samples),
+		bams = expand("resources/alignments/{sample}.marked.bam", sample=samples),
 		index = expand("resources/alignments/{sample}.bam.bai", sample=samples),
 		ref = config['ref']['genome'],
 		samples = ancient("resources/bam.list"),

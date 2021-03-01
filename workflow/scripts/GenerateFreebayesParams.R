@@ -33,7 +33,7 @@ for (chrom in chroms){
 
 metadata = fread(snakemake@params[['metadata']], sep="\t")
 
-metadata$bams = paste0("resources/alignments/", metadata$samples,".bam")
+metadata$bams = paste0("resources/alignments/", metadata$samples,".marked.bam")
 
 metadata %>% 
    select(bams, strain) %>% 
