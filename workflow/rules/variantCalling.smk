@@ -83,6 +83,16 @@ rule SortBams:
     wrapper:
         "0.65.0/bio/samtools/sort"
 
+rule IndexBams:
+    input:
+        "resources/alignments/{sample}.bam"
+    output:
+        "resources/alignments/{sample}.bam.bai"
+    log:
+        "logs/IndexBams/{sample}.log"
+    wrapper:
+        "0.65.0/bio/samtools/index"
+
 rule markDups:
     input:
         bam = "resources/alignments/{sample}.bam"
@@ -100,7 +110,7 @@ rule IndexBams:
     output:
         "resources/alignments/{sample}.marked.bam.bai"
     log:
-        "logs/IndexBams/{sample}.log"
+        "logs/IndexBams/marked.{sample}.log"
     wrapper:
         "0.65.0/bio/samtools/index"
 
