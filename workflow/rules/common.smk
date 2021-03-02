@@ -6,7 +6,7 @@ if config['pbs']:
 else:
     windowedStats = ['fst']
 
-1
+
 def get_desired_outputs(wildcards): 
 
     """
@@ -157,8 +157,6 @@ def check_chroms(gffpath, chroms):
                 
             assert np.isin(chroms, gff.seqid).all(), f"All provided chromosome names ({chroms}) are not present in GFF file"
     
-
-
 
 def welcome(version, verbose=False):
 

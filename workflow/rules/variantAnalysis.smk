@@ -5,7 +5,7 @@
 
 rule mpileupIR:
     input:
-        bam = "resources/alignments/{sample}.bam",
+        bam = "resources/alignments/{sample}.marked.bam",
         index = "resources/alignments/{sample}.bam.bai"
     output:
         "results/allele_balance/counts/{sample}_{mut}_allele_counts.tsv"
@@ -19,7 +19,8 @@ rule mpileupIR:
         ref = config['ref']['genome']
     shell:
         """
-        samtools mpileup {input.bam} -r {params.region} -f {params.ref} | python2 {workflow.basedir}/scripts/BaseParser.py > {output}
+        samtools mpileup {input.bam} -r {params.region} -f {params.ref} | 
+        python2 {workflow.basedir}/scripts/BaseParser.py > {output}
         """
 
 rule AlleleBalanceIR:
@@ -41,7 +42,7 @@ rule AlleleBalanceIR:
 
 rule AlleleTables:
     input:
-        bam = "resources/alignments/{sample}.bam",
+        bam = "resources/alignments/{sample}.dedup.bam",
         bed = "resources/regions/missense.pos.{chrom}.bed",
         ref = config['ref']['genome']
     output:

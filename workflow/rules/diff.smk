@@ -57,7 +57,7 @@ rule DifferentialIsoformExpression:
 		DEcontrasts = "resources/DE.contrast.list",
 		counts = expand("results/quant/{sample}", sample=samples)
 	output:
-                csvs = expand("results/isoformdiff/{comp}.csv", comp=config['contrasts']),
+		csvs = expand("results/isoformdiff/{comp}.csv", comp=config['contrasts']),
 		xlsx = "results/isoformdiff/RNA-Seq_isoformdiff.xlsx"
 	group:"diffexp"
 	priority: 10
@@ -66,7 +66,7 @@ rule DifferentialIsoformExpression:
 	log:
 		"logs/DifferentialIsoformExpression.log"
 	script:
-	    "../scripts/SleuthIsoformsDE.R"
+		"../scripts/SleuthIsoformsDE.R"
 
 
 rule progressiveGenesDE:
