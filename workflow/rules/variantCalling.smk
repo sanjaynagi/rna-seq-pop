@@ -104,7 +104,7 @@ rule markDups:
     wrapper:
         "0.72.0/bio/picard/markduplicates"
 
-rule IndexBams:
+rule IndexMarkedBams:
     input:
         "resources/alignments/{sample}.marked.bam"
     output:
