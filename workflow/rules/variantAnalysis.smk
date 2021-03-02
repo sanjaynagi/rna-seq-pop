@@ -6,7 +6,7 @@
 rule mpileupIR:
     input:
         bam = "resources/alignments/{sample}.marked.bam",
-        index = "resources/alignments/{sample}.bam.bai"
+        index = "resources/alignments/{sample}.marked.bam.bai"
     output:
         "results/allele_balance/counts/{sample}_{mut}_allele_counts.tsv"
     conda:
