@@ -35,7 +35,18 @@ rule FastQC:
     params:
         outdir="--outdir resources/reads/qc"
     wrapper:
-        "0.70.0/bio/fastqc"
+        "0.72.0/bio/fastqc"
+
+rule BamStats:
+    input:
+        bam = "resources/alignments/{sample}.bam",
+        idx = "resources/alignments/{sample}.bam.bai"
+    output:
+        stats = "resources/alignments/bamStats/{sample}.flagstat"
+    log:
+        "logs/BamStats/{sample}.log"
+    wrapper:
+        "0.70.0/bio/samtools/flagstat"
 
 rule Coverage:
     input:
@@ -53,15 +64,16 @@ rule Coverage:
     threads:4
     shell: "mosdepth --threads {threads} --fast-mode --by {params.windowsize} --no-per-base {params.prefix} {input.bam}"
 
-
-rule BamStats:
+rule vcfStats:
     input:
-        bam = "resources/alignments/{sample}.bam",
-        idx = "resources/alignments/{sample}.bam.bai"
+        vcf = "results/variants/vcfs/annot.variants.{chrom}.vcf.gz"
     output:
-        stats = "resources/alignments/bamStats/{sample}.flagstat"
+        vcfStats = "results/variants/vcfs/stats/{chrom}.txt"
+    conda:
+        "../envs/variants.yaml"
     log:
-        "logs/BamStats/{sample}.log"
-    wrapper:
-        "0.70.0/bio/samtools/flagstat"
-
+        "logs/vcfStats/{chrom}.log"
+    shell:
+        """
+        bcftools stats {input} > {output} 2> {log}
+        """

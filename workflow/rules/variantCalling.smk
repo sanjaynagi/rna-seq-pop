@@ -11,6 +11,15 @@
 # filters VCFs (snpSift)
 # extracts bed file of VCF snp-sites (Python)
 
+rule GenomeIndex:
+    input:
+        ref = config['ref']['genome']
+    output:
+        idx = config['ref']['genome'] + ".fai"
+    log: 
+        "logs/GenomeIndex.log"
+    wrapper: 
+        "v0.69.0/bio/samtools/faidx"
 
 rule HISAT2splicesites:
 	input:
@@ -74,26 +83,6 @@ rule SortBams:
     wrapper:
         "0.65.0/bio/samtools/sort"
 
-rule IndexBams:
-    input:
-        "resources/alignments/{sample}.bam"
-    output:
-        "resources/alignments/{sample}.bam.bai"
-    log:
-        "logs/IndexBams/{sample}.log"
-    wrapper:
-        "0.65.0/bio/samtools/index"
-
-rule GenomeIndex:
-    input:
-        ref = config['ref']['genome']
-    output:
-        idx = config['ref']['genome'] + ".fai"
-    log: 
-        "logs/GenomeIndex.log"
-    wrapper: 
-        "v0.69.0/bio/samtools/faidx"
-
 rule markDups:
     input:
         bam = "resources/alignments/{sample}.bam"
@@ -104,6 +93,16 @@ rule markDups:
         "logs/markDups/{sample}.log"
     wrapper:
         "0.72.0/bio/picard/markduplicates"
+
+rule IndexBams:
+    input:
+        "resources/alignments/{sample}.marked.bam"
+    output:
+        "resources/alignments/{sample}.bam.bai"
+    log:
+        "logs/IndexBams/{sample}.log"
+    wrapper:
+        "0.65.0/bio/samtools/index"
 
 chunks = np.arange(1, config['chunks'])
 
@@ -177,6 +176,7 @@ rule snpEff:
         dl = "workflow/scripts/snpEff/db.dl"
     output:
         calls = "results/variants/vcfs/annot.variants.{chrom}.vcf.gz",
+        csvStats = "results/variants/vcfs/snpEff.summary.csv"
     log:
         "logs/snpEff/snpEff.{chrom}.log"
     conda:
@@ -186,7 +186,7 @@ rule snpEff:
         prefix = lambda w, output: os.path.splitext(output[0])[0]
     shell:
         """
-        snpEff eff {params.db} {input.calls} > {params.prefix} 2> {log}
+        snpEff eff {params.db} -csvStats {output.csvStats} {input.calls} > {params.prefix} 2> {log}
         bgzip {params.prefix}
         """
 
