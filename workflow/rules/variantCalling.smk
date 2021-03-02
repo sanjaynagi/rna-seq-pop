@@ -98,7 +98,7 @@ rule IndexBams:
     input:
         "resources/alignments/{sample}.marked.bam"
     output:
-        "resources/alignments/{sample}.bam.bai"
+        "resources/alignments/{sample}.marked.bam.bai"
     log:
         "logs/IndexBams/{sample}.log"
     wrapper:
@@ -129,7 +129,7 @@ rule GenerateFreebayesParams:
 rule VariantCallingFreebayes:
 	input:
 		bams = expand("resources/alignments/{sample}.marked.bam", sample=samples),
-		index = expand("resources/alignments/{sample}.bam.bai", sample=samples),
+		index = expand("resources/alignments/{sample}.marked.bam.bai", sample=samples),
 		ref = config['ref']['genome'],
 		samples = ancient("resources/bam.list"),
 		regions = ancient("resources/regions/genome.{chrom}.region.{i}.bed")
