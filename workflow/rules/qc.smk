@@ -39,8 +39,8 @@ rule FastQC:
 
 rule BamStats:
     input:
-        bam = "resources/alignments/{sample}.bam",
-        idx = "resources/alignments/{sample}.bam.bai"
+        bam = "resources/alignments/{sample}.marked.bam",
+        idx = "resources/alignments/{sample}.marked.bam.bai"
     output:
         stats = "resources/alignments/bamStats/{sample}.flagstat"
     log:
@@ -50,8 +50,8 @@ rule BamStats:
 
 rule Coverage:
     input:
-        bam = "resources/alignments/{sample}.bam",
-        idx = "resources/alignments/{sample}.bam.bai"
+        bam = "resources/alignments/{sample}.marked.bam",
+        idx = "resources/alignments/{sample}.marked.bam.bai"
     output:
         "resources/alignments/coverage/{sample}.mosdepth.summary.txt"
     log:
