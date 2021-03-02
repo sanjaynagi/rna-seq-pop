@@ -176,7 +176,7 @@ rule snpEff:
         dl = "workflow/scripts/snpEff/db.dl"
     output:
         calls = "results/variants/vcfs/annot.variants.{chrom}.vcf.gz",
-        csvStats = "results/variants/vcfs/snpEff.summary.csv"
+        csvStats = "results/variants/vcfs/snpEff.summary.{chrom}.csv"
     log:
         "logs/snpEff/snpEff.{chrom}.log"
     conda:
