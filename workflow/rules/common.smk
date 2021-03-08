@@ -11,7 +11,7 @@ def get_desired_outputs(wildcards):
 
     """
     Function that returns a list of the desired outputs for the rule all, depending on the config.yaml
-    configuration file. As of V0.1 Does not list every single output, but will mean all rules and desired outputs are created.
+    configuration file. As of V0.1 Does not list every single output, but should mean all rules and desired outputs are created.
     """
 
     wanted_input = []
@@ -21,12 +21,15 @@ def get_desired_outputs(wildcards):
         wanted_input.extend(
             expand(
             [
+                "config/.input.check",
                 "resources/reads/qc/{sample}_{n}_fastqc.html",
                 "resources/alignments/coverage/{sample}.mosdepth.summary.txt",
                 "resources/alignments/bamStats/{sample}.flagstat"
+                "results/variants/vcfs/stats/{chrom}.txt"
             ],
             sample=samples, 
-            n=[1,2]
+            n=[1,2],
+            chrom = config['chroms']
             )
         )
 
@@ -157,6 +160,8 @@ def check_chroms(gffpath, chroms):
                 
             assert np.isin(chroms, gff.seqid).all(), f"All provided chromosome names ({chroms}) are not present in GFF file"
     
+
+
 
 def welcome(version, verbose=False):
 

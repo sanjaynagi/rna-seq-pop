@@ -16,7 +16,7 @@ rule CheckInputs:
         for sample in metadata.samples:
             for n in [1,2]:
                 fqpath = f"resources/reads/{sample}_{n}.fastq.gz"
-                assert os.path.isfile(fqpath), "all sample names in 'samples.tsv' do not match a .fastq.gz file"#
+                assert os.path.isfile(fqpath), f"all sample names in 'samples.tsv' do not match a .fastq.gz file in the {worflow.basedir}/resources/reads/ directory"
         # check that the chromosomes are present in the gff file 
         check_chroms(params.gffpath, params.chroms)
         # check column names of gene_names.tsv
