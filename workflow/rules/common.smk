@@ -24,7 +24,7 @@ def get_desired_outputs(wildcards):
                 "config/.input.check",
                 "resources/reads/qc/{sample}_{n}_fastqc.html",
                 "resources/alignments/coverage/{sample}.mosdepth.summary.txt",
-                "resources/alignments/bamStats/{sample}.flagstat"
+                "resources/alignments/bamStats/{sample}.flagstat",
                 "results/variants/vcfs/stats/{chrom}.txt"
             ],
             sample=samples, 
