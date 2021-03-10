@@ -16,11 +16,12 @@ rule mpileupIR:
         "logs/mpileupIR/{sample}_{mut}.log"
     params:
         region = lambda wildcards: mutationData[mutationData.Name == wildcards.mut].Location.tolist(),
-        ref = config['ref']['genome']
+        ref = config['ref']['genome'],
+        basedir = workflow.basedir
     shell:
         """
         samtools mpileup {input.bam} -r {params.region} -f {params.ref} | 
-        python2 {workflow.basedir}/scripts/BaseParser.py > {output}
+        python2 {params.basedir}/scripts/BaseParser.py > {output}
         """
 
 rule AlleleBalanceIR:
@@ -52,6 +53,7 @@ rule AlleleTables:
     log:
         "logs/AlleleTables/{sample}.{chrom}.log"
     params:
+        basedir = workflow.basedir,
         ignore_indels='false',
         baseflt=-5,
         min_alt=3,
@@ -59,7 +61,7 @@ rule AlleleTables:
     shell:
         """
         samtools mpileup -f {input.ref} -l {input.bed} {input.bam} | 
-        {workflow.basedir}/scripts/mpileup2readcounts/mpileup2readcounts 0 {params.baseflt} {params.ignore_indels} {params.min_alt} {params.min_af} > {output} 2> {log}
+        {params.basedir}/scripts/mpileup2readcounts/mpileup2readcounts 0 {params.baseflt} {params.ignore_indels} {params.min_alt} {params.min_af} > {output} 2> {log}
         """
 
 rule DifferentialSNPs:
@@ -195,11 +197,12 @@ rule Karyotype:
     conda:
         "../envs/fstpca.yaml"
     params:
-         ploidy = config['ploidy']
+        ploidy = config['ploidy'],
+        basedir = workflow.basedir
     shell:
         """
         paste <(bcftools query -l {input.vcf}) \
-        <(python {workflow.basedir}/scripts/compkaryo/compkaryo/compkaryo.py {input.vcf} {wildcards.karyo} -p {params.ploidy}) | 
+        <(python {params.basedir}/scripts/compkaryo/compkaryo/compkaryo.py {input.vcf} {wildcards.karyo} -p {params.ploidy}) | 
         column -s $'\\t' -t | sort -k 1 > {output}
         """
         

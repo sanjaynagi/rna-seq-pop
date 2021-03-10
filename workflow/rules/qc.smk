@@ -10,6 +10,8 @@ rule CheckInputs:
        gene_names=config['ref']['genenames']
     log:
         "logs/CheckInputs.log"
+    conda:
+        "../envs/fstpca.yaml"
     script:
         "../scripts/checkInputs.py"
 
