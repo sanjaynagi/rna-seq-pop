@@ -10,19 +10,8 @@ rule CheckInputs:
        gene_names=config['ref']['genenames']
     log:
         "logs/CheckInputs.log"
-    run:
-        metadata = pd.read_csv(params.metadata, sep="\t")
-        #check to see if fastq files 
-        for sample in metadata.samples:
-            for n in [1,2]:
-                fqpath = f"resources/reads/{sample}_{n}.fastq.gz"
-                assert os.path.isfile(fqpath), f"all sample names in 'samples.tsv' do not match a .fastq.gz file in the {worflow.basedir}/resources/reads/ directory"
-        # check that the chromosomes are present in the gff file 
-        check_chroms(params.gffpath, params.chroms)
-        # check column names of gene_names.tsv
-        gene_names = pd.read_csv(params.gene_names, sep="\t")
-        colnames = ['Gene_stable_ID', 'Gene_description', 'Gene_name']
-        assert (gene_names.columns == colnames).all(), f"Column names of gene_names.tsv should be {colnames}"
+    script:
+        "../scripts/checkInputs.py"
 
 rule FastQC:
     input:

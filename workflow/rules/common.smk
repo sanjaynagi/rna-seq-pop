@@ -151,18 +151,6 @@ def get_desired_outputs(wildcards):
     return(wanted_input)
 
 
-def check_chroms(gffpath, chroms):
-            """
-            Check that the chroms in the gff match ours
-            """
-            
-            gff = allel.gff3_to_dataframe(gffpath)
-                
-            assert np.isin(chroms, gff.seqid).all(), f"All provided chromosome names ({chroms}) are not present in GFF file"
-    
-
-
-
 def welcome(version, verbose=False):
 
     print("---------------------------- RNA-Seq-IR ----------------------------")
