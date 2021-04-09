@@ -6,7 +6,7 @@ A script to check the validity of input files and parameters to the workflow
 
 import sys
 sys.stderr = open(snakemake.log[0], "w")
-
+import os
 from tools import *
 
 metadata = pd.read_csv(snakemake.params['metadata'], sep="\t")
