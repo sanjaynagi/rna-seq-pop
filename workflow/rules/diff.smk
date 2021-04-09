@@ -40,7 +40,8 @@ rule DifferentialGeneExpression:
 		csvs = expand("results/genediff/{comp}.csv", comp=config['contrasts']),
 		xlsx = "results/genediff/RNA-Seq_diff.xlsx",
 		pca = "results/plots/PCA.pdf",
-		countstats = "results/quant/count_statistics.tsv"
+		countstats = "results/quant/count_statistics.tsv",
+		normcounts = "results/quant/normcount.tsv"
 	group:"diffexp"
 	priority: 10
 	conda:
@@ -132,3 +133,17 @@ rule Ag1000gSweepsDE:
 		fc = config['sweeps']['fc_threshold']
 	script:
 		"../scripts/Ag1000gSweepsDE.py"
+
+
+rule GeneCategoryContribution:
+	input:
+		normcounts = "results/quant/normcounts.tsv",
+		samples = config['samples'],
+	output:
+		"results/quant/percentageContributionGeneCategories.tsv"
+	log:
+		"logs/GeneCategoryContribution.log"
+	conda:
+		"../envs/diffexp.yaml"
+	script:
+		"../scripts/GeneCategoryContribution.R"
