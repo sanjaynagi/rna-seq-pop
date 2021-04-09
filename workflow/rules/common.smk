@@ -147,6 +147,7 @@ def get_desired_outputs(wildcards):
             )
         )
 
+    wanted_input.extend(["results/quant/percentageContributionGeneCategories.tsv"])
 
     return(wanted_input)
 
