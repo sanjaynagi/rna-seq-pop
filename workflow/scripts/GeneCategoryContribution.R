@@ -8,6 +8,15 @@ library(tidyverse)
 library(data.table)
 library(glue)
 
+##### define functions ######
+round_df = function(df, digits) {
+  
+  #' This function rounds all the numeric columns of a data.frame
+  nums = vapply(df, is.numeric, FUN.VALUE = logical(1))
+  df[,nums] = round(df[,nums], digits = digits)
+  (df)
+}
+
 samples = fread(snakemake@input[['samples']], sep="\t") %>% as.data.frame()
 #samples = fread("config/samples.tsv", sep="\t") %>% as.data.frame()
 gene_names = fread("resources/gene_names.tsv", sep="\t")[1:14459,] %>% distinct()
@@ -62,11 +71,9 @@ perc_contrib_df = purrr::reduce(perc_contrib, merge) %>% round_df(3)
 
 # Loop through each category and plot % contribution to total counts
 for (group in names(genegrps)){
-  name = group
   plt =  ggplot(perc_contrib_df, aes_string(x="sample", y=glue("{group}"), fill="sample")) + 
-    theme(axis.text.y = "Fraction of read counts",
-          title = group) + 
     geom_bar(stat="identity") + 
+    ggtitle(glue("% of read counts {group}")) +
     theme_light()
   
   pdf(glue("results/plots/percentageContribution_{group}.pdf"))
@@ -76,7 +83,7 @@ for (group in names(genegrps)){
 
 # Write to file 
 fwrite(perc_contrib_df, 
-       "resources/quant/percentageContributionGeneCategories.tsv", sep="\t")
+       "results/quant/percentageContributionGeneCategories.tsv", sep="\t")
 
 
 
