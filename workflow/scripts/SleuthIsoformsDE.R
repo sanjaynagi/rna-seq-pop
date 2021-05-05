@@ -23,14 +23,14 @@ print("------------- Kallisto - Sleuth - RNASeq isoform Differential expression 
 
 samples = fread(snakemake@input[['samples']], sep="\t") %>% 
   as.data.frame() %>% 
-  rename('sample' = "samples")
+  dplyr::rename('sample' = "samples")
 
 #add path column for sleuth object
 samples$path = paste0("results/quant/",samples$sample)
 
 #read metadata and get contrasts
 gene_names = fread(snakemake@input[['gene_names']], sep="\t") %>% 
-  rename("GeneID" = "Gene_stable_ID")
+  dplyr::rename("GeneID" = "Gene_stable_ID")
 
 #contrasts
 contrastsdf = fread(snakemake@input[['DEcontrasts']])
@@ -63,8 +63,8 @@ for (cont in contrasts){
   so = sleuth_wt(so, which_beta = paste0("treatment",case))
   
   results = sleuth_results(so, test =paste0("treatment",case), 'reduced:full', show_all = FALSE) %>% 
-    rename("GeneID" = "target_id") %>% 
-    mutate("FC" = (2^b))
+    dplyr::rename("GeneID" = "target_id") %>% 
+    dplyr::mutate("FC" = (2^b))
   
   # Join DE results with normal gene names
   results = unique(left_join(results, gene_names))
