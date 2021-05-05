@@ -1,5 +1,4 @@
 samples: config/samples.tsv
-units: config/units.tsv
 
 ## RNA-Seq-IR
 ## Author - Sanjay Curtis Nagi
@@ -7,8 +6,10 @@ units: config/units.tsv
 ## gzipped fastq files should be stored in the resources/reads/ directory.
 ## If the sample name is Kisumu1 in the samples.tsv file, the paired-end reads 
 ## should be named Kisumu1_1.fastq.gz, and Kisumu1_2.fastq.gz. 
+## Treatment names in samples.tsv should not contain underscores
 
 # Dataset name
+# Can be anything, will be used to name some main output files
 dataset: 'Ag_Bouake'
 
 # Paths for reference files 
@@ -25,8 +26,10 @@ ref:
   # Path to GFF annotation file
   gff:
         "resources/reference/Anopheles-gambiae-PEST_BASEFEATURES_AgamP4.12.gff3"
+  # SNPeff database name
   snpeffdb:
         "Anopheles_gambiae"
+  # gene names file with gene and transcript names
   genenames:
         "resources/gene_names.tsv"
 
@@ -43,6 +46,7 @@ contrasts:
       - 'Kisumu_gambiaeCont'
       - 'gambiaeCont_gambiaePM'
 
+# Activate progressiveGenes analysis.
 # Will find genes that are consistently up or downregulated across two comparisons. 
 # For example - which genes upregulated in Kisumu v gambiaeCont, are also upregulated in gambiaeCont v gambiaePM
 progressiveGenes:
@@ -51,30 +55,36 @@ progressiveGenes:
       FC_threshold: 1
       groups: "Kisumu_gambiaeCont_gambiaePM"
 
-# Do we want to perform gene set enrichment analysis
+# Activate fgsea Gene set enrichment analysis 
 GSEA:
       activate: True
       gaf: "resources/reference/VectorBase-50_AgambiaePEST_GO.gaf"
       KeggSpeciesID: "aga"            # 3 letter KEGG species identifier. "aga" = Anopheles gambiae/coluzzii. 
-      replaceString: "AgaP_"          
-
-
-# Ploidy level for freebayes to call at (Generally we are using pooled samples).
-# For diploid organisms, this should be 2 * number of individuals in each pool
-ploidy: 10
-# Number of chunks to split each chromosome into when parallelising freebayes. 9 or less is recommended. 
-chunks: 9 
+      replaceString: "AgaP_"          # An.gambiae KEGG pathways have this string appended which needs removing
 
 # If activate:True, creates allele balance .xlsx reports on IR mutations of choice
+# Requires appropriate IRmutations file
 IRmutations: 
       activate: True
       path: "resources/IRmutations.tsv"
+      
+####                    Variant Calling options                                     #### 
+# Ploidy level for freebayes to call at (Generally we are using pooled samples).
+# For diploid organisms, this should be 2 * number of individuals in each pool
+VariantCalling:
+      activate: True
+      ploidy: 10
+      chunks: 9                # Number of chunks to split each chromosome into when parallelising freebayes. 9 or less is recommended. 
 
-# Do we want to run pbs (Needs three conditions, two closely related and an outgroup)
+# Activate Population Branch Statistic analysis (Needs three conditions, two closely related and an outgroup)
 pbs:
       activate: True
       contrasts: 
             - 'gambiaePM_gambiaeCont_Kisumu'
+      windownames: ['small', 'large']
+      windowsizes: [1000, 5000]
+      windowsteps: [500, 1000]
+      missingness: 0.8
 
 # For Anopheles gambiae s.l only - run Ancestry Informative Marker analysis.
 # AIMs datasets included in git repo
@@ -104,11 +114,12 @@ sweeps:
       fc_threshold: 1.5
 
 
-# Run differential SNPs analysis with kissde
+#### The following modules may not be functional #### 
+# Activate differential SNPs analysis with kissde
 diffsnps:
         activate: False
 
-# Run Venn diagram - not working as of v0.1.0
+# Activate Venn diagram - not working as of v0.1.0
 venn:
         activate: False
 

@@ -45,9 +45,11 @@ GSEA:
       replaceString: "AgaP_"
 
 
-# Ploidy level for freebayes to call at. (Generally we are using pooled samples)
-ploidy: 10
-chunks: 9 # Number of chunks to split the genome into when parallelising freebayes
+VariantCalling:
+      activate: True
+      ploidy: 10
+      chunks: 9 # Number of chunks to split the genome into when parallelising freebayes
+# Number of chunks to split the genome into when parallelising freebayes
 
 # If activate:True, creates allele balance .xlsx reports on IR mutations of choice
 IRmutations: 

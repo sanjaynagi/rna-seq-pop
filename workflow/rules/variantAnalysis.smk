@@ -106,7 +106,7 @@ rule StatisticsAndPCA:
     params:
         dataset = config['dataset'],
         chroms = config['chroms'],
-        ploidy = config['ploidy'],
+        ploidy = config['VariantCalling']['ploidy'],
         missingprop = config['pbs']['missingness'],
         qualflt = 30
     script:
@@ -129,7 +129,7 @@ rule WindowedFstPBS:
         pbs = config['pbs']['activate'],
         pbscomps = config['pbs']['contrasts'],
         chroms = config['chroms'],
-        ploidy = config['ploidy'],
+        ploidy = config['VariantCalling']['ploidy'],
         missingprop = config['pbs']['missingness'],
         qualflt = 30,
         windowsizes = config['pbs']['windowsizes'],
@@ -157,7 +157,7 @@ rule PerGeneFstPBS:
         pbs = config['pbs']['activate'],
         pbscomps = config['pbs']['contrasts'],
         chroms = config['chroms'],
-        ploidy = config['ploidy'],
+        ploidy = config['VariantCalling']['ploidy'],
         missingprop = 0.8,
     script:
         "../scripts/PerGeneFstPBS.py"
@@ -180,7 +180,7 @@ rule AncestryInformativeMarkers:
         "../envs/fstpca.yaml"
     params:
         chroms = config['chroms'],
-        ploidy = config['ploidy'],
+        ploidy = config['VariantCalling']['ploidy'],
         missingprop = config['AIMs']['missingness'],
         qualflt = 30
     script:
@@ -197,7 +197,7 @@ rule Karyotype:
     conda:
         "../envs/fstpca.yaml"
     params:
-        ploidy = config['ploidy'],
+        ploidy = config['VariantCalling']['ploidy'],
         basedir = workflow.basedir
     shell:
         """
