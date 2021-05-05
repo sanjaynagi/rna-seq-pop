@@ -25,6 +25,10 @@ gene_names = fread("resources/gene_names.tsv", sep="\t")[1:14459,] %>% distinct(
 counts = fread("results/quant/normcounts.tsv", sep="\t") %>% column_to_rownames("GeneID")
 counts = data.frame(t(rowsum(t(counts), group = samples$treatment, na.rm = T)))
 
+apply(counts, 2, var)
+
+colSums(counts)
+
 # Get total counts for each treatment
 totalCounts = colSums(counts)
 

@@ -104,7 +104,7 @@ rule IndexBams:
     wrapper:
         "0.65.0/bio/samtools/index"
 
-chunks = np.arange(1, config['chunks'])
+chunks = np.arange(1, config['VariantCalling']['chunks'])
 
 rule GenerateFreebayesParams:
     input:
@@ -120,7 +120,7 @@ rule GenerateFreebayesParams:
     params:
         metadata = config['samples'],
         chroms = config['chroms'],
-        chunks = config['chunks']
+        chunks = config['VariantCalling']['chunks']
     conda:
         "../envs/diffexp.yaml"
     script:
@@ -138,12 +138,12 @@ rule VariantCallingFreebayes:
 	log:
 		"logs/VariantCallingFreebayes/{chrom}.{i}.log"
 	params:
-		ploidy = config['ploidy'],
+		ploidy = config['VariantCalling']['ploidy'],
 		pops = "resources/populations.tsv"
 	conda:
 		"../envs/variants.yaml"
 	threads:1
-	shell:	"freebayes -f {input.ref} -t {input.regions} --ploidy {params.ploidy} --populations {params.pops} --pooled-discrete --use-best-n-alleles 5 -L {input.samples} > {output} 2> {log}"
+	shell: "freebayes -f {input.ref} -t {input.regions} --ploidy {params.ploidy} --populations {params.pops} --pooled-discrete --use-best-n-alleles 5 -L {input.samples} > {output} 2> {log}"
 
 rule ConcatVCFs:
     input:

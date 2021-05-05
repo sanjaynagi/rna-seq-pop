@@ -44,6 +44,7 @@ runEnrich = function(rankedList, GeneSetList, outName){
 samples = fread(snakemake@input[['samples']]) %>% as.data.frame()
 comparisons = fread(snakemake@input[['DEcontrasts']])
 gaffile = snakemake@input[['gaf']]
+variantCalling = snakemake@params[['variantCalling']]
 pbs = snakemake@params[['pbs']]
 diffsnps = snakemake@params[['diffsnps']]
 pbscomps = snakemake@params[['pbscomps']]
@@ -73,8 +74,6 @@ if (!is.null(replaceString)){
 }
 
 
-
-
 ##### gene DE ####
 for (comp in comparisons$contrast){
   print(glue("Running KEGG and GO enrichment analyses for {comp}"))
@@ -88,7 +87,8 @@ for (comp in comparisons$contrast){
 
 
 ### Fst ####
-for (comp in comparisons$contrast){
+if (variantCalling == TRUE){
+  for (comp in comparisons$contrast){
   print(glue("Running KEGG and GO enrichment analyses for Fst {comp}"))
   # make ranked list using DE results, rank based on log2foldchange
   rank = fread("results/variants/fst.tsv") %>% 
@@ -98,7 +98,9 @@ for (comp in comparisons$contrast){
 
   rank = rank %>% sort(decreasing = TRUE)
   runEnrich(rankedList = rank, GeneSetList = GeneSetList, outName = glue("/fst/{comp}.FST"))
+  }
 }
+
 
 
 ### PBS ####

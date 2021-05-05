@@ -25,7 +25,6 @@ def get_desired_outputs(wildcards):
                 "resources/reads/qc/{sample}_{n}_fastqc.html",
                 "resources/alignments/coverage/{sample}.mosdepth.summary.txt",
                 "resources/alignments/bamStats/{sample}.flagstat",
-                "results/variants/vcfs/stats/{chrom}.txt"
             ],
             sample=samples, 
             n=[1,2],
@@ -38,44 +37,44 @@ def get_desired_outputs(wildcards):
             expand(
                 [
                     "results/genediff/{comp}.csv",
-                    "results/genediff/RNA-Seq_diff.xlsx",
+		            "results/genediff/{dataset}_diffexp.xlsx",
                     "results/isoformdiff/{comp}.csv",
-                    "results/isoformdiff/RNA-Seq_isoformdiff.xlsx",
+                    "results/isoformdiff/{dataset}_isoformdiffexp.xlsx",
                     "results/plots/PCA.pdf",
                     "results/quant/count_statistics.tsv"
                 ],
-             comp = config['contrasts']
+             comp = config['contrasts'],
+             dataset = config['dataset']
             )
         )
 
-    # Progressive changes in expression - e.g Kisumu < control field < resistant field
     if config['progressiveGenes']['activate']:
         wanted_input.extend(
             expand("results/genediff/{name}.{direction}.progressive.tsv", name=config['progressiveGenes']['groups'], direction=["up", "down"])
         )
 
-    # Variant analyses
-    wanted_input.extend(
-        expand(
-            [
-                "results/variants/plots/PCA-{chrom}-{dataset}.png",
-                "results/variants/plots/{dataset}_SNPdensity_{chrom}.png",
-                "results/variants/stats/inbreedingCoef.tsv",
-                "results/variants/stats/inbreedingCoef.mean.tsv",
-                "results/variants/stats/SequenceDiversity.tsv",
-                "results/variants/fst.tsv",
-                "results/variants/TajimasD.tsv",
-                "results/variants/SequenceDiv.tsv",
-                "results/variants/plots/fst/{comp}.{chrom}.fst.{wsize}.png",
-                ],
-                chrom = config['chroms'],
-                dataset = config['dataset'],
-                comp = config['contrasts'],
-                wsize = config['pbs']['windownames']
+    if config['VariantCalling']['activate']:
+        wanted_input.extend(
+            expand(
+                [   
+                    "results/variants/vcfs/stats/{chrom}.txt",
+                    "results/variants/plots/PCA-{chrom}-{dataset}.png",
+                    "results/variants/plots/{dataset}_SNPdensity_{chrom}.png",
+                    "results/variants/stats/inbreedingCoef.tsv",
+                    "results/variants/stats/inbreedingCoef.mean.tsv",
+                    "results/variants/stats/SequenceDiversity.tsv",
+                    "results/variants/fst.tsv",
+                    "results/variants/TajimasD.tsv",
+                    "results/variants/SequenceDiv.tsv",
+                    "results/variants/plots/fst/{comp}.{chrom}.fst.{wsize}.png",
+                    ],
+                    chrom = config['chroms'],
+                    dataset = config['dataset'],
+                    comp = config['contrasts'],
+                    wsize = config['pbs']['windownames']
+                )
             )
-        )
 
-    # Ancestry Informative Markers
     if config['AIMs']['activate']:
         wanted_input.extend(
             expand(
@@ -89,7 +88,6 @@ def get_desired_outputs(wildcards):
             )
         )
 
-    #IRmutations
     if config['IRmutations']['activate']:
         wanted_input.extend(["results/allele_balance/allele_balance.xlsx"])
     
@@ -99,12 +97,23 @@ def get_desired_outputs(wildcards):
            expand(
                [
                "results/gsea/genediff/{comp}.DE.{pathway}.tsv",
-               "results/gsea/fst/{comp}.FST.{pathway}.tsv",
                 ],
                 comp = config['contrasts'],
                 pathway=['kegg', 'GO']
                 )
-	)
+        )
+    
+    if config['VariantCalling']['activate'] and config['GSEA']['activate']:
+        wanted_input.extend(
+            expand(
+            [
+                "results/gsea/fst/{comp}.FST.{pathway}.tsv"
+            ],
+            comp = config['contrasts'],
+            pathway=['kegg', 'GO']
+            )
+        )
+
 
     if config['diffsnps']['activate']:
        wanted_input.extend(
@@ -114,7 +123,7 @@ def get_desired_outputs(wildcards):
                 ],
                 comp = config['contrasts'],
                 )
-	)
+	    )
 
     if config['venn']['activate']:
        wanted_input.extend(
@@ -125,7 +134,7 @@ def get_desired_outputs(wildcards):
                 ],
                 comp = config['contrasts'],
                 )
-	)
+	    )
 
     if config['karyotype']['activate']:
         wanted_input.extend(
@@ -147,7 +156,7 @@ def get_desired_outputs(wildcards):
             )
         )
 
-    wanted_input.extend(["results/quant/percentageContributionGeneCategories.tsv"])
+    #wanted_input.extend(["results/quant/percentageContributionGeneCategories.tsv"])
 
     return(wanted_input)
 

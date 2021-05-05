@@ -38,7 +38,7 @@ rule DifferentialGeneExpression:
 		counts = expand("results/quant/{sample}", sample=samples)
 	output:
 		csvs = expand("results/genediff/{comp}.csv", comp=config['contrasts']),
-		xlsx = "results/genediff/RNA-Seq_diff.xlsx",
+		xlsx = expand("results/genediff/{dataset}_diffexp.xlsx", dataset=config['dataset']),
 		pca = "results/plots/PCA.pdf",
 		countstats = "results/quant/count_statistics.tsv",
 		normcounts = "results/quant/normcount.tsv"
@@ -59,7 +59,7 @@ rule DifferentialIsoformExpression:
 		counts = expand("results/quant/{sample}", sample=samples)
 	output:
 		csvs = expand("results/isoformdiff/{comp}.csv", comp=config['contrasts']),
-		xlsx = "results/isoformdiff/RNA-Seq_isoformdiff.xlsx"
+		xlsx = expand("results/isoformdiff/{dataset}_isoformdiffexp.xlsx", dataset=config['dataset'])
 	group:"diffexp"
 	priority: 10
 	conda:
@@ -72,8 +72,8 @@ rule DifferentialIsoformExpression:
 
 rule progressiveGenesDE:
 	input:
-		"results/genediff/RNA-Seq_diff.xlsx",
-		"results/isoformdiff/RNA-Seq_isoformdiff.xlsx"
+		expand("results/genediff/{dataset}_diffexp.xlsx", dataset = config['dataset']),
+		expand("results/isoformdiff/{dataset}_isoformdiffexp.xlsx", dataset = config['dataset'])
 	output:
 		expand("results/genediff/{name}.{direction}.progressive.tsv", name=config['progressiveGenes']['groups'], direction=["up", "down"]),
 		expand("results/isoformdiff/{name}.{direction}.progressive.tsv", name=config['progressiveGenes']['groups'], direction=["up", "down"])
@@ -105,6 +105,7 @@ rule GeneSetEnrichment:
 		expand("results/gsea/diffsnps/{comp}.diffsnps.{pathway}.tsv", comp = config['contrasts'], pathway=['kegg', 'GO']) if config['diffsnps']['activate'] else [],
 		expand("results/gsea/pbs/{pbscomp}.PBS.{pathway}.tsv", pbscomp = config['pbs']['contrasts'], pathway=['kegg', 'GO']) if config['pbs']['activate'] else []
 	params:
+		VariantCalling = config['VariantCalling']['activate'],
 		pbs = config['pbs']['activate'],
 		pbscomps = config['pbs']['contrasts'],
 		diffsnps = config['diffsnps']['activate'],
