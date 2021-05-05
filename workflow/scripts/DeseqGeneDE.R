@@ -22,7 +22,7 @@ library(EnhancedVolcano)
 #read metadata and get contrasts
 samples = fread(snakemake@input[['samples']], sep="\t") %>% as.data.frame()
 gene_names = fread(snakemake@input[['gene_names']], sep="\t") %>% 
-  rename("GeneID" = "Gene_stable_ID")
+  dplyr::rename("GeneID" = "Gene_stable_ID")
 
 contrastsdf = fread(snakemake@input[['DEcontrasts']])
 contrasts = contrastsdf$contrast

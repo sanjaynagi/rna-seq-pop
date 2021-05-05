@@ -41,7 +41,7 @@ rule DifferentialGeneExpression:
 		xlsx = expand("results/genediff/{dataset}_diffexp.xlsx", dataset=config['dataset']),
 		pca = "results/plots/PCA.pdf",
 		countstats = "results/quant/count_statistics.tsv",
-		normcounts = "results/quant/normcount.tsv"
+		normcounts = "results/quant/normcounts.tsv"
 	group:"diffexp"
 	priority: 10
 	conda:
@@ -88,7 +88,6 @@ rule progressiveGenesDE:
 	    "logs/progressiveGenesDE.log"
 	script:
 	    "../scripts/ProgressiveDE.R"
-
 
 rule GeneSetEnrichment:
 	input:
