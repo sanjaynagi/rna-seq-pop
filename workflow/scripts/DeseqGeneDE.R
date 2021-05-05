@@ -9,8 +9,8 @@ sink(log, type="message")
 #' saved in an .xslx report 
 
 ## Differential expression
-library(DESeq2)
 library(tidyverse)
+library(DESeq2)
 library(pheatmap)
 library(data.table)
 library(ggrepel)

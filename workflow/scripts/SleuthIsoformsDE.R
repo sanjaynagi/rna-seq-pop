@@ -9,8 +9,8 @@ sink(log, type="message")
 #' Sleuth uses the bootstraps of kallisto to estimate uncertainty 
 
 ## Differential expression
-library(sleuth)
 library(tidyverse)
+library(sleuth)
 library(data.table)
 library(ggrepel)
 library(openxlsx)
