@@ -9,7 +9,6 @@ sink(log, type="message")
 #' saved in an .xslx report 
 
 ## Differential expression
-library(tidyverse)
 library(DESeq2)
 library(pheatmap)
 library(data.table)
@@ -18,6 +17,7 @@ library(openxlsx)
 library(glue)
 library(RColorBrewer)
 library(EnhancedVolcano)
+library(tidyverse)
 
 #read metadata and get contrasts
 samples = fread(snakemake@input[['samples']], sep="\t") %>% as.data.frame()

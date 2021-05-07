@@ -45,7 +45,7 @@ rule DifferentialGeneExpression:
 	group:"diffexp"
 	priority: 10
 	conda:
-		"../envs/diffexptest.yaml"
+		"../envs/diffexp.yaml"
 	log:
 		"logs/DifferentialGeneExpression.log"
 	script:
