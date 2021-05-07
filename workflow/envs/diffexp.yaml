@@ -5,7 +5,7 @@ channels:
 dependencies:
   - "r-base>=4.0.0"
   - bioconductor-deseq2
-  - conda-forge::"r-tidyverse>=1.2.1"
+  - "r-tidyverse>=1.2.1"
   - "r-data.table>=1.12.2"
   - "r-ggrepel>=0.8.2"
   - "r-openxlsx>=4.1.0"

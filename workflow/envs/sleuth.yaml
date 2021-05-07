@@ -5,7 +5,7 @@ channels:
 dependencies:
   - r-base=3.6.1
   - r-sleuth=0.30
-  - conda-forge::r-tidyverse=1.2.1
+  - r-tidyverse=1.2.1
   - r-data.table=1.12.2
   - r-ggrepel=0.8.2
   - r-openxlsx
