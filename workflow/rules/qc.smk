@@ -26,7 +26,7 @@ rule FastQC:
     params:
         outdir="--outdir resources/reads/qc"
     wrapper:
-        "0.72.0/bio/fastqc"
+        "0.74.0/bio/fastqc"
 
 rule BamStats:
     input:
@@ -55,6 +55,7 @@ rule Coverage:
     threads:4
     shell: "mosdepth --threads {threads} --fast-mode --by {params.windowsize} --no-per-base {params.prefix} {input.bam}"
 
+
 rule vcfStats:
     input:
         vcf = "results/variants/vcfs/annot.variants.{chrom}.vcf.gz"
@@ -68,3 +69,23 @@ rule vcfStats:
         """
         bcftools stats {input} > {output} 2> {log}
         """
+
+rule multiQC:
+    """
+    Integrate reports from other tools
+    """
+    input:
+        "results/",
+        "resources/",
+        expand("resources/reads/qc/{sample}_{n}_fastqc.zip", sample=samples, n=[1,2]),
+        expand("results/variants/vcfs/stats/{chrom}.txt", chrom=config['chroms']),
+        expand("resources/alignments/coverage/{sample}.mosdepth.summary.txt", sample=samples),
+        expand("resources/alignments/bamStats/{sample}.flagstat", sample=samples)
+    output:
+        "results/multiQC.html"
+    params:
+        ""  # Optional: extra parameters for multiqc.
+    log:
+        "logs/multiQC.log"
+    wrapper:
+        "0.74.0/bio/multiqc"
