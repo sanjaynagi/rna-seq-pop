@@ -25,6 +25,7 @@ def get_desired_outputs(wildcards):
                 "resources/reads/qc/{sample}_{n}_fastqc.html",
                 "resources/alignments/coverage/{sample}.mosdepth.summary.txt",
                 "resources/alignments/bamStats/{sample}.flagstat",
+                "results/multiQC.html"
             ],
             sample=samples, 
             n=[1,2],
