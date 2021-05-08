@@ -67,7 +67,7 @@ rule HISAT2align:
 	log:
 		"logs/HISAT2/{sample}_HISAT2align.log"
 	params:
-		extra="--dta -q --rg-id {sample} --rg SM:{sample}",
+		extra="--dta -q --rg-id {sample} --rg SM:{sample} --new-summary",
 		idx="resources/reference/ht2index/idx"     
 	threads:12
 	wrapper:

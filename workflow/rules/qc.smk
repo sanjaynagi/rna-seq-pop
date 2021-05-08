@@ -75,16 +75,15 @@ rule multiQC:
     Integrate reports from other tools
     """
     input:
-        "results/",
-        "resources/",
         expand("resources/reads/qc/{sample}_{n}_fastqc.zip", sample=samples, n=[1,2]),
         expand("results/variants/vcfs/stats/{chrom}.txt", chrom=config['chroms']),
         expand("resources/alignments/coverage/{sample}.mosdepth.summary.txt", sample=samples),
-        expand("resources/alignments/bamStats/{sample}.flagstat", sample=samples)
+        expand("resources/alignments/bamStats/{sample}.flagstat", sample=samples),
+        expand("results/quant/{sample}", sample=samples)
     output:
         "results/multiQC.html"
     params:
-        ""  # Optional: extra parameters for multiqc.
+        "results/ resources/ logs/"  # Optional: extra parameters for multiqc.
     log:
         "logs/multiQC.log"
     wrapper:
