@@ -5,7 +5,8 @@
 
 This workflow performs various analyses of illumina paired-end RNA-Sequencing data:
 
-* Quality control with [FASTQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
+* Quality control of fastq reads with [FASTQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
+* QC metrics integrated into one final QC report with [multiQC](https://multiqc.info/)
 * Differential expression analysis with [Kallisto](https://pachterlab.github.io/kallisto/) at the gene level ([DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)) and transcript level ([Sleuth](https://github.com/pachterlab/sleuth))
 * Variant calling with [freebayes](https://github.com/freebayes/freebayes), and an Fst and [Population branch statistic (PBS)](https://science.sciencemag.org/content/329/5987/75) analysis, both in windows and at the gene-level ([Scikit-allel](https://scikit-allel.readthedocs.io/en/stable/)).
 * Various summary statistics are calculated (Wattersons Theta, Sequence Diversity etc)
@@ -16,7 +17,7 @@ This workflow performs various analyses of illumina paired-end RNA-Sequencing da
 * *Anopheles gambiae s.l* - Reports if DE genes are found underneath known selective sweep signals in the [Ag1000g](https://www.nature.com/articles/nature24995).
 * *Anopheles gambiae s.l* - Determines Karyotype of chromosome 2 inversions using [compkaryo](https://academic.oup.com/g3journal/article/9/10/3249/6026680) - [Github](https://github.com/sanjaynagi/compkaryo)
 
-The workflow is generalised, and will function with any trimmed Illumina paired-end RNA-sequencing. However, certain modules, such as the AIMs analysis, are only appropriate for specific species. These can be activated in the configuration file (config.yaml). 
+The workflow is generalised, and will function with any trimmed Illumina paired-end RNA-sequencing. However, certain modules, such as the AIMs analysis, are only appropriate for specific species. These can be activated in the configuration file (config.yaml). It requires trimmed, clean paired-end reads.  
 
 The workflow is still in construction, and not yet ready for release. If you have any feedback on how the workflow may be improved, please get in touch, or feel free to fork the github repo and create a pull request for any additional features you would like to implement. 
 
@@ -36,7 +37,7 @@ If you use this workflow in a paper, don't forget to give credits to the author 
 
 ### Step 2: Configure workflow
 
-Configure the workflow according to your needs via editing the files in the `config/` folder. Adjust `config.yaml` to configure the workflow execution, and `samples.tsv` to specify your sample setup.
+Configure the workflow according to your needs via editing the files in the `config/` folder. Adjust the example `config.yaml` to configure the workflow execution, and `samples.tsv` to specify your sample setup.
 
 ### Step 3: Install Snakemake
 
