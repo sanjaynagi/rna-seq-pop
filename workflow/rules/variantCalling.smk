@@ -60,7 +60,7 @@ rule HISAT2align:
     Align reads to the genome with HISAT2
     """
     input:
-        reads = getFASTQs,
+        read1, read2 = getFASTQs,
         idx = "resources/reference/ht2index/.complete"             
     output:
         "resources/alignments/{sample}.bam"
@@ -75,7 +75,7 @@ rule HISAT2align:
     threads:12
     shell:
         """
-        hisat2 {params.extra} --threads {threads} -x {params.idx} {input.reads} 2> {log.align} | 
+        hisat2 {params.extra} --threads {threads} -x {params.idx} -1 {input.read1} -2 {input.read2} 2> {log.align} | 
         samblaster 2> {log.sort} | samtools sort -@{threads} -o {output} 2> {log.sort}
         """
 
