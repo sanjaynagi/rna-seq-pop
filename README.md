@@ -13,7 +13,7 @@ This workflow performs various analyses of illumina paired-end RNA-Sequencing da
 * Differential SNP testing with the R package [kissDE](https://bioconductor.org/packages/release/bioc/html/kissDE.html), which accounts for allele-specific expression.
 * Gene Set Enrichment analyses and Venn diagrams.
 * Allele counts at pre-specified loci of choice.
-* *Anopheles gambiae s.l* - Analysis of Ancestry Informative Markers (AIMs) to determine relative ancestry. 
+* *Anopheles gambiae s.l* - Analysis of Ancestry Informative Markers (AIMs) to determine relative ancestry of *An.gambiae/coluzzii/arabiensis*. 
 * *Anopheles gambiae s.l* - Reports if DE genes are found underneath known selective sweep signals in the [Ag1000g](https://www.nature.com/articles/nature24995).
 * *Anopheles gambiae s.l* - Determines Karyotype of chromosome 2 inversions using [compkaryo](https://academic.oup.com/g3journal/article/9/10/3249/6026680) - [Github](https://github.com/sanjaynagi/compkaryo)
 
