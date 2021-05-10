@@ -24,7 +24,7 @@ rule KallistoQuant:
 	Bootstrap to allow for isoform differential expression.
 	"""
 	input:
-		fastq = expand("resources/reads/{{sample}}_{n}.fastq.gz", n=[1,2]),
+		fastq = getFASTQs,
 		index = "resources/reference/kallisto.idx"
 	output:
 		directory("results/quant/{sample}")

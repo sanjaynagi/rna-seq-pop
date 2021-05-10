@@ -7,6 +7,26 @@ else:
     windowedStats = ['fst']
 
 
+def getFASTQs(wildcards):
+    """
+    Get FASTQ files from unit sheet.
+    If there are more than one wildcard (aka, sample), only return one fastq file
+    """
+    if config['fastq']['auto']:
+        units = pd.read_csv(config['samples'], sep="\t")
+        units = units[['samples']].assign(fq1=units['samples'] + "_1.fastq.gz").assign(fq2=units['samples'] + "_2.fastq.gz").set_index('samples')
+    else:
+        assert os.path.isfile(config['fastq']['table']), f"config['fastq']['table'] (the config/fastq.tsv file) does not seem to exist. Please create one, or use the 'auto' option and name the fastq files as specified in the config/README.md"
+        units = pd.read_csv(config['fastq']['table'], sep="\t", index_col="samples")
+
+    if len(wildcards) > 1:
+        u = units.loc[wildcards.sample, f"fq{wildcards.n}"]
+        return [f'u.fq{wildcards.n}']
+    else:
+        u = units.loc[wildcards.sample, ["fq1", "fq2"]].dropna()
+        return [f"{u.fq1}", f"{u.fq2}"]
+
+
 def get_desired_outputs(wildcards): 
 
     """
