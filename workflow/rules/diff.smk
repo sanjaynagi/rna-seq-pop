@@ -5,6 +5,9 @@
 ####################################################################################################
 
 rule KallistoIndex:
+	"""
+	Create a kallisto index of the reference transcriptome
+	"""
 	input:
 		fasta = config['ref']['transcriptome']
 	output:
@@ -16,6 +19,10 @@ rule KallistoIndex:
 		"0.66.0/bio/kallisto/index"
 
 rule KallistoQuant:
+	"""
+	Pseudo-align reads for each sample to the reference transcriptome.
+	Bootstrap to allow for isoform differential expression.
+	"""
 	input:
 		fastq = expand("resources/reads/{{sample}}_{n}.fastq.gz", n=[1,2]),
 		index = "resources/reference/kallisto.idx"
@@ -31,6 +38,10 @@ rule KallistoQuant:
 		"0.66.0/bio/kallisto/quant"
 
 rule DifferentialGeneExpression:
+	"""
+	Perform differential expression analysis at the gene-level with DESeq2
+	Produce PCAs, heatmaps, volcano plots
+	"""
 	input:
 		samples = config['samples'],
 		gene_names = config['ref']['genenames'],
@@ -52,6 +63,10 @@ rule DifferentialGeneExpression:
 		"../scripts/DeseqGeneDE.R"
 
 rule DifferentialIsoformExpression:
+	"""
+	Perform differential expression analysis at the isoform-level with Sleuth
+	Produce volcano plots
+	"""
 	input:
 		samples = config['samples'],
 		gene_names = config['ref']['genenames'],
@@ -71,6 +86,9 @@ rule DifferentialIsoformExpression:
 
 
 rule progressiveGenesDE:
+	"""
+	Determine if any genes are up/down regulated in same direction in multiple comparisons
+	"""
 	input:
 		expand("results/genediff/{dataset}_diffexp.xlsx", dataset = config['dataset']),
 		expand("results/isoformdiff/{dataset}_isoformdiffexp.xlsx", dataset = config['dataset'])
@@ -90,6 +108,9 @@ rule progressiveGenesDE:
 	    "../scripts/ProgressiveDE.R"
 
 rule GeneSetEnrichment:
+	"""
+	Perform Gene Set Enrichment analysis with fgsea, on GO terms and KEGG pathways
+	"""
 	input:
 		samples = config['samples'],
 		DEcontrasts = "resources/DE.contrast.list",
@@ -119,6 +140,9 @@ rule GeneSetEnrichment:
 
 
 rule Ag1000gSweepsDE:
+	"""
+	Find differentially expressed genes that also lie underneath selective sweeps in the Ag1000g
+	"""
 	input:
 		DEresults = expand("results/genediff/{comp}.csv", comp=config['contrasts']),
 		DEcontrasts = "resources/DE.contrast.list"
@@ -136,6 +160,9 @@ rule Ag1000gSweepsDE:
 
 
 rule GeneCategoryContribution:
+	"""
+	Determine the proportion of read counts that come from P450s, COEs, GSTs, etc.
+	"""
 	input:
 		normcounts = "results/quant/normcounts.tsv",
 		samples = config['samples'],

@@ -1,6 +1,9 @@
 ################################          QC           ##################################
 
 rule CheckInputs:
+    """
+    Check to see that fastq files exist, and reference files are appropriate
+    """
     output:
        touch("config/.input.check")
     params:
@@ -16,6 +19,9 @@ rule CheckInputs:
         "../scripts/checkInputs.py"
 
 rule FastQC:
+    """
+    QC on fastq read data 
+    """
     input:
         "resources/reads/{sample}_{n}.fastq.gz"
     output:
@@ -29,6 +35,9 @@ rule FastQC:
         "0.74.0/bio/fastqc"
 
 rule BamStats:
+    """
+    QC alignment statistics
+    """
     input:
         bam = "resources/alignments/{sample}.marked.bam",
         idx = "resources/alignments/{sample}.marked.bam.bai"
@@ -40,6 +49,9 @@ rule BamStats:
         "0.70.0/bio/samtools/flagstat"
 
 rule Coverage:
+    """
+    Calculate coverage with mosdepth
+    """
     input:
         bam = "resources/alignments/{sample}.marked.bam",
         idx = "resources/alignments/{sample}.marked.bam.bai"
@@ -57,6 +69,9 @@ rule Coverage:
 
 
 rule vcfStats:
+    """
+    QC stats of VCF files
+    """
     input:
         vcf = "results/variants/vcfs/annot.variants.{chrom}.vcf.gz"
     output:
@@ -72,7 +87,7 @@ rule vcfStats:
 
 rule multiQC:
     """
-    Integrate reports from other tools
+    Integrate QC statistics from other tools into a final .html report
     """
     input:
         expand("resources/reads/qc/{sample}_{n}_fastqc.zip", sample=samples, n=[1,2]),
