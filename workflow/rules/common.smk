@@ -31,7 +31,7 @@ def get_desired_outputs(wildcards):
 
     """
     Function that returns a list of the desired outputs for the rule all, depending on the config.yaml
-    configuration file. As of V0.1 Does not list every single output, but should mean all rules and desired outputs are created.
+    configuration file. As of V0.4.0 Does not list every single output, but should mean all rules and desired outputs are created.
     """
 
     wanted_input = []
