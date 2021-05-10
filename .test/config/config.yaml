@@ -4,6 +4,10 @@ units: config/units.tsv
 # Dataset name
 dataset: 'Test-TravisCI'
 
+fastq: 
+      table: config/fastq.tsv
+      auto: True # set auto if your files follow 
+
 # Paths for reference files 
 ref:
   genome:
