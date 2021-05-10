@@ -59,57 +59,63 @@ rule HISAT2align:
     """
     Align reads to the genome with HISAT2
     """
-	input:
-		reads=["resources/reads/{sample}_1.fastq.gz", "resources/reads/{sample}_2.fastq.gz"],
-		idxmarker="resources/reference/ht2index/.complete"             
-	output:
-		temp("temp/{sample}.bam")
-	log:
-		"logs/HISAT2/{sample}_HISAT2align.log"
-	params:
-		extra="--dta -q --rg-id {sample} --rg SM:{sample} --new-summary",
-		idx="resources/reference/ht2index/idx"     
-	threads:12
-	wrapper:
-		"v0.69.0/bio/hisat2/align"
-
-rule SortBams:
-    """
-    Sort the bams by coordinate
-    """
     input:
-        "temp/{sample}.bam"
+        reads = getFASTQs,
+        idx = "resources/reference/ht2index/.complete"             
     output:
-        temp("resources/alignments/{sample}.bam")
+        "resources/alignments/{sample}.bam"
     log:
-        "logs/SortBams/{sample}.log"
-    wrapper:
-        "0.65.0/bio/samtools/sort"
+        align = "logs/HISAT2/{sample}_align.log",
+        sort = "logs/samtoolsSort/{sample}.log",
+    conda:
+        "../envs/variants.yaml"
+    params:
+        extra="--dta -q --rg-id {sample} --rg SM:{sample} --new-summary",
+        idx="resources/reference/ht2index/idx"     
+    threads:12
+    shell:
+        """
+        hisat2 {params.extra} --threads {threads} -x {params.idx} {input.reads} 2> {log.align} | 
+        samblaster 2> {log.sort} | samtools sort -@{threads} -o {output} 2> {log.sort}
+        """
 
-rule markDups:
-    """
-    Mark duplicates with Picard for variant calling
-    """
-    input:
-        bam = "resources/alignments/{sample}.bam"
-    output:
-        bam = "resources/alignments/{sample}.marked.bam",
-        metrics = "resources/alignments/dedup/{sample}.metrics.txt"
-    log:
-        "logs/markDups/{sample}.log"
-    wrapper:
-        "0.72.0/bio/picard/markduplicates"
+# rule SortBams:
+#     """
+#     Sort the bams by coordinate
+#     """
+#     input:
+#         "temp/{sample}.bam"
+#     output:
+#         temp("resources/alignments/{sample}.bam")
+#     log:
+#         "logs/SortBams/{sample}.log"
+#     wrapper:
+#         "0.65.0/bio/samtools/sort"
+
+# rule markDups:
+#     """
+#     Mark duplicates with Picard for variant calling
+#     """
+#     input:
+#         bam = "resources/alignments/{sample}.bam"
+#     output:
+#         bam = "resources/alignments/{sample}.marked.bam",
+#         metrics = "resources/alignments/dedup/{sample}.metrics.txt"
+#     log:
+#         "logs/markDups/{sample}.log"
+#     wrapper:
+#         "0.72.0/bio/picard/markduplicates"
 
 rule IndexBams:
     """
     Index bams with samtools
     """
     input:
-        "resources/alignments/{sample}.marked.bam"
+        "resources/alignments/{sample}.bam"
     output:
-        "resources/alignments/{sample}.marked.bam.bai"
+        "resources/alignments/{sample}.bam.bai"
     log:
-        "logs/IndexBams/marked.{sample}.log"
+        "logs/IndexBams/{sample}.log"
     wrapper:
         "0.65.0/bio/samtools/index"
 
@@ -126,7 +132,7 @@ rule GenerateFreebayesParams:
     input:
         ref_idx = config['ref']['genome'],
         index = config['ref']['genome'] + ".fai",
-        bams = expand("resources/alignments/{sample}.marked.bam", sample=samples)
+        bams = expand("resources/alignments/{sample}.bam", sample=samples)
     output:
         bamlist = "resources/bam.list",
         pops = "resources/populations.tsv",
@@ -147,8 +153,8 @@ rule VariantCallingFreebayes:
     Run freebayes on chunks of the genome, splitting the samples by population (strain)
     """
 	input:
-		bams = expand("resources/alignments/{sample}.marked.bam", sample=samples),
-		index = expand("resources/alignments/{sample}.marked.bam.bai", sample=samples),
+		bams = expand("resources/alignments/{sample}.bam", sample=samples),
+		index = expand("resources/alignments/{sample}.bam.bai", sample=samples),
 		ref = config['ref']['genome'],
 		samples = ancient("resources/bam.list"),
 		regions = ancient("resources/regions/genome.{chrom}.region.{i}.bed")

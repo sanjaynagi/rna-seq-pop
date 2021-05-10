@@ -8,8 +8,8 @@ rule mpileupIR:
     Get allele count tables of variants of choice (specified in config file ("IRmutations.tsv"))
     """
     input:
-        bam = "resources/alignments/{sample}.marked.bam",
-        index = "resources/alignments/{sample}.marked.bam.bai"
+        bam = "resources/alignments/{sample}.bam",
+        index = "resources/alignments/{sample}.bam.bai"
     output:
         "results/allele_balance/counts/{sample}_{mut}_allele_counts.tsv"
     conda:
@@ -52,7 +52,7 @@ rule AlleleTables:
     Create allele tables for all missense variants for diffsnps analysis 
     """
     input:
-        bam = "resources/alignments/{sample}.dedup.bam",
+        bam = "resources/alignments/{sample}.bam",
         bed = "resources/regions/missense.pos.{chrom}.bed",
         ref = config['ref']['genome']
     output:

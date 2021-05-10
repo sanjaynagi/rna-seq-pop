@@ -23,7 +23,7 @@ rule FastQC:
     QC on fastq read data 
     """
     input:
-        "resources/reads/{sample}_{n}.fastq.gz"
+        getFASTQs
     output:
         html="resources/reads/qc/{sample}_{n}_fastqc.html",
         zip="resources/reads/qc/{sample}_{n}_fastqc.zip"
@@ -39,8 +39,8 @@ rule BamStats:
     QC alignment statistics
     """
     input:
-        bam = "resources/alignments/{sample}.marked.bam",
-        idx = "resources/alignments/{sample}.marked.bam.bai"
+        bam = "resources/alignments/{sample}.bam",
+        idx = "resources/alignments/{sample}.bam.bai"
     output:
         stats = "resources/alignments/bamStats/{sample}.flagstat"
     log:
@@ -53,8 +53,8 @@ rule Coverage:
     Calculate coverage with mosdepth
     """
     input:
-        bam = "resources/alignments/{sample}.marked.bam",
-        idx = "resources/alignments/{sample}.marked.bam.bai"
+        bam = "resources/alignments/{sample}.bam",
+        idx = "resources/alignments/{sample}.bam.bai"
     output:
         "resources/alignments/coverage/{sample}.mosdepth.summary.txt"
     log:
