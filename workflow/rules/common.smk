@@ -14,7 +14,7 @@ def getFASTQs(wildcards):
     """
     if config['fastq']['auto']:
         units = pd.read_csv(config['samples'], sep="\t")
-        units = units[['samples']].assign(fq1=units['samples'] + "_1.fastq.gz").assign(fq2=units['samples'] + "_2.fastq.gz").set_index('samples')
+        units = units[['samples']].assign(fq1="resources/reads/" + units['samples'] + "_1.fastq.gz").assign(fq2="resources/reads/" + units['samples'] + "_2.fastq.gz").set_index('samples')
     else:
         assert os.path.isfile(config['fastq']['table']), f"config['fastq']['table'] (the config/fastq.tsv file) does not seem to exist. Please create one, or use the 'auto' option and name the fastq files as specified in the config/README.md"
         units = pd.read_csv(config['fastq']['table'], sep="\t", index_col="samples")
