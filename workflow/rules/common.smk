@@ -21,7 +21,7 @@ def getFASTQs(wildcards):
 
     if len(wildcards) > 1:
         u = units.loc[wildcards.sample, f"fq{wildcards.n}"]
-        return [f'u.fq{wildcards.n}']
+        return [f'{u.fq}{wildcards.n}']
     else:
         u = units.loc[wildcards.sample, ["fq1", "fq2"]].dropna()
         return [f"{u.fq1}", f"{u.fq2}"]
