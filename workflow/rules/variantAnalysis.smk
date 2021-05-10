@@ -4,6 +4,9 @@
 # kiss-DE
 
 rule mpileupIR:
+    """
+    Get allele count tables of variants of choice (specified in config file ("IRmutations.tsv"))
+    """
     input:
         bam = "resources/alignments/{sample}.marked.bam",
         index = "resources/alignments/{sample}.marked.bam.bai"
@@ -25,6 +28,9 @@ rule mpileupIR:
         """
 
 rule AlleleBalanceIR:
+    """
+    R script to take allele count tables from mpileupIR rule and output .xlsx report for all mutations of interest
+    """
     input:
         counts = expand("results/allele_balance/counts/{sample}_{mut}_allele_counts.tsv", sample=samples, mut=mutationData.Name),
         samples = config['samples'],
@@ -42,6 +48,9 @@ rule AlleleBalanceIR:
         "../scripts/MutAlleleBalance.R"
 
 rule AlleleTables:
+    """
+    Create allele tables for all missense variants for diffsnps analysis 
+    """
     input:
         bam = "resources/alignments/{sample}.dedup.bam",
         bed = "resources/regions/missense.pos.{chrom}.bed",
@@ -65,6 +74,9 @@ rule AlleleTables:
         """
 
 rule DifferentialSNPs:
+    """
+    Test to see if any alleles are enriched in one condition versus the other
+    """
     input:
         samples = config['samples'],
         gff = config['ref']['gff'],
@@ -88,6 +100,9 @@ rule DifferentialSNPs:
 
 
 rule StatisticsAndPCA:
+    """
+    Calculate population genetic summary statistics and PCA on genotype data 
+    """
     input:
         vcf = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
         samples = config['samples'],
@@ -114,6 +129,9 @@ rule StatisticsAndPCA:
 
 
 rule WindowedFstPBS:
+    """
+    Calculate Fst and PBS in windows
+    """
     input:
         samples = config['samples'],
         contrasts = "resources/DE.contrast.list",
@@ -139,6 +157,9 @@ rule WindowedFstPBS:
         "../scripts/WindowedFstPBS.py"
 
 rule PerGeneFstPBS:
+    """
+    Calculate Fst and PBS for each gene
+    """
     input:
         samples = config['samples'],
         gff = config['ref']['gff'],
@@ -164,6 +185,9 @@ rule PerGeneFstPBS:
 
 
 rule AncestryInformativeMarkers:
+    """
+    Calculate the proportion of An.gambiae / An.coluzzii / An.arabiensis ancestry for each sample
+    """
     input:
         vcf = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
         samples = config['samples'],
@@ -188,6 +212,9 @@ rule AncestryInformativeMarkers:
 
 
 rule Karyotype:
+    """
+    Use compkaryo to determine the "average" karyotype in each sample, based on tagging SNPs. 2la and 2rb only reliable marker sets.
+    """
     input:
         vcf = lambda wildcards: "results/variants/vcfs/annot.variants.2L.vcf.gz" if wildcards.karyo == "2La" else "results/variants/vcfs/annot.variants.2R.vcf.gz"
     output:
@@ -207,20 +234,24 @@ rule Karyotype:
         """
         
 rule VennDiagrams:
-   input:
+    """
+    Find intersection of DE analyses between comparisons and plot
+    Not working May 2021, v0.3.0 
+    """
+    input:
         DEcontrasts = "resources/DE.contrast.list",
         DE = "results/genediff/RNA-Seq_diff.xlsx",
         Fst = "results/variants/fst.tsv",
         diffsnps = expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts']) if config['diffsnps']['activate'] else []
-   output:
+    output:
         "results/RNA-Seq-full.xlsx",
         expand("results/venn/{name}_DE.Fst.venn.png", name=config['contrasts'])
-   conda:
+    conda:
         "../envs/fstpca.yaml"
-   log:
+    log:
         "logs/VennDiagrams.log"
-   params:
+    params:
         diffsnps = config['diffsnps']['activate'],
         percentile = 0.05
-   script:
+    script:
        "../scripts/VennDiagrams.py"

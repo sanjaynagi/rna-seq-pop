@@ -1,17 +1,8 @@
-# This .smk rule file performs the following tasks:
-
-# Extracts exons and splice sites from the reference files (HISAT2)
-# Builds HISAT2 index (HISAT2)
-# Aligns reads to genome ---> .bam file (HISAT2)
-# Sorts .bam, indexes (samtools)
-# Generates parameters for freebayes (R)
-# Runs freebayes in parallel, splitting the genome into chunks (freebayes)
-# concatenates resulting vcfs (bcftools)
-# estimates impact of SNPs (snpEff)
-# filters VCFs (snpSift)
-# extracts bed file of VCF snp-sites (Python)
 
 rule GenomeIndex:
+    """
+    Index the reference genome with samtools
+    """
     input:
         ref = config['ref']['genome']
     output:
@@ -22,6 +13,9 @@ rule GenomeIndex:
         "v0.69.0/bio/samtools/faidx"
 
 rule HISAT2splicesites:
+    """
+    Extract splice-sites from gtf file, useful for later potential lncRNA work
+    """
 	input:
 		ref = config['ref']['genome'],
 		gtf = config['ref']['gtf']
@@ -39,6 +33,9 @@ rule HISAT2splicesites:
 		"""
 
 rule HISAT2index:
+    """
+    Make a HISAT2 index of the reference genome
+    """
     input:
         fasta = config['ref']['genome'],
         splice_sites="resources/reference/splice-sites.gtf",
@@ -59,6 +56,9 @@ rule HISAT2index:
         "hisat2-build -p {threads} --ss {input.splice_sites} --exon {input.exons} {input.fasta} {params.prefix}  2> {log}"
 	
 rule HISAT2align:
+    """
+    Align reads to the genome with HISAT2
+    """
 	input:
 		reads=["resources/reads/{sample}_1.fastq.gz", "resources/reads/{sample}_2.fastq.gz"],
 		idxmarker="resources/reference/ht2index/.complete"             
@@ -74,6 +74,9 @@ rule HISAT2align:
 		"v0.69.0/bio/hisat2/align"
 
 rule SortBams:
+    """
+    Sort the bams by coordinate
+    """
     input:
         "temp/{sample}.bam"
     output:
@@ -84,6 +87,9 @@ rule SortBams:
         "0.65.0/bio/samtools/sort"
 
 rule markDups:
+    """
+    Mark duplicates with Picard for variant calling
+    """
     input:
         bam = "resources/alignments/{sample}.bam"
     output:
@@ -95,6 +101,9 @@ rule markDups:
         "0.72.0/bio/picard/markduplicates"
 
 rule IndexBams:
+    """
+    Index bams with samtools
+    """
     input:
         "resources/alignments/{sample}.marked.bam"
     output:
@@ -104,9 +113,16 @@ rule IndexBams:
     wrapper:
         "0.65.0/bio/samtools/index"
 
+
+"""
+Get a sequence for the number of chunks to break the genome into
+"""
 chunks = np.arange(1, config['VariantCalling']['chunks'])
 
 rule GenerateFreebayesParams:
+    """
+    Set up some parameters for freebayes
+    """
     input:
         ref_idx = config['ref']['genome'],
         index = config['ref']['genome'] + ".fai",
@@ -127,6 +143,9 @@ rule GenerateFreebayesParams:
         "../scripts/GenerateFreebayesParams.R"
 
 rule VariantCallingFreebayes:
+    """
+    Run freebayes on chunks of the genome, splitting the samples by population (strain)
+    """
 	input:
 		bams = expand("resources/alignments/{sample}.marked.bam", sample=samples),
 		index = expand("resources/alignments/{sample}.marked.bam.bai", sample=samples),
@@ -146,6 +165,9 @@ rule VariantCallingFreebayes:
 	shell: "freebayes -f {input.ref} -t {input.regions} --ploidy {params.ploidy} --populations {params.pops} --pooled-discrete --use-best-n-alleles 5 -L {input.samples} > {output} 2> {log}"
 
 rule ConcatVCFs:
+    """
+    Concatenate VCFs together
+    """
     input:
         calls = expand("results/variants/vcfs/{{chrom}}/variants.{i}.vcf", i=chunks)
     output:
@@ -159,6 +181,9 @@ rule ConcatVCFs:
         "bcftools concat {input.calls} | vcfuniq > {output} 2> {log}"
 
 rule snpEffDbDownload:
+    """
+    Download the snpEff database for your species
+    """
     output:
         touch("workflow/scripts/snpEff/db.dl")
     log:
@@ -171,6 +196,9 @@ rule snpEffDbDownload:
         "snpEff download {params.ref} 2> {log}"
 
 rule snpEff:
+    """
+    Run snpEff on the VCFs 
+    """
     input:
         calls = "results/variants/vcfs/variants.{chrom}.vcf",
         dl = "workflow/scripts/snpEff/db.dl"
@@ -191,6 +219,9 @@ rule snpEff:
         """
 
 rule MissenseAndQualFilter:
+    """
+    Filter VCFs for missense variants and quality (used later for diffsnps analysis)
+    """
     input:
         vcf = "results/variants/vcfs/annot.variants.{chrom}.vcf.gz"
     output:
@@ -207,6 +238,9 @@ rule MissenseAndQualFilter:
         """
 
 rule ExtractBedVCF:
+    """
+    Extract SNP positions from the filtered VCFs (used later for diffsnps analysis)
+    """
     input:
         vcf = expand("results/variants/vcfs/annot.missense.{chrom}.vcf", chrom = config['chroms'])
     output:
