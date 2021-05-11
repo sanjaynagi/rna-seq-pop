@@ -24,7 +24,7 @@ def getFASTQs(wildcards, rule=None):
         return u
     else:
         u = units.loc[wildcards.sample, ["fq1", "fq2"]].dropna()
-        if rule is "HISAT2align":
+        if rule == "HISAT2align":
             return [f"-1 {u.fq1} -2 {u.fq2}"]
         else:
             return [f"{u.fq1}", f"{u.fq2}"]
