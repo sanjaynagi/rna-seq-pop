@@ -57,7 +57,7 @@ rule HISAT2index:
 	
 rule HISAT2align:
     """
-    Align reads to the genome with HISAT2
+    Align reads to the genome with HISAT2, mark duplicates with samblaster and sort with samtools
     """
     input:
         reads = getFASTQs,
