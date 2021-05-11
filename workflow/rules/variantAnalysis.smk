@@ -1,7 +1,5 @@
 ################ Variant Analysis ##################
-# samtools
 # scikit-allel (Miles, Harding) 10.5281/zenodo.3935797
-# kiss-DE
 
 rule mpileupIR:
     """
@@ -80,7 +78,6 @@ rule DifferentialSNPs:
     input:
         samples = config['samples'],
         gff = config['ref']['gff'],
-        DEcontrasts = "resources/DE.contrast.list",
         geneNames = "resources/gene_names.tsv",
         tables = expand("results/variants/alleleTables/{sample}.chr{chrom}.allele.table", sample=samples, chrom=config['chroms'])
     output:
@@ -92,6 +89,7 @@ rule DifferentialSNPs:
     log:
         "logs/DifferentialSNPs.log"
     params:
+        DEcontrasts = config['contrasts'],
         chroms = config['chroms'],
         mincounts = 100,
         pval_flt = 0.001, # pvalues already adjusted but way want extra filter for sig file
@@ -106,7 +104,6 @@ rule StatisticsAndPCA:
     input:
         vcf = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms']),
         samples = config['samples'],
-        contrasts = "resources/DE.contrast.list",
         gff = config['ref']['gff']
     output:
         PCAfig = expand("results/variants/plots/PCA-{chrom}-{dataset}.png", chrom=config['chroms'], dataset=config['dataset']),
@@ -119,6 +116,7 @@ rule StatisticsAndPCA:
     conda:
         "../envs/fstpca.yaml"
     params:
+        DEcontrasts = config['contrasts'],
         dataset = config['dataset'],
         chroms = config['chroms'],
         ploidy = config['VariantCalling']['ploidy'],
@@ -134,7 +132,6 @@ rule WindowedFstPBS:
     """
     input:
         samples = config['samples'],
-        contrasts = "resources/DE.contrast.list",
         vcf = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms'])
     output:
         Fst = expand("results/variants/plots/fst/{comp}.{chrom}.fst.{wsize}.png", comp=config['contrasts'], chrom=config['chroms'], wsize=config['pbs']['windownames']),
@@ -144,6 +141,7 @@ rule WindowedFstPBS:
     log:
         "logs/WindowedFstPCA.log",
     params:
+        DEcontrasts = config['contrasts'],
         pbs = config['pbs']['activate'],
         pbscomps = config['pbs']['contrasts'],
         chroms = config['chroms'],
@@ -163,7 +161,6 @@ rule PerGeneFstPBS:
     input:
         samples = config['samples'],
         gff = config['ref']['gff'],
-        contrasts = "resources/DE.contrast.list",
         geneNames = "resources/gene_names.tsv",
         vcf = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms'])
     output:
@@ -175,6 +172,7 @@ rule PerGeneFstPBS:
     log:
         "logs/PerGeneFstPBS.log"
     params:
+        DEcontrasts = config['contrasts'],
         pbs = config['pbs']['activate'],
         pbscomps = config['pbs']['contrasts'],
         chroms = config['chroms'],
@@ -239,7 +237,6 @@ rule VennDiagrams:
     Not working May 2021, v0.3.0 
     """
     input:
-        DEcontrasts = "resources/DE.contrast.list",
         DE = "results/genediff/RNA-Seq_diff.xlsx",
         Fst = "results/variants/fst.tsv",
         diffsnps = expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts']) if config['diffsnps']['activate'] else []
@@ -251,6 +248,7 @@ rule VennDiagrams:
     log:
         "logs/VennDiagrams.log"
     params:
+        DEcontrasts = config['contrasts'],
         diffsnps = config['diffsnps']['activate'],
         percentile = 0.05
     script:

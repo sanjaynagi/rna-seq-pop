@@ -11,6 +11,7 @@ def getFASTQs(wildcards, rule=None):
     """
     Get FASTQ files from unit sheet.
     If there are more than one wildcard (aka, sample), only return one fastq file
+    If the rule is HISAT2align, then return the fastqs with -1 and -2 flags 
     """
     if config['fastq']['auto']:
         units = pd.read_csv(config['samples'], sep="\t")
@@ -185,7 +186,7 @@ def get_desired_outputs(wildcards):
     return(wanted_input)
 
 
-def welcome(version, verbose=False):
+def welcome(version):
 
     print("---------------------------- RNA-Seq-IR ----------------------------")
     print(f"Running RNA-Seq-IR snakemake workflow in {workflow.basedir}\n")
@@ -193,34 +194,3 @@ def welcome(version, verbose=False):
     print(f"Workflow Version: {version}")
     print("Execution time: ", datetime.datetime.now())
     print(f"Dataset: {config['dataset']}", "\n")
-    
-    if verbose:
-        print("Modules activated:", "\n")
-            
-        if config['qc']['activate']: 
-            print('QC - FASTQC, mosdepth, samtools flagstat')
-
-        print("Differential Expression - Kallisto, DESeq2, Sleuth")
-        print("Writing results to results/genediff, results/isoformdiff")
-        print(f"contrasts: {config['contrasts']}\n")
-
-        if config['progressiveGenes']['activate']:
-            print("ProgressiveGenes - Checking for DE genes differentially expressed in the same direction")
-            print(f"groups: {config['progressiveGenes']['groups']}\n")
-
-        if config['GSEA']['activate']:
-            print("GSEA")
-
-        if config['IRmutations']['activate']:
-            print(f"IRmutations - reporting raw allele frequencies from loci found in {config['IRmutations']['path']}")
-        
-        if config['pbs']['activate']:
-            print("PBS - Performing population branch statistic analysis")
-            print(f"contrasts: {config['pbs']['contrasts']}", "\n")
-        
-
-        if config['diffsnps']['activate']:
-            print("DifferentialSNPs - Performing differential SNP testing analysis")
-        
-        if config['AIMs']['activate']:
-            print("AIMs - Ancestry informative marker analysis")

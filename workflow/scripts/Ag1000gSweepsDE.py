@@ -14,7 +14,7 @@ pval_threshold = snakemake.params['pval']
 upper_fc = snakemake.params['fc']
 lower_fc = 1/upper_fc # if someone wants a FC threshold of 2, need to have lower threshold of 0.5.
 # Read in list of contrasts
-comparisons = pd.read_csv(snakemake.input['DEcontrasts'])
+comparisons = pd.DataFrame(snakemake.params['DEcontrasts'], columns=['contrast'])
 
 # Read in .csv file containing selection signals and associated metadata
 signals = pd.read_csv("resources/signals.csv")

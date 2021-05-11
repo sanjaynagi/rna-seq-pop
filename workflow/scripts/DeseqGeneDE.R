@@ -24,7 +24,7 @@ samples = fread(snakemake@input[['samples']], sep="\t") %>% as.data.frame()
 gene_names = fread(snakemake@input[['gene_names']], sep="\t") %>% 
   dplyr::rename("GeneID" = "Gene_stable_ID")
 
-contrastsdf = fread(snakemake@input[['DEcontrasts']])
+contrastsdf = data.frame("contrast" = snakemake@params[['DEcontrasts']])
 contrasts = contrastsdf$contrast
 
 ##### define functions ######

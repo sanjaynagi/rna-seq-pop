@@ -80,33 +80,6 @@ rule HISAT2align:
         samblaster 2> {log.sort} | samtools sort -@{threads} -o {output} 2> {log.sort}
         """
 
-# rule SortBams:
-#     """
-#     Sort the bams by coordinate
-#     """
-#     input:
-#         "temp/{sample}.bam"
-#     output:
-#         temp("resources/alignments/{sample}.bam")
-#     log:
-#         "logs/SortBams/{sample}.log"
-#     wrapper:
-#         "0.65.0/bio/samtools/sort"
-
-# rule markDups:
-#     """
-#     Mark duplicates with Picard for variant calling
-#     """
-#     input:
-#         bam = "resources/alignments/{sample}.bam"
-#     output:
-#         bam = "resources/alignments/{sample}.marked.bam",
-#         metrics = "resources/alignments/dedup/{sample}.metrics.txt"
-#     log:
-#         "logs/markDups/{sample}.log"
-#     wrapper:
-#         "0.72.0/bio/picard/markduplicates"
-
 rule IndexBams:
     """
     Index bams with samtools

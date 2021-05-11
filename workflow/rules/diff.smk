@@ -45,7 +45,6 @@ rule DifferentialGeneExpression:
 	input:
 		samples = config['samples'],
 		gene_names = config['ref']['genenames'],
-		DEcontrasts = "resources/DE.contrast.list",
 		counts = expand("results/quant/{sample}", sample=samples)
 	output:
 		csvs = expand("results/genediff/{comp}.csv", comp=config['contrasts']),
@@ -59,6 +58,8 @@ rule DifferentialGeneExpression:
 		"../envs/diffexp.yaml"
 	log:
 		"logs/DifferentialGeneExpression.log"
+	params:
+		DEcontrasts = config['contrasts']
 	script:
 		"../scripts/DeseqGeneDE.R"
 
@@ -70,7 +71,6 @@ rule DifferentialIsoformExpression:
 	input:
 		samples = config['samples'],
 		gene_names = config['ref']['genenames'],
-		DEcontrasts = "resources/DE.contrast.list",
 		counts = expand("results/quant/{sample}", sample=samples)
 	output:
 		csvs = expand("results/isoformdiff/{comp}.csv", comp=config['contrasts']),
@@ -81,6 +81,8 @@ rule DifferentialIsoformExpression:
 		"../envs/sleuth.yaml"
 	log:
 		"logs/DifferentialIsoformExpression.log"
+	params:
+		DEcontrasts = config['contrasts']
 	script:
 		"../scripts/SleuthIsoformsDE.R"
 
@@ -113,7 +115,6 @@ rule GeneSetEnrichment:
 	"""
 	input:
 		samples = config['samples'],
-		DEcontrasts = "resources/DE.contrast.list",
 		gaf = config['GSEA']['gaf'],
 		DEresults = expand("results/genediff/{comp}.csv", comp=config['contrasts']),
 		diffsnps = expand("results/variants/diffsnps/{comp}.kissDE.tsv", comp=config['contrasts']) if config['diffsnps']['activate'] else [],
@@ -125,6 +126,7 @@ rule GeneSetEnrichment:
 		expand("results/gsea/diffsnps/{comp}.diffsnps.{pathway}.tsv", comp = config['contrasts'], pathway=['kegg', 'GO']) if config['diffsnps']['activate'] else [],
 		expand("results/gsea/pbs/{pbscomp}.PBS.{pathway}.tsv", pbscomp = config['pbs']['contrasts'], pathway=['kegg', 'GO']) if config['pbs']['activate'] else []
 	params:
+		DEcontrasts = config['contrasts'],
 		VariantCalling = config['VariantCalling']['activate'],
 		pbs = config['pbs']['activate'],
 		pbscomps = config['pbs']['contrasts'],
@@ -145,7 +147,6 @@ rule Ag1000gSweepsDE:
 	"""
 	input:
 		DEresults = expand("results/genediff/{comp}.csv", comp=config['contrasts']),
-		DEcontrasts = "resources/DE.contrast.list"
 	output:
 		expand("results/genediff/ag1000gSweeps/{comp}_swept.tsv", comp=config['contrasts'])
 	log:
@@ -153,6 +154,7 @@ rule Ag1000gSweepsDE:
 	conda:
 		"../envs/fstpca.yaml"
 	params:
+		DEcontrasts = config['contrasts'],
 		pval = config['sweeps']['padj_threshold'],
 		fc = config['sweeps']['fc_threshold']
 	script:
