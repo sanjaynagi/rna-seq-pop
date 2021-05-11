@@ -25,7 +25,7 @@ windowsteps = snakemake.params['windowsteps']
 windownames = snakemake.params['windownames']
 
 # Read in list of contrasts
-comparisons = pd.read_csv(snakemake.input['contrasts'])
+comparisons = pd.DataFrame(snakemake.params['DEcontrasts'], columns=['contrast'])
 comparisons = comparisons.contrast.str.split("_", expand=True)
 comparisons.columns = ['sus', 'res']
 comparisons = [list(row) for i,row in comparisons.iterrows()]

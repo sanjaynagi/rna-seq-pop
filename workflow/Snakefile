@@ -29,17 +29,3 @@ rule all:
         # The first rule should define the default target files
         # The below function (defined in rules/common.smk) will read the config file and determine desired output files
         get_desired_outputs
-
-## This rule produces a table with all the desired contrasts between treatment groups. If the config file is updated, it will re-run the analysis (because new contrasts may have been added)
-## To update the config file, but not re-run already completed rules, use the --touch directive at the command line, to update the timestamps of created files 
-rule DElist:
-    output:
-        DElist = "resources/DE.contrast.list"
-    params:
-        contrasts = config['contrasts']
-    log: 
-        "logs/DElist.log"
-    run:
-        df = pd.DataFrame(params.contrasts)
-        df.columns = ['contrast']
-        df.to_csv(output.DElist, sep="\t", index=None)

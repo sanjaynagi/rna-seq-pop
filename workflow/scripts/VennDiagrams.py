@@ -59,7 +59,7 @@ def add_columns_xlsx(name, de, fst, highfst, diffsnps, diffsnpsdf=None):
 
 #### Main ####
 # Read contrasts in and other snakemake params
-comparisons = pd.read_csv(snakemake.input['DEcontrasts'])
+comparisons = pd.DataFrame(snakemake.params['DEcontrasts'], columns=['contrast'])
 comparisons = comparisons.contrast.str.split("_", expand=True)
 comparisons = [list(row) for i,row in comparisons.iterrows()]
 

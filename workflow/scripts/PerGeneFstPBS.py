@@ -15,7 +15,6 @@ warnings.filterwarnings('ignore') # suppress numpy runtime warnings, this is a b
 metadata_path = snakemake.input['samples']
 samples = pd.read_csv(metadata_path, sep="\s+")
 gffpath = snakemake.input['gff']
-comparisons_path = snakemake.input['contrasts']
 pbs = snakemake.params['pbs']
 pbscomps = snakemake.params['pbscomps']
 chroms = snakemake.params['chroms']
@@ -33,7 +32,7 @@ gene_names.columns = ['GeneID' if x=='Gene_stable_ID' else x for x in gene_names
 
 ### main ####
 # Read in list of contrasts
-comparisons = pd.read_csv(comparisons_path)
+comparisons = pd.DataFrame(snakemake.params['DEcontrasts'], columns=['contrast'])
 comparisons = comparisons.contrast.str.split("_", expand=True)
 comparisons.columns = ['sus', 'res']
 comparisons = [list(row) for i,row in comparisons.iterrows()]

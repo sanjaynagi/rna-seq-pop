@@ -42,7 +42,7 @@ runEnrich = function(rankedList, GeneSetList, outName){
 
 ###### configuration - metadata and parameters ######
 samples = fread(snakemake@input[['samples']]) %>% as.data.frame()
-comparisons = fread(snakemake@input[['DEcontrasts']])
+comparisons = data.frame("contrast" = snakemake@params[['DEcontrasts']])
 gaffile = snakemake@input[['gaf']]
 variantCalling = snakemake@params[['VariantCalling']]
 pbs = snakemake@params[['pbs']]
