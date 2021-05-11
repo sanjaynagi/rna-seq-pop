@@ -60,7 +60,7 @@ rule HISAT2align:
     Align reads to the genome with HISAT2
     """
     input:
-        read1, read2 = getFASTQs,
+        reads = getFASTQs,
         idx = "resources/reference/ht2index/.complete"             
     output:
         "resources/alignments/{sample}.bam"
@@ -70,12 +70,13 @@ rule HISAT2align:
     conda:
         "../envs/variants.yaml"
     params:
+        readflags = lambda wildcards : getFASTQs(wildcards=wildcards, rule="HISAT2align"),
         extra="--dta -q --rg-id {sample} --rg SM:{sample} --new-summary",
         idx="resources/reference/ht2index/idx"     
     threads:12
     shell:
         """
-        hisat2 {params.extra} --threads {threads} -x {params.idx} -1 {input.read1} -2 {input.read2} 2> {log.align} | 
+        hisat2 {params.extra} --threads {threads} -x {params.idx} {params.readflags} 2> {log.align} | 
         samblaster 2> {log.sort} | samtools sort -@{threads} -o {output} 2> {log.sort}
         """
 
