@@ -13,7 +13,7 @@ library(data.table)
 library(tidyverse)
 library(glue)
 
-#read metadata and get contrasts
+# read metadata and get contrasts
 comps = snakemake@params['comps'][[1]]
 padj_threshold = snakemake@params['pval']
 upper_fc = snakemake@params['fc']

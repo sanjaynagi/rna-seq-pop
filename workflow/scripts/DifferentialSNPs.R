@@ -18,7 +18,7 @@ library(rtracklayer)
 ######## parse inputs #############
 chroms = snakemake@params[['chroms']]
 metadata = fread(snakemake@input[['samples']])
-contrasts = fread(snakemake@input[['DEcontrasts']], header = TRUE) 
+contrasts = data.frame("contrast" = snakemake@params[['DEcontrasts']])
 comparisons = contrasts %>% separate(contrast, into = c("control", "case"), sep = "_")
 mincounts = snakemake@params[['mincounts']]
 pval = snakemake@params[['pval_flt']]
