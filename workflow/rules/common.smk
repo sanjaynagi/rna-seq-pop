@@ -7,7 +7,7 @@ else:
     windowedStats = ['fst']
 
 
-def getFASTQs(wildcards):
+def getFASTQs(wildcards, rule=None):
     """
     Get FASTQ files from unit sheet.
     If there are more than one wildcard (aka, sample), only return one fastq file
@@ -24,7 +24,10 @@ def getFASTQs(wildcards):
         return u
     else:
         u = units.loc[wildcards.sample, ["fq1", "fq2"]].dropna()
-        return [f"{u.fq1}", f"{u.fq2}"]
+        if rule is "HISAT2align":
+            return [f"-1 {u.fq1} -2 {u.fq2}"]
+        else:
+            return [f"{u.fq1}", f"{u.fq2}"]
 
 
 def get_desired_outputs(wildcards): 
