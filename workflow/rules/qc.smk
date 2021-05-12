@@ -5,7 +5,7 @@ rule CheckInputs:
     Check to see that fastq files exist, and reference files are appropriate
     """
     output:
-       touch("config/.input.check")
+       touch("results/.input.check")
     params:
        metadata=config['samples'],
        chroms=config['chroms'],
