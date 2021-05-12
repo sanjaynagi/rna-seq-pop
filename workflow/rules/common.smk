@@ -47,8 +47,8 @@ def GetDesiredOutputs(wildcards):
             [
                 "config/.input.check",
                 "resources/reads/qc/{sample}_{n}_fastqc.html",
-                "resources/alignments/coverage/{sample}.mosdepth.summary.txt",
-                "resources/alignments/bamStats/{sample}.flagstat",
+                "results/alignments/coverage/{sample}.mosdepth.summary.txt",
+                "results/alignments/bamStats/{sample}.flagstat",
                 "results/multiQC.html"
             ],
             sample=samples, 

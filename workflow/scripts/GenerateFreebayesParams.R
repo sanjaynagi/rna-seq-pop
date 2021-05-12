@@ -1,3 +1,8 @@
+#!/usr/bin/env Rscript
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
+
 ## Generate freebayes params ##
 # 1) make bed for parallelising freebayes
 library(dplyr)
@@ -33,7 +38,7 @@ for (chrom in chroms){
 
 metadata = fread(snakemake@params[['metadata']], sep="\t")
 
-metadata$bams = paste0("resources/alignments/", metadata$samples,".bam")
+metadata$bams = paste0("results/alignments/", metadata$samples,".bam")
 
 metadata %>% 
    select(bams, strain) %>% 

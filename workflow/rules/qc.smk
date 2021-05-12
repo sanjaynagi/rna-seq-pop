@@ -10,11 +10,15 @@ rule CheckInputs:
        metadata=config['samples'],
        chroms=config['chroms'],
        gffpath=config['ref']['gff'],
-       gene_names=config['ref']['genenames']
+       gene_names=config['ref']['genenames'],
+       contrasts=config['contrasts'],
+       fastq=config['fastq']['auto'],
+       table=config['fastq']['table']
     log:
         "logs/CheckInputs.log"
     conda:
         "../envs/fstpca.yaml"
+    priority: 50
     script:
         "../scripts/checkInputs.py"
 
@@ -39,10 +43,10 @@ rule BamStats:
     QC alignment statistics
     """
     input:
-        bam = "resources/alignments/{sample}.bam",
-        idx = "resources/alignments/{sample}.bam.bai"
+        bam = "results/alignments/{sample}.bam",
+        idx = "results/alignments/{sample}.bam.bai"
     output:
-        stats = "resources/alignments/bamStats/{sample}.flagstat"
+        stats = "results/alignments/bamStats/{sample}.flagstat"
     log:
         "logs/BamStats/{sample}.log"
     wrapper:
@@ -53,10 +57,10 @@ rule Coverage:
     Calculate coverage with mosdepth
     """
     input:
-        bam = "resources/alignments/{sample}.bam",
-        idx = "resources/alignments/{sample}.bam.bai"
+        bam = "results/alignments/{sample}.bam",
+        idx = "results/alignments/{sample}.bam.bai"
     output:
-        "resources/alignments/coverage/{sample}.mosdepth.summary.txt"
+        "results/alignments/coverage/{sample}.mosdepth.summary.txt"
     log:
         "logs/Coverage/{sample}.log"
     conda:
@@ -92,8 +96,8 @@ rule multiQC:
     input:
         expand("resources/reads/qc/{sample}_{n}_fastqc.zip", sample=samples, n=[1,2]),
         expand("results/variants/vcfs/stats/{chrom}.txt", chrom=config['chroms']),
-        expand("resources/alignments/coverage/{sample}.mosdepth.summary.txt", sample=samples),
-        expand("resources/alignments/bamStats/{sample}.flagstat", sample=samples),
+        expand("results/alignments/coverage/{sample}.mosdepth.summary.txt", sample=samples),
+        expand("results/alignments/bamStats/{sample}.flagstat", sample=samples),
         expand("results/quant/{sample}", sample=samples)
     output:
         "results/multiQC.html"

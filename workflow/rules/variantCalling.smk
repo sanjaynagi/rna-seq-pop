@@ -63,7 +63,7 @@ rule HISAT2align:
         reads = getFASTQs,
         idx = "resources/reference/ht2index/.complete"             
     output:
-        "resources/alignments/{sample}.bam"
+        "results/alignments/{sample}.bam"
     log:
         align = "logs/HISAT2/{sample}_align.log",
         sort = "logs/samtoolsSort/{sample}.log",
@@ -85,9 +85,9 @@ rule IndexBams:
     Index bams with samtools
     """
     input:
-        "resources/alignments/{sample}.bam"
+        "results/alignments/{sample}.bam"
     output:
-        "resources/alignments/{sample}.bam.bai"
+        "results/alignments/{sample}.bam.bai"
     log:
         "logs/IndexBams/{sample}.log"
     wrapper:
@@ -106,7 +106,7 @@ rule GenerateFreebayesParams:
     input:
         ref_idx = config['ref']['genome'],
         index = config['ref']['genome'] + ".fai",
-        bams = expand("resources/alignments/{sample}.bam", sample=samples)
+        bams = expand("results/alignments/{sample}.bam", sample=samples)
     output:
         bamlist = "resources/bam.list",
         pops = "resources/populations.tsv",
@@ -127,10 +127,10 @@ rule VariantCallingFreebayes:
     Run freebayes on chunks of the genome, splitting the samples by population (strain)
     """
 	input:
-		bams = expand("resources/alignments/{sample}.bam", sample=samples),
-		index = expand("resources/alignments/{sample}.bam.bai", sample=samples),
+		bams = expand("results/alignments/{sample}.bam", sample=samples),
+		index = expand("results/alignments/{sample}.bam.bai", sample=samples),
 		ref = config['ref']['genome'],
-		samples = ancient("resources/bam.list"),
+		samples = "resources/bam.list",
 		regions = ancient("resources/regions/genome.{chrom}.region.{i}.bed")
 	output:
 		temp("results/variants/vcfs/{chrom}/variants.{i}.vcf")
