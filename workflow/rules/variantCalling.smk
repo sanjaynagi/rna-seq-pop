@@ -77,7 +77,7 @@ rule HISAT2align:
     shell:
         """
         hisat2 {params.extra} --threads {threads} -x {params.idx} {params.readflags} 2> {log.align} | 
-        samblaster 2> {log.sort} | samtools sort -@{threads} -o {output} 2> {log.sort}
+        samblaster 2> {log.sort} | samtools sort -@{threads} -o {output} 2>> {log.sort}
         """
 
 rule IndexBams:
