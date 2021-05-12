@@ -31,7 +31,7 @@ def getFASTQs(wildcards, rule=None):
             return [f"{u.fq1}", f"{u.fq2}"]
 
 
-def get_desired_outputs(wildcards): 
+def GetDesiredOutputs(wildcards): 
 
     """
     Function that returns a list of the desired outputs for the rule all, depending on the config.yaml

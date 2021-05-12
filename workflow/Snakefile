@@ -26,6 +26,5 @@ include: "rules/variantAnalysis.smk"
 
 rule all:
     input:
-        # The first rule should define the default target files
         # The below function (defined in rules/common.smk) will read the config file and determine desired output files
-        get_desired_outputs
+        GetDesiredOutputs
