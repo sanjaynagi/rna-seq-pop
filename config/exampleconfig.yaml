@@ -39,7 +39,8 @@ ref:
   genenames:
         "resources/exampleGeneNames.tsv"
 
-# Chromosome names for the appropriate species. Should correspond to the reference fasta/gff files. 
+# Chromosome names for the appropriate species. 
+# Please ensure that these correspond exactly to the reference fasta/gff files. Extra unwanted chromosomes (unplaced contigs) can be ignored. 
 chroms: ['2L', '2R', '3L', '3R', 'X']
 
 qc:
