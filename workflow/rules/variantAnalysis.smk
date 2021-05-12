@@ -21,8 +21,8 @@ rule mpileupIR:
         basedir = workflow.basedir
     shell:
         """
-        samtools mpileup {input.bam} -r {params.region} -f {params.ref} | 
-        python2 {params.basedir}/scripts/BaseParser.py > {output}
+        samtools mpileup {input.bam} -r {params.region} -f {params.ref} 2> {log} | 
+        python2 {params.basedir}/scripts/BaseParser.py > {output} 2>> {log}
         """
 
 rule AlleleBalanceIR:
@@ -67,8 +67,8 @@ rule AlleleTables:
         min_af=0
     shell:
         """
-        samtools mpileup -f {input.ref} -l {input.bed} {input.bam} | 
-        {params.basedir}/scripts/mpileup2readcounts/mpileup2readcounts 0 {params.baseflt} {params.ignore_indels} {params.min_alt} {params.min_af} > {output} 2> {log}
+        samtools mpileup -f {input.ref} -l {input.bed} {input.bam} 2> {log} | 
+        {params.basedir}/scripts/mpileup2readcounts/mpileup2readcounts 0 {params.baseflt} {params.ignore_indels} {params.min_alt} {params.min_af} > {output} 2>> {log}
         """
 
 rule DifferentialSNPs:
