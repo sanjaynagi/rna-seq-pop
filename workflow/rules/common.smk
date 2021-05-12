@@ -45,7 +45,7 @@ def GetDesiredOutputs(wildcards):
         wanted_input.extend(
             expand(
             [
-                "config/.input.check",
+                "results/.input.check",
                 "resources/reads/qc/{sample}_{n}_fastqc.html",
                 "results/alignments/coverage/{sample}.mosdepth.summary.txt",
                 "results/alignments/bamStats/{sample}.flagstat",

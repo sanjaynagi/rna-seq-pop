@@ -8,6 +8,7 @@ import sys
 sys.stderr = open(snakemake.log[0], "w")
 import os
 import pandas as pd
+import numpy as np
 
 metadata = pd.read_csv(snakemake.params['metadata'], sep="\t")
 gffpath = snakemake.params['gffpath']
@@ -31,9 +32,9 @@ comparisons = comparisons.values.ravel()
 assert (np.isin(comparisons, metadata['treatment']).all()), f"treatments specified in config.yaml contrasts do not exist in samples.tsv. {comparisons}"
 
 # Check that samples in fastq.tsv match those in metadata.tsv
-if autofastq:
+if autofastq is False:
     fastq = pd.read_csv(snakemake.params['table'], sep="\t")
-    assert(np.isin(fastq['samples'], metadata['samples']).all(), f"all samples specified in fastq table do not match that in samples.tsv")
+    assert np.isin(fastq['samples'], metadata['samples']).all(), f"all samples specified in fastq table do not match those in samples.tsv"
 
 # Check column names of gene_names.tsv
 gene_names = pd.read_csv(snakemake.params['gene_names'], sep="\t")
