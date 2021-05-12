@@ -25,7 +25,7 @@ for sample in metadata.samples:
 #assert np.isin(chroms, gff.seqid).all(), f"All provided chromosome names ({chroms}) are not present in GFF file"
 
 # Check that the contrasts specified in config.yaml are all in the treatment column
-comparisons = pd.DataFrame(snakemake.params['DEcontrasts'], columns=['contrast'])
+comparisons = pd.DataFrame(snakemake.params['contrasts'], columns=['contrast'])
 comparisons = comparisons.contrast.str.split("_", expand=True)
 comparisons = comparisons.values.ravel()
 assert (np.isin(comparisons, metadata['treatment']).all()), f"treatments specified in config.yaml contrasts do not exist in samples.tsv. {comparisons}"
