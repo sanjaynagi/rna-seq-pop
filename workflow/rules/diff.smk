@@ -45,7 +45,7 @@ rule DifferentialGeneExpression:
 	input:
 		samples = config['samples'],
 		gene_names = config['ref']['genenames'],
-		counts = expand("results/quant/{sample}", sample=samples)
+		counts = expand("results/quant/{sample}", sample=samples),
 	output:
 		csvs = expand("results/genediff/{comp}.csv", comp=config['contrasts']),
 		xlsx = expand("results/genediff/{dataset}_diffexp.xlsx", dataset=config['dataset']),
