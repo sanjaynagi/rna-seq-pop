@@ -135,7 +135,7 @@ rule WindowedFstPBS:
         vcf = expand("results/variants/vcfs/annot.variants.{chrom}.vcf.gz", chrom=config['chroms'])
     output:
         Fst = expand("results/variants/plots/fst/{comp}.{chrom}.fst.{wsize}.png", comp=config['contrasts'], chrom=config['chroms'], wsize=config['pbs']['windownames']),
-        PBS = expand("results/variants/plots/pbs/{pbscomp}.{chrom}.pbs.{wsize}.png", pbscomp=config['pbs']['contrasts'], chrom=config['chroms'], wsize=config['pbs']['windownames']) if config['pbs'] else [], 
+        PBS = expand("results/variants/plots/pbs/{pbscomp}.{chrom}.pbs.{wsize}.png", pbscomp=config['pbs']['contrasts'], chrom=config['chroms'], wsize=config['pbs']['windownames']) if config['pbs']['activate'] else [], 
     conda:
         "../envs/fstpca.yaml"
     log:
@@ -237,7 +237,7 @@ rule VennDiagrams:
     Not working May 2021, v0.3.0 
     """
     input:
-        DE = "results/genediff/RNA-Seq_diff.xlsx",
+        DE = expand("results/genediff/{dataset}_diffexp.xlsx", dataset = config['dataset'])
         Fst = "results/variants/fst.tsv",
         diffsnps = expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts']) if config['diffsnps']['activate'] else []
     output:

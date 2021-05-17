@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 
 """
-A script to check the validity of input files and parameters to the workflow
-It will check - Fastq file naming, that the contrasts in config.yaml exist in samples.tsv treatment column, that the fasta chromosomes match the config
-and that the gene_names.tsv file has appropriate column names.
+A python script to check the validity of input files and parameters to the snakemake workflow. 
+It will check the following and raise assertion errors if they fail.
+- Fastq table samples matches that in samples.tsv
+- The contrasts in config.yaml exist in samples.tsv treatment column
+- The genome reference fasta chromosome headers match the config yaml
+- The gff file chromosomes match the config yaml
+- The gene_names.tsv file has appropriate column names.
 """
 
 import sys
@@ -12,6 +16,7 @@ import os
 import pandas as pd
 import numpy as np
 import re
+import allel
 
 # Read in parameters 
 metadata = pd.read_csv(snakemake.params['metadata'], sep="\t")
@@ -53,12 +58,10 @@ else:
 # Check column names of gene_names.tsv
 gene_names = pd.read_csv(snakemake.params['gene_names'], sep="\t")
 colnames = ['Gene_stable_ID', 'Gene_description', 'Gene_name']
-
 assert (gene_names.columns.isin(colnames)).all(), f"Column names of gene_names.tsv should be {colnames}"
 
 
-
-
 # Check that the chromosomes are present in the gff file 
-#gff = allel.gff3_to_dataframe(gffpath)
-#assert np.isin(chroms, gff.seqid).all(), f"All provided chromosome names ({chroms}) are not present in GFF file"
+gff = allel.gff3_to_dataframe(gffpath)
+assert np.isin(chroms, gff.seqid).all(), f"All provided chromosome names ({chroms}) are not present in the reference GFF file"
+
