@@ -237,7 +237,7 @@ rule VennDiagrams:
     Not working May 2021, v0.3.0 
     """
     input:
-        DE = expand("results/genediff/{dataset}_diffexp.xlsx", dataset = config['dataset'])
+        DE = expand("results/genediff/{dataset}_diffexp.xlsx", dataset = config['dataset']),
         Fst = "results/variants/fst.tsv",
         diffsnps = expand("results/variants/diffsnps/{name}.sig.kissDE.tsv", name = config['contrasts']) if config['diffsnps']['activate'] else []
     output:
