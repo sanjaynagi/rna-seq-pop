@@ -1,7 +1,7 @@
 ################################          Common functions           ##################################
 
 ## If PBS is activated 
-if config['pbs']:
+if config['pbs']['activate']:
     windowedStats = ['fst', 'pbs']
 else:
     windowedStats = ['fst']
