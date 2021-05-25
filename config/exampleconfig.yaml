@@ -115,7 +115,7 @@ karyotype:
              - "2Rd"
              - "2Ru"
 
-# find DE genes under Ag1000g selective sweeps 
+# find DE genes that lie under Ag1000g selective sweeps 
 sweeps:
       activate: True
       padj_threshold: 0.05

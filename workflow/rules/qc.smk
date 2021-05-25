@@ -15,7 +15,8 @@ rule CheckInputs:
        gene_names=config['ref']['genenames'],
        contrasts=config['contrasts'],
        fastq=config['fastq']['auto'],
-       table=config['fastq']['table']
+       table=config['fastq']['table'],
+       sweeps=config['sweeps']['activate']
     log:
         "logs/CheckInputs.log"
     conda:
