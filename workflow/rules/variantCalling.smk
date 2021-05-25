@@ -70,7 +70,7 @@ rule HISAT2align:
     conda:
         "../envs/variants.yaml"
     params:
-        readflags = lambda wildcards : getFASTQs(wildcards=wildcards, rule="HISAT2align"),
+        readflags = lambda wildcards : getFASTQs(wildcards=wildcards, rules="HISAT2align"),
         extra="--dta -q --rg-id {sample} --rg SM:{sample} --new-summary",
         idx="resources/reference/ht2index/idx"     
     threads:12

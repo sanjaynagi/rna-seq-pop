@@ -7,7 +7,7 @@ else:
     windowedStats = ['fst']
 
 
-def getFASTQs(wildcards, rule=None):
+def getFASTQs(wildcards, rules=None):
     """
     Get FASTQ files from unit sheet.
     If there are more than one wildcard (aka, sample), only return one fastq file
@@ -15,7 +15,7 @@ def getFASTQs(wildcards, rule=None):
     """
     if config['fastq']['auto']:
         units = pd.read_csv(config['samples'], sep="\t")
-        units = units[['samples']].assign(fq1="resources/reads/" + units['samples'] + "_1.fastq.gz").assign(fq2="resources/reads/" + units['samples'] + "_2.fastq.gz").set_index('samples')
+        units = units.assign(fq1=f"resources/reads/" + units['samples'] + "_1.fastq.gz").assign(fq2=f"resources/reads/" + units['samples'] + "_2.fastq.gz").set_index('samples')
     else:
         assert os.path.isfile(config['fastq']['table']), f"config['fastq']['table'] (the config/fastq.tsv file) does not seem to exist. Please create one, or use the 'auto' option and name the fastq files as specified in the config/README.md"
         units = pd.read_csv(config['fastq']['table'], sep="\t", index_col="samples")
@@ -25,7 +25,7 @@ def getFASTQs(wildcards, rule=None):
         return u
     else:
         u = units.loc[wildcards.sample, ["fq1", "fq2"]].dropna()
-        if rule == "HISAT2align":
+        if rules == "HISAT2align":
             return [f"-1 {u.fq1} -2 {u.fq2}"]
         else:
             return [f"{u.fq1}", f"{u.fq2}"]
