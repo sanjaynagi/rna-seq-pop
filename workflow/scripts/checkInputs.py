@@ -20,11 +20,12 @@ import allel
 
 # Read in parameters 
 metadata = pd.read_csv(snakemake.params['metadata'], sep="\t")
+ref = snakemake.input['ref']
 gffpath = snakemake.params['gffpath']
 chroms = snakemake.params['chroms']
 autofastq = snakemake.params['fastq']
-ref = snakemake.input['ref']
-
+sweeps = snakemake.params['sweeps']
+signalpath = "resources/signals.csv"
 
 
 ## Read fasta file and grep chromosome names, check if they match config
@@ -65,3 +66,6 @@ assert (gene_names.columns.isin(colnames)).all(), f"Column names of gene_names.t
 gff = allel.gff3_to_dataframe(gffpath)
 assert np.isin(chroms, gff.seqid).all(), f"All provided chromosome names ({chroms}) are not present in the reference GFF file"
 
+# Check for signals.csv
+if sweeps:
+    assert os.path.isfile(signalpath), f"Ag1000g sweeps is activated, but no signals file is present in {signalpath}"
