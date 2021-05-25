@@ -13,6 +13,7 @@ def getFASTQs(wildcards, rules=None):
     If there are more than one wildcard (aka, sample), only return one fastq file
     If the rule is HISAT2align, then return the fastqs with -1 and -2 flags
     """
+    
     if config["fastq"]["auto"]:
         units = pd.read_csv(config["samples"], sep="\t")
         units = (
@@ -60,7 +61,16 @@ def GetDesiredOutputs(wildcards):
                 chrom=config["chroms"],
             )
         )
-        if config["VariantCalling"]["activate"]
+        if config["VariantCalling"]["activate"]:
+            wanted_input.extend(
+            expand(
+                [
+                    "results/alignments/coverage/{sample}.mosdepth.summary.txt",
+                    "results/alignments/bamStats/{sample}.flagstat",
+                ],
+                sample=samples,
+            )
+        )   
 
     # Differential Expression outputs
     wanted_input.extend(
