@@ -8,14 +8,21 @@ import pandas as pd
 import numpy as np
 import os
 import datetime
-configfile:"config/config.yaml"
 
-metadata = pd.read_csv(config['samples'], sep="\t")
+
+configfile: "config/config.yaml"
+
+
+metadata = pd.read_csv(config["samples"], sep="\t")
 validate(metadata, schema="schemas/samples.schema.yaml")
 samples = metadata.samples
 
 # IR allele balance mutations file
-mutationData = pd.read_csv(config['IRmutations']['path'], sep="\t") if config['IRmutations']['activate'] else []
+mutationData = (
+    pd.read_csv(config["IRmutations"]["path"], sep="\t") if config["IRmutations"]["activate"]
+    else []
+)
+
 
 include: "rules/common.smk"
 welcome(version="v0.4.0")
@@ -24,7 +31,8 @@ include: "rules/diff.smk"
 include: "rules/variantCalling.smk"
 include: "rules/variantAnalysis.smk"
 
+
 rule all:
     input:
         # The below function (defined in rules/common.smk) will read the config file and determine desired output files
-        GetDesiredOutputs
+        GetDesiredOutputs,
