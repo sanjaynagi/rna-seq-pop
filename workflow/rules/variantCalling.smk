@@ -14,7 +14,7 @@ rule GenomeIndex:
 
 
 rule HISAT2splicesites:
-"""
+    """
     Extract splice-sites from gtf file, useful for later potential lncRNA work
     """
         input:
