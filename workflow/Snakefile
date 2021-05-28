@@ -21,7 +21,7 @@ samples = metadata.samples
 if config["IRmutations"]["activate"]:
     mutationData = pd.read_csv(config["IRmutations"]["path"], sep="\t") 
 else:
-    mutationData = pd.read_csv("resources/exampleMutations.tsv", sep="\t")
+    mutationData = pd.DataFrame({"Name": ["KDR"], "mut":["995F"], "Location": ["2L-28xxxxx"]})   # ignore this, just an dummy df for snakemake
 
 include: "rules/common.smk"
 welcome(version="v0.4.0")
