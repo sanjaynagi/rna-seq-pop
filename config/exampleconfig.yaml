@@ -116,6 +116,7 @@ karyotype:
              - "2Ru"
 
 # find DE genes that lie under Ag1000g selective sweeps 
+# Only applicable for Anopheles gambiae s.l
 sweeps:
       activate: True
       padj_threshold: 0.05
