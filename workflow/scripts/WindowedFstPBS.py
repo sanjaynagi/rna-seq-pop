@@ -37,6 +37,7 @@ for i, chrom in enumerate(chroms):
                                                            chrom=chrom,
                                                            samples=samples,
                                                            numbers=numbers,
+                                                           ploidy=ploidy,
                                                            qualflt=qualflt,
                                                            missingfltprop=missingprop)
 

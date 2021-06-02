@@ -35,6 +35,7 @@ for chrom in chroms:
                                                                chrom=chrom,
                                                                samples=samples,
                                                                numbers=numbers,
+                                                               ploidy=ploidy,
                                                                qualflt=qualflt,
                                                                missingfltprop=missingprop)
     aimspos = aims[chrom]['POS'][:]

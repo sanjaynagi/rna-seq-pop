@@ -104,8 +104,6 @@ def GetDesiredOutputs(wildcards):
                     "results/variants/vcfs/stats/{chrom}.txt",
                     "results/variants/plots/PCA-{chrom}-{dataset}.png",
                     "results/variants/plots/{dataset}_SNPdensity_{chrom}.png",
-                    "results/variants/stats/inbreedingCoef.tsv",
-                    "results/variants/stats/inbreedingCoef.mean.tsv",
                     "results/variants/stats/SequenceDiversity.tsv",
                     "results/variants/fst.tsv",
                     "results/variants/TajimasD.tsv",
@@ -118,6 +116,17 @@ def GetDesiredOutputs(wildcards):
                 wsize=config["pbs"]["windownames"],
             )
         )
+
+
+        if config['VariantCalling']['ploidy'] > 1:
+            wanted_input.extend(
+                expand(
+                    [
+                        "results/variants/stats/inbreedingCoef.tsv",
+                    ]
+                )
+            )
+
 
     if config["AIMs"]["activate"]:
         wanted_input.extend(

@@ -50,6 +50,7 @@ for i, chrom in enumerate(chroms):
                                                            chrom=chrom,
                                                            samples=samples,
                                                            numbers=numbers,
+                                                           ploidy=ploidy,
                                                            qualflt=qualflt,
                                                            missingfltprop=missingprop)
     # Store total SNPs per chromosome
@@ -105,7 +106,7 @@ for i, chrom in enumerate(chroms):
     
     # Run PCA function defined in tools.py
     print(f"Performing PCA on {dataset} chromosome {chrom}")
-    pca(geno, chrom, dataset, populations, samples, pop_colours, prune=True, scaler=None)
+    pca(geno, chrom, ploidy, dataset, populations, samples, pop_colours, prune=True, scaler=None)
 
     ######## Plot variant density over genome (defined in tools.py) ########
     plot_density(pos, window_size=100000, title=f"Variant Density chromosome {chrom}", path=f"results/variants/plots/{dataset}_SNPdensity_{chrom}.png")
@@ -125,35 +126,37 @@ for i, chrom in enumerate(chroms):
         thetadict[pop] = allel.watterson_theta(pos, acsubpops[pop])
 
         # Inbreeding coefficient
-        coef = allel.moving_statistic(gn, statistic=allel.inbreeding_coefficient, 
-                                            size=1000, step=100)
-        coef = np.nanmean(coef, axis=1)
-        coefdict[pop] = np.mean(coef)
-        allcoef[pop].append(np.array(coef))
+        if ploidy > 1:
+            coef = allel.moving_statistic(gn, statistic=allel.inbreeding_coefficient, 
+                                                size=1000, step=100)
+            coef = np.nanmean(coef, axis=1)
+            coefdict[pop] = np.mean(coef)
+            allcoef[pop].append(np.array(coef))
 
         print(f"{pop},{chrom}, Sequence Diversity = ", seqdivdict[pop])
         print(f"{pop},{chrom}, Wattersons Theta = ", thetadict[pop])
-        print(f"{pop},{chrom}, Inbreeding Coef = ", np.mean(coef), "\n")
+        if ploidy > 1: print(f"{pop},{chrom}, Inbreeding Coef = ", np.mean(coef), "\n")
 
     seqdivdictchrom[chrom] = dict(seqdivdict)
     thetadictchrom[chrom] = dict(thetadict)
-    coefdictchrom[chrom] = dict(coefdict)
+    if ploidy > 1: coefdictchrom[chrom] = dict(coefdict)
 
 seqdivdictchrom= flip_dict(seqdivdictchrom)
 thetadictchrom = flip_dict(thetadictchrom)
-coefdictchrom = flip_dict(coefdictchrom)
+if ploidy > 1: coefdictchrom = flip_dict(coefdictchrom)
 
 # Get stats per chromosome
 pd.DataFrame.from_dict(seqdivdictchrom).to_csv("results/variants/stats/SequenceDiversity.tsv", sep="\t", index=True)
 pd.DataFrame.from_dict(thetadictchrom).to_csv("results/variants/stats/WattersonsTheta.tsv", sep="\t", index=True)
-pd.DataFrame.from_dict(coefdictchrom).to_csv("results/variants/stats/inbreedingCoef.tsv", sep="\t", index=True)
+if ploidy > 1: pd.DataFrame.from_dict(coefdictchrom).to_csv("results/variants/stats/inbreedingCoef.tsv", sep="\t", index=True)
 
 # Get genome wide average stats
-for pop in allcoef.keys():
-    allcoef[pop] = np.nanmean(allcoef[pop])
+if ploidy > 1:
+    for pop in allcoef.keys():
+        allcoef[pop] = np.nanmean(allcoef[pop])
 
-coefdf = pd.DataFrame.from_dict(allcoef, orient='index', columns=['InbreedingCoefficient'])
-coefdf.to_csv(f"results/variants/stats/inbreedingCoef.mean.tsv", sep="\t", index=True)
+    coefdf = pd.DataFrame.from_dict(allcoef, orient='index', columns=['InbreedingCoefficient'])
+    coefdf.to_csv(f"results/variants/stats/inbreedingCoef.mean.tsv", sep="\t", index=True)
 
 # Total SNPs per chrom, all samples
 totalsnpsdf = pd.DataFrame.from_dict(total_snps_per_chrom, orient='index', columns=['Total_SNPs'])
