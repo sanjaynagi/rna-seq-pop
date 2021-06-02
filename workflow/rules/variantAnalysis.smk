@@ -140,8 +140,7 @@ rule StatisticsAndPCA:
             chrom=config["chroms"],
             dataset=config["dataset"],
         ),
-        inbreedingCoef="results/variants/stats/inbreedingCoef.tsv",
-        inbreedingCoefMean="results/variants/stats/inbreedingCoef.mean.tsv",
+        inbreedingCoef="results/variants/stats/inbreedingCoef.tsv" if config['VariantCalling']['ploidy'] > 1 else [],
         SequenceDiversity="results/variants/stats/SequenceDiversity.tsv",
     log:
         "logs/StatisticsAndPCA.log",

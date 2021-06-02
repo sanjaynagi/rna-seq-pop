@@ -85,7 +85,7 @@ def get_numbers_dict(ploidy):
     return(numbers)
 
 
-def readAndFilterVcf(path, chrom, samples, numbers, qualflt=30, missingfltprop=0.6, plot=True, verbose=False):
+def readAndFilterVcf(path, chrom, samples, numbers, ploidy, qualflt=30, missingfltprop=0.6, plot=True, verbose=False):
 
     """
     This function reads a VCF file, and filters it to a given quality and missingness proportion
@@ -112,7 +112,12 @@ def readAndFilterVcf(path, chrom, samples, numbers, qualflt=30, missingfltprop=0
     #apply quality filters
     qual = vcf['variants/QUAL']
     passfilter = (qual >= qualflt)
-    geno = allel.GenotypeArray(vcf['calldata/GT'].compress(passfilter, axis=0))
+
+    if ploidy == 1:
+        geno = allel.HaplotypeArray(vcf['calldata/GT'].compress(passfilter, axis=0))
+    else: 
+        geno = allel.GenotypeArray(vcf['calldata/GT'].compress(passfilter, axis=0))
+
     pos = allel.SortedIndex(vcf['variants/POS'].compress(passfilter, axis=0))
     depth = vcf['variants/DP'].compress(passfilter, axis=0)
     print(f"After QUAL filter, {passfilter.sum()} SNPs retained out of {passfilter.shape[0]} for chromosome {chrom}")
@@ -232,23 +237,25 @@ def fig_pca(coords, model, title, path, samples, pop_colours,sample_population=N
         
         fig.savefig(path, bbox_inches='tight', dpi=300)
 
-def pca(geno, chrom, dataset, populations, samples, pop_colours, prune=True, scaler=None):
+def pca(geno, chrom, ploidy, dataset, populations, samples, pop_colours, prune=True, scaler=None):
     if prune is True:
-        geno = geno.to_n_alt()
-        gn = ld_prune(geno, size=500, step=200,threshold=0.2)
+        if ploidy > 1:
+            geno = geno.to_n_alt()
+        geno = ld_prune(geno, size=500, step=200,threshold=0.2)
     else:
-        gn = geno.to_n_alt()
+        if ploidy > 1:
+            geno = geno.to_n_alt()
         
-    coords1, model1 = allel.pca(gn, n_components=10, scaler=scaler)
+    coords1, model1 = allel.pca(geno, n_components=10, scaler=scaler)
 
-    fig_pca(coords1, model1, f"PCA-{chrom}-{dataset}", f"results/variants/plots/PCA-{chrom}-{dataset}", samples, pop_colours, sample_population=populations)
-
-
+    fig_pca(coords1, model1, f"PCA {chrom} {dataset}", f"results/variants/plots/PCA-{chrom}-{dataset}", samples, pop_colours, sample_population=populations)
 
 
 
 
-### AIMs plotting###
+
+
+### AIMs plotting ###
 
 def plot_aims(df, n_aims, species1="coluzzii", species2="gambiae", figtitle="AIM_fraction_overall", total=True):
     
@@ -296,51 +303,6 @@ def plot_aims(df, n_aims, species1="coluzzii", species2="gambiae", figtitle="AIM
         item.set_fontsize(22)
     
     # add title and save figure
-    plt.title(f"{figtitle}", fontsize=22)
+    plt.title(f"{figtitle}", fontsize=22, pad=20)
     plt.savefig(f"results/variants/AIMs/{figtitle}.png")
     plt.close()    
-
-
-
-
-
-
-
-
-### NOT USED IN PIPELINE ###
-#### Garuds G12 #### 
-# Instead of haps.discrete_frequencies() in allel.garuds_h() which does not allow for differences between multi-locus genotypes
-
-def cluster_G12(gnalt, cut_height=0.1, metric='euclidean'):
-    
-    #cluster the genotypes in the window
-    dist = scipy.spatial.distance.pdist(gnalt.T, metric=metric)
-    if metric in {'hamming', 'jaccard'}:
-        # convert distance to number of SNPs, easier to interpret
-        dist *= gnalt.shape[0]
-
-    Z = scipy.cluster.hierarchy.linkage(dist, method='single')
-
-    cut = scipy.cluster.hierarchy.cut_tree(Z, height=cut_height)[:, 0]
-    cluster_sizes = np.bincount(cut)
-    clusters = [np.nonzero(cut == i)[0] for i in range(cut.max() + 1)]
-    
-    #get freq of clusters and sort by largest freq
-    f = cluster_sizes/gnalt.shape[1]
-    f = np.sort(f)[::-1]
-    
-    #calculate g12
-    g12 = np.sum(f[:2])**2 + np.sum(f[2:]**2)
-    
-    return(g12)
-
-def garuds_G12(gnalt, pos, cut_height=10, window_size=1000, save=False, name=None, metric='euclidean'):
-    
-    g12 = allel.moving_statistic(gnalt, cluster_G12, size=window_size, metric=metric, cut_height=cut_height)
-    midpoint = allel.moving_statistic(pos, np.median, size=window_size)
-    
-    plt.figure(figsize=[20,10])
-    sns.scatterplot(midpoint, g12)
-    plt.title("G12 clustered BFgam")
-    plt.show()
-    if save: plt.savefig(f"{name}.png")

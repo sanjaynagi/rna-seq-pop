@@ -182,6 +182,7 @@ if ("strain" %in% colnames(samples)){
 
 results_list = list()
 names_list = list()
+ngenes_list = list()
 ######### subset data and run DESeq for each combo we need, store in xlsx ########
 for (cont in contrasts){
   control = str_split(cont, "_")[[1]][1] # get first of string, which is control 
@@ -218,6 +219,14 @@ for (cont in contrasts){
   labels = results %>% mutate("Gene_name" = case_when(Gene_name == "" ~ GeneID,
                                      Gene_name == NA ~ GeneID,
                                      TRUE ~ Gene_name)) %>% select(Gene_name) %>% deframe()
+  
+  #get number of sig genes 
+  ngenes_list[[cont]] = results %>% filter(padj < 0.05) %>% 
+    count("direction" = FC > 1) %>% 
+    mutate("direction" = case_when(direction == FALSE ~ "Downregulated",
+                                   direction == TRUE ~ "Upregulated")) %>%
+    dplyr::rename(!!glue("{cont}_ngenes") := "n")
+  
 
   # store names of comparisons for xlsx report sheets
   results_list[[cont]] = results
@@ -233,6 +242,8 @@ for (cont in contrasts){
   cat("\n", glue("{cont} complete!"), "\n")
 }
 
+# Join different comparisons together and write out number of sig genes 
+purrr::reduce(ngenes_list, inner_join) %>% fwrite("results/genediff/nsig_genes.tsv", sep="\t", col.names = TRUE)
 
 #### write to excel file on diff sheets #### 
 sheets = unlist(names_list)
@@ -244,5 +255,6 @@ for (i in 1:length(sheets)){
 }
 #### save workbook to disk once all worksheets and data have been added ####
 saveWorkbook(wb,file=snakemake@output[['xlsx']], overwrite = TRUE)
+
 
 sessionInfo()

@@ -50,8 +50,10 @@ for chrom in chroms:
     path = f"results/variants/vcfs/annot.variants.{chrom}.vcf.gz"
     # function to read in vcfs and associated SNP data
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops =  readAndFilterVcf(path=path,
-                                                               chrom=chrom, samples=samples,
+                                                               chrom=chrom, 
+                                                               samples=samples,
                                                                numbers=numbers,
+                                                               ploidy=ploidy,
                                                                qualflt=30,
                                                                missingfltprop=missingprop,
                                                                plot=False)
