@@ -19,7 +19,7 @@ This workflow performs various analyses of illumina paired-end RNA-Sequencing da
 
 The workflow is generalised, and will function with any trimmed Illumina paired-end RNA-sequencing. However, certain modules, such as the AIMs analysis, are only appropriate for specific species. These can be activated in the configuration file (config.yaml).
 
-The workflow is still in construction, and not yet ready for release. If you have any feedback on how the workflow may be improved, please get in touch, or feel free to fork the github repo and create a pull request for any additional features you would like to implement. 
+The workflow is still in construction, and not yet ready for release. If you have any feedback on how the workflow may be improved, please get in touch, or feel free to fork the github repo and create a pull request for any additional features you would like to implement. If you are using the workflow and would like to give feedback or troubleshoot, consider joining the discord server [here](https://discord.gg/RaXjP8APCq)
 
 ## Authors
 

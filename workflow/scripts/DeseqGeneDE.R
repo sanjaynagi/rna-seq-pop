@@ -71,6 +71,7 @@ vst_pca = function(counts, samples, colourvar, name="PCA", st="", comparison="")
           legend.title = element_blank(),
           legend.background=element_blank(),
           panel.grid.minor = element_blank(),
+          panel.grid.major = element_blank(),
           panel.background = element_blank(),
           plot.title = element_text(hjust = 0.5),
           axis.text.x = element_text(colour="black", size=18),
