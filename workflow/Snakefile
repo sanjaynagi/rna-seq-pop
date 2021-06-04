@@ -15,9 +15,9 @@ configfile: "config/config.yaml"
 
 metadata = pd.read_csv(config["samples"], sep="\t")
 validate(metadata, schema="schemas/samples.schema.yaml")
-samples = metadata.samples
+samples = metadata['sampleID']
 
-# IR allele balance mutations file
+# AlleleBalance mutations file
 if config["IRmutations"]["activate"]:
     mutationData = pd.read_csv(config["IRmutations"]["path"], sep="\t") 
 else:

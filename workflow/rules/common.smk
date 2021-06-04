@@ -17,15 +17,15 @@ def getFASTQs(wildcards, rules=None):
     if config["fastq"]["auto"]:
         units = pd.read_csv(config["samples"], sep="\t")
         units = (
-            units.assign(fq1=f"resources/reads/" + units["samples"] + "_1.fastq.gz")
-            .assign(fq2=f"resources/reads/" + units["samples"] + "_2.fastq.gz")
-            .set_index("samples")
+            units.assign(fq1=f"resources/reads/" + units["sampleID"] + "_1.fastq.gz")
+            .assign(fq2=f"resources/reads/" + units["sampleID"] + "_2.fastq.gz")
+            .set_index("sampleID")
         )
     else:
         assert os.path.isfile(
             config["fastq"]["table"]
         ), f"config['fastq']['table'] (the config/fastq.tsv file) does not seem to exist. Please create one, or use the 'auto' option and name the fastq files as specified in the config/README.md"
-        units = pd.read_csv(config["fastq"]["table"], sep="\t", index_col="samples")
+        units = pd.read_csv(config["fastq"]["table"], sep="\t", index_col="sampleID")
 
     if len(wildcards) > 1:
         u = units.loc[wildcards.sample, f"fq{wildcards.n}"]
@@ -142,7 +142,7 @@ def GetDesiredOutputs(wildcards):
         )
 
     if config["IRmutations"]["activate"]:
-        wanted_input.extend(["results/allele_balance/allele_balance.xlsx"])
+        wanted_input.extend(["results/alleleBalance/alleleBalance.xlsx"])
 
     if config["GSEA"]["activate"]:
         wanted_input.extend(

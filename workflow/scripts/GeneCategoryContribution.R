@@ -17,13 +17,13 @@ round_df = function(df, digits) {
   (df)
 }
 
-samples = fread(snakemake@input[['samples']], sep="\t") %>% as.data.frame()
+metadata = fread(snakemake@input[['metadata']], sep="\t") %>% as.data.frame()
 #samples = fread("config/samples.tsv", sep="\t") %>% as.data.frame()
 gene_names = fread("resources/gene_names.tsv", sep="\t")[1:14459,] %>% distinct()
 
 # Read in normalised counts and sum biological replicates
 counts = fread("results/quant/normcounts.tsv", sep="\t") %>% column_to_rownames("GeneID")
-counts = data.frame(t(rowsum(t(counts), group = samples$treatment, na.rm = T)))
+counts = data.frame(t(rowsum(t(counts), group = metadata$treatment, na.rm = T)))
 
 apply(counts, 2, var)
 
