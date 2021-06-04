@@ -48,7 +48,7 @@ rule DifferentialGeneExpression:
     Produce PCAs, heatmaps, volcano plots
     """
     input:
-        samples=config["samples"],
+        metadata=config["samples"],
         gene_names=config["ref"]["genenames"],
         counts=expand("results/quant/{sample}", sample=samples),
     output:
@@ -78,7 +78,7 @@ rule DifferentialIsoformExpression:
     Produce volcano plots
     """
     input:
-        samples=config["samples"],
+        metadata=config["samples"],
         gene_names=config["ref"]["genenames"],
         counts=expand("results/quant/{sample}", sample=samples),
     output:
@@ -122,7 +122,7 @@ rule progressiveGenesDE:
             direction=["up", "down"],
         ),
     params:
-        samples=config["samples"],
+        metadata=config["samples"],
         comps=config["progressiveGenes"]["groups"],
         pval=config["progressiveGenes"]["padj_threshold"],
         fc=config["progressiveGenes"]["fc_threshold"],
@@ -139,7 +139,7 @@ rule GeneSetEnrichment:
     Perform Gene Set Enrichment analysis with fgsea, on GO terms and KEGG pathways
     """
     input:
-        samples=config["samples"],
+        metadata=config["samples"],
         gaf=config["GSEA"]["gaf"],
         DEresults=expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
         diffsnps=(
@@ -216,7 +216,7 @@ rule GeneCategoryContribution:
     """
     input:
         normcounts="results/quant/normcounts.tsv",
-        samples=config["samples"],
+        metadata=config["samples"],
     output:
         "results/quant/percentageContributionGeneCategories.tsv",
     log:

@@ -9,8 +9,8 @@ library(glue)
 library(openxlsx)
 
 #### allele imbalance ####
-metadata = fread(snakemake@input[['samples']], sep="\t")
-samples = metadata$samples
+metadata = fread(snakemake@input[['metadata']], sep="\t")
+samples = metadata$sampleID
 # Read IR mutation data 
 mutation_data = fread(snakemake@input[['mutations']], sep="\t")
 
@@ -29,7 +29,7 @@ for (m in mutation_data$Name){
   allele_list = list()
   # read data for each sample and subset to what we want
   for (sample in samples){
-    allele_list[[sample]] = fread(glue("results/allele_balance/counts/{sample}_{m}_allele_counts.tsv"))[,c(1:8)] #for each sample read data, and store first 8 columns 
+    allele_list[[sample]] = fread(glue("results/alleleBalance/counts/{sample}_{m}_allele_counts.tsv"))[,c(1:8)] #for each sample read data, and store first 8 columns 
     allele_list[[sample]]$sample = sample                                            #add sample column
     allele_list[[sample]]$treatment = metadata$treatment[samples == sample]         #add treatment column
     allele_list[[sample]]$mutation = m
@@ -49,8 +49,8 @@ for (m in mutation_data$Name){
   mean_alleles = alleles %>% group_by(chrom, pos,ref, mutation, treatment) %>% summarise_at(.vars = c("cov","A","C","G","T", propstring)
                                                                                       , .funs = c(mean="mean"))
   #write to file, reorder mean_kdr_alleles
-  fwrite(alleles, glue("results/allele_balance/csvs/{m}_allele_balance.csv"))
-  fwrite(mean_alleles, glue("results/allele_balance/csvs/mean_{m}_allele_balance.csv"))
+  fwrite(alleles, glue("results/alleleBalance/csvs/{m}_alleleBalance.csv"))
+  fwrite(mean_alleles, glue("results/alleleBalance/csvs/mean_{m}_alleleBalance.csv"))
   
   all_list[[m]] = alleles
   mean_list[[m]] = mean_alleles
@@ -66,7 +66,7 @@ for (i in 1:length(sheets)){
   writeData(wb, sheets[i], results_list[[i]], rowNames = TRUE, colNames = TRUE)
 }
 #### save workbook to disk once all worksheets and data have been added ####
-saveWorkbook(wb,file=snakemake@output[['allele_balance']], overwrite = TRUE)
+saveWorkbook(wb,file=snakemake@output[['alleleBalance']], overwrite = TRUE)
 
 
 ### mean balance ####
@@ -80,6 +80,6 @@ for (i in 1:length(sheets)){
   writeData(wb, sheets[i], results_list[[i]], rowNames = TRUE, colNames = TRUE)
 }
 #### save workbook to disk once all worksheets and data have been added ####
-saveWorkbook(wb,file=snakemake@output[['mean_allele_balance']], overwrite = TRUE)
+saveWorkbook(wb,file=snakemake@output[['mean_alleleBalance']], overwrite = TRUE)
 
 sessionInfo()

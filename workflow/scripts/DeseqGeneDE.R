@@ -18,9 +18,10 @@ library(glue)
 library(RColorBrewer)
 library(EnhancedVolcano)
 library(tidyverse)
+library(jsonlite)
 
 #read metadata and get contrasts
-samples = fread(snakemake@input[['samples']], sep="\t") %>% as.data.frame()
+metadata = fread(snakemake@input[['metadata']], sep="\t") %>% as.data.frame()
 gene_names = fread(snakemake@input[['gene_names']], sep="\t") %>% 
   dplyr::rename("GeneID" = "Gene_stable_ID")
 
@@ -56,13 +57,13 @@ vst_pca = function(counts, samples, colourvar, name="PCA", st="", comparison="")
   
   #### write pca of samples to pdf
   pca2=prcomp(t(vstcounts),center=TRUE)
-  pc = data.frame(pca2$x) %>% rownames_to_column("samples")
+  pc = data.frame(pca2$x) %>% rownames_to_column("sampleID")
   pc = left_join(pc, samples)
 
   pdf(glue("results/plots/{name}{st}{comparison}.pdf"))  
   print(ggplot(data=pc,aes(x=PC1, y=PC2, colour=treatment)) + 
     geom_point(size=6, alpha=0.8) + 
-    geom_text_repel(aes(label=samples), colour="black") + 
+    geom_text_repel(aes(label=sampleID), colour="black") + 
     theme_light() + 
     labs(title=glue("{name} {st} {comparison}"),
          x=glue("PC1 - Variance explained - {round(summary(pca2)$importance[2,][1], 3)}"),
@@ -87,19 +88,19 @@ cat("\n", "------------- Kallisto - DESeq2 - RNASeq Differential expression ----
 
 #### Read counts for each sample
 df = list()
-for (sample in samples$samples){
+for (sample in metadata$sampleID){
   df[[sample]]= fread(glue("results/quant/{sample}/abundance.tsv"), sep = "\t")
 }
 
 counts = data.frame('GeneID' = df[[1]]$target_id)
 #get read counts for each gene and fill table
-for (sample in samples$samples){
+for (sample in metadata$sampleID){
   reads = df[[sample]]$est_counts
   counts = cbind(counts, reads)
 }
 
 #rename columns
-colnames(counts) = c("GeneID", samples$samples)
+colnames(counts) = c("GeneID", metadata$sampleID)
 
 ## aggregate to gene level
 counts$GeneID = substr(counts$GeneID, 1, 10) #get first 10 letters, (remove -RA,-RB etc of transcripts)
@@ -118,20 +119,20 @@ count_stats %>% fwrite(., "results/quant/count_statistics.tsv",sep="\t")
 
 print("Counting and plotting total reads per sample...")
 pdf("results/quant/total_reads_counted.pdf")
-ggplot(count_stats, aes(x=Sample, y=total_counts, fill=samples$treatment)) + 
+ggplot(count_stats, aes(x=Sample, y=total_counts, fill=metadata$treatment)) + 
   geom_bar(stat='identity') + 
   theme_light() +
   ggtitle("Total reads counted (mapped to Ag transcriptome (PEST))") +
   theme(axis.text.x = element_text(angle=45),
         plot.title = element_text(hjust = 0.5))
 null = dev.off() 
- 
+
 # round numbers to be whole, they are not due averaging across transcripts
 counts = counts %>% rownames_to_column('GeneID') %>% 
   mutate_if(is.numeric, round) %>% column_to_rownames('GeneID')
 
 ############ Plots PCA with all data, and performs DESeq2 normalisation ########################
-res = vst_pca(counts, samples, colourvar = 'strain', name="PCA")
+res = vst_pca(counts, metadata, colourvar = 'strain', name="PCA")
 vstcounts = res[[1]]
 dds = res[[2]]
 normcounts = res[[3]]
@@ -154,16 +155,16 @@ pheatmap(correlations)
 garbage = dev.off()
 
 # add column if it doesnt exist
-if(!("lab" %in% colnames(samples)))
+if(!("lab" %in% colnames(metadata)))
 {
-  samples$lab = 'FALSE'
+  metadata$lab = 'FALSE'
 }
 
 # for each strain in the dataset, do a PCA plot
 # analysis of case v control with DESEq2 and make PCAs and volcano plots.
-if ("strain" %in% colnames(samples)){
-  for (sp in unique(samples$species)){
-    df_samples = samples %>% filter(species == sp)
+if ("strain" %in% colnames(metadata)){
+  for (sp in unique(metadata$species)){
+    df_samples = metadata %>% filter(species == sp)
     df_samples = df_samples %>% filter(lab == 'FALSE') #remove lab samples
     for (st in unique(df_samples$strain)){
       ai_list = list()
@@ -172,7 +173,7 @@ if ("strain" %in% colnames(samples)){
       if (length(unique(ai_list[[st]]$cohort)) > 1){
         cat(glue("\n Running PCA for all {st} samples \n"))
         # subset counts data to our strains of interest
-        subcounts = counts[colnames(counts) %in% ai_list[[st]]$samples]
+        subcounts = counts[colnames(counts) %in% ai_list[[st]]$sampleID]
         # perform PCA on the data at strain level
         vstcounts = vst_pca(subcounts, ai_list[[st]], 'treatment', "PCA_", st=st)[[1]]
       }
@@ -187,12 +188,12 @@ ngenes_list = list()
 for (cont in contrasts){
   control = str_split(cont, "_")[[1]][1] # get first of string, which is control 
   case = str_split(cont, "_")[[1]][2] # get case 
-  controls = which(samples$treatment %in% control)
-  cases = which(samples$treatment %in% case)
+  controls = which(metadata$treatment %in% control)
+  cases = which(metadata$treatment %in% case)
   
   ## Perform PCA for each comparison
   subcounts = counts[,c(controls, cases)]
-  subsamples = samples[c(controls, cases),]
+  subsamples = metadata[c(controls, cases),]
   # make treatment a factor with the 'susceptible' as reference
   subsamples$treatment = as.factor(as.character(subsamples$treatment))
   subsamples$treatment = relevel(subsamples$treatment, control)
@@ -221,12 +222,19 @@ for (cont in contrasts){
                                      TRUE ~ Gene_name)) %>% select(Gene_name) %>% deframe()
   
   #get number of sig genes 
-  ngenes_list[[cont]] = results %>% filter(padj < 0.05) %>% 
+  res1 = results %>% filter(padj < 0.05) %>% 
     count("direction" = FC > 1) %>% 
-    mutate("direction" = case_when(direction == FALSE ~ "Downregulated",
-                                   direction == TRUE ~ "Upregulated")) %>%
+    mutate("direction" = case_when(direction == FALSE ~ "Downregulated, padj = 0.05",
+                                   direction == TRUE ~ "Upregulated, padj = 0.05")) %>%
     dplyr::rename(!!glue("{cont}_ngenes") := "n")
   
+  res2 = results %>% filter(padj < 0.001) %>% 
+    count("direction" = FC > 1) %>% 
+    mutate("direction" = case_when(direction == FALSE ~ "Downregulated, padj = 0.001",
+                                   direction == TRUE ~ "Upregulated, padj = 0.001")) %>%
+    dplyr::rename(!!glue("{cont}_ngenes") := "n")
+  
+  ngenes_list[[cont]] = bind_rows(res1, res2)
 
   # store names of comparisons for xlsx report sheets
   results_list[[cont]] = results
@@ -255,6 +263,27 @@ for (i in 1:length(sheets)){
 }
 #### save workbook to disk once all worksheets and data have been added ####
 saveWorkbook(wb,file=snakemake@output[['xlsx']], overwrite = TRUE)
+
+
+### Get kallisto statistics ###
+
+totalReads = c()
+totalAligned = c()
+
+# open kallisto json info and store stats, save to file 
+for (sample in metadata$sampleID){
+  run = fromJSON(glue("results/quant/{sample}/run_info.json"), flatten=TRUE)
+  
+  totalReads = c(totalReads, run$n_processed)
+  totalAligned = c(totalAligned, run$n_pseudoaligned)
+  
+}
+
+df = data.frame("sample" = c(metadata$sampleID, "Total"),
+                "totalReads" = c(totalReads, sum(totalReads)),
+                "totalAligned" = c(totalAligned, sum(totalAligned))) %>% 
+  mutate("percentage" = (totalAligned/totalReads)*100) %>% 
+  fwrite("results/quant/KallistoQuantSummary.tsv", sep="\t", col.names = TRUE)
 
 
 sessionInfo()

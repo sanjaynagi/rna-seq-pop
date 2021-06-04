@@ -51,7 +51,7 @@ GSEA:
 
 VariantCalling:
       activate: True
-      ploidy: 10
+      ploidy: 1
       chunks: 9 # Number of chunks to split the genome into when parallelising freebayes
 # Number of chunks to split the genome into when parallelising freebayes
 

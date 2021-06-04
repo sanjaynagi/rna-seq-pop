@@ -21,12 +21,12 @@ library(EnhancedVolcano)
 print("------------- Kallisto - Sleuth - RNASeq isoform Differential expression ---------")
 #### read data ####
 
-samples = fread(snakemake@input[['samples']], sep="\t") %>% 
+metadata = fread(snakemake@input[['metadata']], sep="\t") %>% 
   as.data.frame() %>% 
-  dplyr::rename('sample' = "samples")
+  dplyr::rename('sample' = "sampleID")
 
 #add path column for sleuth object
-samples$path = paste0("results/quant/",samples$sample)
+metadata$path = paste0("results/quant/", metadata$sample)
 
 #read metadata and get contrasts
 gene_names = fread(snakemake@input[['gene_names']], sep="\t") %>% 
@@ -43,11 +43,11 @@ names_list = list()
 for (cont in contrasts){
   control = str_split(cont, "_")[[1]][1] #get first of string, which is control (or susceptible)
   case = str_split(cont, "_")[[1]][2] #get second of string, which is case (or resistant)
-  controls = which(samples$treatment %in% control) #get indices of case/control
-  cases = which(samples$treatment %in% case)
+  controls = which(metadata$treatment %in% control) #get indices of case/control
+  cases = which(metadata$treatment %in% case)
   
   ##subset to subcounts of our contrast
-  subsamples = samples[c(controls, cases),]
+  subsamples = metadata[c(controls, cases),]
   
   #make treatment a factor with the 'susceptible' as reference
   subsamples$treatment = as.factor(as.character(subsamples$treatment))

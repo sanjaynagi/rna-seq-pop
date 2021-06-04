@@ -1,4 +1,4 @@
-samples	treatment	species	strain
+sampleID	treatment	species	strain
 Kisumu1	Kisumu	gambiae	Kisumu
 Kisumu2	Kisumu	gambiae	Kisumu
 Kisumu3	Kisumu	gambiae	Kisumu
