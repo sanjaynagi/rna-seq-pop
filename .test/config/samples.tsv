@@ -1,4 +1,4 @@
-samples	treatment	species	strain
+sampleID	treatment	species	strain
 ContTia1-X-test	ContTia	coluzzii 	Tiassale
 ContTia2-X-test	ContTia	coluzzii 	Tiassale
 ContTia4-X-test	ContTia	coluzzii 	Tiassale

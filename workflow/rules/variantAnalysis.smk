@@ -10,7 +10,7 @@ rule mpileupIR:
         bam="results/alignments/{sample}.bam",
         index="results/alignments/{sample}.bam.bai",
     output:
-        "results/allele_balance/counts/{sample}_{mut}_allele_counts.tsv",
+        "results/alleleBalance/counts/{sample}_{mut}_allele_counts.tsv",
     conda:
         "../envs/variants.yaml"
     priority: 10
@@ -35,19 +35,19 @@ rule AlleleBalanceIR:
     """
     input:
         counts=expand(
-            "results/allele_balance/counts/{sample}_{mut}_allele_counts.tsv",
+            "results/alleleBalance/counts/{sample}_{mut}_allele_counts.tsv",
             sample=samples,
             mut=mutationData.Name,
         ),
-        samples=config["samples"],
+        metadata=config["samples"],
         mutations=config["IRmutations"]["path"],
     output:
         expand(
-            "results/allele_balance/csvs/{mut}_allele_balance.csv",
+            "results/alleleBalance/csvs/{mut}_alleleBalance.csv",
             mut=mutationData.Name,
         ),
-        allele_balance="results/allele_balance/allele_balance.xlsx",
-        mean_allele_balance="results/allele_balance/mean_allele_balance.xlsx",
+        alleleBalance="results/alleleBalance/alleleBalance.xlsx",
+        mean_alleleBalance="results/alleleBalance/mean_alleleBalance.xlsx",
     conda:
         "../envs/diffexp.yaml"
     priority: 10
@@ -89,7 +89,7 @@ rule DifferentialSNPs:
     Test to see if any alleles are enriched in one condition versus the other
     """
     input:
-        samples=config["samples"],
+        metadata=config["samples"],
         gff=config["ref"]["gff"],
         geneNames="resources/gene_names.tsv",
         tables=expand(
@@ -127,7 +127,7 @@ rule StatisticsAndPCA:
             "results/variants/vcfs/annot.variants.{chrom}.vcf.gz",
             chrom=config["chroms"],
         ),
-        samples=config["samples"],
+        metadata=config["samples"],
         gff=config["ref"]["gff"],
     output:
         PCAfig=expand(
@@ -162,7 +162,7 @@ rule WindowedFstPBS:
     Calculate Fst and PBS in windows
     """
     input:
-        samples=config["samples"],
+        metadata=config["samples"],
         vcf=expand(
             "results/variants/vcfs/annot.variants.{chrom}.vcf.gz",
             chrom=config["chroms"],
@@ -208,7 +208,7 @@ rule PerGeneFstPBS:
     Calculate Fst and PBS for each gene
     """
     input:
-        samples=config["samples"],
+        metadata=config["samples"],
         gff=config["ref"]["gff"],
         geneNames="resources/gene_names.tsv",
         vcf=expand(
@@ -243,7 +243,7 @@ rule AncestryInformativeMarkers:
             "results/variants/vcfs/annot.variants.{chrom}.vcf.gz",
             chrom=config["chroms"],
         ),
-        samples=config["samples"],
+        metadata=config["samples"],
         aims_zarr_gambcolu=config["AIMs"]["gambcolu"],
         aims_zarr_arab=config["AIMs"]["arab"],
     output:

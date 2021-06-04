@@ -9,8 +9,8 @@ sys.stderr = open(snakemake.log[0], "w")
 from tools import *
 
 ### AIMS ###
-samples = pd.read_csv(snakemake.input['samples'], sep="\t")
-samples = samples.sort_values(by='species').reset_index(drop=True)
+metadata = pd.read_csv(snakemake.input['metadata'], sep="\t")
+metadate = metadata.sort_values(by='species').reset_index(drop=True)
 chroms = snakemake.params['chroms']
 ploidy = snakemake.params['ploidy']
 numbers = get_numbers_dict(ploidy)
@@ -33,7 +33,7 @@ for chrom in chroms:
     path = f"results/variants/vcfs/annot.variants.{chrom}.vcf.gz"
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops =  readAndFilterVcf(path=path,
                                                                chrom=chrom,
-                                                               samples=samples,
+                                                               samples=metadata,
                                                                numbers=numbers,
                                                                ploidy=ploidy,
                                                                qualflt=qualflt,
@@ -84,7 +84,7 @@ for chrom in chroms:
 
         # for each sample, get proportion of gambiae/coluzzii alleles
         # alleles that are different to both will be missed here
-        for sample in samples.treatment.unique():
+        for sample in metadata.treatment.unique():
             alleles = gn.take(subpops[sample], axis=1).flatten()
             
             # at each AIM, do we have gamb or colu alleles
@@ -105,7 +105,7 @@ for chrom in chroms:
         prop_colu = {}
         n_aims_per_sample = {}
 
-        for sample in samples.treatment.unique():
+        for sample in metadata.treatment.unique():
 
             prop_gambiae[sample] = np.nanmean(np.array(list(gambscores[sample].values())))
             all_gamb[sample].append(np.nanmean(np.array(list(gambscores[sample].values()))))
@@ -156,7 +156,7 @@ plot_aims(df, n_aimsdf, species1="coluzzii", species2="gambiae", figtitle="AIM_f
 ########### The same but for arabiensis v gambiae/coluzzii 
 # script should be modularised but no time atm, isnt necessary
 
-if samples['species'].isin(['arabiensis']).any():
+if metadata['species'].isin(['arabiensis']).any():
 
     aims = zarr.open(snakemake.input['aims_zarr_arab'], mode='r')
 
@@ -172,8 +172,8 @@ if samples['species'].isin(['arabiensis']).any():
         path = f"results/variants/vcfs/annot.variants.{chrom}.vcf.gz"
         vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops =  readAndFilterVcf(path=path,
                                                                 chrom=chrom,
-                                                                samples=samples,
-								numbers=numbers,
+                                                                samples=metadata,
+                                                                numbers=numbers,
                                                                 qualflt=qualflt,
                                                                 missingfltprop=missingprop)
         aimspos = aims[chrom]['POS'][:]
@@ -222,7 +222,7 @@ if samples['species'].isin(['arabiensis']).any():
 
             # for each sample, get proportion of gambiae/arabiensis alleles
             # alleles that are different to both will be missed here
-            for sample in samples.treatment.unique():
+            for sample in metadata.treatment.unique():
                 alleles = gn.take(subpops[sample], axis=1).flatten()
                 
                 # at each AIM, do we have gamb or arab alleles
@@ -243,7 +243,7 @@ if samples['species'].isin(['arabiensis']).any():
             prop_arab = {}
             n_aims_per_sample = {}
 
-            for sample in samples.treatment.unique():
+            for sample in metadata.treatment.unique():
 
                 prop_gambiae[sample] = np.nanmean(np.array(list(gambscores[sample].values())))
                 all_gamb[sample].append(np.nanmean(np.array(list(gambscores[sample].values()))))

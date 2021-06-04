@@ -17,7 +17,7 @@ library(rtracklayer)
 
 ######## parse inputs #############
 chroms = snakemake@params[['chroms']]
-metadata = fread(snakemake@input[['samples']])
+metadata = fread(snakemake@input[['metadata']])
 contrasts = data.frame("contrast" = snakemake@params[['DEcontrasts']])
 comparisons = contrasts %>% separate(contrast, into = c("control", "case"), sep = "_")
 mincounts = snakemake@params[['mincounts']]
@@ -43,7 +43,7 @@ for (i in 1:nrow(comparisons)){
   nrepscontrol =  sum(metadata$treatment %in% control)
   nrepscase = sum(metadata$treatment %in% case)
   
-  samples = metadata[metadata$treatment %in% c(case, control)]$samples
+  samples = metadata[metadata$treatment %in% c(case, control)]$sampleID
   print(glue("Extracting allele tables for {case}, {control}"))
   
   sample_list = list()

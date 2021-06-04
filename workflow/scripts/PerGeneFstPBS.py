@@ -12,8 +12,8 @@ import warnings
 warnings.filterwarnings('ignore') # suppress numpy runtime warnings, this is a bit dangerous, should be removed for release or resolve source of warnings
 
 # snakemake inputs and params
-metadata_path = snakemake.input['samples']
-samples = pd.read_csv(metadata_path, sep="\s+")
+metadata_path = snakemake.input['metadata']
+metadata = pd.read_csv(metadata_path, sep="\s+")
 gffpath = snakemake.input['gff']
 pbs = snakemake.params['pbs']
 pbscomps = snakemake.params['pbscomps']
@@ -51,7 +51,7 @@ for chrom in chroms:
     # function to read in vcfs and associated SNP data
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops =  readAndFilterVcf(path=path,
                                                                chrom=chrom, 
-                                                               samples=samples,
+                                                               samples=metadata,
                                                                numbers=numbers,
                                                                ploidy=ploidy,
                                                                qualflt=30,

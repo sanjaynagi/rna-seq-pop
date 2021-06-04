@@ -39,7 +39,8 @@ ref:
   genenames:
         "resources/exampleGeneNames.tsv"
 
-# Chromosome names for the appropriate species. 
+# Chromosome names for the appropriate species.
+# Currently, the variant calling and analysis part of workflow requires genes mapped to chromosomes and their physical location.
 # Please ensure that these correspond exactly to the reference fasta/gff files. Extra unwanted chromosomes (unplaced contigs) can be ignored. 
 # if you need to remove a prefix (Such as "AgamP4_"or "AaegL5_") from a file, use sed - i.e - "sed s/AgamP4_// An.gambiae.fasta > An.gambiae_clean.fasta"
 chroms: ['2L', '2R', '3L', '3R', 'X']

@@ -101,7 +101,7 @@ def readAndFilterVcf(path, chrom, samples, numbers, ploidy, qualflt=30, missingf
     ind = defaultdict(list)
 
     for s,names in enumerate(samplenames):
-        idx = np.where(np.isin(samples['samples'],names))[0][0]
+        idx = np.where(np.isin(samples['sampleID'],names))[0][0]
         t = samples.treatment[idx]
         ind[t].append(s)
         subpops = dict(ind)
@@ -212,7 +212,7 @@ def plot_pca_coords(coords, model, pc1, pc2, ax, sample_population, samples, pop
         x = coords[:, pc1]
         y = coords[:, pc2]
         for pop in sample_population:
-            treatment = samples[samples['samples'] == pop]['treatment'].values[0]
+            treatment = samples[samples['sampleID'] == pop]['treatment'].values[0]
             flt = (sample_population == pop)
             ax.plot(x[flt], y[flt], marker='o', linestyle=' ', color=pop_colours[treatment], 
                     label=treatment, markersize=14, mec='k', mew=.5)
@@ -225,7 +225,7 @@ def plot_pca_coords(coords, model, pc1, pc2, ax, sample_population, samples, pop
 
 def fig_pca(coords, model, title, path, samples, pop_colours,sample_population=None):
         if sample_population is None:
-            sample_population = samples.samples.values
+            sample_population = samples['sampleID'].values
         # plot coords for PCs 1 vs 2, 3 vs 4
         fig = plt.figure(figsize=(10, 5))
         ax = fig.add_subplot(1, 2, 1)

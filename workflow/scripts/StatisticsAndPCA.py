@@ -12,8 +12,8 @@ from tools import *
 
 # Read in parameters from snakemake
 dataset = snakemake.params['dataset']
-samples = pd.read_csv(snakemake.input['samples'], sep="\t")
-samples = samples.sort_values(by='species')
+metadata = pd.read_csv(snakemake.input['metadata'], sep="\t")
+metadata = metadata.sort_values(by='species')
 chroms = snakemake.params['chroms']
 ploidy = snakemake.params['ploidy']
 numbers = get_numbers_dict(ploidy)
@@ -48,7 +48,7 @@ for i, chrom in enumerate(chroms):
     path = f"results/variants/vcfs/annot.variants.{chrom}.vcf.gz"
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, populations = readAndFilterVcf(path=path,
                                                            chrom=chrom,
-                                                           samples=samples,
+                                                           samples=metadata,
                                                            numbers=numbers,
                                                            ploidy=ploidy,
                                                            qualflt=qualflt,
@@ -67,7 +67,7 @@ for i, chrom in enumerate(chroms):
     snps_per_gene = {}
     snps_per_sample = {}
 
-    for sample in samples['samples']:
+    for sample in metadata['sampleID']:
 
         bool_ = sample == populations
         gn = geno.compress(bool_, axis=1)
@@ -81,7 +81,7 @@ for i, chrom in enumerate(chroms):
         # locate_ranges() to get a boolean, needed as locate_range() will throw errors if no snps found in gene
         gene_bool = pos.locate_ranges([gene['start']], [gene['end']], strict=False)
 
-        for sample in samples['samples']:
+        for sample in metadata['sampleID']:
 
             presentSNPs = missing_array[sample].compress(gene_bool, axis=0)
             snps_per_sample[sample] = presentSNPs.sum()
@@ -106,7 +106,7 @@ for i, chrom in enumerate(chroms):
     
     # Run PCA function defined in tools.py
     print(f"Performing PCA on {dataset} chromosome {chrom}")
-    pca(geno, chrom, ploidy, dataset, populations, samples, pop_colours, prune=True, scaler=None)
+    pca(geno, chrom, ploidy, dataset, populations, metadata, pop_colours, prune=True, scaler=None)
 
     ######## Plot variant density over genome (defined in tools.py) ########
     plot_density(pos, window_size=100000, title=f"Variant Density chromosome {chrom}", path=f"results/variants/plots/{dataset}_SNPdensity_{chrom}.png")
@@ -117,7 +117,7 @@ for i, chrom in enumerate(chroms):
     coefdict= {}
     allcoef = defaultdict(list)
 
-    for pop in samples.treatment.unique():
+    for pop in metadata.treatment.unique():
 
         # Sequence diversity 
         seqdivdict[pop] = allel.sequence_diversity(pos, acsubpops[pop])

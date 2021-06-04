@@ -9,8 +9,8 @@ sys.stderr = open(snakemake.log[0], "w")
 
 from tools import *
 
-samples = pd.read_csv(snakemake.input['samples'], sep="\t")
-samples = samples.sort_values(by='species')
+metadata = pd.read_csv(snakemake.input['metadata'], sep="\t")
+metadata = metadata.sort_values(by='species')
 chroms = snakemake.params['chroms']
 ploidy = snakemake.params['ploidy']
 numbers = get_numbers_dict(ploidy)
@@ -35,7 +35,7 @@ for i, chrom in enumerate(chroms):
     path = f"results/variants/vcfs/annot.variants.{chrom}.vcf.gz"
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, populations = readAndFilterVcf(path=path,
                                                            chrom=chrom,
-                                                           samples=samples,
+                                                           samples=metadata,
                                                            numbers=numbers,
                                                            ploidy=ploidy,
                                                            qualflt=qualflt,

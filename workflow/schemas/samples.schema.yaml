@@ -4,7 +4,7 @@ description: Schema to validate the input config/sample.tsv file.
 
 # columns that the config/samples.tsv file can have and which type they should be
 properties:
-  samples:
+  sampleID:
     type: string
     description: sample name/identifier, should be a string ending in the sample number. Should match the input FASTQ files.
   treatment:
@@ -13,9 +13,6 @@ properties:
   species:
     type: string
     description: Name of species.
-  insecticide:
-    type: string
-    description: Name of insecticide, necessary in case of a dataset with multiple different insecticides.
   lab:
     type: boolean
     description: If the sample is a lab-susceptible strain, enter TRUE here, to ensure it is compared to the 'control' (unexposed) resistant strain.
@@ -23,7 +20,7 @@ properties:
 
 # columns that the config/samples.tsv file must have to pass schema validation
 required:
-  - samples
+  - sampleID
   - treatment
   - species
   - strain
