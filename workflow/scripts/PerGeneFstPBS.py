@@ -203,9 +203,9 @@ for chrom in chroms:
 
 
 
-fstall = pd.concat(fstbychrom.values(), ignore_index=True)
-tajdall = pd.concat(tajdbychrom.values(), ignore_index=True)
-gdivall = pd.concat(gdivbychrom.values(), ignore_index=True)
+fstall = pd.concat(fstbychrom.values(), ignore_index=True).drop_duplicates()
+tajdall = pd.concat(tajdbychrom.values(), ignore_index=True).drop_duplicates()
+gdivall = pd.concat(gdivbychrom.values(), ignore_index=True).drop_duplicates()
 
 #write to csv
 fstall.to_csv(f"results/variants/fst.tsv", index=False, sep="\t")
@@ -213,5 +213,5 @@ tajdall.to_csv(f"results/variants/TajimasD.tsv", index=False, sep="\t")
 gdivall.to_csv(f"results/variants/SequenceDiv.tsv", index=False, sep="\t")
 
 if pbs is True:
-    pbsall = pd.concat(pbsbychrom.values(), ignore_index=True)
+    pbsall = pd.concat(pbsbychrom.values(), ignore_index=True).drop_duplicates()
     pbsall.to_csv(f"results/variants/pbs.tsv", index=False, sep="\t")
