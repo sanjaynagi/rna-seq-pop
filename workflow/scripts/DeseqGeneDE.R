@@ -93,27 +93,27 @@ for (sample in metadata$sampleID){
 }
 
 counts = data.frame('GeneID' = df[[1]]$target_id)
-#get read counts for each gene and fill table
+# Get read counts for each gene and fill table
 for (sample in metadata$sampleID){
   reads = df[[sample]]$est_counts
   counts = cbind(counts, reads)
 }
 
-#rename columns
+# Rename columns
 colnames(counts) = c("GeneID", metadata$sampleID)
 
-## aggregate to gene level
+## Aggregate to gene level
 counts$GeneID = substr(counts$GeneID, 1, 10) #get first 10 letters, (remove -RA,-RB etc of transcripts)
 counts = counts %>% group_by(GeneID) %>% summarise_all(sum)
 
-### count total reads counted
+### Count total reads counted
 counts = counts %>% column_to_rownames('GeneID')
-#### get count statistics for each sample and plot ####
+#### Get count statistics for each sample and plot ####
 count_stats = apply(counts, 2, sum) %>% enframe(name="Sample", value="total_counts") # total counts
 ngenes = nrow(counts)
 count_stats$genes_zerocounts = apply(counts, 2, function(x){sum(x==0)}) # genes with zero counts 
 count_stats$genes_lessthan10counts = apply(counts, 2, function(x){sum(x<10)}) # genes with less than 10 counts
-count_stats = count_stats %>% mutate("proportion_zero" = genes_zerocounts/ngenes,
+count_stats = count_stats %>% dplyr::mutate("proportion_zero" = genes_zerocounts/ngenes,
                                      "proportion_low" = genes_lessthan10counts/ngenes)
 count_stats %>% fwrite(., "results/quant/count_statistics.tsv",sep="\t")
 
@@ -129,7 +129,7 @@ null = dev.off()
 
 # round numbers to be whole, they are not due averaging across transcripts
 counts = counts %>% rownames_to_column('GeneID') %>% 
-  mutate_if(is.numeric, round) %>% column_to_rownames('GeneID')
+  dplyr::mutate_if(is.numeric, round) %>% column_to_rownames('GeneID')
 
 ############ Plots PCA with all data, and performs DESeq2 normalisation ########################
 res = vst_pca(counts, metadata, colourvar = 'strain', name="PCA")
@@ -204,7 +204,7 @@ for (cont in contrasts){
   cds = nbinomWaldTest(dds)
   results = results(cds, contrast = c("treatment", case, control)) %>% as.data.frame() 
   results = results[order(results$padj),] #order by pvalue 
-  results = results %>% rownames_to_column("GeneID") %>% mutate("FC" = (2^log2FoldChange))
+  results = results %>% rownames_to_column("GeneID") %>% dplyr::mutate("FC" = (2^log2FoldChange))
     
   ### absolute difference
   #### Get rowsums of counts, grouping by case/control. Then get difference of counts and join with DE results
@@ -217,20 +217,20 @@ for (cont in contrasts){
   results = unique(left_join(results, gene_names))
   fwrite(results, glue("results/genediff/{cont}.csv")) #write to csv 
   # volcano plot for each comparison, using EnhancedVolcano. First make vector of labels which is AGAPs unless a gene name exists
-  labels = results %>% mutate("Gene_name" = case_when(Gene_name == "" ~ GeneID,
-                                     Gene_name == NA ~ GeneID,
+  labels = results %>% dplyr::mutate("Gene_name" = case_when(Gene_name == "" ~ GeneID,
+                                     is.na(Gene_name) ~ GeneID,
                                      TRUE ~ Gene_name)) %>% select(Gene_name) %>% deframe()
   
   #get number of sig genes 
   res1 = results %>% filter(padj < 0.05) %>% 
     count("direction" = FC > 1) %>% 
-    mutate("direction" = case_when(direction == FALSE ~ "Downregulated, padj = 0.05",
+    dplyr::mutate("direction" = case_when(direction == FALSE ~ "Downregulated, padj = 0.05",
                                    direction == TRUE ~ "Upregulated, padj = 0.05")) %>%
     dplyr::rename(!!glue("{cont}_ngenes") := "n")
   
   res2 = results %>% filter(padj < 0.001) %>% 
     count("direction" = FC > 1) %>% 
-    mutate("direction" = case_when(direction == FALSE ~ "Downregulated, padj = 0.001",
+    dplyr::mutate("direction" = case_when(direction == FALSE ~ "Downregulated, padj = 0.001",
                                    direction == TRUE ~ "Upregulated, padj = 0.001")) %>%
     dplyr::rename(!!glue("{cont}_ngenes") := "n")
   

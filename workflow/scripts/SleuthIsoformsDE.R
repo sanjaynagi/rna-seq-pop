@@ -75,8 +75,8 @@ for (cont in contrasts){
   names_list[[cont]] = cont
   
     # volcano plot for each comparison, using EnhancedVolcano. First make vector of labels which is AGAPs unless a gene name exists
-  labels = results %>% mutate("Gene_name" = case_when(Gene_name == "" ~ GeneID,
-                                     Gene_name == NA ~ GeneID,
+  labels = results %>% dplyr::mutate("Gene_name" = case_when(Gene_name == "" ~ GeneID,
+                                     is.na(Gene_name) ~ GeneID,
                                      TRUE ~ Gene_name)) %>% select(Gene_name) %>% deframe()
   pdf(glue("results/isoformdiff/Volcano_plot_{cont}.pdf"))
   print(EnhancedVolcano(results_list[[cont]],
