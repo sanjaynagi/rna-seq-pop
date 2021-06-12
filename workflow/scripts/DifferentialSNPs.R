@@ -15,6 +15,7 @@ library(kissDE)
 library(glue)
 library(rtracklayer)
 
+
 ######## parse inputs #############
 chroms = snakemake@params[['chroms']]
 metadata = fread(snakemake@input[['metadata']])
@@ -22,6 +23,7 @@ contrasts = data.frame("contrast" = snakemake@params[['DEcontrasts']])
 comparisons = contrasts %>% separate(contrast, into = c("control", "case"), sep = "_")
 mincounts = snakemake@params[['mincounts']]
 pval = snakemake@params[['pval_flt']]
+gene_names = fread(snakemake@input[['geneNames']], sep="\t") %>% dplyr::rename("GeneID" = "Gene_stable_ID") %>% distinct()
 
 gffpath = snakemake@input[['gff']]
 #load gff with rtracklayer and filter to genes only 
@@ -43,7 +45,7 @@ for (i in 1:nrow(comparisons)){
   nrepscontrol =  sum(metadata$treatment %in% control)
   nrepscase = sum(metadata$treatment %in% case)
   
-  samples = metadata[metadata$treatment %in% c(case, control)]$sampleID
+  samples = metadata[metadata$treatment %in% c(case, control),]$sampleID
   print(glue("Extracting allele tables for {case}, {control}"))
   
   sample_list = list()
@@ -83,6 +85,7 @@ for (i in 1:nrow(comparisons)){
       select(eventsName,type, sample)
     
   }
+  
   #merge all counts across samples 
   counts = sample_list %>% 
     purrr::reduce(full_join, by=c("eventsName", "type")) %>% 
@@ -129,22 +132,25 @@ for (i in 1:nrow(comparisons)){
     select(chrom, start, end, Adjusted_pvalue, `Deltaf/DeltaPSI`,`REF>ALT`, -pos) %>% 
     as.data.table()
   
-  #data table fast overlaps, useful to find intersections and join  
+  # Data table fast overlaps, useful to find intersections and join  
   setkey(gff, chrom, start, end)
   de_variants = foverlaps(bed, gff, 
                           by.x=c("chrom", "start", "end"), 
                           by.y=c("chrom", "start", "end"),
                           type = "within",
-                          nomatch = 0L)
-  
-  #write to file
+                          nomatch = 0L) %>% 
+    dplyr::rename("GeneID" = "ID")
+
+    # Write to file
   print(glue("Writing {name} results to results/variants/diffsnps/"))
   results %>% fwrite(., glue("results/variants/diffsnps/{name}.normcounts.tsv"), sep="\t", row.names=FALSE)
-  de_variants %>% dplyr::rename("GeneID" = "ID") %>% fwrite(., glue("results/variants/diffsnps/{name}.kissDE.tsv"), sep="\t", row.names=FALSE)
+
+  de_variants = left_join(de_variants, gene_names) %>% distinct()
+  
+  fwrite(de_variants, glue("results/variants/diffsnps/{name}.kissDE.tsv"), sep="\t", row.names=FALSE)
   
   de_variants %>% 
     filter(Adjusted_pvalue <= pval) %>% 
-    dplyr::rename("GeneID" = "ID") %>%
     fwrite(., glue("results/variants/diffsnps/{name}.sig.kissDE.tsv"), sep="\t", row.names=FALSE)
 }
 
