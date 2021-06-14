@@ -36,8 +36,8 @@ ref:
   snpeffdb:
         "Anopheles_gambiae"
   # gene names file with gene and transcript names
-  genenames:
-        "resources/exampleGeneNames.tsv"
+  genes2transcripts:
+        "resources/ExampleGene2TranscriptMap.tsv"
 
 # Chromosome names for the appropriate species.
 # Currently, the variant calling and analysis part of workflow requires genes mapped to chromosomes and their physical location.

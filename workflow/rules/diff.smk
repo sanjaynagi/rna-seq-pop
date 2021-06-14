@@ -49,7 +49,7 @@ rule DifferentialGeneExpression:
     """
     input:
         metadata=config["samples"],
-        gene_names=config["ref"]["genenames"],
+        genes2transcripts=config['ref']['genes2transcripts'],
         counts=expand("results/quant/{sample}", sample=samples),
     output:
         csvs=expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
@@ -57,8 +57,8 @@ rule DifferentialGeneExpression:
             "results/genediff/{dataset}_diffexp.xlsx", dataset=config["dataset"]
         ),
         pca="results/plots/PCA.pdf",
-        countstats="results/quant/count_statistics.tsv",
-        normcounts="results/quant/normcounts.tsv",
+        countStats="results/quant/countStatistics.tsv",
+        normCounts="results/quant/normCounts.tsv",
     group:
         "diffexp"
     priority: 10
@@ -79,7 +79,7 @@ rule DifferentialIsoformExpression:
     """
     input:
         metadata=config["samples"],
-        gene_names=config["ref"]["genenames"],
+        genes2transcripts=config['ref']['genes2transcripts'],
         counts=expand("results/quant/{sample}", sample=samples),
     output:
         csvs=expand("results/isoformdiff/{comp}.csv", comp=config["contrasts"]),

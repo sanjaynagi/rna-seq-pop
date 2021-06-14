@@ -49,8 +49,8 @@ for (cont in comps){
   up2  = two %>% filter(FC > upper_fc, qval < padj_threshold)
   down2 = two %>% filter(FC < lower_fc, qval < padj_threshold)
   
-  intersectdown = inner_join(down1, down2, by="GeneID", suffix=c("_field", "_lab"))
-  intersectup = inner_join(up1, up2, by="GeneID", suffix=c("_field", "_lab"))
+  intersectdown = inner_join(down1, down2, by="TranscriptID", suffix=c("_field", "_lab"))
+  intersectup = inner_join(up1, up2, by="TranscriptID", suffix=c("_field", "_lab"))
   
   fwrite(intersectup, glue("results/isoformdiff/{sus}_{intermediate}_{res}.up.progressive.tsv"), sep="\t")
   fwrite(intersectdown, glue("results/isoformdiff/{sus}_{intermediate}_{res}.down.progressive.tsv"), sep="\t")

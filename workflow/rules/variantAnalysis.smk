@@ -91,7 +91,7 @@ rule DifferentialSNPs:
     input:
         metadata=config["samples"],
         gff=config["ref"]["gff"],
-        geneNames="resources/gene_names.tsv",
+        geneNames=config['ref']['genes2transcripts'],
         tables=expand(
             "results/variants/alleleTables/{sample}.chr{chrom}.allele.table",
             sample=samples,
@@ -210,7 +210,7 @@ rule PerGeneFstPBS:
     input:
         metadata=config["samples"],
         gff=config["ref"]["gff"],
-        geneNames="resources/gene_names.tsv",
+        geneNames=config['ref']['genes2transcripts'],
         vcf=expand(
             "results/variants/vcfs/annot.variants.{chrom}.vcf.gz",
             chrom=config["chroms"],
