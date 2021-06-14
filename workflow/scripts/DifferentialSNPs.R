@@ -23,7 +23,7 @@ contrasts = data.frame("contrast" = snakemake@params[['DEcontrasts']])
 comparisons = contrasts %>% separate(contrast, into = c("control", "case"), sep = "_")
 mincounts = snakemake@params[['mincounts']]
 pval = snakemake@params[['pval_flt']]
-gene_names = fread(snakemake@input[['geneNames']], sep="\t") %>% dplyr::rename("GeneID" = "Gene_stable_ID") %>% distinct()
+gene_names = fread(snakemake@input[['geneNames']], sep="\t") %>% select(-TranscriptID) %>% distinct()
 
 gffpath = snakemake@input[['gff']]
 #load gff with rtracklayer and filter to genes only 

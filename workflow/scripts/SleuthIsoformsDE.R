@@ -29,8 +29,7 @@ metadata = fread(snakemake@input[['metadata']], sep="\t") %>%
 metadata$path = paste0("results/quant/", metadata$sample)
 
 #read metadata and get contrasts
-gene_names = fread(snakemake@input[['gene_names']], sep="\t") %>% 
-  dplyr::rename("GeneID" = "Gene_stable_ID")
+gene_names = fread(snakemake@input[['genes2transcripts']], sep="\t") %>% select(-GeneID)
 
 #contrasts
 contrastsdf = data.frame("contrast" = snakemake@params[['DEcontrasts']])
@@ -63,7 +62,7 @@ for (cont in contrasts){
   so = sleuth_wt(so, which_beta = paste0("treatment",case))
   
   results = sleuth_results(so, test =paste0("treatment",case), 'reduced:full', show_all = FALSE) %>% 
-    dplyr::rename("GeneID" = "target_id") %>% 
+    dplyr::rename("TranscriptID" = "target_id") %>% 
     dplyr::mutate("FC" = (2^b))
   
   # Join DE results with normal gene names
@@ -75,9 +74,9 @@ for (cont in contrasts){
   names_list[[cont]] = cont
   
     # volcano plot for each comparison, using EnhancedVolcano. First make vector of labels which is AGAPs unless a gene name exists
-  labels = results %>% dplyr::mutate("Gene_name" = case_when(Gene_name == "" ~ GeneID,
-                                     is.na(Gene_name) ~ GeneID,
-                                     TRUE ~ Gene_name)) %>% select(Gene_name) %>% deframe()
+  labels = results %>% dplyr::mutate("Gene_name" = case_when(GeneName == "" ~ TranscriptID,
+                                     is.na(GeneName) ~ TranscriptID,
+                                     TRUE ~ GeneName)) %>% select(Gene_name) %>% deframe()
   pdf(glue("results/isoformdiff/Volcano_plot_{cont}.pdf"))
   print(EnhancedVolcano(results_list[[cont]],
                   lab=labels,

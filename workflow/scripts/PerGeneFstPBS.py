@@ -27,8 +27,7 @@ features = allel.gff3_to_dataframe(gffpath,
                        attributes=["ID", "description"])
 gff = features[features.type == 'gene']
 # gene names file, rename
-gene_names = pd.read_csv(snakemake.input['geneNames'], sep="\t")
-gene_names.columns = ['GeneID' if x=='Gene_stable_ID' else x for x in gene_names.columns]
+gene_names = pd.read_csv(snakemake.input['geneNames'], sep="\t").drop(columns=['TranscriptID']).drop_duplicates()
 
 ### main ####
 # Read in list of contrasts
