@@ -20,8 +20,8 @@ ref:
         "resources/reference/Anopheles-gambiae-PEST_BASEFEATURES_AgamP4.12-X.gff3"
   snpeffdb:
         "Anopheles_gambiae"
-  genenames:
-        "resources/gene_names.tsv"
+  genes2transcripts:
+        "resources/Gene2TranscriptMap.tsv"
 
 # Chromosome names for the appropriate species. Should correspond to the reference fasta/gff files. 
 chroms: ['X']

@@ -13,7 +13,7 @@ rule CheckInputs:
         metadata=config["samples"],
         chroms=config["chroms"],
         gffpath=config["ref"]["gff"],
-        gene_names=config["ref"]["genenames"],
+        gene_names=config["ref"]["genes2transcripts"],
         contrasts=config["contrasts"],
         fastq=config["fastq"]["auto"],
         table=config["fastq"]["table"],

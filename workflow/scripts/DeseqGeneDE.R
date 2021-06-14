@@ -22,8 +22,7 @@ library(jsonlite)
 
 #read metadata and get contrasts
 metadata = fread(snakemake@input[['metadata']], sep="\t") %>% as.data.frame()
-gene_names = fread(snakemake@input[['gene_names']], sep="\t") %>% 
-  dplyr::rename("GeneID" = "Gene_stable_ID")
+gene_names = fread(snakemake@input[['genes2transcripts']], sep="\t") %>% distinct()
 
 contrastsdf = data.frame("contrast" = snakemake@params[['DEcontrasts']])
 contrasts = contrastsdf$contrast
@@ -92,7 +91,7 @@ for (sample in metadata$sampleID){
   df[[sample]]= fread(glue("results/quant/{sample}/abundance.tsv"), sep = "\t")
 }
 
-counts = data.frame('GeneID' = df[[1]]$target_id)
+counts = data.frame('TranscriptID' = df[[1]]$target_id)
 # Get read counts for each gene and fill table
 for (sample in metadata$sampleID){
   reads = df[[sample]]$est_counts
@@ -100,11 +99,12 @@ for (sample in metadata$sampleID){
 }
 
 # Rename columns
-colnames(counts) = c("GeneID", metadata$sampleID)
+colnames(counts) = c("TranscriptID", metadata$sampleID)
 
 ## Aggregate to gene level
-counts$GeneID = substr(counts$GeneID, 1, 10) #get first 10 letters, (remove -RA,-RB etc of transcripts)
+counts = left_join(counts, gene_names) %>% select(GeneID, metadata$sampleID)
 counts = counts %>% group_by(GeneID) %>% summarise_all(sum)
+gene_names = gene_names %>% select(-TranscriptID)
 
 ### Count total reads counted
 counts = counts %>% column_to_rownames('GeneID')
@@ -115,7 +115,7 @@ count_stats$genes_zerocounts = apply(counts, 2, function(x){sum(x==0)}) # genes 
 count_stats$genes_lessthan10counts = apply(counts, 2, function(x){sum(x<10)}) # genes with less than 10 counts
 count_stats = count_stats %>% dplyr::mutate("proportion_zero" = genes_zerocounts/ngenes,
                                      "proportion_low" = genes_lessthan10counts/ngenes)
-count_stats %>% fwrite(., "results/quant/count_statistics.tsv",sep="\t")
+count_stats %>% fwrite(., "results/quant/countStatistics.tsv",sep="\t")
 
 print("Counting and plotting total reads per sample...")
 pdf("results/quant/total_reads_counted.pdf")
@@ -146,7 +146,7 @@ normcounts %>%
   as.data.frame() %>% 
   rownames_to_column("GeneID") %>% 
   round_df(., 1) %>% 
-  fwrite(., "results/quant/normcounts.tsv", sep="\t", row.names = FALSE)
+  fwrite(., "results/quant/normCounts.tsv", sep="\t", row.names = FALSE)
 
 # calculate correlations between samples based on the count data, and plot heatmap
 correlations = cor(vstcounts)
@@ -217,9 +217,9 @@ for (cont in contrasts){
   results = unique(left_join(results, gene_names))
   fwrite(results, glue("results/genediff/{cont}.csv")) #write to csv 
   # volcano plot for each comparison, using EnhancedVolcano. First make vector of labels which is AGAPs unless a gene name exists
-  labels = results %>% dplyr::mutate("Gene_name" = case_when(Gene_name == "" ~ GeneID,
-                                     is.na(Gene_name) ~ GeneID,
-                                     TRUE ~ Gene_name)) %>% select(Gene_name) %>% deframe()
+  labels = results %>% dplyr::mutate("Gene_name" = case_when(GeneName == "" ~ GeneID,
+                                     is.na(GeneName) ~ GeneID,
+                                     TRUE ~ GeneName)) %>% select(Gene_name) %>% deframe()
   
   #get number of sig genes 
   res1 = results %>% filter(padj < 0.05) %>% 

@@ -58,7 +58,7 @@ else:
 
 # Check column names of gene_names.tsv
 gene_names = pd.read_csv(snakemake.params['gene_names'], sep="\t")
-colnames = ['Gene_stable_ID', 'Gene_description', 'Gene_name']
+colnames = ['GeneID', 'TranscriptID', 'GeneDescription', 'GeneName']
 assert (gene_names.columns.isin(colnames)).all(), f"Column names of gene_names.tsv should be {colnames}"
 
 
