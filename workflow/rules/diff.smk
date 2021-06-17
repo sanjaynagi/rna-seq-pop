@@ -149,8 +149,8 @@ rule GeneSetEnrichment:
             if config["diffsnps"]["activate"]
             else []
         ),
-        Fst="results/variants/fst.tsv",
-        PBS="results/variants/pbs.tsv" if config["pbs"]["activate"] else [],
+        Fst="results/variants/FstPerGene.tsv",
+        PBS="results/variants/PbsPerGene.tsv" if config["pbs"]["activate"] else [],
     output:
         expand(
             "results/gsea/genediff/{comp}.DE.{pathway}.tsv",
