@@ -303,7 +303,7 @@ rule VennDiagrams:
         DE=expand(
             "results/genediff/{dataset}_diffexp.xlsx", dataset=config["dataset"]
         ),
-        Fst="results/variants/fst.tsv",
+        Fst="results/variants/FstPerGene.tsv",
         diffsnps=(
             expand(
                 "results/variants/diffsnps/{name}.sig.kissDE.tsv",
