@@ -34,6 +34,7 @@ If you use this workflow in a paper, don't forget to give credits to the author 
 1. Create a new github repository using this workflow [as a template](https://help.github.com/en/articles/creating-a-repository-from-a-template).
 2. [Clone](https://help.github.com/en/articles/cloning-a-repository) the newly created repository to your local system, into the place where you want to perform the data analysis.
 3. As the workflow contains submodules (compkaryo & mpileup2readcounts), `git clone --recursive` should be used to clone the repo. 
+4. If you want to run the differential SNPs analysis, please compile mpileup2readcounts by navigating to its folder in workflow/scripts and: `g++ -std=c++11 -O3 mpileup2readcounts.cc -o mpileup2readcounts`
 
 ### Step 2: Configure workflow
 
