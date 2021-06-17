@@ -65,7 +65,3 @@ assert (gene_names.columns.isin(colnames)).all(), f"Column names of gene_names.t
 # Check that the chromosomes are present in the gff file 
 gff = allel.gff3_to_dataframe(gffpath)
 assert np.isin(chroms, gff.seqid).all(), f"All provided chromosome names ({chroms}) are not present in the reference GFF file"
-
-# Check for signals.csv
-if sweeps:
-    assert os.path.isfile(signalpath), f"Ag1000g sweeps is activated, but no signals file is present in {signalpath}"

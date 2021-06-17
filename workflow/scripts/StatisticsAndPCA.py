@@ -67,6 +67,7 @@ for i, chrom in enumerate(chroms):
     snps_per_gene = {}
     snps_per_sample = {}
 
+    # For each sample in metadata, compress the genotype array and check is data is missing
     for sample in metadata['sampleID']:
 
         bool_ = sample == populations
@@ -76,6 +77,7 @@ for i, chrom in enumerate(chroms):
         missing_array[sample] = np.fromiter(res, dtype=bool)
         snpsnotmissing[sample] = missing_array[sample].sum()
 
+    # For each gene, find out how many SNPs per gene 
     for i, gene in genes.iterrows():
         ID = gene['ID']
         # locate_ranges() to get a boolean, needed as locate_range() will throw errors if no snps found in gene
@@ -127,6 +129,7 @@ for i, chrom in enumerate(chroms):
 
         # Inbreeding coefficient
         if ploidy > 1:
+            gn = geno.take(subpops[pop], axis=1)
             coef = allel.moving_statistic(gn, statistic=allel.inbreeding_coefficient, 
                                                 size=1000, step=100)
             coef = np.nanmean(coef, axis=1)
