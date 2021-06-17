@@ -194,6 +194,7 @@ rule Ag1000gSweepsDE:
     """
     input:
         DEresults=expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
+        signals = "resource/signals.csv"
     output:
         expand(
             "results/genediff/ag1000gSweeps/{comp}_swept.tsv", comp=config["contrasts"]

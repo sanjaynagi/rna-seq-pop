@@ -2,9 +2,9 @@
 
 ## If PBS is activated
 if config["pbs"]["activate"]:
-    windowedStats = ["fst", "pbs"]
+    windowedStats = ["Fst", "Pbs"]
 else:
-    windowedStats = ["fst"]
+    windowedStats = ["Fst"]
 
 
 def getFASTQs(wildcards, rules=None):
@@ -105,9 +105,10 @@ def GetDesiredOutputs(wildcards):
                     "results/variants/plots/PCA-{chrom}-{dataset}.png",
                     "results/variants/plots/{dataset}_SNPdensity_{chrom}.png",
                     "results/variants/stats/SequenceDiversity.tsv",
-                    "results/variants/fst.tsv",
-                    "results/variants/TajimasD.tsv",
-                    "results/variants/SequenceDiv.tsv",
+                    "results/variants/FstPerGene.tsv",
+                    "results/variants/TajimasDPerGene.tsv",
+                    "results/variants/SequenceDivPerGene.tsv",
+                    "results/variants/DxyPerGene.tsv",
                     "results/variants/plots/fst/{comp}.{chrom}.fst.{wsize}.png",
                 ],
                 chrom=config["chroms"],

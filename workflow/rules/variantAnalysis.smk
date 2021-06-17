@@ -216,9 +216,10 @@ rule PerGeneFstPBS:
             chrom=config["chroms"],
         ),
     output:
-        expand("results/variants/{stat}.tsv", stat=windowedStats),
-        "results/variants/TajimasD.tsv",
-        "results/variants/SequenceDiv.tsv",
+        expand("results/variants/{stat}PerGene.tsv", stat=windowedStats),
+        "results/variants/TajimasDPerGene.tsv",
+        "results/variants/SequenceDivPerGene.tsv",
+        "results/variants/DxyPerGene.tsv"
     conda:
         "../envs/fstpca.yaml"
     log:
