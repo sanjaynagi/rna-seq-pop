@@ -3,7 +3,7 @@
 [![Snakemake](https://img.shields.io/badge/snakemake-≥5.11.0-brightgreen.svg)](https://snakemake.bitbucket.io)
 [![Build Status](https://travis-ci.org/sanjaynagi/rna-seq-ir.svg?branch=master)](https://travis-ci.org/snakemake-workflows/rna-seq-ir)
 
-This workflow performs various analyses of illumina paired-end RNA-Sequencing data:
+This snakemake workflow performs various analyses of illumina paired-end RNA-Sequencing data:
 
 * Quality control of fastq reads with [FASTQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
 * QC metrics integrated into one final QC report with [multiQC](https://multiqc.info/)
