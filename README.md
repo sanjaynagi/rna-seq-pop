@@ -1,15 +1,15 @@
-# Snakemake workflow: RNA-Seq-Pop
+# RNA-Seq-Pop
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥5.11.0-brightgreen.svg)](https://snakemake.bitbucket.io)
-[![Build Status](https://travis-ci.org/sanjaynagi/rna-seq-ir.svg?branch=master)](https://travis-ci.org/snakemake-workflows/rna-seq-ir)
+[![Build Status](https://travis-ci.org/sanjaynagi/rna-seq-pop.svg?branch=master)](https://travis-ci.org/snakemake-workflows/rna-seq-pop)
 
-This workflow performs various analyses of illumina paired-end RNA-Sequencing data:
+This snakemake workflow performs various analyses of illumina paired-end RNA-Sequencing data:
 
 * Quality control of fastq reads with [FASTQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
 * QC metrics integrated into one final QC report with [multiQC](https://multiqc.info/)
 * Differential expression analysis with [Kallisto](https://pachterlab.github.io/kallisto/) at the gene level ([DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)) and transcript level ([Sleuth](https://github.com/pachterlab/sleuth))
 * Variant calling with [freebayes](https://github.com/freebayes/freebayes), and an Fst and [Population branch statistic (PBS)](https://science.sciencemag.org/content/329/5987/75) analysis, both in windows and at the gene-level ([Scikit-allel](https://scikit-allel.readthedocs.io/en/stable/)).
-* Various summary statistics are calculated (Wattersons Theta, Sequence Diversity etc)
+* Various summary statistics are calculated (Wattersons Theta, Sequence Diversity, Dxy etc)
 * Differential SNP testing with the R package [kissDE](https://bioconductor.org/packages/release/bioc/html/kissDE.html), which accounts for allele-specific expression.
 * Gene Set Enrichment analyses and Venn diagrams.
 * Allele counts at pre-specified loci of choice.
@@ -88,7 +88,7 @@ Whenever you change something, don't forget to commit the changes back to your g
 
 Whenever you want to synchronize your workflow copy with new developments from upstream, do the following.
 
-1. Once, register the upstream repository in your local copy: `git remote add -f upstream git@github.com:snakemake-workflows/rna-seq-ir.git` or `git remote add -f upstream https://github.com/snakemake-workflows/rna-seq-ir.git` if you do not have setup ssh keys.
+1. Once, register the upstream repository in your local copy: `git remote add -f upstream git@github.com:snakemake-workflows/rna-seq-pop.git` or `git remote add -f upstream https://github.com/snakemake-workflows/rna-seq-pop.git` if you do not have setup ssh keys.
 2. Update the upstream version: `git fetch upstream`.
 3. Create a diff with the current version: `git diff HEAD upstream/master workflow > upstream-changes.diff`.
 4. Investigate the changes: `vim upstream-changes.diff`.
