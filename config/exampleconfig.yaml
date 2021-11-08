@@ -26,9 +26,6 @@ ref:
   # Path to transcriptome reference FASTA file
   transcriptome:
         "resources/reference/Anopheles-gambiae-PEST_TRANSCRIPTS_AgamP4.12.fa"
-  # Path to GTF annotation file 
-  gtf: 
-        "resources/reference/Anopheles-gambiae-PEST_BASEFEATURES_AgamP4.12.gtf"
   # Path to GFF annotation file
   gff:
         "resources/reference/Anopheles-gambiae-PEST_BASEFEATURES_AgamP4.12.gff3"
@@ -37,7 +34,7 @@ ref:
         "Anopheles_gambiae"
   # gene names file with gene and transcript names
   genes2transcripts:
-        "resources/ExampleGene2TranscriptMap.tsv"
+        "resources/exampleGene2TranscriptMap.tsv"
 
 # Chromosome names for the appropriate species.
 # Currently, the variant calling and analysis part of workflow requires genes mapped to chromosomes and their physical location.

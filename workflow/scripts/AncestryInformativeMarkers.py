@@ -10,7 +10,7 @@ from tools import *
 
 ### AIMS ###
 metadata = pd.read_csv(snakemake.input['metadata'], sep="\t")
-metadate = metadata.sort_values(by='species').reset_index(drop=True)
+metadata = metadata.sort_values(by='species').reset_index(drop=True)
 chroms = snakemake.params['chroms']
 ploidy = snakemake.params['ploidy']
 numbers = get_numbers_dict(ploidy)
