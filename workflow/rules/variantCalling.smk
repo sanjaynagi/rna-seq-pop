@@ -13,35 +13,12 @@ rule GenomeIndex:
         "v0.69.0/bio/samtools/faidx"
 
 
-rule HISAT2splicesites:
-    """
-    Extract splice-sites from gtf file, useful for later potential lncRNA work
-    """
-        input:
-            ref=config["ref"]["genome"],
-            gtf=config["ref"]["gtf"],
-        output:
-            splice_sites="resources/reference/splice-sites.gtf",
-            exons="resources/reference/exon-sites.gtf",
-        conda:
-            "../envs/variants.yaml"
-        log:
-            "logs/HISAT2/HISAT2splicesites.log",
-        shell:
-            """
-            hisat2_extract_splice_sites.py {input.gtf} > {output.splice_sites} 2> {log}
-            hisat2_extract_exons.py {input.gtf} > {output.exons} 2>> {log}
-            """
-
-
 rule HISAT2index:
     """
     Make a HISAT2 index of the reference genome
     """
     input:
-        fasta=config["ref"]["genome"],
-        splice_sites="resources/reference/splice-sites.gtf",
-        exons="resources/reference/exon-sites.gtf",
+        fasta=config["ref"]["genome"]
     output:
         "resources/reference/ht2index/idx.1.ht2",
         touch("resources/reference/ht2index/.complete"),
@@ -50,12 +27,10 @@ rule HISAT2index:
     conda:
         "../envs/variants.yaml"
     params:
-        ss="--ss {input.splice_sites}",
-        exon="--exon {input.exons}",
         prefix=lambda w, output: output[0].split(os.extsep)[0],
     threads: 8
     shell:
-        "hisat2-build -p {threads} --ss {input.splice_sites} --exon {input.exons} {input.fasta} {params.prefix}  2> {log}"
+        "hisat2-build -p {threads} {input.fasta} {params.prefix}  2> {log}"
 
 
 rule HISAT2align:
