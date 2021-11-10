@@ -162,8 +162,9 @@ rule snpEffDbDownload:
         "../envs/snpeff.yaml"
     params:
         ref=config["ref"]["snpeffdb"],
+        dir="resources/snpEffdb"
     shell:
-        "snpEff download {params.ref} 2> {log}"
+        "snpEff download {params.ref} -dataDir {params.dir} 2> {log}"
 
 
 rule snpEff:
@@ -183,9 +184,10 @@ rule snpEff:
     params:
         db=config["ref"]["snpeffdb"],
         prefix=lambda w, output: os.path.splitext(output[0])[0],
+        dir="resources/snpEffdb"
     shell:
         """
-        snpEff eff {params.db} -csvStats {output.csvStats} {input.calls} > {params.prefix} 2> {log}
+        snpEff eff {params.db} -dataDir {params.dir} -csvStats {output.csvStats} {input.calls} > {params.prefix} 2> {log}
         bgzip {params.prefix}
         """
 
