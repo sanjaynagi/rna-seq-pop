@@ -32,7 +32,7 @@ comparisons = [list(row) for i,row in comparisons.iterrows()]
 
 for i, chrom in enumerate(chroms):
 
-    path = f"results/variants/vcfs/annot.variants.{chrom}.vcf.gz"
+    path = f"results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz"
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, populations = readAndFilterVcf(path=path,
                                                            chrom=chrom,
                                                            samples=metadata,
@@ -52,11 +52,17 @@ for i, chrom in enumerate(chroms):
                             size=size, step=step)
             midpoint = allel.moving_statistic(pos, np.mean, size=size, step=step)
 
-            plt.figure(figsize=[20,8])
-            sns.lineplot(midpoint, FstArray)
-            plt.title(f"Fst {chrom} {name}")
-            plt.savefig(f"results/variants/plots/fst/{name}.{chrom}.fst.{wname}.png")
-            plt.close()
+
+            saveAndPlot("Fst", 
+                        FstArray, 
+                        midpoint, 
+                        name=name,
+                        prefix="results/variantAnalysis/selection/Fst/{name}.{chrom}.fst.{wname}.png", 
+                        species=species, 
+                        chrom=chrom, 
+                        ylim=0.5, 
+                        save=True)
+
             
         
     #### Population Branch Statistic (PBS) in windows ####
@@ -76,5 +82,5 @@ for i, chrom in enumerate(chroms):
                 plt.figure(figsize=[20,8])
                 sns.lineplot(midpoint, pbsArray)
                 plt.title(f"PBS {chrom} {pbscomp}")
-                plt.savefig(f"results/variants/plots/pbs/{pbscomp}.{chrom}.pbs.{wname}.png")
+                plt.savefig(f"results/variantAnalysis/selection/pbs/{pbscomp}.{chrom}.pbs.{wname}.png")
                 plt.close()

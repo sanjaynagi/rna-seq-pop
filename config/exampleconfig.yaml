@@ -4,6 +4,10 @@
 ## sample metadata file
 samples: config/samples.tsv
 
+# Dataset name
+# Can be anything, will be used to name some main output files
+dataset: 'Ag_Bouake'
+
 ## Fastq filenames and locations can either be specified in the config/fastq.tsv file. 
 ## OR if auto: True -
 ## gzipped fastq files should be stored in the resources/reads/ directory
@@ -11,12 +15,14 @@ samples: config/samples.tsv
 ## should be named Kisumu1_1.fastq.gz, and Kisumu1_2.fastq.gz. 
 ## Treatment names in samples.tsv should not contain underscores
 fastq: 
-      table: config/fastq.tsv
-      auto: False # set auto if your files follow 
+      table: #config/fastq.tsv
+      auto: True # set auto if your files follow the above rules
 
-# Dataset name
-# Can be anything, will be used to name some main output files
-dataset: 'Ag_Bouake'
+# Chromosome names for the appropriate species.
+# Currently, the variant calling and analysis part of workflow requires genes mapped to chromosomes and their physical location.
+# Please ensure that these correspond exactly to the reference fasta/gff files. Extra unwanted chromosomes (unplaced contigs) can be ignored. 
+# if you need to remove a prefix (Such as "AgamP4_"or "AaegL5_") from a file, use sed - i.e - "sed s/AgamP4_// An.gambiae.fasta > An.gambiae_clean.fasta"
+chroms: ['2L', '2R', '3L', '3R', 'X']
 
 # Paths for reference files 
 ref:
@@ -35,12 +41,6 @@ ref:
   # gene names file with gene and transcript names
   genes2transcripts:
         "resources/exampleGene2TranscriptMap.tsv"
-
-# Chromosome names for the appropriate species.
-# Currently, the variant calling and analysis part of workflow requires genes mapped to chromosomes and their physical location.
-# Please ensure that these correspond exactly to the reference fasta/gff files. Extra unwanted chromosomes (unplaced contigs) can be ignored. 
-# if you need to remove a prefix (Such as "AgamP4_"or "AaegL5_") from a file, use sed - i.e - "sed s/AgamP4_// An.gambiae.fasta > An.gambiae_clean.fasta"
-chroms: ['2L', '2R', '3L', '3R', 'X']
 
 qc:
       activate: True

@@ -47,7 +47,7 @@ dxybychrom = {}
 for chrom in chroms:
 
     # path to vcf
-    path = f"results/variants/vcfs/annot.variants.{chrom}.vcf.gz"
+    path = f"results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz"
     # function to read in vcfs and associated SNP data
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops =  readAndFilterVcf(path=path,
                                                                chrom=chrom, 
@@ -223,11 +223,11 @@ gdivall = pd.concat(gdivbychrom.values(), ignore_index=True).drop_duplicates()
 dxyall = pd.concat(dxybychrom.values(), ignore_index=True).drop_duplicates()
 
 # Write to csv
-fstall.to_csv(f"results/variants/FstPerGene.tsv", index=False, sep="\t")
-tajdall.to_csv(f"results/variants/TajimasDPerGene.tsv", index=False, sep="\t")
-gdivall.to_csv(f"results/variants/SequenceDivPerGene.tsv", index=False, sep="\t")
-dxyall.to_csv(f"results/variants/DxyPerGene.tsv", index=False, sep="\t")
+fstall.to_csv(f"results/variantAnalysis/selection/FstPerGene.tsv", index=False, sep="\t")
+tajdall.to_csv(f"results/variantAnalysis/selection/TajimasDPerGene.tsv", index=False, sep="\t")
+gdivall.to_csv(f"results/variantAnalysis/diversity/SequenceDivPerGene.tsv", index=False, sep="\t")
+dxyall.to_csv(f"results/variantAnalysis/diversity/DxyPerGene.tsv", index=False, sep="\t")
 
 if pbs is True:
     pbsall = pd.concat(pbsbychrom.values(), ignore_index=True).drop_duplicates()
-    pbsall.to_csv(f"results/variants/PbsPerGene.tsv", index=False, sep="\t")
+    pbsall.to_csv(f"results/variantAnalysis/selection/PbsPerGene.tsv", index=False, sep="\t")

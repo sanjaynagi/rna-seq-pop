@@ -144,13 +144,13 @@ rule GeneSetEnrichment:
         DEresults=expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
         diffsnps=(
             expand(
-                "results/variants/diffsnps/{comp}.kissDE.tsv", comp=config["contrasts"]
+                "results/variantAnalysis/diffsnps/{comp}.kissDE.tsv", comp=config["contrasts"]
             )
             if config["diffsnps"]["activate"]
             else []
         ),
-        Fst="results/variants/FstPerGene.tsv",
-        PBS="results/variants/PbsPerGene.tsv" if config["pbs"]["activate"] else [],
+        Fst="results/variantAnalysis/selection/FstPerGene.tsv",
+        PBS="results/variantAnalysis/selection/PbsPerGene.tsv" if config["pbs"]["activate"] else [],
     output:
         expand(
             "results/gsea/genediff/{comp}.DE.{pathway}.tsv",

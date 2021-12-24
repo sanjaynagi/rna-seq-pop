@@ -19,12 +19,6 @@ ploidy = snakemake.params['ploidy']
 numbers = get_numbers_dict(ploidy)
 qualflt = snakemake.params['qualflt']
 missingprop = snakemake.params['missingprop']
-gffpath = snakemake.input['gff']
-
-# load gff
-features = allel.gff3_to_dataframe(gffpath,
-                        attributes=["ID", "description"])
-gff = features[features.type == 'gene']
 
 # define functions
 def isnotmissing(gn):
@@ -45,7 +39,7 @@ coefdictchrom= {}
 for i, chrom in enumerate(chroms):
     
     # Read in and Filter VCF
-    path = f"results/variants/vcfs/annot.variants.{chrom}.vcf.gz"
+    path = f"results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz"
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, populations = readAndFilterVcf(path=path,
                                                            chrom=chrom,
                                                            samples=metadata,
@@ -53,65 +47,7 @@ for i, chrom in enumerate(chroms):
                                                            ploidy=ploidy,
                                                            qualflt=qualflt,
                                                            missingfltprop=missingprop)
-    # Store total SNPs per chromosome
-    # And summaries from SnpEff
-    total_snps_per_chrom[chrom] = geno.shape[0]
-    snpeffdict[chrom] = snpeff[1].value_counts(normalize=True)
 
-    ######## SNP counts per gene ########
-    # Subset GFF to appropriate chromosome
-    genes = gff[gff.seqid == f"{chrom}"].sort_values('start').reset_index(drop=True)
-
-    snpsnotmissing = {}
-    missing_array = {}
-    snps_per_gene = {}
-    snps_per_sample = {}
-
-    # For each sample in metadata, compress the genotype array and check is data is missing
-    for sample in metadata['sampleID']:
-
-        bool_ = sample == populations
-        gn = geno.compress(bool_, axis=1)
-
-        res = map(isnotmissing, gn[:,0])
-        missing_array[sample] = np.fromiter(res, dtype=bool)
-        snpsnotmissing[sample] = missing_array[sample].sum()
-
-    # For each gene, find out how many SNPs per gene 
-    for i, gene in genes.iterrows():
-        ID = gene['ID']
-        # locate_ranges() to get a boolean, needed as locate_range() will throw errors if no snps found in gene
-        gene_bool = pos.locate_ranges([gene['start']], [gene['end']], strict=False)
-
-        for sample in metadata['sampleID']:
-
-            presentSNPs = missing_array[sample].compress(gene_bool, axis=0)
-            snps_per_sample[sample] = presentSNPs.sum()
-
-        snps_per_gene[ID] = dict(snps_per_sample)
-
-    snps_per_gene_allchroms[chrom] = pd.DataFrame.from_dict(flip_dict(snps_per_gene))
-    
-    
-    #### Principal Components Analysis (PCA) ####
-    # Set up dict to store indices for colours
-    d={}
-    for name, inds in subpops.items():
-        for n in range(len(inds)):
-            p = inds[n]
-            d[p] = name
-
-    # Store dict as a dataframe and get colours 
-    treatment_indices = pd.DataFrame.from_dict(d, orient='index').reset_index()
-    treatment_indices = treatment_indices.rename(columns = {'index':'sample_index', 0:"name"})
-    pop_colours = get_colour_dict(treatment_indices['name'], "viridis")
-    
-    # Run PCA function defined in tools.py
-    print(f"Performing PCA on {dataset} chromosome {chrom}")
-    pca(geno, chrom, ploidy, dataset, populations, metadata, pop_colours, prune=True, scaler=None)
-
-    ######## Plot variant density over genome (defined in tools.py) ########
-    plot_density(pos, window_size=100000, title=f"Variant Density chromosome {chrom}", path=f"results/variants/plots/{dataset}_SNPdensity_{chrom}.png")
 
     #### Genome-wide statistics (seqDiv, Wattersons Theta, LD, inbreeding coefficient) ####
     seqdivdict = {}
@@ -149,9 +85,9 @@ thetadictchrom = flip_dict(thetadictchrom)
 if ploidy > 1: coefdictchrom = flip_dict(coefdictchrom)
 
 # Get stats per chromosome
-pd.DataFrame.from_dict(seqdivdictchrom).to_csv("results/variants/stats/SequenceDiversity.tsv", sep="\t", index=True)
-pd.DataFrame.from_dict(thetadictchrom).to_csv("results/variants/stats/WattersonsTheta.tsv", sep="\t", index=True)
-if ploidy > 1: pd.DataFrame.from_dict(coefdictchrom).to_csv("results/variants/stats/inbreedingCoef.tsv", sep="\t", index=True)
+pd.DataFrame.from_dict(seqdivdictchrom).to_csv("results/variantAnalysis/stats/SequenceDiversity.tsv", sep="\t", index=True)
+pd.DataFrame.from_dict(thetadictchrom).to_csv("results/variantAnalysis/stats/WattersonsTheta.tsv", sep="\t", index=True)
+if ploidy > 1: pd.DataFrame.from_dict(coefdictchrom).to_csv("results/variantAnalysis/stats/inbreedingCoef.tsv", sep="\t", index=True)
 
 # Get genome wide average stats
 if ploidy > 1:
@@ -159,18 +95,18 @@ if ploidy > 1:
         allcoef[pop] = np.nanmean(allcoef[pop])
 
     coefdf = pd.DataFrame.from_dict(allcoef, orient='index', columns=['InbreedingCoefficient'])
-    coefdf.to_csv(f"results/variants/stats/inbreedingCoef.mean.tsv", sep="\t", index=True)
+    coefdf.to_csv(f"results/variantAnalysis/stats/inbreedingCoef.mean.tsv", sep="\t", index=True)
 
 # Total SNPs per chrom, all samples
 totalsnpsdf = pd.DataFrame.from_dict(total_snps_per_chrom, orient='index', columns=['Total_SNPs'])
-totalsnpsdf.to_csv(f"results/variants/stats/totalSNPs.tsv", sep="\t", index=True)
+totalsnpsdf.to_csv(f"results/variantAnalysis/stats/totalSNPs.tsv", sep="\t", index=True)
 
 # SNPcount per gene
 snpcountsdf = pd.concat(snps_per_gene_allchroms)  
-snpcountsdf.to_csv("results/variants/stats/nSNPsPerGene.tsv", sep="\t", index=True)
+snpcountsdf.to_csv("results/variantAnalysis/stats/nSNPsPerGene.tsv", sep="\t", index=True)
 genesNoSNPs = pd.DataFrame((snpcountsdf == 0).sum(axis=0), columns=['Genes with zero SNPs'])
-genesNoSNPs.to_csv("results/variants/stats/nGenesZeroSNPs.tsv", sep="\t", index=True)
+genesNoSNPs.to_csv("results/variantAnalysis/stats/nGenesZeroSNPs.tsv", sep="\t", index=True)
 
 # snpEff
 snpeffdf = pd.concat(snpeffdict)
-snpeffdf.to_csv("results/variants/stats/snpEffProportions.tsv", sep="\t", index=True)
+snpeffdf.to_csv("results/variantAnalysis/stats/snpEffProportions.tsv", sep="\t", index=True)

@@ -54,7 +54,7 @@ for (i in 1:nrow(comparisons)){
     chrom_list = list()
     for (chrom in chroms){
       #read in data 
-      alleles  = fread(glue("results/variants/alleleTables/{sample}.chr{chrom}.allele.table"))
+      alleles  = fread(glue("results/variantAnalysis/alleleTables/{sample}.chr{chrom}.allele.table"))
       #sum lowercase and uppercase alleles, make new column (refcount)
       chrom_list[[chrom]] = alleles %>% 
         mutate("A" = A+a,"T" = T+t,"G" = G+g,"C" = C+c) %>% 
@@ -115,7 +115,7 @@ for (i in 1:nrow(comparisons)){
   #  str_replace("3", "rep3")
   #run kissde quality control
   print(glue("Running kissDE QC for {name}"))
-  qualityControl(counts, conditionsde, storeFigs = glue("results/variants/diffsnps/kissDEfigs_{name}"))
+  qualityControl(counts, conditionsde, storeFigs = glue("results/variantAnalysis/diffsnps/kissDEfigs_{name}"))
   
   #Run kissde algorithm to find differentially expressed variants
   de_Vars = diffExpressedVariants(counts, conditions = conditionsde)                    
@@ -142,16 +142,16 @@ for (i in 1:nrow(comparisons)){
     dplyr::rename("GeneID" = "ID")
 
     # Write to file
-  print(glue("Writing {name} results to results/variants/diffsnps/"))
-  results %>% fwrite(., glue("results/variants/diffsnps/{name}.normcounts.tsv"), sep="\t", row.names=FALSE)
+  print(glue("Writing {name} results to results/variantAnalysis/diffsnps/"))
+  results %>% fwrite(., glue("results/variantAnalysis/diffsnps/{name}.normcounts.tsv"), sep="\t", row.names=FALSE)
 
   de_variants = left_join(de_variants, gene_names) %>% distinct()
   
-  fwrite(de_variants, glue("results/variants/diffsnps/{name}.kissDE.tsv"), sep="\t", row.names=FALSE)
+  fwrite(de_variants, glue("results/variantAnalysis/diffsnps/{name}.kissDE.tsv"), sep="\t", row.names=FALSE)
   
   de_variants %>% 
     filter(Adjusted_pvalue <= pval) %>% 
-    fwrite(., glue("results/variants/diffsnps/{name}.sig.kissDE.tsv"), sep="\t", row.names=FALSE)
+    fwrite(., glue("results/variantAnalysis/diffsnps/{name}.sig.kissDE.tsv"), sep="\t", row.names=FALSE)
 }
 
 sessionInfo()

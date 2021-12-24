@@ -101,15 +101,15 @@ def GetDesiredOutputs(wildcards):
         wanted_input.extend(
             expand(
                 [
-                    "results/variants/vcfs/stats/{chrom}.txt",
-                    "results/variants/plots/PCA-{chrom}-{dataset}.png",
-                    "results/variants/plots/{dataset}_SNPdensity_{chrom}.png",
-                    "results/variants/stats/SequenceDiversity.tsv",
-                    "results/variants/FstPerGene.tsv",
-                    "results/variants/TajimasDPerGene.tsv",
-                    "results/variants/SequenceDivPerGene.tsv",
-                    "results/variants/DxyPerGene.tsv",
-                    "results/variants/plots/fst/{comp}.{chrom}.fst.{wsize}.png",
+                    "results/variantAnalysis/vcfs/stats/{chrom}.txt",
+                    "results/variantAnalysis/pca/PCA-{chrom}-{dataset}.png",
+                    "results/variantAnalysis/diversity/{dataset}_SNPdensity_{chrom}.png",
+                    "results/variantAnalysis/stats/SequenceDiversity.tsv",
+                    "results/variantAnalysis/selection/FstPerGene.tsv",
+                    "results/variantAnalysis/selection/TajimasDPerGene.tsv",
+                    "results/variantAnalysis/diversity/SequenceDivPerGene.tsv",
+                    "results/variantAnalysis/diversity/DxyPerGene.tsv",
+                    "results/variantAnalysis/selection/fst/{comp}.{chrom}.fst.{wsize}.png",
                 ],
                 chrom=config["chroms"],
                 dataset=config["dataset"],
@@ -123,7 +123,7 @@ def GetDesiredOutputs(wildcards):
             wanted_input.extend(
                 expand(
                     [
-                        "results/variants/stats/inbreedingCoef.tsv",
+                        "results/variantAnalysis/stats/inbreedingCoef.tsv",
                     ]
                 )
             )
@@ -133,10 +133,10 @@ def GetDesiredOutputs(wildcards):
         wanted_input.extend(
             expand(
                 [
-                    "results/variants/AIMs/AIMs_summary.tsv",
-                    "results/variants/AIMs/AIM_fraction_whole_genome.png",
-                    "results/variants/AIMs/n_AIMS_per_chrom.tsv",
-                    "results/variants/AIMs/AIM_fraction_{chrom}.tsv",
+                    "results/variantAnalysis/AIMs/AIMs_summary.tsv",
+                    "results/variantAnalysis/AIMs/AIM_fraction_whole_genome.png",
+                    "results/variantAnalysis/AIMs/n_AIMS_per_chrom.tsv",
+                    "results/variantAnalysis/AIMs/AIM_fraction_{chrom}.tsv",
                 ],
                 chrom=config["chroms"],
             )
@@ -169,7 +169,7 @@ def GetDesiredOutputs(wildcards):
         wanted_input.extend(
             expand(
                 [
-                    "results/variants/diffsnps/{comp}.sig.kissDE.tsv",
+                    "results/variantAnalysis/diffsnps/{comp}.sig.kissDE.tsv",
                 ],
                 comp=config["contrasts"],
             )

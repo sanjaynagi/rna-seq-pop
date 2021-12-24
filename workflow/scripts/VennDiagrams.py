@@ -74,7 +74,7 @@ for comp1,comp2 in comparisons:
     name = comp1 + "_" + comp2
     print(f"\n-------------- Venn Diagram for {name} --------------")
     de = pd.read_csv(f"results/genediff/{name}.csv")
-    fst = pd.read_csv("results/variants/FstPerGene.tsv", sep="\t")
+    fst = pd.read_csv("results/variantAnalysis/selection/FstPerGene.tsv", sep="\t")
     #compare sig DE genes and top 5% fst genes?
     #get sig up and down diffexp genes
     sigde = de[de['padj'] < pval_threshold]

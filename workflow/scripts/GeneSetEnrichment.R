@@ -91,7 +91,7 @@ if (variantCalling == TRUE){
   for (comp in comparisons$contrast){
   print(glue("Running KEGG and GO enrichment analyses for Fst {comp}"))
   # make ranked list using DE results, rank based on log2foldchange
-  rank = fread("results/variants/FstPerGene.tsv") %>% 
+  rank = fread("results/variantAnalysis/selection/FstPerGene.tsv") %>% 
     distinct() %>% 
     dplyr::select(GeneID, glue("{comp}_zFst")) %>% 
     deframe()
@@ -108,7 +108,7 @@ if (pbs == TRUE){
   for (comp in pbscomps){
   print(glue("Running KEGG and GO enrichment analyses for PBS {comp}"))
   # make ranked list using DE results, rank based on log2foldchange
-  rank = fread("results/variants/PbsPerGene.tsv") %>% 
+  rank = fread("results/variantAnalysis/selection/PbsPerGene.tsv") %>% 
     distinct() %>% 
     drop_na() %>% 
     dplyr::select(GeneID, glue("{comp}PBS")) %>% 
@@ -126,7 +126,7 @@ if (diffsnps == TRUE){
   for (comp in comparisons$contrast){
   print(glue("Running KEGG and GO enrichment analyses for diffSNPs {comp}"))
   # make ranked list using DE results, rank based on log2foldchange
-  rank = fread(glue("results/variants/diffsnps/{comp}.kissDE.tsv"), sep="\t") %>% 
+  rank = fread(glue("results/variantAnalysis/diffsnps/{comp}.kissDE.tsv"), sep="\t") %>% 
     arrange("Deltaf/DeltaPSI") %>% 
     dplyr::select(c('GeneID', all_of("Deltaf/DeltaPSI"))) %>% 
     deframe()
