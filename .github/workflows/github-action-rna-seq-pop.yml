@@ -7,10 +7,16 @@
     pull_request:
       branches_ignore: []
 
-  uses: snakemake/snakemake-github-action@v1.23.0
-  with:
-    directory: '.test'
-    snakefile: 'workflow/Snakefile'
-    args: '--cores 4 --use-conda --conda-cleanup-pkgs cache'
-    submodules: True
-    stagein: '' # additional preliminary commands to run (can be multiline)
+  jobs:
+    check-bats-version:
+      runs-on: ubuntu-latest
+      steps:
+        uses: snakemake/snakemake-github-action@v1.23.0
+        with:
+          directory: '.test'
+          snakefile: 'workflow/Snakefile'
+          args: '--cores 4 --use-conda --conda-cleanup-pkgs cache'
+          submodules: True
+          stagein: '' # additional preliminary commands to run (can be multiline)
+      
+
