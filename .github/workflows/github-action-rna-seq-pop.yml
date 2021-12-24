@@ -1,4 +1,12 @@
 - name: snakemake
+
+  on:
+    push:
+      branches:
+        - main
+    pull_request:
+      branches_ignore: []
+
   uses: snakemake/snakemake-github-action@v1.23.0
   with:
     directory: '.test'
