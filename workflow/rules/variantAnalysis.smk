@@ -66,7 +66,7 @@ rule AlleleTables:
         bed="resources/regions/missense.pos.{chrom}.bed",
         ref=config["ref"]["genome"],
     output:
-        "results/variants/alleleTables/{sample}.chr{chrom}.allele.table",
+        "results/variantAnalysis/alleleTables/{sample}.chr{chrom}.allele.table",
     conda:
         "../envs/variants.yaml"
     log:
@@ -93,17 +93,17 @@ rule DifferentialSNPs:
         gff=config["ref"]["gff"],
         geneNames=config['ref']['genes2transcripts'],
         tables=expand(
-            "results/variants/alleleTables/{sample}.chr{chrom}.allele.table",
+            "results/variantAnalysis/alleleTables/{sample}.chr{chrom}.allele.table",
             sample=samples,
             chrom=config["chroms"],
         ),
     output:
         expand(
-            "results/variants/diffsnps/{name}.sig.kissDE.tsv", name=config["contrasts"]
+            "results/variantAnalysis/diffsnps/{name}.sig.kissDE.tsv", name=config["contrasts"]
         ),
-        expand("results/variants/diffsnps/{name}.kissDE.tsv", name=config["contrasts"]),
+        expand("results/variantAnalysis/diffsnps/{name}.kissDE.tsv", name=config["contrasts"]),
         expand(
-            "results/variants/diffsnps/{name}.normcounts.tsv", name=config["contrasts"]
+            "results/variantAnalysis/diffsnps/{name}.normcounts.tsv", name=config["contrasts"]
         ),
     conda:
         "../envs/diffsnps.yaml"
@@ -117,44 +117,86 @@ rule DifferentialSNPs:
     script:
         "../scripts/DifferentialSNPs.R"
 
-
-rule StatisticsAndPCA:
+rule SNPstatistics:
     """
-    Calculate population genetic summary statistics and PCA on genotype data 
+    Calculate statistics such as no. of SNPs called in exons/introns/genes
+    no. of missing SNPs
     """
     input:
         vcf=expand(
-            "results/variants/vcfs/annot.variants.{chrom}.vcf.gz",
+            "results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz",
             chrom=config["chroms"],
         ),
         metadata=config["samples"],
         gff=config["ref"]["gff"],
     output:
-        PCAfig=expand(
-            "results/variants/plots/PCA-{chrom}-{dataset}.png",
-            chrom=config["chroms"],
-            dataset=config["dataset"],
-        ),
+        snpsPerGenomicFeature = "results/variantAnalysis/stats/snpsPerGenomicFeature.tsv",
         SNPdensityFig=expand(
-            "results/variants/plots/{dataset}_SNPdensity_{chrom}.png",
+            "results/variantAnalysis/diversity/{dataset}_SNPdensity_{chrom}.png",
             chrom=config["chroms"],
             dataset=config["dataset"],
         ),
-        inbreedingCoef="results/variants/stats/inbreedingCoef.tsv" if config['VariantCalling']['ploidy'] > 1 else [],
-        SequenceDiversity="results/variants/stats/SequenceDiversity.tsv",
     log:
-        "logs/StatisticsAndPCA.log",
-    conda:
-        "../envs/fstpca.yaml"
+        "logs/SNPstatistics.log"
     params:
-        DEcontrasts=config["contrasts"],
+
+    script:
+        "../scripts/SNPstatistics.py"
+
+
+rule PCA:
+    """
+    Perform pca on genotype data and plot 
+    """
+    input:
+        vcf=expand(
+            "results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz",
+            chrom=config["chroms"],
+        ),
+        metadata=config["samples"]
+    output:
+        PCAfig=expand(
+            "results/variantAnalysis/pca/PCA-{chrom}-{dataset}.png",
+            chrom=config["chroms"],
+            dataset=config["dataset"],
+        ),
+    log:
+        "logs/pca.log"
+    params:
         dataset=config["dataset"],
         chroms=config["chroms"],
         ploidy=config["VariantCalling"]["ploidy"],
         missingprop=config["pbs"]["missingness"],
         qualflt=30,
     script:
-        "../scripts/StatisticsAndPCA.py"
+        "../scripts/pca.py"
+
+
+rule SummaryStatistics:
+    """
+    Calculate population genetic summary statistics and PCA on genotype data 
+    """
+    input:
+        vcf=expand(
+            "results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz",
+            chrom=config["chroms"],
+        ),
+        metadata=config["samples"],
+    output:
+        inbreedingCoef="results/variantAnalysis/stats/inbreedingCoef.tsv" if config['VariantCalling']['ploidy'] > 1 else [],
+        SequenceDiversity="results/variantAnalysis/stats/SequenceDiversity.tsv",
+    log:
+        "logs/SummaryStatsAndPCA.log",
+    conda:
+        "../envs/fstpca.yaml"
+    params:
+        dataset=config["dataset"],
+        chroms=config["chroms"],
+        ploidy=config["VariantCalling"]["ploidy"],
+        missingprop=config["pbs"]["missingness"],
+        qualflt=30,
+    script:
+        "../scripts/SummaryStats.py"
 
 
 rule WindowedFstPBS:
@@ -164,19 +206,19 @@ rule WindowedFstPBS:
     input:
         metadata=config["samples"],
         vcf=expand(
-            "results/variants/vcfs/annot.variants.{chrom}.vcf.gz",
+            "results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz",
             chrom=config["chroms"],
         ),
     output:
         Fst=expand(
-            "results/variants/plots/fst/{comp}.{chrom}.fst.{wsize}.png",
+            "results/variantAnalysis/selection/fst/{comp}.{chrom}.fst.{wsize}.png",
             comp=config["contrasts"],
             chrom=config["chroms"],
             wsize=config["pbs"]["windownames"],
         ),
         PBS=(
             expand(
-                "results/variants/plots/pbs/{pbscomp}.{chrom}.pbs.{wsize}.png",
+                "results/variantAnalysis/selection/pbs/{pbscomp}.{chrom}.pbs.{wsize}.png",
                 pbscomp=config["pbs"]["contrasts"],
                 chrom=config["chroms"],
                 wsize=config["pbs"]["windownames"],
@@ -203,7 +245,7 @@ rule WindowedFstPBS:
         "../scripts/WindowedFstPBS.py"
 
 
-rule PerGeneFstPBS:
+rule PerGeneFstPBSDxyPi:
     """
     Calculate Fst and PBS for each gene
     """
@@ -212,14 +254,14 @@ rule PerGeneFstPBS:
         gff=config["ref"]["gff"],
         geneNames=config['ref']['genes2transcripts'],
         vcf=expand(
-            "results/variants/vcfs/annot.variants.{chrom}.vcf.gz",
+            "results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz",
             chrom=config["chroms"],
         ),
     output:
-        expand("results/variants/{stat}PerGene.tsv", stat=windowedStats),
-        "results/variants/TajimasDPerGene.tsv",
-        "results/variants/SequenceDivPerGene.tsv",
-        "results/variants/DxyPerGene.tsv"
+        expand("results/variantAnalysis/selection/{stat}PerGene.tsv", stat=windowedStats),
+        "results/variantAnalysis/selection/TajimasDPerGene.tsv",
+        "results/variantAnalysis/diversity/SequenceDivPerGene.tsv",
+        "results/variantAnalysis/diversity/DxyPerGene.tsv"
     conda:
         "../envs/fstpca.yaml"
     log:
@@ -241,18 +283,18 @@ rule AncestryInformativeMarkers:
     """
     input:
         vcf=expand(
-            "results/variants/vcfs/annot.variants.{chrom}.vcf.gz",
+            "results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz",
             chrom=config["chroms"],
         ),
         metadata=config["samples"],
         aims_zarr_gambcolu=config["AIMs"]["gambcolu"],
         aims_zarr_arab=config["AIMs"]["arab"],
     output:
-        AIMs="results/variants/AIMs/AIMs_summary.tsv",
-        AIMs_fig="results/variants/AIMs/AIM_fraction_whole_genome.png",
-        n_AIMs="results/variants/AIMs/n_AIMS_per_chrom.tsv",
+        AIMs="results/variantAnalysis/AIMs/AIMs_summary.tsv",
+        AIMs_fig="results/variantAnalysis/AIMs/AIM_fraction_whole_genome.png",
+        n_AIMs="results/variantAnalysis/AIMs/n_AIMS_per_chrom.tsv",
         AIMs_chroms=expand(
-            "results/variants/AIMs/AIM_fraction_{chrom}.tsv", chrom=config["chroms"]
+            "results/variantAnalysis/AIMs/AIM_fraction_{chrom}.tsv", chrom=config["chroms"]
         ),
     log:
         "logs/AncestryInformativeMarkers.log",
@@ -273,9 +315,9 @@ rule Karyotype:
     """
     input:
         vcf=(
-            lambda wildcards: "results/variants/vcfs/annot.variants.2L.vcf.gz"
+            lambda wildcards: "results/variantAnalysis/vcfs/annot.variants.2L.vcf.gz"
             if wildcards.karyo == "2La"
-            else "results/variants/vcfs/annot.variants.2R.vcf.gz"
+            else "results/variantAnalysis/vcfs/annot.variants.2R.vcf.gz"
         ),
     output:
         "results/karyotype/{karyo}.karyo.txt",
@@ -303,10 +345,10 @@ rule VennDiagrams:
         DE=expand(
             "results/genediff/{dataset}_diffexp.xlsx", dataset=config["dataset"]
         ),
-        Fst="results/variants/FstPerGene.tsv",
+        Fst="results/variantAnalysis/FstPerGene.tsv",
         diffsnps=(
             expand(
-                "results/variants/diffsnps/{name}.sig.kissDE.tsv",
+                "results/variantAnalysis/diffsnps/{name}.sig.kissDE.tsv",
                 name=config["contrasts"],
             )
             if config["diffsnps"]["activate"]

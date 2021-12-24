@@ -11,6 +11,8 @@ import seaborn as sns
 from functools import partial, reduce
 from collections import defaultdict
 from adjustText import adjust_text
+    
+
 
 # get indices of duplicate names
 def list_duplicates(seq):
@@ -248,7 +250,7 @@ def pca(geno, chrom, ploidy, dataset, populations, samples, pop_colours, prune=T
         
     coords1, model1 = allel.pca(geno, n_components=10, scaler=scaler)
 
-    fig_pca(coords1, model1, f"PCA {chrom} {dataset}", f"results/variants/plots/PCA-{chrom}-{dataset}", samples, pop_colours, sample_population=populations)
+    fig_pca(coords1, model1, f"PCA {chrom} {dataset}", f"results/variantAnalysis/pca/PCA-{chrom}-{dataset}", samples, pop_colours, sample_population=populations)
 
 
 
@@ -304,5 +306,42 @@ def plot_aims(df, n_aims, species1="coluzzii", species2="gambiae", figtitle="AIM
     
     # add title and save figure
     plt.title(f"{figtitle}", fontsize=22, pad=20)
-    plt.savefig(f"results/variants/AIMs/{figtitle}.png")
+    plt.savefig(f"results/variantAnalysis/AIMs/{figtitle}.png")
     plt.close()    
+
+def getSNPGffstats(gff, pos):
+    """
+    Calculates number of sites found that intersect with a GFF feature and the proportion % 
+    """
+    
+    assert 'exon' in gff['type'].unique(), "There are no values for 'exon' in the gff 'type' column. Required"
+
+    # Get sequence from 1 to chromosome length
+    refBases = allel.SortedIndex(np.arange(1, gff['end'].max()+1))
+
+    # retrieve introns which dont exist in gff
+    exons = gff.query("type == 'exons'")
+    # Make note of when genes change to next one (when we calculate intron we must remove these rows as they are
+    # stretches of bases between genes (not introns)
+    my_column_changes = exons["Parent"].shift(-1) != exons["Parent"]
+    my_column_changes[0] = False # First value is False
+    exons['new'] = my_column_changes
+    introns = pd.DataFrame({'start':exons['end'], 'end': exons['start'].shift(-1), 'new':exons['new']}).dropna()
+    introns['type'] = 'intron'
+    introns = introns.query("new == False") # Get rid of incorrect intergenic rows
+    
+    # Merge reduced gff with out introns
+    gff = gff[['type', 'start', 'end']].merge(introns, how='outer').drop(columns='new')
+
+    RefDict = {}
+    SamplesDict = {}
+    for feature in ['chromosome', 'gene','exon','intron', 'three_prime_UTR', 'five_prime_UTR']:
+                RefDict[feature] = getSNPsinType(gff, refBases, feature, verbose=False)
+                SamplesDict[feature] = getSNPsinType(gff, pos, feature, verbose=False)
+    
+    # Make data frame from dicts
+    ref = pd.DataFrame.from_dict(RefDict).T.rename(columns={2:'ReferenceGenomeProportion'})[['ReferenceGenomeProportion']]
+    res = pd.DataFrame.from_dict(SamplesDict).T.rename(columns={0:'called', 1:'total', 2:'proportion'})
+    res[['total', 'called']] = res[['total', 'called']].astype(int)
+    ref = ref.merge(res, left_index=True, right_index=True)
+    return(ref)

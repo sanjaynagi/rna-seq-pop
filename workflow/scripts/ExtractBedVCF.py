@@ -10,7 +10,7 @@ import allel
 chroms = snakemake.params['chroms']
 
 for chrom in chroms:
-    vcf = allel.read_vcf(f"results/variants/vcfs/annot.missense.{chrom}.vcf")
+    vcf = allel.read_vcf(f"results/variantAnalysis/vcfs/annot.missense.{chrom}.vcf")
         
     pos = vcf['variants/POS']
     pos1 = pos+1
