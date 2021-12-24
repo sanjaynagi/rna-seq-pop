@@ -85,9 +85,9 @@ rule vcfStats:
     QC stats of VCF files
     """
     input:
-        vcf="results/variants/vcfs/annot.variants.{chrom}.vcf.gz",
+        vcf="results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz",
     output:
-        vcfStats="results/variants/vcfs/stats/{chrom}.txt",
+        vcfStats="results/variantAnalysis/vcfs/stats/{chrom}.txt",
     conda:
         "../envs/variants.yaml"
     log:
@@ -104,7 +104,7 @@ rule multiQC:
     """
     input:
         expand("resources/reads/qc/{sample}_{n}_fastqc.zip", sample=samples, n=[1, 2]),
-        expand("results/variants/vcfs/stats/{chrom}.txt", chrom=config["chroms"]),
+        expand("results/variantAnalysis/vcfs/stats/{chrom}.txt", chrom=config["chroms"]),
         expand(
             "results/alignments/coverage/{sample}.mosdepth.summary.txt", sample=samples
         ),

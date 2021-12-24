@@ -120,7 +120,7 @@ rule VariantCallingFreebayes:
             samples="resources/bam.list",
             regions=ancient("resources/regions/genome.{chrom}.region.{i}.bed"),
         output:
-            temp("results/variants/vcfs/{chrom}/variants.{i}.vcf"),
+            temp("results/variantAnalysis/vcfs/{chrom}/variants.{i}.vcf"),
         log:
             "logs/VariantCallingFreebayes/{chrom}.{i}.log",
         params:
@@ -138,9 +138,9 @@ rule ConcatVCFs:
     Concatenate VCFs together
     """
     input:
-        calls=expand("results/variants/vcfs/{{chrom}}/variants.{i}.vcf", i=chunks),
+        calls=expand("results/variantAnalysis/vcfs/{{chrom}}/variants.{i}.vcf", i=chunks),
     output:
-        "results/variants/vcfs/variants.{chrom}.vcf",
+        "results/variantAnalysis/vcfs/variants.{chrom}.vcf",
     log:
         "logs/ConcatVCFs/{chrom}.log",
     conda:
@@ -172,11 +172,11 @@ rule snpEff:
     Run snpEff on the VCFs 
     """
     input:
-        calls="results/variants/vcfs/variants.{chrom}.vcf",
+        calls="results/variantAnalysis/vcfs/variants.{chrom}.vcf",
         dl="workflow/scripts/snpEff/db.dl",
     output:
-        calls="results/variants/vcfs/annot.variants.{chrom}.vcf.gz",
-        csvStats="results/variants/vcfs/snpEff.summary.{chrom}.csv",
+        calls="results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz",
+        csvStats="results/variantAnalysis/vcfs/snpEff.summary.{chrom}.csv",
     log:
         "logs/snpEff/snpEff.{chrom}.log",
     conda:
@@ -197,9 +197,9 @@ rule MissenseAndQualFilter:
     Filter VCFs for missense variants and quality (used later for diffsnps analysis)
     """
     input:
-        vcf="results/variants/vcfs/annot.variants.{chrom}.vcf.gz",
+        vcf="results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz",
     output:
-        "results/variants/vcfs/annot.missense.{chrom}.vcf",
+        "results/variantAnalysis/vcfs/annot.missense.{chrom}.vcf",
     log:
         "logs/snpSift/missense_vcf_{chrom}.log",
     conda:
@@ -218,7 +218,7 @@ rule ExtractBedVCF:
     """
     input:
         vcf=expand(
-            "results/variants/vcfs/annot.missense.{chrom}.vcf", chrom=config["chroms"]
+            "results/variantAnalysis/vcfs/annot.missense.{chrom}.vcf", chrom=config["chroms"]
         ),
     output:
         bed=expand(
