@@ -1,4 +1,4 @@
-- name: snakemake
+- name: rna-seq-pop
 
   on:
     push:
