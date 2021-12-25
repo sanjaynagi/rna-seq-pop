@@ -9,6 +9,7 @@ sys.stderr = open(snakemake.log[0], "w")
 from tools import *
 
 ### AIMS ###
+dataset = snakemake.params['dataset']
 metadata = pd.read_csv(snakemake.input['metadata'], sep="\t")
 metadata = metadata.sort_values(by='species').reset_index(drop=True)
 chroms = snakemake.params['chroms']
@@ -30,7 +31,7 @@ n_aims_per_chrom = {}
 for chrom in chroms:
 
     # read in and filter data
-    path = f"results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz"
+    path = f"results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz"
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops =  readAndFilterVcf(path=path,
                                                                chrom=chrom,
                                                                samples=metadata,
@@ -169,7 +170,7 @@ if metadata['species'].isin(['arabiensis']).any():
     for chrom in chroms:
 
         # read in and filter data
-        path = f"results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz"
+        path = f"results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz"
         vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops =  readAndFilterVcf(path=path,
                                                                 chrom=chrom,
                                                                 samples=metadata,

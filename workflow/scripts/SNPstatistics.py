@@ -44,7 +44,7 @@ coefdictchrom= {}
 for i, chrom in enumerate(chroms):
     
     # Read in and Filter VCF
-    path = f"results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz"
+    path = f"results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz"
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, populations = readAndFilterVcf(path=path,
                                                            chrom=chrom,
                                                            samples=metadata,
@@ -57,6 +57,12 @@ for i, chrom in enumerate(chroms):
     total_snps_per_chrom[chrom] = geno.shape[0]
     snpeffdict[chrom] = snpeff[1].value_counts(normalize=True)
 
+    # Plot SNP density
+    plot_density(pos, 
+                window_size=100000, 
+                title=f"Variant Density | {dataset} | Chromosome {chrom}", 
+                path=f"results/variantAnalysis/diversity/{dataset}_SNPdensity_{chrom}.png")
+
     ######## SNP counts per gene ########
     # Subset GFF to appropriate chromosome
     gff = features.query("seqid == @chrom").sort_values('start').reset_index(drop=True)
@@ -64,7 +70,7 @@ for i, chrom in enumerate(chroms):
     exons = features.query("type == 'exon'").reset_index(drop=True)
     
     ## Proportion SNPs per GFF feature
-    snpsPerGff = getSNPGFFstats(gff,  pos)
+    snpsPerGff = getSNPGffstats(gff,  pos)
     snpsPerGff.to_csv(snakemake.output['snpsPerGenomicFeature'], sep="\t", index=True)
 
     ## Calculate missing SNPs per sample, SNPs per gene etc

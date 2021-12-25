@@ -13,6 +13,33 @@ from collections import defaultdict
 from adjustText import adjust_text
     
 
+def saveAndPlot(statName, cohortText, cohortNoSpaceText, values, midpoints, prefix, chrom, ylim, colour, save=True):
+
+    """
+    Saves to .tsv and plots windowed statistics
+    """
+    
+    assert midpoints.shape == values.shape, f"arrays not same shape, midpoints shape - {midpoints.shape}, value shape - {values.shape}"
+    
+    if save:
+        # store windowed statistics as .tsv 
+        df = pd.DataFrame({'midpoint':midpoints, statName:values})
+        df.to_csv(f"{prefix}/{statName}_{cohortNoSpaceText}.{chrom}.tsv", sep="\t", index=False)
+
+    xtick = np.arange(0, midpoints.max(), 2000000)
+    ylim = np.max([ylim, values.max()])
+    plt.figure(figsize=[20,10])
+    sns.lineplot(midpoints, values, color=colour)
+    plt.xlim(0, midpoints.max()+1000)
+    plt.ylim(0, ylim)
+    plt.yticks(fontsize=14)
+    plt.xticks(xtick, rotation=45, ha='right', fontsize=14)
+    plt.ticklabel_format(style='plain', axis='x')
+    plt.title(f"{statName} | {cohortText} | Chromosome {chrom}", fontdict={'fontsize':20})
+    if save: plt.savefig(f"{prefix}/{statName}.{cohortNoSpaceText}.{chrom}.png",format="png")
+    
+
+    
 
 # get indices of duplicate names
 def list_duplicates(seq):
@@ -345,3 +372,13 @@ def getSNPGffstats(gff, pos):
     res[['total', 'called']] = res[['total', 'called']].astype(int)
     ref = ref.merge(res, left_index=True, right_index=True)
     return(ref)
+
+
+def getSNPsinType(gff, pos, feature, verbose=False):
+    gf = gff.query("type == @feature")
+
+    snps = pos.intersect_ranges(gf['start'], gf['end'])
+    total = pos.shape[0]
+    called = snps.shape[0]
+    prop = called/total
+    return(called, total, prop)
