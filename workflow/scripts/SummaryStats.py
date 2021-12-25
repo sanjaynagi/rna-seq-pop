@@ -39,7 +39,7 @@ coefdictchrom= {}
 for i, chrom in enumerate(chroms):
     
     # Read in and Filter VCF
-    path = f"results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz"
+    path = f"results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz"
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, populations = readAndFilterVcf(path=path,
                                                            chrom=chrom,
                                                            samples=metadata,
@@ -96,17 +96,3 @@ if ploidy > 1:
 
     coefdf = pd.DataFrame.from_dict(allcoef, orient='index', columns=['InbreedingCoefficient'])
     coefdf.to_csv(f"results/variantAnalysis/stats/inbreedingCoef.mean.tsv", sep="\t", index=True)
-
-# Total SNPs per chrom, all samples
-totalsnpsdf = pd.DataFrame.from_dict(total_snps_per_chrom, orient='index', columns=['Total_SNPs'])
-totalsnpsdf.to_csv(f"results/variantAnalysis/stats/totalSNPs.tsv", sep="\t", index=True)
-
-# SNPcount per gene
-snpcountsdf = pd.concat(snps_per_gene_allchroms)  
-snpcountsdf.to_csv("results/variantAnalysis/stats/nSNPsPerGene.tsv", sep="\t", index=True)
-genesNoSNPs = pd.DataFrame((snpcountsdf == 0).sum(axis=0), columns=['Genes with zero SNPs'])
-genesNoSNPs.to_csv("results/variantAnalysis/stats/nGenesZeroSNPs.tsv", sep="\t", index=True)
-
-# snpEff
-snpeffdf = pd.concat(snpeffdict)
-snpeffdf.to_csv("results/variantAnalysis/stats/snpEffProportions.tsv", sep="\t", index=True)

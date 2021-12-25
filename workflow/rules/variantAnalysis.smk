@@ -124,8 +124,8 @@ rule SNPstatistics:
     """
     input:
         vcf=expand(
-            "results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz",
-            chrom=config["chroms"],
+            "results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz",
+            chrom=config["chroms"], dataset=config['dataset'],
         ),
         metadata=config["samples"],
         gff=config["ref"]["gff"],
@@ -138,8 +138,14 @@ rule SNPstatistics:
         ),
     log:
         "logs/SNPstatistics.log"
+    conda:
+        "../envs/fstpca.yaml"
     params:
-
+        dataset=config['dataset'],
+        chroms=config["chroms"],
+        ploidy=config["VariantCalling"]["ploidy"],
+        missingprop=config["pbs"]["missingness"],
+        qualflt=30,
     script:
         "../scripts/SNPstatistics.py"
 
@@ -150,8 +156,8 @@ rule PCA:
     """
     input:
         vcf=expand(
-            "results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz",
-            chrom=config["chroms"],
+            "results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz",
+            chrom=config["chroms"], dataset=config['dataset'],
         ),
         metadata=config["samples"]
     output:
@@ -162,6 +168,8 @@ rule PCA:
         ),
     log:
         "logs/pca.log"
+    conda:
+        "../envs/fstpca.yaml"
     params:
         dataset=config["dataset"],
         chroms=config["chroms"],
@@ -178,15 +186,15 @@ rule SummaryStatistics:
     """
     input:
         vcf=expand(
-            "results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz",
-            chrom=config["chroms"],
+            "results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz",
+            chrom=config["chroms"], dataset=config['dataset'],
         ),
         metadata=config["samples"],
     output:
         inbreedingCoef="results/variantAnalysis/stats/inbreedingCoef.tsv" if config['VariantCalling']['ploidy'] > 1 else [],
         SequenceDiversity="results/variantAnalysis/stats/SequenceDiversity.tsv",
     log:
-        "logs/SummaryStatsAndPCA.log",
+        "logs/SummaryStatistics.log",
     conda:
         "../envs/fstpca.yaml"
     params:
@@ -206,19 +214,19 @@ rule WindowedFstPBS:
     input:
         metadata=config["samples"],
         vcf=expand(
-            "results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz",
-            chrom=config["chroms"],
+            "results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz",
+            chrom=config["chroms"], dataset=config['dataset'],
         ),
     output:
         Fst=expand(
-            "results/variantAnalysis/selection/fst/{comp}.{chrom}.fst.{wsize}.png",
+            "results/variantAnalysis/selection/fst/Fst.{comp}.{wsize}.{chrom}.png",
             comp=config["contrasts"],
             chrom=config["chroms"],
             wsize=config["pbs"]["windownames"],
         ),
         PBS=(
             expand(
-                "results/variantAnalysis/selection/pbs/{pbscomp}.{chrom}.pbs.{wsize}.png",
+                "results/variantAnalysis/selection/pbs/PBS.{pbscomp}.{wsize}.{chrom}.png",
                 pbscomp=config["pbs"]["contrasts"],
                 chrom=config["chroms"],
                 wsize=config["pbs"]["windownames"],
@@ -229,8 +237,9 @@ rule WindowedFstPBS:
     conda:
         "../envs/fstpca.yaml"
     log:
-        "logs/WindowedFstPCA.log",
+        "logs/WindowedFstPBS.log",
     params:
+        dataset=config['dataset'],
         DEcontrasts=config["contrasts"],
         pbs=config["pbs"]["activate"],
         pbscomps=config["pbs"]["contrasts"],
@@ -254,8 +263,8 @@ rule PerGeneFstPBSDxyPi:
         gff=config["ref"]["gff"],
         geneNames=config['ref']['genes2transcripts'],
         vcf=expand(
-            "results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz",
-            chrom=config["chroms"],
+            "results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz",
+            chrom=config["chroms"], dataset=config['dataset'],
         ),
     output:
         expand("results/variantAnalysis/selection/{stat}PerGene.tsv", stat=windowedStats),
@@ -265,8 +274,9 @@ rule PerGeneFstPBSDxyPi:
     conda:
         "../envs/fstpca.yaml"
     log:
-        "logs/PerGeneFstPBS.log",
+        "logs/PerGeneFstPBSDxyPi.log",
     params:
+        dataset=config['dataset'],
         DEcontrasts=config["contrasts"],
         pbs=config["pbs"]["activate"],
         pbscomps=config["pbs"]["contrasts"],
@@ -283,8 +293,8 @@ rule AncestryInformativeMarkers:
     """
     input:
         vcf=expand(
-            "results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz",
-            chrom=config["chroms"],
+            "results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz",
+            chrom=config["chroms"], dataset=config['dataset'],
         ),
         metadata=config["samples"],
         aims_zarr_gambcolu=config["AIMs"]["gambcolu"],
@@ -301,6 +311,7 @@ rule AncestryInformativeMarkers:
     conda:
         "../envs/fstpca.yaml"
     params:
+        dataset=config['dataset'],
         chroms=config["chroms"],
         ploidy=config["VariantCalling"]["ploidy"],
         missingprop=config["AIMs"]["missingness"],
@@ -315,14 +326,14 @@ rule Karyotype:
     """
     input:
         vcf=(
-            lambda wildcards: "results/variantAnalysis/vcfs/annot.variants.2L.vcf.gz"
+            lambda wildcards: "results/variantAnalysis/vcfs/{dataset}.2L.vcf.gz"
             if wildcards.karyo == "2La"
-            else "results/variantAnalysis/vcfs/annot.variants.2R.vcf.gz"
+            else "results/variantAnalysis/vcfs/{dataset}.2R.vcf.gz"
         ),
     output:
-        "results/karyotype/{karyo}.karyo.txt",
+        "results/karyotype/{karyo}.{dataset}.karyo.txt",
     log:
-        "logs/compKaryo/Karyo_{karyo}.log",
+        "logs/compKaryo/{dataset}.karyo.{karyo}.log",
     conda:
         "../envs/fstpca.yaml"
     params:

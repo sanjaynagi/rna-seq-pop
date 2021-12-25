@@ -85,7 +85,7 @@ rule vcfStats:
     QC stats of VCF files
     """
     input:
-        vcf="results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz",
+        vcf=expand("results/variantAnalysis/vcfs/{dataset}.{{chrom}}.vcf.gz", dataset=config['dataset']),
     output:
         vcfStats="results/variantAnalysis/vcfs/stats/{chrom}.txt",
     conda:

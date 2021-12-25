@@ -23,7 +23,7 @@ missingprop = snakemake.params['missingprop']
 for i, chrom in enumerate(chroms):
     
     # Read in and Filter VCF
-    path = f"results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz"
+    path = f"results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz"
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, populations = readAndFilterVcf(path=path,
                                                            chrom=chrom,
                                                            samples=metadata,
