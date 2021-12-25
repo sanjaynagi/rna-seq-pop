@@ -109,7 +109,7 @@ def GetDesiredOutputs(wildcards):
                     "results/variantAnalysis/selection/TajimasDPerGene.tsv",
                     "results/variantAnalysis/diversity/SequenceDivPerGene.tsv",
                     "results/variantAnalysis/diversity/DxyPerGene.tsv",
-                    "results/variantAnalysis/selection/fst/{comp}.{chrom}.fst.{wsize}.png",
+                    "results/variantAnalysis/selection/fst/Fst.{comp}.{wsize}.{chrom}.png",
                 ],
                 chrom=config["chroms"],
                 dataset=config["dataset"],

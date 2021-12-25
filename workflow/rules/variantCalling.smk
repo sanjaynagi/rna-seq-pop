@@ -175,7 +175,7 @@ rule snpEff:
         calls="results/variantAnalysis/vcfs/variants.{chrom}.vcf",
         dl="workflow/scripts/snpEff/db.dl",
     output:
-        calls="results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz",
+        calls=expand("results/variantAnalysis/vcfs/{dataset}.{{chrom}}.vcf.gz", dataset=config['dataset']),
         csvStats="results/variantAnalysis/vcfs/snpEff.summary.{chrom}.csv",
     log:
         "logs/snpEff/snpEff.{chrom}.log",
@@ -197,7 +197,7 @@ rule MissenseAndQualFilter:
     Filter VCFs for missense variants and quality (used later for diffsnps analysis)
     """
     input:
-        vcf="results/variantAnalysis/vcfs/annot.variants.{chrom}.vcf.gz",
+        vcf="results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz",
     output:
         "results/variantAnalysis/vcfs/annot.missense.{chrom}.vcf",
     log:

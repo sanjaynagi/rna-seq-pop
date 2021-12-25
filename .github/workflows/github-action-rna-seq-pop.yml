@@ -6,16 +6,21 @@ on:
       - main
 
 jobs:
-  check-bats-version:
+  run-workflow:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: snakemake/snakemake-github-action@v1.23.0
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      
+      - name: Test workflow 
+        uses: snakemake/snakemake-github-action@v1.23.0
         with:
           directory: '.test'
           snakefile: 'workflow/Snakefile'
           args: '--cores 4 --use-conda --conda-cleanup-pkgs cache'
-          submodules: True
-          stagein: '' # additional preliminary commands to run (can be multiline)
+ #         submodules: True
+#          stagein: '' # additional preliminary commands to run (can be multiline)
       
 
