@@ -78,7 +78,7 @@ rule IndexBams:
 """
 Get a sequence for the number of chunks to break the genome into
 """
-chunks = np.arange(1, config["VariantCalling"]["chunks"])
+chunks = np.arange(1, config["VariantAnalysis"]["chunks"])
 
 
 rule GenerateFreebayesParams:
@@ -100,9 +100,9 @@ rule GenerateFreebayesParams:
     log:
         "logs/GenerateFreebayesParams.log",
     params:
-        metadata=config["samples"],
+        metadata=config["metadata"],
         chroms=config["chroms"],
-        chunks=config["VariantCalling"]["chunks"],
+        chunks=config["VariantAnalysis"]["chunks"],
     conda:
         "../envs/diffexp.yaml"
     script:
@@ -124,7 +124,7 @@ rule VariantCallingFreebayes:
         log:
             "logs/VariantCallingFreebayes/{chrom}.{i}.log",
         params:
-            ploidy=config["VariantCalling"]["ploidy"],
+            ploidy=config["VariantAnalysis"]["ploidy"],
             pops="resources/populations.tsv",
         conda:
             "../envs/variants.yaml"
@@ -140,7 +140,7 @@ rule ConcatVCFs:
     input:
         calls=expand("results/variantAnalysis/vcfs/{{chrom}}/variants.{i}.vcf", i=chunks),
     output:
-        "results/variantAnalysis/vcfs/variants.{chrom}.vcf",
+        temp("results/variantAnalysis/vcfs/variants.{chrom}.vcf"),
     log:
         "logs/ConcatVCFs/{chrom}.log",
     conda:

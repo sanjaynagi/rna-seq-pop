@@ -29,7 +29,7 @@ for (m in mutation_data$Name){
   allele_list = list()
   # read data for each sample and subset to what we want
   for (sample in samples){
-    allele_list[[sample]] = fread(glue("results/alleleBalance/counts/{sample}_{m}_allele_counts.tsv"))[,c(1:8)] #for each sample read data, and store first 8 columns 
+    allele_list[[sample]] = fread(glue("results/variantAnalysis/variantsOfInterest/counts/{sample}_{m}_allele_counts.tsv"))[,c(1:8)] #for each sample read data, and store first 8 columns 
     allele_list[[sample]]$sample = sample                                            #add sample column
     allele_list[[sample]]$treatment = metadata$treatment[samples == sample]         #add treatment column
     allele_list[[sample]]$mutation = m
@@ -49,8 +49,8 @@ for (m in mutation_data$Name){
   mean_alleles = alleles %>% group_by(chrom, pos,ref, mutation, treatment) %>% summarise_at(.vars = c("cov","A","C","G","T", propstring)
                                                                                       , .funs = c(mean="mean"))
   #write to file, reorder mean_kdr_alleles
-  fwrite(alleles, glue("results/alleleBalance/csvs/{m}_alleleBalance.csv"))
-  fwrite(mean_alleles, glue("results/alleleBalance/csvs/mean_{m}_alleleBalance.csv"))
+  fwrite(alleles, glue("results/variantAnalysis/variantsOfInterest/csvs/{m}_alleleBalance.csv"))
+  fwrite(mean_alleles, glue("results/variantAnalysis/variantsOfInterest/csvs/mean_{m}_alleleBalance.csv"))
   
   all_list[[m]] = alleles
   mean_list[[m]] = mean_alleles

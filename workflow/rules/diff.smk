@@ -48,7 +48,7 @@ rule DifferentialGeneExpression:
     Produce PCAs, heatmaps, volcano plots
     """
     input:
-        metadata=config["samples"],
+        metadata=config["metadata"],
         genes2transcripts=config['ref']['genes2transcripts'],
         counts=expand("results/quant/{sample}", sample=samples),
     output:
@@ -78,7 +78,7 @@ rule DifferentialIsoformExpression:
     Produce volcano plots
     """
     input:
-        metadata=config["samples"],
+        metadata=config["metadata"],
         genes2transcripts=config['ref']['genes2transcripts'],
         counts=expand("results/quant/{sample}", sample=samples),
     output:
@@ -113,19 +113,19 @@ rule progressiveGenesDE:
     output:
         expand(
             "results/genediff/{name}.{direction}.progressive.tsv",
-            name=config["progressiveGenes"]["groups"],
+            name=config['DifferentialExpression']["progressiveGenes"]["groups"],
             direction=["up", "down"],
         ),
         expand(
             "results/isoformdiff/{name}.{direction}.progressive.tsv",
-            name=config["progressiveGenes"]["groups"],
+            name=config['DifferentialExpression']["progressiveGenes"]["groups"],
             direction=["up", "down"],
         ),
     params:
-        metadata=config["samples"],
-        comps=config["progressiveGenes"]["groups"],
-        pval=config["progressiveGenes"]["padj_threshold"],
-        fc=config["progressiveGenes"]["fc_threshold"],
+        metadata=config["metadata"],
+        comps=config['DifferentialExpression']["progressiveGenes"]["groups"],
+        pval=config['DifferentialExpression']["progressiveGenes"]["padj_threshold"],
+        fc=config['DifferentialExpression']["progressiveGenes"]["fc_threshold"],
     conda:
         "../envs/sleuth.yaml"
     log:
@@ -139,18 +139,18 @@ rule GeneSetEnrichment:
     Perform Gene Set Enrichment analysis with fgsea, on GO terms and KEGG pathways
     """
     input:
-        metadata=config["samples"],
-        gaf=config["GSEA"]["gaf"],
+        metadata=config["metadata"],
+        gaf=config['DifferentialExpression']["GSEA"]["gaf"],
         DEresults=expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
         diffsnps=(
             expand(
                 "results/variantAnalysis/diffsnps/{comp}.kissDE.tsv", comp=config["contrasts"]
             )
-            if config["diffsnps"]["activate"]
+            if config['miscellaneous']["diffsnps"]["activate"]
             else []
         ),
         Fst="results/variantAnalysis/selection/FstPerGene.tsv",
-        PBS="results/variantAnalysis/selection/PbsPerGene.tsv" if config["pbs"]["activate"] else [],
+        PBS="results/variantAnalysis/selection/PbsPerGene.tsv" if config['VariantAnalysis']['selection']["pbs"]["activate"] else [],
     output:
         expand(
             "results/gsea/genediff/{comp}.DE.{pathway}.tsv",
@@ -166,20 +166,20 @@ rule GeneSetEnrichment:
             "results/gsea/diffsnps/{comp}.diffsnps.{pathway}.tsv",
             comp=config["contrasts"],
             pathway=["kegg", "GO"],
-        ) if config["diffsnps"]["activate"] else [],
+        ) if config['miscellaneous']["diffsnps"]["activate"] else [],
         expand(
             "results/gsea/pbs/{pbscomp}.PBS.{pathway}.tsv",
-            pbscomp=config["pbs"]["contrasts"],
+            pbscomp=config["VariantAnalysis"]['selection']["pbs"]["contrasts"],
             pathway=["kegg", "GO"],
-        ) if config["pbs"]["activate"] else [],
+        ) if config["VariantAnalysis"]['selection']["pbs"]["activate"] else [],
     params:
         DEcontrasts=config["contrasts"],
-        VariantCalling=config["VariantCalling"]["activate"],
-        pbs=config["pbs"]["activate"],
-        pbscomps=config["pbs"]["contrasts"],
-        diffsnps=config["diffsnps"]["activate"],
-        replaceStringKegg=config["GSEA"]["replaceString"],
-        KeggSpeciesID=config["GSEA"]["KeggSpeciesID"],
+        VariantCalling=config["VariantAnalysis"]["activate"],
+        pbs=config["VariantAnalysis"]['selection']["pbs"]["activate"],
+        pbscomps=config["VariantAnalysis"]['selection']["pbs"]["contrasts"],
+        diffsnps=config['miscellaneous']["diffsnps"]["activate"],
+        replaceStringKegg=config['DifferentialExpression']["GSEA"]["replaceString"],
+        KeggSpeciesID=config['DifferentialExpression']["GSEA"]["KeggSpeciesID"],
     conda:
         "../envs/gsea.yaml"
     log:
@@ -205,8 +205,8 @@ rule Ag1000gSweepsDE:
         "../envs/fstpca.yaml"
     params:
         DEcontrasts=config["contrasts"],
-        pval=config["sweeps"]["padj_threshold"],
-        fc=config["sweeps"]["fc_threshold"],
+        pval=config['miscellaneous']["sweeps"]["padj_threshold"],
+        fc=config['miscellaneous']["sweeps"]["fc_threshold"],
     script:
         "../scripts/Ag1000gSweepsDE.py"
 
@@ -217,7 +217,7 @@ rule GeneCategoryContribution:
     """
     input:
         normcounts="results/quant/normcounts.tsv",
-        metadata=config["samples"],
+        metadata=config["metadata"],
     output:
         "results/quant/percentageContributionGeneCategories.tsv",
     log:
