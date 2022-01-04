@@ -1,7 +1,7 @@
 ################################          Common functions           ##################################
 
 ## If PBS is activated
-if config["pbs"]["activate"]:
+if config['VariantAnalysis']['selection']["pbs"]["activate"]:
     windowedStats = ["Fst", "Pbs"]
 else:
     windowedStats = ["Fst"]
@@ -15,7 +15,7 @@ def getFASTQs(wildcards, rules=None):
     """
     
     if config["fastq"]["auto"]:
-        units = pd.read_csv(config["samples"], sep="\t")
+        units = pd.read_csv(config["metadata"], sep="\t")
         units = (
             units.assign(fq1=f"resources/reads/" + units["sampleID"] + "_1.fastq.gz")
             .assign(fq2=f"resources/reads/" + units["sampleID"] + "_2.fastq.gz")
@@ -48,7 +48,7 @@ def GetDesiredOutputs(wildcards):
     wanted_input = []
 
     # QC & Coverage
-    if config["qc"]["activate"]:
+    if config["QualityControl"]["activate"]:
         wanted_input.extend(
             expand(
                 [
@@ -61,7 +61,7 @@ def GetDesiredOutputs(wildcards):
                 chrom=config["chroms"],
             )
         )
-        if config["VariantCalling"]["activate"]:
+        if config["VariantAnalysis"]["activate"]:
             wanted_input.extend(
             expand(
                 [
@@ -71,33 +71,35 @@ def GetDesiredOutputs(wildcards):
                 sample=samples,
             )
         )   
-
-    # Differential Expression outputs
-    wanted_input.extend(
-        expand(
-            [
-                "results/genediff/{comp}.csv",
-                "results/genediff/{dataset}_diffexp.xlsx",
-                "results/isoformdiff/{comp}.csv",
-                "results/isoformdiff/{dataset}_isoformdiffexp.xlsx",
-                "results/plots/PCA.pdf",
-                "results/quant/countStatistics.tsv",
-            ],
-            comp=config["contrasts"],
-            dataset=config["dataset"],
+    
+    if config['DifferentialExpression']['activate']:
+        
+        # Differential Expression outputs
+        wanted_input.extend(
+            expand(
+                [
+                    "results/genediff/{comp}.csv",
+                    "results/genediff/{dataset}_diffexp.xlsx",
+                    "results/isoformdiff/{comp}.csv",
+                    "results/isoformdiff/{dataset}_isoformdiffexp.xlsx",
+                    "results/plots/PCA.pdf",
+                    "results/quant/countStatistics.tsv",
+                ],
+                comp=config["contrasts"],
+                dataset=config["dataset"],
+            )
         )
-    )
 
-    if config["progressiveGenes"]["activate"]:
+    if config['DifferentialExpression']["progressiveGenes"]["activate"]:
         wanted_input.extend(
             expand(
                 "results/genediff/{name}.{direction}.progressive.tsv",
-                name=config["progressiveGenes"]["groups"],
+                name=config['DifferentialExpression']["progressiveGenes"]["groups"],
                 direction=["up", "down"],
             )
         )
 
-    if config["VariantCalling"]["activate"]:
+    if config["VariantAnalysis"]["activate"]:
         wanted_input.extend(
             expand(
                 [
@@ -114,12 +116,12 @@ def GetDesiredOutputs(wildcards):
                 chrom=config["chroms"],
                 dataset=config["dataset"],
                 comp=config["contrasts"],
-                wsize=config["pbs"]["windownames"],
+                wsize=config['VariantAnalysis']['selection']["pbs"]["windownames"],
             )
         )
 
 
-        if config['VariantCalling']['ploidy'] > 1:
+        if config['VariantAnalysis']['ploidy'] > 1:
             wanted_input.extend(
                 expand(
                     [
@@ -129,7 +131,7 @@ def GetDesiredOutputs(wildcards):
             )
 
 
-    if config["AIMs"]["activate"]:
+    if config['VariantAnalysis']["AIMs"]["activate"]:
         wanted_input.extend(
             expand(
                 [
@@ -142,10 +144,16 @@ def GetDesiredOutputs(wildcards):
             )
         )
 
-    if config["IRmutations"]["activate"]:
-        wanted_input.extend(["results/alleleBalance/alleleBalance.xlsx"])
+    if config['miscellaneous']["VariantsOfInterest"]["activate"]:
+        wanted_input.extend(
+            [
+                "results/variantAnalysis/variantsOfInterest/alleleBalance.xlsx",
+                "results/variantAnalysis/variantsOfInterest/VOI.heatmapPerSample.png",
+                "results/variantAnalysis/variantsOfInterest/VOI.heatmapPerTreatment.png"
+                ]
+            )
 
-    if config["GSEA"]["activate"]:
+    if config['DifferentialExpression']["GSEA"]["activate"]:
         wanted_input.extend(
             expand(
                 [
@@ -156,7 +164,7 @@ def GetDesiredOutputs(wildcards):
             )
         )
 
-    if config["VariantCalling"]["activate"] and config["GSEA"]["activate"]:
+    if config["VariantAnalysis"]["activate"] and config['DifferentialExpression']["GSEA"]["activate"]:
         wanted_input.extend(
             expand(
                 ["results/gsea/fst/{comp}.FST.{pathway}.tsv"],
@@ -165,7 +173,7 @@ def GetDesiredOutputs(wildcards):
             )
         )
 
-    if config["diffsnps"]["activate"]:
+    if config['miscellaneous']["diffsnps"]["activate"]:
         wanted_input.extend(
             expand(
                 [
@@ -175,7 +183,7 @@ def GetDesiredOutputs(wildcards):
             )
         )
 
-    if config["venn"]["activate"]:
+    if config['miscellaneous']["venn"]["activate"]:
         wanted_input.extend(
             expand(
                 [
@@ -186,27 +194,28 @@ def GetDesiredOutputs(wildcards):
             )
         )
 
-    if config["karyotype"]["activate"]:
+    if config['VariantAnalysis']["karyotype"]["activate"]:
         wanted_input.extend(
             expand(
                 ["results/karyotype/{karyo}.karyo.txt"],
-                karyo=config["karyotype"]["inversions"],
+                karyo=config['VariantAnalysis']["karyotype"]["inversions"],
             )
         )
 
-    if config["sweeps"]["activate"]:
-        wanted_input.extend(
-            expand(
-                [
-                    "results/genediff/ag1000gSweeps/{comp}_swept.tsv",
-                ],
-                comp=config["contrasts"],
+    if config['miscellaneous']["sweeps"]["activate"]:
+        if config['DifferentialExpression']['activate']:
+            wanted_input.extend(
+                expand(
+                    [
+                        "results/genediff/ag1000gSweeps/{comp}_swept.tsv",
+                    ],
+                    comp=config["contrasts"],
+                )
             )
-        )
 
     # wanted_input.extend(["results/quant/percentageContributionGeneCategories.tsv"])
 
-    return wanted_input
+    return(wanted_input)
 
 
 def welcome(version):

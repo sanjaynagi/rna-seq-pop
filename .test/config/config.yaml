@@ -1,4 +1,4 @@
-samples: config/samples.tsv
+metadata: config/samples.tsv
 units: config/units.tsv
 
 # Dataset name
@@ -26,79 +26,92 @@ ref:
 # Chromosome names for the appropriate species. Should correspond to the reference fasta/gff files. 
 chroms: ['X']
 
-
-qc:
-      activate: True
-
 # List of contrasts to do DE and Fst analysis on. Should correspond to the 'treatment' columns of the samples.tsv file, and be separated by an underscore "_". i.e ['control_case'], or ['Kisumu_Tiassale'].
 # The treatment names themselves must not contain underscores
 contrasts:
       - 'Kisumu_ContTia'
       - 'ContTia_PiriTia'
 
-progressiveGenes:
-      activate: True
-      padj_threshold: 0.05
-      fc_threshold: 1.5
-      groups: "Kisumu_ContTia_PiriTia"
 
-GSEA:
-      activate: True
-      gaf: "resources/reference/X-test-PEST_GO.gaf"
-      KeggSpeciesID: "aga" # 3 letter KEGG species identifier
-      replaceString: "AgaP_"
+QualityControl:                               # Activate Quality control analyses
+      activate: False
+
+DifferentialExpression:                       # Activate differential expression analyses
+      activate: False   
+
+      progressiveGenes:
+            activate: True
+            padj_threshold: 0.05
+            fc_threshold: 1.5
+            groups: "Kisumu_ContTia_PiriTia"
+
+      GSEA:
+            activate: True
+            gaf: "resources/reference/X-test-PEST_GO.gaf"
+            KeggSpeciesID: "aga" # 3 letter KEGG species identifier
+            replaceString: "AgaP_"
 
 
-VariantCalling:
+VariantAnalysis:
       activate: True
       ploidy: 1
       chunks: 9 # Number of chunks to split the genome into when parallelising freebayes
 # Number of chunks to split the genome into when parallelising freebayes
-
-# If activate:True, creates allele balance .xlsx reports on IR mutations of choice
-IRmutations: 
-      activate: True
-      path: "resources/test-IRmutations.tsv"
-
-# Do we want to run pbs (Needs three conditions, two more closely related and a slight outgroup)
-pbs:
-      activate: True
-      contrasts: 
-            - 'PiriTia_ContTia_Kisumu'
-      windownames: ['small', 'large']
-      windowsizes: [1000, 5000]
-      windowsteps: [500, 1000]
       missingness: 0.3
+      pca:
+            activate: True
 
-# For Anopheles gambiae s.l only - run Ancestry Informative Marker analysis.
-AIMs:
-      activate: True
-      missingness: 0.5                                # proportion between 0 and 1 
-      gambcolu: "resources/gamb_vs_colu.zarr"         # path to gambcolu AIMs
-      arab: "resources/gambcolu_vs_arab.zarr"         # path to arab AIMs
+      summaryStatistics:
+            activate: True
 
-# Run analysis with compkaryo to determine proportion % karyotype
-# Only 2la and 2Rb reliable for now. 
-karyotype:
-        activate: False
-        inversions:
-             - "2La"
-             - "2Rj"
-             - "2Rb"
-             - "2Rc_col"
-             - "2Rc_gam"
-             - "2Rd"
-             - "2Ru"
+      selection:
+            activate: True
+            # Do we want to run pbs (Needs three conditions, two more closely related and a slight outgroup)
+            pbs:
+                  activate: True
+                  contrasts: 
+                        - 'PiriTia_ContTia_Kisumu'
+                  windownames: ['small', 'large']
+                  windowsizes: [1000, 5000]
+                  windowsteps: [500, 1000]
+                  missingness: 0.3
+
+      # For Anopheles gambiae s.l only - run Ancestry Informative Marker analysis.
+      AIMs:
+            activate: True
+            missingness: 0.5                                # proportion between 0 and 1 
+            gambcolu: "resources/gamb_vs_colu.zarr"         # path to gambcolu AIMs
+            arab: "resources/gambcolu_vs_arab.zarr"         # path to arab AIMs
+
+      # Run analysis with compkaryo to determine proportion % karyotype
+      # Only 2la and 2Rb reliable for now. 
+      karyotype:
+            activate: False
+            inversions:
+                  - "2La"
+                  - "2Rj"
+                  - "2Rb"
+                  - "2Rc_col"
+                  - "2Rc_gam"
+                  - "2Rd"
+                  - "2Ru"
 
 
-sweeps:
-      activate: True
-      padj_threshold: 0.05
-      fc_threshold: 1.5
 
 
-diffsnps:
-        activate: False
+miscellaneous:
+# If activate:True, creates allele balance .xlsx reports on IR mutations of choice
+      VariantsOfInterest: 
+            activate: True
+            path: "resources/test-IRmutations.tsv"
 
-venn:
-        activate: False
+      sweeps:
+            activate: False
+            padj_threshold: 0.05
+            fc_threshold: 1.5
+
+      diffsnps:
+            activate: False
+
+      venn:
+            activate: False

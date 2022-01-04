@@ -10,14 +10,14 @@ rule CheckInputs:
     output:
         touch("results/.input.check"),
     params:
-        metadata=config["samples"],
+        metadata=config["metadata"],
         chroms=config["chroms"],
         gffpath=config["ref"]["gff"],
         gene_names=config["ref"]["genes2transcripts"],
         contrasts=config["contrasts"],
         fastq=config["fastq"]["auto"],
         table=config["fastq"]["table"],
-        sweeps=config["sweeps"]["activate"],
+        sweeps=config['miscellaneous']["sweeps"]["activate"],
     log:
         "logs/CheckInputs.log",
     conda:
