@@ -55,7 +55,7 @@ for i, chrom in enumerate(chroms):
             midpoint = allel.moving_statistic(pos, np.mean, size=size, step=step)
             
             cohortNoSpaceText = name + "." + wname
-            saveAndPlot(statName="Fst",
+            plotWindowed(statName="Fst",
                         cohortText=cohortText,
                         cohortNoSpaceText=cohortNoSpaceText,
                         values=FstArray, 
@@ -83,7 +83,7 @@ for i, chrom in enumerate(chroms):
                 midpoint = allel.moving_statistic(pos, np.mean, size=size, step=step)
 
                 cohortNoSpaceText = pbscomp + "." + wname
-                saveAndPlot(statName="PBS", 
+                plotWindowed(statName="PBS", 
                             cohortText=cohortText,
                             cohortNoSpaceText=cohortNoSpaceText,
                             values=pbsArray, 

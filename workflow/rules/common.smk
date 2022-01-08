@@ -105,8 +105,10 @@ def GetDesiredOutputs(wildcards):
                 [
                     "results/variantAnalysis/vcfs/stats/{chrom}.txt",
                     "results/variantAnalysis/pca/PCA-{chrom}-{dataset}.png",
+                    "results/variantAnalysis/SNPstats/snpsPerGenomicFeature.tsv",
+                    "results/variantAnalysis/SNPstats/nSNPsPerGene.tsv",
                     "results/variantAnalysis/diversity/{dataset}_SNPdensity_{chrom}.png",
-                    "results/variantAnalysis/stats/SequenceDiversity.tsv",
+                    "results/variantAnalysis/diversity/SequenceDiversity.tsv",
                     "results/variantAnalysis/selection/FstPerGene.tsv",
                     "results/variantAnalysis/selection/TajimasDPerGene.tsv",
                     "results/variantAnalysis/diversity/SequenceDivPerGene.tsv",
@@ -125,7 +127,7 @@ def GetDesiredOutputs(wildcards):
             wanted_input.extend(
                 expand(
                     [
-                        "results/variantAnalysis/stats/inbreedingCoef.tsv",
+                        "results/variantAnalysis/diversity/inbreedingCoef.tsv",
                     ]
                 )
             )
@@ -197,7 +199,10 @@ def GetDesiredOutputs(wildcards):
     if config['VariantAnalysis']["karyotype"]["activate"]:
         wanted_input.extend(
             expand(
-                ["results/karyotype/{karyo}.karyo.txt"],
+                [
+                    "results/karyotype/{karyo}.karyo.txt",
+                    "results/karyotype/karyoFreqs.png"
+                ],
                 karyo=config['VariantAnalysis']["karyotype"]["inversions"],
             )
         )

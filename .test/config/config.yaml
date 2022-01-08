@@ -60,12 +60,15 @@ VariantAnalysis:
       missingness: 0.3
       pca:
             activate: True
+            missingness: 0.4
 
       summaryStatistics:
             activate: True
+            missingness: 0.4
 
       selection:
             activate: True
+            missingness: 0.5
             # Do we want to run pbs (Needs three conditions, two more closely related and a slight outgroup)
             pbs:
                   activate: True
@@ -74,7 +77,6 @@ VariantAnalysis:
                   windownames: ['small', 'large']
                   windowsizes: [1000, 5000]
                   windowsteps: [500, 1000]
-                  missingness: 0.3
 
       # For Anopheles gambiae s.l only - run Ancestry Informative Marker analysis.
       AIMs:

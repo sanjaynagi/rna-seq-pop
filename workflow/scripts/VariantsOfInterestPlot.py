@@ -39,25 +39,15 @@ def getAlleleFreqTable(muts, Path, var="sample", mean_=False):
     voiFreqTable = voiData.pivot(index="name", columns=var).round(2).droplevel(0, axis=1) 
     return(voiFreqTable)
 
-def plotAlleleFreqs(voiFreqTable, path, xlab="Sample", ylab="Variant Of Interest", cmap=sns.cubehelix_palette(start=.5, rot=-.75, as_cmap=True)):
-    plt.figure(figsize=[10,10])
-    sns.heatmap(voiFreqTable, cmap=cmap,
-                   linewidths=0.8,linecolor="white",annot=True)
-    plt.xticks(fontsize=11, rotation=45, ha='right',rotation_mode="anchor")
-    plt.yticks(fontsize=11)
-    plt.xlabel(xlab, fontdict={'fontsize':14}, labelpad=20)
-    plt.ylabel(ylab, fontdict={'fontsize':14})
-    plt.savefig(path)
-    plt.show()
 
 
 ## Run for all samples
 df = getAlleleFreqTable(muts, "results/variantAnalysis/variantsOfInterest/csvs/{mut}_alleleBalance.csv", var="sample")
-plotAlleleFreqs(df, path="results/variantAnalysis/variantsOfInterest/csvs/{mut}_allele_balance.csv")
+plotRectangular(df, path="results/variantAnalysis/variantsOfInterest/csvs/{mut}_allele_balance.csv")
 
 
 ## Run for avarage frequencies across treatments
 df = getAlleleFreqTable(muts, "results/variantAnalysis/variantsOfInterest/csvs/mean_{mut}_allele_balance.csv", var="treatment", mean_=True)
-plotAlleleFreqs(df, path="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerTreatment.png", xlab="strain")
+plotRectangular(df, path="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerTreatment.png", xlab="strain")
 
     
