@@ -13,7 +13,7 @@ from collections import defaultdict
 from adjustText import adjust_text
     
 
-def saveAndPlot(statName, cohortText, cohortNoSpaceText, values, midpoints, prefix, chrom, ylim, colour, save=True):
+def plotWindowed(statName, cohortText, cohortNoSpaceText, values, midpoints, prefix, chrom, ylim, colour, save=True):
 
     """
     Saves to .tsv and plots windowed statistics
@@ -39,6 +39,25 @@ def saveAndPlot(statName, cohortText, cohortNoSpaceText, values, midpoints, pref
     if save: plt.savefig(f"{prefix}/{statName}.{cohortNoSpaceText}.{chrom}.png",format="png")
     
 
+def plotRectangular(rectangularTable, path, xlab="Sample", ylab="Variant Of Interest", title=None, dpi=200, figsize=[10,10], vmax=None, rotate=True, cmap=sns.cubehelix_palette(start=.5, rot=-.75, as_cmap=True)):
+    """
+    plots and saves heatmap rectangular data
+    """
+    plt.figure(figsize=figsize)
+    sns.heatmap(rectangularTable, cmap=cmap, vmax=vmax,
+                   linewidths=0.8,linecolor="white",annot=True)
+    if title != None: plt.title(title)
+    
+    if rotate:
+        plt.xticks(fontsize=11, rotation=45, ha='right',rotation_mode="anchor")
+    else:
+        plt.xticks(fontsize=13)
+        
+    plt.yticks(fontsize=11)
+    plt.xlabel(xlab, fontdict={'fontsize':14}, labelpad=20)
+    plt.ylabel(ylab, fontdict={'fontsize':14})
+    plt.savefig(path, bbox_inches='tight', dpi=dpi)
+    plt.show()
     
 
 # get indices of duplicate names
@@ -114,7 +133,7 @@ def get_numbers_dict(ploidy):
     return(numbers)
 
 
-def readAndFilterVcf(path, chrom, samples, numbers, ploidy, qualflt=30, missingfltprop=0.6, plot=True, verbose=False):
+def readAndFilterVcf(path, chrom, samples, numbers, ploidy, qualflt=30, missingfltprop=0.6, verbose=False):
 
     """
     This function reads a VCF file, and filters it to a given quality and missingness proportion
@@ -341,37 +360,44 @@ def getSNPGffstats(gff, pos):
     Calculates number of sites found that intersect with a GFF feature and the proportion % 
     """
     
-    assert 'exon' in gff['type'].unique(), "There are no values for 'exon' in the gff 'type' column. Required"
-
-    # Get sequence from 1 to chromosome length
     refBases = allel.SortedIndex(np.arange(1, gff['end'].max()+1))
 
-    # retrieve introns which dont exist in gff
-    exons = gff.query("type == 'exons'")
-    # Make note of when genes change to next one (when we calculate intron we must remove these rows as they are
-    # stretches of bases between genes (not introns)
-    my_column_changes = exons["Parent"].shift(-1) != exons["Parent"]
-    my_column_changes[0] = False # First value is False
-    exons['new'] = my_column_changes
-    introns = pd.DataFrame({'start':exons['end'], 'end': exons['start'].shift(-1), 'new':exons['new']}).dropna()
-    introns['type'] = 'intron'
-    introns = introns.query("new == False") # Get rid of incorrect intergenic rows
+    exons = gff.query("type == 'exon'")
+    genes = gff.query("type == 'gene'")
     
-    # Merge reduced gff with out introns
-    gff = gff[['type', 'start', 'end']].merge(introns, how='outer').drop(columns='new')
+    ## Get intergenic and intronic SNP numbers
+    snpsInGenesBool = pos.locate_intersection_ranges(genes['start'], genes['end'])[0] # Locate genic snps
+    intergenicSNPs = pos[~snpsInGenesBool]                 # get complement of genic snps - intergenic
+    genicSNPs = pos[snpsInGenesBool]             
+    snpsInExonsBool = genicSNPs.locate_intersection_ranges(exons['start'], exons['end'])[0]
+    exonicSNPs = genicSNPs[snpsInExonsBool]
+    intronicSNPs = genicSNPs[~snpsInExonsBool]
 
+    ## Get intergenic and intronic SNP numbers in Reference genome
+    snpsInGenesBool = refBases.locate_intersection_ranges(genes['start'], genes['end'])[0] # Locate genic snps
+    RefIntergenicSNPs = refBases[~snpsInGenesBool]                 # get complement of genic snps - intergenic
+    RefGenicSNPs = refBases[snpsInGenesBool]             
+    snpsInExonsBool = RefGenicSNPs.locate_intersection_ranges(exons['start'], exons['end'])[0]
+    RefExonicSNPs = RefGenicSNPs[snpsInExonsBool]
+    RefIntronicSNPs = RefGenicSNPs[~snpsInExonsBool]
+    
     RefDict = {}
     SamplesDict = {}
-    for feature in ['chromosome', 'gene','exon','intron', 'three_prime_UTR', 'five_prime_UTR']:
+    for feature in ['chromosome', 'gene', 'exon', 'intron', 'three_prime_UTR', 'five_prime_UTR']:
                 RefDict[feature] = getSNPsinType(gff, refBases, feature, verbose=False)
                 SamplesDict[feature] = getSNPsinType(gff, pos, feature, verbose=False)
     
-    # Make data frame from dicts
+    RefDict['intergenic'] = [RefIntergenicSNPs.shape[0], refBases.shape[0], RefIntergenicSNPs.shape[0]/refBases.shape[0]]
+    SamplesDict['intergenic'] = [intergenicSNPs.shape[0], pos.shape[0], intergenicSNPs.shape[0]/pos.shape[0]]
+    RefDict['intron'] = [RefIntronicSNPs.shape[0], refBases.shape[0], RefIntronicSNPs.shape[0]/refBases.shape[0]]
+    SamplesDict['intron'] = [intronicSNPs.shape[0], pos.shape[0], intronicSNPs.shape[0]/pos.shape[0]]
+    
     ref = pd.DataFrame.from_dict(RefDict).T.rename(columns={2:'ReferenceGenomeProportion'})[['ReferenceGenomeProportion']]
     res = pd.DataFrame.from_dict(SamplesDict).T.rename(columns={0:'called', 1:'total', 2:'proportion'})
     res[['total', 'called']] = res[['total', 'called']].astype(int)
     ref = ref.merge(res, left_index=True, right_index=True)
     return(ref)
+
 
 
 def getSNPsinType(gff, pos, feature, verbose=False):

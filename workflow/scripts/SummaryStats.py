@@ -55,7 +55,7 @@ for i, chrom in enumerate(chroms):
     coefdict= {}
     allcoef = defaultdict(list)
 
-    for pop in metadata.treatment.unique():
+    for pop in metadata['treatment'].unique():
 
         # Sequence diversity 
         seqdivdict[pop] = allel.sequence_diversity(pos, acsubpops[pop])
@@ -84,10 +84,20 @@ seqdivdictchrom= flip_dict(seqdivdictchrom)
 thetadictchrom = flip_dict(thetadictchrom)
 if ploidy > 1: coefdictchrom = flip_dict(coefdictchrom)
 
-# Get stats per chromosome
-pd.DataFrame.from_dict(seqdivdictchrom).to_csv("results/variantAnalysis/stats/SequenceDiversity.tsv", sep="\t", index=True)
-pd.DataFrame.from_dict(thetadictchrom).to_csv("results/variantAnalysis/stats/WattersonsTheta.tsv", sep="\t", index=True)
-if ploidy > 1: pd.DataFrame.from_dict(coefdictchrom).to_csv("results/variantAnalysis/stats/inbreedingCoef.tsv", sep="\t", index=True)
+# Get stats per chromosome and plot heatmap
+pidf = pd.DataFrame.from_dict(seqdivdictchrom)
+pidf.to_csv("results/variantAnalysis/diversity/SequenceDiversity.tsv", sep="\t", index=True)
+plotRectangular(pidf, path="results/variantAnalysis/diversity/piPerChrom.png", ylab="Chromosome", xlab="Treatment", figsize=[5,5], title=r'$\pi$')
+thetadf = pd.DataFrame.from_dict(thetadictchrom)
+plotRectangular(thetadf, path="results/variantAnalysis/diversity/thetaPerChrom.png", ylab="Chromosome", xlab="Treatment", figsize=[5,5], title=r'$\theta$')
+thetadf.to_csv("results/variantAnalysis/diversity/WattersonsTheta.tsv", sep="\t", index=True)
+
+thetamean = thetadf.apply(np.mean, axis=0)
+pimean = pidf.apply(np.mean, axis=0)
+summaryStats = pd.DataFrame({r'$\theta$':thetamean, r'$\pi$':pimean})
+plotRectangular(summaryStats, path="results/variantAnalysis/diversity/pi_theta.overall.png", ylab="Treatment", xlab="Statistic", figsize=[5,5], rotate=False)
+
+if ploidy > 1: pd.DataFrame.from_dict(coefdictchrom).to_csv("results/variantAnalysis/diversity/inbreedingCoef.tsv", sep="\t", index=True)
 
 # Get genome wide average stats
 if ploidy > 1:
@@ -95,4 +105,4 @@ if ploidy > 1:
         allcoef[pop] = np.nanmean(allcoef[pop])
 
     coefdf = pd.DataFrame.from_dict(allcoef, orient='index', columns=['InbreedingCoefficient'])
-    coefdf.to_csv(f"results/variantAnalysis/stats/inbreedingCoef.mean.tsv", sep="\t", index=True)
+    coefdf.to_csv(f"results/variantAnalysis/diversity/inbreedingCoef.mean.tsv", sep="\t", index=True)
