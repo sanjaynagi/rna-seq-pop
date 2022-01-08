@@ -14,7 +14,8 @@ rule SNPstatistics:
         metadata=config["metadata"],
         gff=config["ref"]["gff"],
     output:
-        snpsPerGenomicFeature = "results/variantAnalysis/stats/snpsPerGenomicFeature.tsv",
+        snpsPerGenomicFeature = "results/variantAnalysis/SNPstats/snpsPerGenomicFeature.tsv",
+        snpsPerGene = "results/variantAnalysis/SNPstats/nSNPsPerGene.tsv",
         SNPdensityFig=expand(
             "results/variantAnalysis/diversity/{dataset}_SNPdensity_{chrom}.png",
             chrom=config["chroms"],
@@ -28,7 +29,7 @@ rule SNPstatistics:
         dataset=config['dataset'],
         chroms=config["chroms"],
         ploidy=config["VariantAnalysis"]["ploidy"],
-        missingprop=config["VariantAnalysis"]['selection']["pbs"]["missingness"],
+        missingprop=config["VariantAnalysis"]['selection']["missingness"],
         qualflt=30,
     script:
         "../scripts/SNPstatistics.py"
@@ -58,7 +59,7 @@ rule PCA:
         dataset=config["dataset"],
         chroms=config["chroms"],
         ploidy=config["VariantAnalysis"]["ploidy"],
-        missingprop=config['VariantAnalysis']["missingness"],
+        missingprop=config['VariantAnalysis']['pca']["missingness"],
         qualflt=30,
     script:
         "../scripts/pca.py"
@@ -75,8 +76,11 @@ rule SummaryStatistics:
         ),
         metadata=config["metadata"],
     output:
-        inbreedingCoef="results/variantAnalysis/stats/inbreedingCoef.tsv" if config['VariantAnalysis']['ploidy'] > 1 else [],
-        SequenceDiversity="results/variantAnalysis/stats/SequenceDiversity.tsv",
+        inbreedingCoef="results/variantAnalysis/diversity/inbreedingCoef.tsv" if config['VariantAnalysis']['ploidy'] > 1 else [],
+        pi="results/variantAnalysis/diversity/SequenceDiversity.tsv",
+        pi_png="results/variantAnalysis/diversity/piPerChrom.png",
+        theta="results/variantAnalysis/diversity/WattersonsTheta.tsv",
+        theta_png="results/variantAnalysis/diversity/thetaPerChrom.png"
     log:
         "logs/SummaryStatistics.log",
     conda:
@@ -85,7 +89,7 @@ rule SummaryStatistics:
         dataset=config["dataset"],
         chroms=config["chroms"],
         ploidy=config["VariantAnalysis"]["ploidy"],
-        missingprop=config['VariantAnalysis']["missingness"],
+        missingprop=config['VariantAnalysis']['summaryStatistics']["missingness"],
         qualflt=30,
     script:
         "../scripts/SummaryStats.py"
@@ -129,7 +133,7 @@ rule WindowedFstPBS:
         pbscomps=config['VariantAnalysis']['selection']["pbs"]["contrasts"],
         chroms=config["chroms"],
         ploidy=config["VariantAnalysis"]["ploidy"],
-        missingprop=config['VariantAnalysis']["missingness"],
+        missingprop=config['VariantAnalysis']['selection']["missingness"],
         qualflt=30,
         windowsizes=config['VariantAnalysis']['selection']["pbs"]["windowsizes"],
         windowsteps=config['VariantAnalysis']['selection']["pbs"]["windowsteps"],
@@ -166,7 +170,7 @@ rule PerGeneFstPBSDxyPi:
         pbscomps=config['VariantAnalysis']['selection']["pbs"]["contrasts"],
         chroms=config["chroms"],
         ploidy=config["VariantAnalysis"]["ploidy"],
-        missingprop=config['VariantAnalysis']["missingness"],
+        missingprop=config['VariantAnalysis']['selection']["missingness"],
     script:
         "../scripts/PerGeneFstPBS.py"
 
@@ -229,3 +233,26 @@ rule Karyotype:
         <(python {params.basedir}/scripts/compkaryo/compkaryo/compkaryo.py {input.vcf} {wildcards.karyo} -p {params.ploidy}) | 
         column -s $'\\t' -t | sort -k 1 > {output}
         """
+
+
+
+rule KaryotypePlots:
+    """
+    Plot karyotype results
+    """
+    input:
+        expand("results/karyotype/{karyo}.{dataset}.karyo.txt", karyo=config['VariantAnalysis']['karyotype']['inversions'], dataset=config['dataset'])
+    output:
+        "results/karyotype/karyoFreqs.png"
+    log:
+        "logs/compKaryo/KaryotypePlots.log",
+    conda:
+        "../envs/fstpca.yaml"
+    params:
+        ploidy=config["VariantAnalysis"]["ploidy"],
+        inversions=config['VariantAnalysis']['karyotype']['inversions'],
+    script:
+        """
+        ../scripts/KaryoPlots.py
+        """
+

@@ -33,6 +33,7 @@ def isnotmissing(gn):
     return((gn != -1).all())
 
 #initialise dicts
+snpsPerGff = {}
 total_snps_per_chrom = {}
 snps_per_gene_allchroms = {}
 snpeffdict = {}
@@ -70,8 +71,8 @@ for i, chrom in enumerate(chroms):
     exons = features.query("type == 'exon'").reset_index(drop=True)
     
     ## Proportion SNPs per GFF feature
-    snpsPerGff = getSNPGffstats(gff,  pos)
-    snpsPerGff.to_csv(snakemake.output['snpsPerGenomicFeature'], sep="\t", index=True)
+    snpsPerGff[chrom] = getSNPGffstats(gff,  pos)
+    snpsPerGff[chrom]['chromosome'] = chrom
 
     ## Calculate missing SNPs per sample, SNPs per gene etc
     snpsnotmissing = {}
@@ -102,16 +103,20 @@ for i, chrom in enumerate(chroms):
 
     snps_per_gene_allchroms[chrom] = pd.DataFrame.from_dict(flip_dict(snps_per_gene))
 
+snpsPerGff = pd.concat(snpsPerGff).reset_index().rename(columns={'level_1':'feature'})
+snpsPerGff = snpsPerGff.groupby('feature').agg({'ReferenceGenomeProportion': 'mean', 'called':'sum', 'proportion': 'mean', 'total':'sum'})
+snpsPerGff.to_csv(snakemake.output['snpsPerGenomicFeature'], sep="\t", index=True)
+
 # Total SNPs per chrom, all samples
 totalsnpsdf = pd.DataFrame.from_dict(total_snps_per_chrom, orient='index', columns=['Total_SNPs'])
-totalsnpsdf.to_csv(f"results/variantAnalysis/stats/totalSNPs.tsv", sep="\t", index=True)
+totalsnpsdf.to_csv(f"results/variantAnalysis/SNPstats/totalSNPs.tsv", sep="\t", index=True)
 
 # SNPcount per gene
 snpcountsdf = pd.concat(snps_per_gene_allchroms)  
-snpcountsdf.to_csv("results/variantAnalysis/stats/nSNPsPerGene.tsv", sep="\t", index=True)
+snpcountsdf.to_csv("results/variantAnalysis/SNPstats/nSNPsPerGene.tsv", sep="\t", index=True)
 genesNoSNPs = pd.DataFrame((snpcountsdf == 0).sum(axis=0), columns=['Genes with zero SNPs'])
-genesNoSNPs.to_csv("results/variantAnalysis/stats/nGenesZeroSNPs.tsv", sep="\t", index=True)
+genesNoSNPs.to_csv("results/variantAnalysis/SNPstats/nGenesZeroSNPs.tsv", sep="\t", index=True)
 
 # snpEff summary
 snpeffdf = pd.concat(snpeffdict)
-snpeffdf.to_csv("results/variantAnalysis/stats/snpEffProportions.tsv", sep="\t", index=True)
+snpeffdf.to_csv("results/variantAnalysis/SNPstats/snpEffProportions.tsv", sep="\t", index=True)
