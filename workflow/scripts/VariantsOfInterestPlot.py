@@ -20,34 +20,14 @@ muts['pos'] = muts['Location'].str.split(":").str.get(1).str.split("-").str.get(
 muts = muts.sort_values(['chrom', 'pos'])
 
 
-def getAlleleFreqTable(muts, Path, var="sample", mean_=False):
-    """
-    This function loops through the mutations, reads in its csv file containing frequencies
-    and stores as a rectangular matrix for heatmap plotting.
-    """
-    Dict = {}
-    for mut in muts['Name']:
-        df = pd.read_csv(Path.format(mut=mut))
-        if mean_:
-            df['gene'] = muts[muts.Name == mut]['Gene'].iloc[0]
-        df['name'] = df['chrom'] + ":"+ df['pos'].astype(str) + "  " + df['gene'] + " | " + df['mutation']
-        df['frequency'] = df.filter(like="proportion").sum(axis=1)
-        Dict[mut] = df[['name', var, 'frequency']]
-
-    voiData = pd.concat(Dict)
-    # Make rectangular
-    voiFreqTable = voiData.pivot(index="name", columns=var).round(2).droplevel(0, axis=1) 
-    return(voiFreqTable)
-
-
-
 ## Run for all samples
-df = getAlleleFreqTable(muts, "results/variantAnalysis/variantsOfInterest/csvs/{mut}_alleleBalance.csv", var="sample")
+df, annot = getAlleleFreqTable(muts, "results/variantAnalysis/variantsOfInterest/csvs/{mut}_alleleBalance.csv", var="sample")
 plotRectangular(df, path="results/variantAnalysis/variantsOfInterest/csvs/{mut}_allele_balance.csv")
 
 
 ## Run for avarage frequencies across treatments
-df = getAlleleFreqTable(muts, "results/variantAnalysis/variantsOfInterest/csvs/mean_{mut}_allele_balance.csv", var="treatment", mean_=True)
+df2, annot2 = getAlleleFreqTable(muts, "results/variantAnalysis/variantsOfInterest/csvs/mean_{mut}_allele_balance.csv", var="treatment", mean_=True)
 plotRectangular(df, path="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerTreatment.png", xlab="strain")
 
-    
+
+plotTwoRectangular(df, annot, df2, annot2, path="results/variantAnalysis/variantsOfInterest/VOI.heatmapBothPlots.png", ratio='atuo')
