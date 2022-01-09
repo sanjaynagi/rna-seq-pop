@@ -39,14 +39,11 @@ def plotWindowed(statName, cohortText, cohortNoSpaceText, values, midpoints, pre
     if save: plt.savefig(f"{prefix}/{statName}.{cohortNoSpaceText}.{chrom}.png",format="png")
     
 
-def plotRectangular(rectangularTable, path, xlab="Sample", ylab="Variant Of Interest", title=None, dpi=200, figsize=[10,10], vmax=None, rotate=True, cmap=sns.cubehelix_palette(start=.5, rot=-.75, as_cmap=True)):
-    """
-    plots and saves heatmap rectangular data
-    """
+def plotRectangular(voiFreqTable, path, xlab="Sample", ylab="Variant Of Interest", title=None, figsize=[10,10], cbar=True, vmax=None, rotate=True, cmap=sns.cubehelix_palette(start=.5, rot=-.75, as_cmap=True), dpi=100):
     plt.figure(figsize=figsize)
-    sns.heatmap(rectangularTable, cmap=cmap, vmax=vmax,
+    sns.heatmap(voiFreqTable, cmap=cmap, vmax=vmax, cbar=cbar,
                    linewidths=0.8,linecolor="white",annot=True)
-    if title != None: plt.title(title)
+    if title != None: plt.title(title, pad=10)
     
     if rotate:
         plt.xticks(fontsize=11, rotation=45, ha='right',rotation_mode="anchor")
@@ -58,6 +55,82 @@ def plotRectangular(rectangularTable, path, xlab="Sample", ylab="Variant Of Inte
     plt.ylabel(ylab, fontdict={'fontsize':14})
     plt.savefig(path, bbox_inches='tight', dpi=dpi)
     plt.show()
+    
+def getAlleleFreqTable(muts, Path, var="sample", mean_=False):
+    Dict = {}
+
+    for mut in muts['Name']:
+        df = pd.read_csv(Path.format(mut=mut))
+        if mean_:
+            df['gene'] = muts[muts.Name == mut]['Gene'].iloc[0]
+        df['name'] = df['chrom'] + ":"+ df['pos'].astype(str) + "  " + df['gene'] + " | " + df['mutation']
+        df['frequency'] = df.filter(like="proportion").sum(axis=1)
+        Dict[mut] = df[['name', var, 'frequency']]
+
+    voiData = pd.concat(Dict)
+    voiFreqTable = voiData.pivot(index="name", columns=var).round(2).droplevel(0, axis=1) 
+    
+    #annotTable = (voiFreqTable*100).astype(int).astype(str) + "%" ## percentages
+    annotTable = voiFreqTable.astype(str).apply(lambda x: x.str.strip("0")).applymap(addZeros)  ## decimals
+    return(voiFreqTable, annotTable)
+
+def addZeros(x):
+    if x == "1.":
+        return("1")
+    elif x == ".":
+        return("")
+    elif len(x) < 3:
+        return(x + "0")
+    else: 
+        return(x)
+
+def plotTwoRectangular(FreqTable1, annotdf1, FreqTable2, annotdf2, path, ylab="Variant Of Interest", annotFontsize=50, ylabfontsize=28 ,ytickfontsize=18, title1=None, title2=None, figsize=[20,10], ratio='auto', vmax=None, rotate=True, cmap=sns.cubehelix_palette(start=.5, rot=-.75, as_cmap=True), dpi=100):
+    
+    if ratio=='auto':
+        ratio=[FreqTable1.shape[1],FreqTable2.shape[1]]
+    else:
+        ratio=[2,1]
+        
+    ## Load subplots
+    fig, ax = plt.subplots(1,2, figsize=figsize, constrained_layout=True, gridspec_kw={'width_ratios': ratio})
+    if title1 != None: ax[0].set_title(title1, fontsize=28)
+    ## First heatmap
+    sns.heatmap(ax=ax[0],
+                data=FreqTable1, 
+                cmap=cmap, 
+                vmax=vmax, 
+                cbar=False,
+                linewidths=0.8,
+                linecolor="white",
+                annot=annotdf1,
+                fmt = '', 
+                annot_kws={"size": annotFontsize / np.sqrt(len(FreqTable1))})
+    ax[0].set(xlabel=None)
+    plt.setp(ax[0].get_xticklabels(),fontsize=18, rotation=45, ha='right',rotation_mode="anchor")
+    ax[0].set_ylabel(ylab, fontsize=ylabfontsize)
+    plt.xlabel(None)     
+    plt.setp(ax[0].get_yticklabels(),fontsize=ytickfontsize)
+    
+    ## Second heatmap
+    sns.heatmap(ax=ax[1],
+                data=FreqTable2, 
+                cmap=cmap, 
+                vmax=vmax, 
+                cbar=True,
+                linewidths=0.8,
+                linecolor="white",
+                annot=annotdf2, 
+                yticklabels=False, 
+                fmt = '', 
+                annot_kws={"size": annotFontsize / np.sqrt(len(FreqTable2))})
+    
+    plt.ylabel(None)
+    plt.xlabel(None)
+    plt.setp(ax[1].get_xticklabels(),fontsize=18, rotation=45, ha='right',rotation_mode="anchor")
+    if title2 != None: plt.title(title2, fontsize=28)
+    if path != None: plt.savefig(path, bbox_inches='tight', dpi=dpi)
+    plt.show()
+
     
 
 # get indices of duplicate names
