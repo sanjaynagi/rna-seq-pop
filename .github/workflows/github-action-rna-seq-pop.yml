@@ -6,19 +6,19 @@ on:
       - main
 
 jobs:
-run-workflow:
-  runs-on: ubuntu-latest
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-      with:
-        submodules: recursive
-    
-    - name: Test workflow 
-      uses: snakemake/snakemake-github-action@v1.23.0
-      with:
-        directory: '.test'
-        snakefile: 'workflow/Snakefile'
-        args: '--cores 4 --use-conda --conda-cleanup-pkgs cache'
-        submodules: True
-        stagein: '' # additional preliminary commands to run (can be multiline)
+  run-workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      
+      - name: Test workflow 
+        uses: snakemake/snakemake-github-action@v1.23.0
+        with:
+          directory: '.test'
+          snakefile: 'workflow/Snakefile'
+          args: '--cores 4 --use-conda --conda-cleanup-pkgs cache'
+          submodules: True
+          stagein: '' # additional preliminary commands to run (can be multiline)
