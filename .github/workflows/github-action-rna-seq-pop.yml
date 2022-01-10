@@ -1,10 +1,10 @@
-name: rna-seq-pop
-on:
-  push:
-    branches:
-      - main
+- name: rna-seq-pop
+  on:
+    push:
+      branches:
+        - main
 
-jobs:
+  jobs:
   run-workflow:
     runs-on: ubuntu-latest
     steps:
