@@ -56,8 +56,7 @@ for chrom in chroms:
                                                                numbers=numbers,
                                                                ploidy=ploidy,
                                                                qualflt=30,
-                                                               missingfltprop=missingprop,
-                                                               plot=False)
+                                                               missingfltprop=missingprop)
     # subset gff to appropriate chrom
     genes = gff[gff.seqid == chrom].sort_values('start').reset_index(drop=True)
 

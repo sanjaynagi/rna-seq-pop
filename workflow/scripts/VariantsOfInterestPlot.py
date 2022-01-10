@@ -26,7 +26,7 @@ plotRectangular(df, path="results/variantAnalysis/variantsOfInterest/VOI.heatmap
 
 
 ## Run for avarage frequencies across treatments
-df2, annot2 = getAlleleFreqTable(muts, "results/variantAnalysis/variantsOfInterest/csvs/mean_{mut}_allele_balance.csv", var="treatment", mean_=True)
+df2, annot2 = getAlleleFreqTable(muts, "results/variantAnalysis/variantsOfInterest/csvs/mean_{mut}_alleleBalance.csv", var="treatment", mean_=True)
 plotRectangular(df, path="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerTreatment.png", xlab="strain")
 
 

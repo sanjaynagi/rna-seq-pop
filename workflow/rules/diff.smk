@@ -61,7 +61,7 @@ rule DifferentialGeneExpression:
         normCounts="results/quant/normCounts.tsv",
     group:
         "diffexp"
-    priority: 10
+    priority: 20
     conda:
         "../envs/diffexp.yaml"
     log:

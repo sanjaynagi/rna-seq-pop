@@ -12,7 +12,7 @@ from tools import *
 # Read in parameters from snakemake
 ploidy = snakemake.params['ploidy']
 invs = snakemake.params['inversions']
-metadata = pd.read_csv(snakemake.input['metadata'], sep="\t")
+metadata = pd.read_csv(snakemake.params['metadata'], sep="\t")
 metadata = metadata.sort_values(by='species')
 dataset = snakemake.params['dataset']
 ##
@@ -20,10 +20,10 @@ dataset = snakemake.params['dataset']
 
 karyo = {}
 for inv in invs:
-    df = pd.read_csv(f"../../results/karyotype/{inv}.{dataset}.karyo.txt", sep="\s+", header=None)
+    df = pd.read_csv(f"results/karyotype/{inv}.{dataset}.karyo.txt", sep="\s+", header=None)
     df = df.rename(columns={0:'Sample', 1:'KaryoScore', 2:'n_SNPtags'})
     df[inv] = df['KaryoScore']/ploidy
-    df.rename({inv:f'{inv} frequency'}).to_csv(f"../../results/karyotype/{inv}.karyo.txt", sep="\t")
+    df.rename({inv:f'{inv} frequency'}).to_csv(f"results/karyotype/{inv}.{dataset}.karyo.txt", sep="\t")
     
     karyo[inv] = df[['Sample', inv]]
 
@@ -31,7 +31,7 @@ for inv in invs:
 karyo = pd.concat(karyo.values(), axis=1).T.drop_duplicates().T.set_index("Sample")
 
 ## transpose and round to 2 decimals
-karyo = karyo.T.astype("float16").round(2)
+karyo = karyo.T.astype("float64").round(2)
 
 plotRectangular(karyo, path="results/karyotype/karyoFreqs.png" , cmap='mako_r', ylab='Inversion', figsize=[10,5])
 
