@@ -1,5 +1,4 @@
 name: rna-seq-pop
-
 on:
   push:
     branches:
