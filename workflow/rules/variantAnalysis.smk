@@ -249,9 +249,10 @@ rule KaryotypePlots:
     conda:
         "../envs/fstpca.yaml"
     params:
+        metadata=config['metadata'],
         ploidy=config["VariantAnalysis"]["ploidy"],
         inversions=config['VariantAnalysis']['karyotype']['inversions'],
-	    dataset=config['dataset']
+        dataset=config['dataset']
     script:
         "../scripts/KaryoPlots.py"
 
