@@ -22,7 +22,7 @@ muts = muts.sort_values(['chrom', 'pos'])
 
 ## Run for all samples
 df, annot = getAlleleFreqTable(muts, "results/variantAnalysis/variantsOfInterest/csvs/{mut}_alleleBalance.csv", var="sample")
-plotRectangular(df, path="results/variantAnalysis/variantsOfInterest/csvs/{mut}_allele_balance.csv")
+plotRectangular(df, path="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerSample.png")
 
 
 ## Run for avarage frequencies across treatments
@@ -30,4 +30,4 @@ df2, annot2 = getAlleleFreqTable(muts, "results/variantAnalysis/variantsOfIntere
 plotRectangular(df, path="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerTreatment.png", xlab="strain")
 
 
-plotTwoRectangular(df, annot, df2, annot2, path="results/variantAnalysis/variantsOfInterest/VOI.heatmapBothPlots.png", ratio='atuo')
+plotTwoRectangular(df, annot, df2, annot2, path="results/variantAnalysis/variantsOfInterest/VOI.heatmapBothPlots.png", ratio='auto')
