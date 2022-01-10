@@ -251,8 +251,7 @@ rule KaryotypePlots:
     params:
         ploidy=config["VariantAnalysis"]["ploidy"],
         inversions=config['VariantAnalysis']['karyotype']['inversions'],
+	    dataset=config['dataset']
     script:
-        """
-        ../scripts/KaryoPlots.py
-        """
+        "../scripts/KaryoPlots.py"
 
