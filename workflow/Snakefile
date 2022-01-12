@@ -18,7 +18,7 @@ samples = metadata['sampleID']
 
 # AlleleBalance mutations file
 if config['miscellaneous']["VariantsOfInterest"]["activate"]:
-    mutationData = pd.read_csv(config['miscellaneous']["VariantsOfInterest"]["path"], sep="\t") 
+    mutationData = pd.read_csv(config['miscellaneous']["VariantsOfInterest"]["path"], sep="\t")[:16] 
 else:
     mutationData = pd.DataFrame({"Name": ["KDR"], "mut":["995F"], "Location": ["2L-28xxxxx"]})   # ignore this, just an dummy df for snakemake
 

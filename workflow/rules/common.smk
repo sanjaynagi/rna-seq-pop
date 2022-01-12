@@ -133,14 +133,14 @@ def GetDesiredOutputs(wildcards):
             )
 
 
-    if config['VariantAnalysis']["AIMs"]["activate"]:
+    if config['VariantAnalysis']["ancestry"]["activate"]:
         wanted_input.extend(
             expand(
                 [
-                    "results/variantAnalysis/AIMs/AIMs_summary.tsv",
-                    "results/variantAnalysis/AIMs/AIM_fraction_whole_genome.png",
-                    "results/variantAnalysis/AIMs/n_AIMS_per_chrom.tsv",
-                    "results/variantAnalysis/AIMs/AIM_fraction_{chrom}.tsv",
+                    "results/variantAnalysis/ancestry/AIMs_summary.tsv",
+                    "results/variantAnalysis/ancestry/AIM_fraction_whole_genome.png",
+                    "results/variantAnalysis/ancestry/n_AIMS_per_chrom.tsv",
+                    "results/variantAnalysis/ancestry/AIM_fraction_{chrom}.tsv",
                 ],
                 chrom=config["chroms"],
             )

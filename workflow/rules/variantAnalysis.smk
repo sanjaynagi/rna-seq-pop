@@ -185,14 +185,14 @@ rule AncestryInformativeMarkers:
             chrom=config["chroms"], dataset=config['dataset'],
         ),
         metadata=config["metadata"],
-        aims_zarr_gambcolu=config['VariantAnalysis']["AIMs"]["gambcolu"],
-        aims_zarr_arab=config['VariantAnalysis']["AIMs"]["arab"],
+        aims_zarr_gambcolu=config['VariantAnalysis']["ancestry"]["gambcolu"],
+        aims_zarr_arab=config['VariantAnalysis']["ancestry"]["arab"],
     output:
-        AIMs="results/variantAnalysis/AIMs/AIMs_summary.tsv",
-        AIMs_fig="results/variantAnalysis/AIMs/AIM_fraction_whole_genome.png",
-        n_AIMs="results/variantAnalysis/AIMs/n_AIMS_per_chrom.tsv",
+        AIMs="results/variantAnalysis/ancestry/AIMs_summary.tsv",
+        AIMs_fig="results/variantAnalysis/ancestry/AIM_fraction_whole_genome.png",
+        n_AIMs="results/variantAnalysis/ancestry/n_AIMS_per_chrom.tsv",
         AIMs_chroms=expand(
-            "results/variantAnalysis/AIMs/AIM_fraction_{chrom}.tsv", chrom=config["chroms"]
+            "results/variantAnalysis/ancestry/AIM_fraction_{chrom}.tsv", chrom=config["chroms"]
         ),
     log:
         "logs/AncestryInformativeMarkers.log",
@@ -202,7 +202,7 @@ rule AncestryInformativeMarkers:
         dataset=config['dataset'],
         chroms=config["chroms"],
         ploidy=config["VariantAnalysis"]["ploidy"],
-        missingprop=config['VariantAnalysis']["AIMs"]["missingness"],
+        missingprop=config['VariantAnalysis']["ancestry"]["missingness"],
         qualflt=30,
     script:
         "../scripts/AncestryInformativeMarkers.py"
