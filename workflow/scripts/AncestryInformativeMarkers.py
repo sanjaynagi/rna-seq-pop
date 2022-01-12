@@ -128,7 +128,7 @@ for chrom in chroms:
     perchromdf = gambdf.merge(coludf, left_index=True, right_index=True)
     aimsperchromdf = pd.DataFrame.from_dict(n_aims_per_sample, orient='index', columns=['n_AIMs'])
 
-    perchromdf.to_csv(f"results/variantAnalysis/AIMs/AIM_fraction_{chrom}.tsv", sep="\t", index=True)
+    perchromdf.to_csv(f"results/variantAnalysis/ancestry/AIM_fraction_{chrom}.tsv", sep="\t", index=True)
     plot_aims(perchromdf, aimsperchromdf, species1="coluzzii", species2="gambiae", figtitle=f"AIM_fraction_{chrom}", total=False)
 
 
@@ -144,10 +144,10 @@ for k in all_gamb:
 df1 = pd.DataFrame.from_dict(all_gamb, orient='index',columns=['AIM_fraction_gambiae'])
 df2 = pd.DataFrame.from_dict(all_colu, orient='index', columns=['AIM_fraction_coluzzii'])
 n_aimsdf = pd.DataFrame.from_dict(n_aims_per_chrom)
-n_aimsdf.to_csv(f"results/variantAnalysis/AIMs/n_AIMS_per_chrom.tsv", sep="\t", index=True)
+n_aimsdf.to_csv(f"results/variantAnalysis/ancestry/n_AIMS_per_chrom.tsv", sep="\t", index=True)
 
 df = df1.merge(df2, left_index=True, right_index=True)
-df.to_csv(f"results/variantAnalysis/AIMs/AIMs_summary.tsv", sep="\t", index=True)
+df.to_csv(f"results/variantAnalysis/ancestry/AIMs_summary.tsv", sep="\t", index=True)
 
 plot_aims(df, n_aimsdf, species1="coluzzii", species2="gambiae", figtitle="AIM_fraction_whole_genome", total=True)
 
@@ -265,7 +265,7 @@ if metadata['species'].isin(['arabiensis']).any():
         perchromdf = gambdf.merge(arabdf, left_index=True, right_index=True)
         aimsperchromdf = pd.DataFrame.from_dict(n_aims_per_sample, orient='index', columns=['n_AIMs'])
 
-        perchromdf.to_csv(f"results/variantAnalysis/AIMs/AIM_fraction_{chrom}.arab.tsv", sep="\t", index=True)
+        perchromdf.to_csv(f"results/variantAnalysis/ancestry/AIM_fraction_{chrom}.arab.tsv", sep="\t", index=True)
         plot_aims(perchromdf, aimsperchromdf, species1="arabiensis", species2="gambiae", figtitle=f"AIM_fraction_arab_{chrom}", total=False)
 
     aims_chrom_gamb = flip_dict(aims_chrom_gamb)
@@ -280,9 +280,9 @@ if metadata['species'].isin(['arabiensis']).any():
     df1 = pd.DataFrame.from_dict(all_gamb, orient='index', columns=['AIM_fraction_gambiae'])
     df2 = pd.DataFrame.from_dict(all_arab, orient='index', columns=['AIM_fraction_arabiensis'])
     n_aimsdf = pd.DataFrame.from_dict(n_aims_per_chrom)
-    n_aimsdf.to_csv(f"results/variantAnalysis/AIMs/n_AIMS_per_chrom.tsv", sep="\t", index=True)
+    n_aimsdf.to_csv(f"results/variantAnalysis/ancestry/n_AIMS_per_chrom_arab.tsv", sep="\t", index=True)
 
     df = df1.merge(df2, left_index=True, right_index=True)
-    df.to_csv(f"results/variantAnalysis/AIMs/AIMs_summary_arab.tsv", sep="\t", index=True)
+    df.to_csv(f"results/variantAnalysis/ancestry/AIMs_summary_arab.tsv", sep="\t", index=True)
 
     plot_aims(df, n_aimsdf, species1="arabiensis", species2="gambiae", figtitle="AIM_fraction_whole_genome", total=True)

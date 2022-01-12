@@ -11,7 +11,7 @@ import seaborn as sns
 from functools import partial, reduce
 from collections import defaultdict
 from adjustText import adjust_text
-    
+
 
 def plotWindowed(statName, cohortText, cohortNoSpaceText, values, midpoints, prefix, chrom, ylim, colour, save=True):
 
@@ -39,10 +39,10 @@ def plotWindowed(statName, cohortText, cohortNoSpaceText, values, midpoints, pre
     if save: plt.savefig(f"{prefix}/{statName}.{cohortNoSpaceText}.{chrom}.png",format="png")
     
 
-def plotRectangular(voiFreqTable, path, xlab="Sample", ylab="Variant Of Interest", title=None, figsize=[10,10], cbar=True, vmax=None, rotate=True, cmap=sns.cubehelix_palette(start=.5, rot=-.75, as_cmap=True), dpi=100):
+def plotRectangular(voiFreqTable, path, annot=True, xlab="Sample", ylab="Variant Of Interest", title=None, figsize=[10,10], cbar=True, vmax=None, rotate=True, cmap=sns.cubehelix_palette(start=.5, rot=-.75, as_cmap=True), dpi=100):
     plt.figure(figsize=figsize)
     sns.heatmap(voiFreqTable, cmap=cmap, vmax=vmax, cbar=cbar,
-                   linewidths=0.8,linecolor="white",annot=True)
+                   linewidths=0.8,linecolor="white",annot=annot, fmt = '')
     if title != None: plt.title(title, pad=10)
     
     if rotate:
@@ -54,7 +54,6 @@ def plotRectangular(voiFreqTable, path, xlab="Sample", ylab="Variant Of Interest
     plt.xlabel(xlab, fontdict={'fontsize':14}, labelpad=20)
     plt.ylabel(ylab, fontdict={'fontsize':14})
     plt.savefig(path, bbox_inches='tight', dpi=dpi)
-    plt.show()
     
 def getAlleleFreqTable(muts, Path, var="sample", mean_=False):
     Dict = {}
@@ -105,7 +104,7 @@ def plotTwoRectangular(FreqTable1, annotdf1, FreqTable2, annotdf2, path, ylab="V
                 annot=annotdf1,
                 fmt = '', 
                 annot_kws={"size": annotFontsize / np.sqrt(len(FreqTable1))})
-    ax[0].set(xlabel=None)
+    ax[0].set(xlabel="")
     plt.setp(ax[0].get_xticklabels(),fontsize=18, rotation=45, ha='right',rotation_mode="anchor")
     ax[0].set_ylabel(ylab, fontsize=ylabfontsize)
     plt.xlabel(None)     
@@ -124,12 +123,10 @@ def plotTwoRectangular(FreqTable1, annotdf1, FreqTable2, annotdf2, path, ylab="V
                 fmt = '', 
                 annot_kws={"size": annotFontsize / np.sqrt(len(FreqTable2))})
     
-    plt.ylabel(None)
-    plt.xlabel(None)
     plt.setp(ax[1].get_xticklabels(),fontsize=18, rotation=45, ha='right',rotation_mode="anchor")
+    ax[1].set(xlabel="", ylabel="")
     if title2 != None: plt.title(title2, fontsize=28)
     if path != None: plt.savefig(path, bbox_inches='tight', dpi=dpi)
-    plt.show()
 
     
 
@@ -338,8 +335,8 @@ def plot_pca_coords(coords, model, pc1, pc2, ax, sample_population, samples, pop
             ax.plot(x[flt], y[flt], marker='o', linestyle=' ', color=pop_colours[treatment], 
                     label=treatment, markersize=14, mec='k', mew=.5)
 
-        texts = [plt.text(x[i], y[i], pop, fontsize='small', ha='center', va='center') for i, pop in enumerate(sample_population)]
-        adjust_text(texts)
+        #texts = [plt.text(x[i], y[i], pop, fontsize='small', ha='center', va='center') for i, pop in enumerate(sample_population)]
+        #adjust_text(texts)
 
         ax.set_xlabel('PC%s (%.1f%%)' % (pc1+1, model.explained_variance_ratio_[pc1]*100))
         ax.set_ylabel('PC%s (%.1f%%)' % (pc2+1, model.explained_variance_ratio_[pc2]*100))
@@ -389,7 +386,7 @@ def plot_aims(df, n_aims, species1="coluzzii", species2="gambiae", figtitle="AIM
 
     #### Seaborn stacked barplots, overall AIM fraction ####
     sns.set_style("white")
-    sns.set_context({"figure.figsize":(24,10)})
+    sns.set_context({"figure.figsize":(16,10)})
 
     total = df[f'AIM_fraction_{species1}'] + df[f'AIM_fraction_{species2}']
 
@@ -404,8 +401,8 @@ def plot_aims(df, n_aims, species1="coluzzii", species2="gambiae", figtitle="AIM
     bottombar = plt.Rectangle((0,0),1,1,fc='#3598db',  edgecolor = 'none')
     l = plt.legend([bottombar, topbar], 
                    [f'An. {species2}', f'An. {species1}'],
-                   loc='right', bbox_to_anchor=(1.18, 0.5),
-              ncol=1, fancybox=True, shadow=True, prop={'size':20})
+                   loc='best',# bbox_to_anchor=(1, 0.95),
+              ncol=1, fancybox=True, shadow=True, prop={'size':20}, framealpha=0.8)
     l.draw_frame(True)
 
     # label the bars with n_obs
@@ -416,7 +413,7 @@ def plot_aims(df, n_aims, species1="coluzzii", species2="gambiae", figtitle="AIM
 
     # Label axes
     bottom_plot.set_ylabel("AIM fraction")
-    bottom_plot.set_xlabel("Population")
+    bottom_plot.set_xlabel("Population", labelpad=10)
 
     #Set fonts to consistent 16pt size
     for item in ([bottom_plot.xaxis.label, bottom_plot.yaxis.label] +
@@ -425,7 +422,7 @@ def plot_aims(df, n_aims, species1="coluzzii", species2="gambiae", figtitle="AIM
     
     # add title and save figure
     plt.title(f"{figtitle}", fontsize=22, pad=20)
-    plt.savefig(f"results/variantAnalysis/AIMs/{figtitle}.png")
+    plt.savefig(f"results/variantAnalysis/ancestry/{figtitle}.png")
     plt.close()    
 
 def getSNPGffstats(gff, pos):
