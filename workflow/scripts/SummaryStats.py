@@ -95,7 +95,11 @@ thetadf.to_csv("results/variantAnalysis/diversity/WattersonsTheta.tsv", sep="\t"
 thetamean = thetadf.apply(np.mean, axis=0)
 pimean = pidf.apply(np.mean, axis=0)
 summaryStats = pd.DataFrame({r'$\theta$':thetamean, r'$\pi$':pimean})
-plotRectangular(summaryStats, path="results/variantAnalysis/diversity/pi_theta.overall.png", ylab="Treatment", xlab="Statistic", figsize=[5,5], rotate=False)
+plotRectangular(summaryStats, path="results/variantAnalysis/diversity/pi_theta.overall.png", ylab="", xlab="Statistic", figsize=[5,5], rotate=False)
+
+theta = pd.DataFrame(summaryStats.iloc[:,0])
+pi = pd.DataFrame(summaryStats.iloc[:,1])
+plotTwoRectangular(pi, True, theta, True, path="results/variantAnalysis/diversity/piThetaBoth.png", cmap="Greys", figsize=[5,5], annotFontsize=20, ytickfontsize=12, ylab="")
 
 if ploidy > 1: pd.DataFrame.from_dict(coefdictchrom).to_csv("results/variantAnalysis/diversity/inbreedingCoef.tsv", sep="\t", index=True)
 

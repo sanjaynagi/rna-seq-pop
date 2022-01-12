@@ -12,7 +12,7 @@ from tools import *
 voiData = snakemake.input['VariantsOfInterest']
 
 ## Read VOI data
-muts = pd.read_csv(voiData, sep="\t")
+muts = pd.read_csv(voiData, sep="\t")[:16]
 
 ## separate chrom and pos data and sort 
 muts['chrom'] = muts['Location'].str.split(":").str.get(0)
@@ -22,12 +22,12 @@ muts = muts.sort_values(['chrom', 'pos'])
 
 ## Run for all samples
 df, annot = getAlleleFreqTable(muts, "results/variantAnalysis/variantsOfInterest/csvs/{mut}_alleleBalance.csv", var="sample")
-plotRectangular(df, path="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerSample.png")
+plotRectangular(df, annot=annot, path="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerSample.png")
 
 
 ## Run for avarage frequencies across treatments
 df2, annot2 = getAlleleFreqTable(muts, "results/variantAnalysis/variantsOfInterest/csvs/mean_{mut}_alleleBalance.csv", var="treatment", mean_=True)
-plotRectangular(df, path="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerTreatment.png", xlab="strain")
+plotRectangular(df2, annot=annot2, path="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerTreatment.png", xlab="strain")
 
 
 plotTwoRectangular(df, annot, df2, annot2, path="results/variantAnalysis/variantsOfInterest/VOI.heatmapBothPlots.png", ratio='auto')

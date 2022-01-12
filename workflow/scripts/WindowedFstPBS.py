@@ -52,7 +52,7 @@ for i, chrom in enumerate(chroms):
             FstArray = allel.moving_hudson_fst(acsubpops[sus], 
                             acsubpops[res], 
                             size=size, step=step)
-            midpoint = allel.moving_statistic(pos, np.mean, size=size, step=step)
+            midpoint = allel.moving_statistic(pos, np.median, size=size, step=step)
             
             cohortNoSpaceText = name + "." + wname
             plotWindowed(statName="Fst",
@@ -80,7 +80,7 @@ for i, chrom in enumerate(chroms):
                                 acsubpops[pop2], 
                                 acsubpops[outpop], 
                                 window_size=size, window_step=step, normed=True)
-                midpoint = allel.moving_statistic(pos, np.mean, size=size, step=step)
+                midpoint = allel.moving_statistic(pos, np.median, size=size, step=step)
 
                 cohortNoSpaceText = pbscomp + "." + wname
                 plotWindowed(statName="PBS", 
