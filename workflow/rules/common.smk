@@ -54,6 +54,7 @@ def GetDesiredOutputs(wildcards):
                 [
                     "results/.input.check",
                     "resources/reads/qc/{sample}_{n}_fastqc.html",
+                    "results/alignments/qualimap/{sample}.pdf",
                     "results/multiQC.html",
                 ],
                 sample=samples,
