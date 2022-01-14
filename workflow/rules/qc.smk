@@ -97,6 +97,24 @@ rule vcfStats:
         bcftools stats {input} > {output} 2> {log}
         """
 
+rule Qualimap:
+    """
+    QC of bam files
+    """
+    input:
+        bam="results/alignments/{sample}.bam",
+        idx="results/alignments/{sample}.bam.bai",
+        gff=config['ref']['gff']
+    output:
+        "results/alignments/qualimap/{sample}.pdf",
+    log:
+        "logs/qualimap/{sample}.log",
+    conda:
+        "../envs/qc.yaml"
+    shell:
+        "qualimap bamqc -bam {input.bam} -c -gff {input.gff} -outfile {output} 2> {log}"
+
+
 
 rule multiQC:
     """
