@@ -12,7 +12,7 @@ from tools import *
 voiData = snakemake.input['VariantsOfInterest']
 
 ## Read VOI data
-muts = pd.read_csv(voiData, sep="\t")[:16]
+muts = pd.read_csv(voiData, sep="\t")
 
 ## separate chrom and pos data and sort 
 muts['chrom'] = muts['Location'].str.split(":").str.get(0)
