@@ -72,9 +72,9 @@ for i, chrom in enumerate(chroms):
             coefdict[pop] = np.mean(coef)
             allcoef[pop].append(np.array(coef))
 
-        print(f"{pop},{chrom}, Sequence Diversity = ", seqdivdict[pop])
-        print(f"{pop},{chrom}, Wattersons Theta = ", thetadict[pop])
-        if ploidy > 1: print(f"{pop},{chrom}, Inbreeding Coef = ", np.mean(coef), "\n")
+        print(f"{pop} | {chrom} | Nucleotide Diversity (Pi) =", seqdivdict[pop])
+        print(f"{pop} | {chrom} | Wattersons Theta =", thetadict[pop])
+        if ploidy > 1: print(f"{pop} | {chrom} | Inbreeding Coef =", np.mean(coef), "\n")
 
     seqdivdictchrom[chrom] = dict(seqdivdict)
     thetadictchrom[chrom] = dict(thetadict)
