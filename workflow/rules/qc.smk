@@ -44,6 +44,30 @@ rule FastQC:
         "0.74.0/bio/fastqc"
 
 
+
+
+rule cutAdapt:
+    input:
+        getFASTQs,
+    output:
+        fastq1="resources/trimmed/{sample}.1.fastq.gz",
+        fastq2="resources/trimmed/{sample}.2.fastq.gz",
+        qc="resources/trimmed/{sample}.qc.txt"
+    params:
+        # https://cutadapt.readthedocs.io/en/stable/guide.html#adapter-types
+        adapters="-a AGAGCACACGTCTGAACTCCAGTCAC -g AGATCGGAAGAGCACACGT -A AGAGCACACGTCTGAACTCCAGTCAC -G AGATCGGAAGAGCACACGT",
+        # https://cutadapt.readthedocs.io/en/stable/guide.html#
+        extra="--minimum-length 1 -q 20"
+    log:
+        "logs/cutadapt/{sample}.log"
+    threads: 4 # set desired number of threads here
+    wrapper:
+        "v0.86.0/bio/cutadapt/pe"
+
+
+
+
+
 rule BamStats:
     """
     QC alignment statistics
