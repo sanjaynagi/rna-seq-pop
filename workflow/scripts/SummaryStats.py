@@ -20,12 +20,6 @@ numbers = get_numbers_dict(ploidy)
 qualflt = snakemake.params['qualflt']
 missingprop = snakemake.params['missingprop']
 
-# define functions
-def isnotmissing(gn):
-    """
-    Function to check if missing values are present at a SNP
-    """
-    return((gn != -1).all())
 
 #initialise dicts
 total_snps_per_chrom = {}
