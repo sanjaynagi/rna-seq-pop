@@ -150,6 +150,22 @@ rule ConcatVCFs:
         "bcftools concat {input.calls} | vcfuniq > {output} 2> {log}"
 
 
+rule RestrictToSNPs:
+    """"
+    Filter out indels
+    """
+    input:
+        "results/variantAnalysis/vcfs/variants.{chrom}.vcf"
+    output:
+        temp("results/variantAnalysis/vcfs/variants.{chrom}.snps.vcf")
+    log:
+        "logs/bcftoolsView/{chrom}.log",
+    params:
+        extra="-v snps",
+    wrapper:
+        "v1.0.0/bio/bcftools/view"
+
+
 rule snpEffDbDownload:
     """
     Download the snpEff database for your species
@@ -172,7 +188,7 @@ rule snpEff:
     Run snpEff on the VCFs 
     """
     input:
-        calls="results/variantAnalysis/vcfs/variants.{chrom}.vcf",
+        calls="results/variantAnalysis/vcfs/variants.{chrom}.snps.vcf",
         dl="workflow/scripts/snpEff/db.dl",
     output:
         calls=expand("results/variantAnalysis/vcfs/{dataset}.{{chrom}}.vcf.gz", dataset=config['dataset']),
