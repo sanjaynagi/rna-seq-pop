@@ -46,7 +46,7 @@ for (m in mutation_data$Name){
   # We have 24 separate dataframes in a list, bind them together into one big dataframe
   alleles = rbindlist(allele_list, fill = TRUE)
   # average across replicates 
-  mean_alleles = alleles %>% group_by(chrom, pos,ref, mutation, treatment) %>% summarise_at(.vars = c("cov","A","C","G","T", propstring)
+  mean_alleles = alleles %>% group_by(chrom, pos, ref, mutation, treatment) %>% summarise_at(.vars = c("cov","A","C","G","T", propstring)
                                                                                       , .funs = c(mean="mean"))
   #write to file, reorder mean_kdr_alleles
   fwrite(alleles, glue("results/variantAnalysis/variantsOfInterest/csvs/{m}_alleleBalance.csv"))
