@@ -47,10 +47,10 @@ for (m in mutation_data$Name){
   alleles = rbindlist(allele_list, fill = TRUE)
   # average across replicates
   if (!base2 %in% c("", NA)){
-    mean_alleles = alleles %>% group_by(chrom, pos, ref, mutation, treatment) %>% summarise_at(.vars = c("cov","A","C","G","T", propstring)
+    mean_alleles = alleles %>% group_by(chrom, pos, ref, mutation, treatment) %>% summarise_at(.vars = c("cov","A","C","G","T", propstring, propstring2)
                                                                                       , .funs = c(mean="mean"))
   } else {
-    mean_alleles = alleles %>% group_by(chrom, pos, ref, mutation, treatment) %>% summarise_at(.vars = c("cov","A","C","G","T", propstring, propstring2)
+    mean_alleles = alleles %>% group_by(chrom, pos, ref, mutation, treatment) %>% summarise_at(.vars = c("cov","A","C","G","T", propstring)
                                                                                                , .funs = c(mean="mean"))
   }
     
