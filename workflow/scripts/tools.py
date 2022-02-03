@@ -55,8 +55,9 @@ def plotRectangular(voiFreqTable, path, annot=True, xlab="Sample", ylab="Variant
     plt.ylabel(ylab, fontdict={'fontsize':14})
     plt.savefig(path, bbox_inches='tight', dpi=dpi)
     
-def getAlleleFreqTable(muts, Path, var="sample", mean_=False):
-    Dict = {}
+def getAlleleFreqTable(muts, Path, var="sample", mean_=False, lowCov = 10):
+    freqDict = {}
+    covDict = {}
 
     for mut in muts['Name']:
         df = pd.read_csv(Path.format(mut=mut))
@@ -64,13 +65,20 @@ def getAlleleFreqTable(muts, Path, var="sample", mean_=False):
             df['gene'] = muts[muts.Name == mut]['Gene'].iloc[0]
         df['name'] = df['chrom'] + ":"+ df['pos'].astype(str) + "  " + df['gene'] + " | " + df['mutation']
         df['frequency'] = df.filter(like="proportion").sum(axis=1)
-        Dict[mut] = df[['name', var, 'frequency']]
+        freqDict[mut] = df[['name', var, 'frequency']]
+        covDict[mut] = df[['name', var, 'cov']]
 
-    voiData = pd.concat(Dict)
-    voiFreqTable = voiData.pivot(index="name", columns=var).round(2).droplevel(0, axis=1) 
-    
+    voiData = pd.concat(freqDict)
+    covData = pd.concat(covDict)
+    voiFreqTable = voiData.pivot(index="name", columns=var).round(2).droplevel(0, axis=1)
+    voiCovTable = covData.pivot(index="name", columns=var).round(2).droplevel(0, axis=1)
+
     #annotTable = (voiFreqTable*100).astype(int).astype(str) + "%" ## percentages
     annotTable = voiFreqTable.astype(str).apply(lambda x: x.str.strip("0")).applymap(addZeros)  ## decimals
+    ## adding asterisks if low Cov 
+    asteriskTable = voiCovTable.applymap(lambda x: "*" if x < lowCov else "")
+    annotTable = annotTable + asteriskTable
+    annotTable = annotTable.applymap(lambda x: "" if x == "*" else x)
     return(voiFreqTable, annotTable)
 
 def addZeros(x):
