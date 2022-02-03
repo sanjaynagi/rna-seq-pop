@@ -58,6 +58,7 @@ def plotRectangular(voiFreqTable, path, annot=True, xlab="Sample", ylab="Variant
 def getAlleleFreqTable(muts, Path, var="sample", mean_=False, lowCov = 10):
     freqDict = {}
     covDict = {}
+    cov_var = "cov" if mean_== False else "cov_mean"
 
     for mut in muts['Name']:
         df = pd.read_csv(Path.format(mut=mut))
@@ -66,7 +67,7 @@ def getAlleleFreqTable(muts, Path, var="sample", mean_=False, lowCov = 10):
         df['name'] = df['chrom'] + ":"+ df['pos'].astype(str) + "  " + df['gene'] + " | " + df['mutation']
         df['frequency'] = df.filter(like="proportion").sum(axis=1)
         freqDict[mut] = df[['name', var, 'frequency']]
-        covDict[mut] = df[['name', var, 'cov']]
+        covDict[mut] = df[['name', var, cov_var]]
 
     voiData = pd.concat(freqDict)
     covData = pd.concat(covDict)
