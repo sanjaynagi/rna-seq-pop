@@ -48,10 +48,10 @@ for (m in mutation_data$Name){
   # average across replicates
   if (!base2 %in% c("", NA)){
     mean_alleles = alleles %>% group_by(chrom, pos, ref, mutation, treatment) %>% summarise_at(.vars = c("cov","A","C","G","T", propstring, propstring2)
-                                                                                      , .funs = c(mean="mean"))
+                                                                                      , .funs = c(mean="mean"), na.rm = TRUE)
   } else {
     mean_alleles = alleles %>% group_by(chrom, pos, ref, mutation, treatment) %>% summarise_at(.vars = c("cov","A","C","G","T", propstring)
-                                                                                               , .funs = c(mean="mean"))
+                                                                                               , .funs = c(mean="mean"), na.rm = TRUE)
   }
     
   #write to file, reorder mean_kdr_alleles
