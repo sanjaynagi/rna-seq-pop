@@ -67,16 +67,18 @@ VariantAnalysis:
       activate: True
       ploidy: 10                          # Ploidy level for freebayes to call at (Generally we are using pooled samples).For diploid organisms, this should be 2 * number of individuals in each pool
       chunks: 9                           # Number of chunks to split each chromosome into when parallelising freebayes. 9 or less is recommended. 
-      missingness: 0.8                    # Filter to ensure snps only found in {missingness} 
 
       pca:                                # Run PCA on the genotype data?
             activate: True
+            missingness: 1 
       
       summaryStatistics:                  # Estimate Population Genetic Summary Statistics such as Dxy, Pi
             activate: True
+            missingness: 1
       
       selection:                          # Calculate Fst and PBS per gene and in windows
             activate: True
+            missingness: 1
 
             pbs:
                   activate: True          # Activate Population Branch Statistic analysis (Needs three conditions, two closely related and an outgroup)
@@ -86,7 +88,7 @@ VariantAnalysis:
                   windowsizes: [1000, 5000]
                   windowsteps: [500, 1000]
 
-      AIMs:                                # For Anopheles gambiae s.l only - run Ancestry Informative Marker analysis. AIM datasets included in git repo.
+      ancestry:                                # For Anopheles gambiae s.l only - run Ancestry Informative Marker analysis. AIM datasets included in git repo.
             activate: True
             missingness: 0.5                                # proportion between 0 and 1 
             gambcolu: "resources/gamb_vs_colu.zarr"         # path to gambcolu AIMs
@@ -96,17 +98,17 @@ VariantAnalysis:
             activate: True
             inversions:
                   - "2La"
-                  - "2Rj"
+       #           - "2Rj"
                   - "2Rb"
-                  - "2Rc_col"
-                  - "2Rc_gam"
-                  - "2Rd"
-                  - "2Ru"
+        #          - "2Rc_col"
+          #        - "2Rc_gam"
+           #       - "2Rd"
+            #      - "2Ru"
 
 miscellaneous:
-      IRmutations:                                # Creates allele count .xlsx reports on specific mutations of choice
+      VariantsOfInterest:                                # Creates allele count .xlsx reports on specific mutations of choice
             activate: True                             
-            path: "resources/IRmutations.tsv"          # Requires appropriate mutations.tsv file
+            path: "resources/exampleMutations.tsv"          # Requires appropriate mutations.tsv file
             
       # find DE genes that lie under Ag1000g selective sweeps 
       # Only applicable for Anopheles gambiae s.l
