@@ -7,7 +7,12 @@ A script to perform PCA on the genotype data
 import sys
 sys.stderr = open(snakemake.log[0], "w")
 
-from tools import *
+import rnaseqpoptools as rnaseqpop
+import pandas as pd 
+import numpy as np
+import allel
+from adjustText import adjust_text
+
 
 # Read in parameters from snakemake
 dataset = snakemake.params['dataset']
@@ -15,7 +20,7 @@ metadata = pd.read_csv(snakemake.input['metadata'], sep="\t")
 metadata = metadata.sort_values(by='species')
 chroms = snakemake.params['chroms']
 ploidy = snakemake.params['ploidy']
-numbers = get_numbers_dict(ploidy)
+numbers = rnaseqpop.get_numbers_dict(ploidy)
 qualflt = snakemake.params['qualflt']
 missingprop = snakemake.params['missingprop']
 
@@ -24,7 +29,7 @@ for i, chrom in enumerate(chroms):
     
     # Read in and Filter VCF
     path = f"results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz"
-    vcf, geno, acsubpops, pos, depth, snpeff, subpops, populations = readAndFilterVcf(path=path,
+    vcf, geno, acsubpops, pos, depth, snpeff, subpops, populations = rnaseqpop.readAndFilterVcf(path=path,
                                                            chrom=chrom,
                                                            samples=metadata,
                                                            numbers=numbers,
@@ -33,7 +38,6 @@ for i, chrom in enumerate(chroms):
                                                            missingfltprop=missingprop)
     
 
-    
     #### Principal Components Analysis (PCA) ####
     # Set up dict to store indices for colours
     d={}
@@ -45,8 +49,8 @@ for i, chrom in enumerate(chroms):
     # Store dict as a dataframe and get colours 
     treatment_indices = pd.DataFrame.from_dict(d, orient='index').reset_index()
     treatment_indices = treatment_indices.rename(columns = {'index':'sample_index', 0:"name"})
-    pop_colours = get_colour_dict(treatment_indices['name'], "viridis")
+    pop_colours = rnaseqpop.get_colour_dict(treatment_indices['name'], "viridis")
     
     # Run PCA function defined in tools.py
     print(f"Performing PCA on {dataset} chromosome {chrom}")
-    pca(geno, chrom, ploidy, dataset, populations, metadata, pop_colours, prune=True, scaler=None)
+    rnaseqpop.pca(geno, chrom, ploidy, dataset, populations, metadata, pop_colours, prune=True, scaler=None)

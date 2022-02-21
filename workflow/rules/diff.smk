@@ -202,7 +202,7 @@ rule Ag1000gSweepsDE:
     log:
         "logs/Ag1000gSweepsDE.log",
     conda:
-        "../envs/fstpca.yaml"
+        "../envs/pythonGenomics.yaml"
     params:
         DEcontrasts=config["contrasts"],
         pval=config['miscellaneous']["sweeps"]["padj_threshold"],

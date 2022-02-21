@@ -67,7 +67,7 @@ rule PlotVariantsOfInterest:
         perSampleHeatmap="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerSample.png",
         perTreatmentHeatmap="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerTreatment.png"
     conda:
-        "../envs/fstpca.yaml"
+        "../envs/pythonGenomics.yaml"
     priority: 10
     log:
         "logs/variantsOfInterestPlot.log",
