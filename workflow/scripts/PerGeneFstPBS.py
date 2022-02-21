@@ -6,8 +6,12 @@ A script to perform Fst and population branch statistic analysis by gene on geno
 import sys
 sys.stderr = open(snakemake.log[0], "w")
 
-from tools import *
+import rnaseqpoptools as rnaseqpop
+import pandas as pd
+import numpy as np
+import allel
 from scipy import stats
+from functools import partial, reduce
 import warnings
 warnings.filterwarnings('ignore') # suppress numpy runtime warnings, this is a bit dangerous, should be removed for release or resolve source of warnings
 
@@ -20,7 +24,7 @@ pbs = snakemake.params['pbs']
 pbscomps = snakemake.params['pbscomps']
 chroms = snakemake.params['chroms']
 ploidy = snakemake.params['ploidy']
-numbers = get_numbers_dict(ploidy)
+numbers = rnaseqpop.get_numbers_dict(ploidy)
 missingprop = snakemake.params['missingprop']
 
 # gff
@@ -50,7 +54,7 @@ for chrom in chroms:
     # path to vcf
     path = f"results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz"
     # function to read in vcfs and associated SNP data
-    vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops =  readAndFilterVcf(path=path,
+    vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops = rnaseqpop.readAndFilterVcf(path=path,
                                                                chrom=chrom, 
                                                                samples=metadata,
                                                                numbers=numbers,
@@ -113,7 +117,7 @@ for chrom in chroms:
         if pbs is True:
             for pbscomp in pbscomps:
                 pop1, pop2, outpop = pbscomp.split("_")
-                pbs_per_comp[pbscomp],se,_,_ = meanPBS(acsubpops[pop1].compress(gene_bool, axis=0),
+                pbs_per_comp[pbscomp],se,_,_ = rnaseqpop.meanPBS(acsubpops[pop1].compress(gene_bool, axis=0),
                                           acsubpops[pop2].compress(gene_bool, axis=0),
                                           acsubpops[outpop].compress(gene_bool, axis=0),
                                                      window_size=1,
@@ -127,12 +131,12 @@ for chrom in chroms:
         dxy_per_gene[ID] = dict(dxy_per_comp)
 
     #reverse the dicts so the comparisons/subpops are on the outer dict
-    fst_per_gene = flip_dict(fst_per_gene)
-    se_per_gene = flip_dict(se_per_gene)
-    if pbs is True : pbs_per_gene = flip_dict(pbs_per_gene)
-    tajd_per_gene = flip_dict(tajd_per_gene)
-    gdiv_per_gene = flip_dict(gdiv_per_gene)
-    dxy_per_gene = flip_dict(dxy_per_gene)
+    fst_per_gene = rnaseqpop.flip_dict(fst_per_gene)
+    se_per_gene = rnaseqpop.flip_dict(se_per_gene)
+    if pbs is True : pbs_per_gene = rnaseqpop.flip_dict(pbs_per_gene)
+    tajd_per_gene = rnaseqpop.flip_dict(tajd_per_gene)
+    gdiv_per_gene = rnaseqpop.flip_dict(gdiv_per_gene)
+    dxy_per_gene = rnaseqpop.flip_dict(dxy_per_gene)
 
     print(f"Chromosome {chrom} complete...\n")
     for comp1,comp2 in comparisons:

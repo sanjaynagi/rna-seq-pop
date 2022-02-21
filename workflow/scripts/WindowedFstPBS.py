@@ -6,15 +6,17 @@ A script to calculate windowed population genetic statistics (Fst, PBS).
 
 import sys
 sys.stderr = open(snakemake.log[0], "w")
-
-from tools import *
+import pandas as pd
+import numpy as np
+import allel
+import rnaseqpoptools as rnaseqpop
 
 dataset = snakemake.params['dataset']
 metadata = pd.read_csv(snakemake.input['metadata'], sep="\t")
 metadata = metadata.sort_values(by='species')
 chroms = snakemake.params['chroms']
 ploidy = snakemake.params['ploidy']
-numbers = get_numbers_dict(ploidy)
+numbers = rnaseqpop.get_numbers_dict(ploidy)
 pbs = snakemake.params['pbs']
 pbscomps = snakemake.params['pbscomps']
 qualflt = snakemake.params['qualflt']
@@ -34,7 +36,7 @@ comparisons = [list(row) for i,row in comparisons.iterrows()]
 for i, chrom in enumerate(chroms):
 
     path = f"results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz"
-    vcf, geno, acsubpops, pos, depth, snpeff, subpops, populations = readAndFilterVcf(path=path,
+    vcf, geno, acsubpops, pos, depth, snpeff, subpops, populations = rnaseqpop.readAndFilterVcf(path=path,
                                                            chrom=chrom,
                                                            samples=metadata,
                                                            numbers=numbers,
@@ -55,7 +57,7 @@ for i, chrom in enumerate(chroms):
             midpoint = allel.moving_statistic(pos, np.median, size=size, step=step)
             
             cohortNoSpaceText = name + "." + wname
-            plotWindowed(statName="Fst",
+            rnaseqpop.plotWindowed(statName="Fst",
                         cohortText=cohortText,
                         cohortNoSpaceText=cohortNoSpaceText,
                         values=FstArray, 
@@ -66,7 +68,6 @@ for i, chrom in enumerate(chroms):
                         ylim=0.5, 
                         save=True)
 
-            
         
     #### Population Branch Statistic (PBS) in windows ####
     if pbs:
@@ -83,7 +84,7 @@ for i, chrom in enumerate(chroms):
                 midpoint = allel.moving_statistic(pos, np.median, size=size, step=step)
 
                 cohortNoSpaceText = pbscomp + "." + wname
-                plotWindowed(statName="PBS", 
+                rnaseqpop.plotWindowed(statName="PBS", 
                             cohortText=cohortText,
                             cohortNoSpaceText=cohortNoSpaceText,
                             values=pbsArray, 

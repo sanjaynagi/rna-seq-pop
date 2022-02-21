@@ -241,7 +241,7 @@ rule ExtractBedVCF:
             "resources/regions/missense.pos.{chrom}.bed", chrom=config["chroms"]
         ),
     conda:
-        "../envs/fstpca.yaml"
+        "../envs/pythonGenomics.yaml"
     log:
         "logs/ExtractBedVCF.log",
     params:
