@@ -22,6 +22,7 @@ missingprop = snakemake.params['missingprop']
 aims = zarr.open(snakemake.input['aims_zarr_gambcolu'], mode='r')
 
 ## initialize dicts
+ancestryPerAim = {}
 aims_chrom_gamb = {}
 aims_chrom_colu = {}
 all_gamb = defaultdict(list)
@@ -122,6 +123,10 @@ for chrom in chroms:
     aims_chrom_colu[chrom] = dict(prop_colu)
     n_aims_per_chrom[chrom] = dict(n_aims_per_sample)
 
+    # Store ancestry score per aim
+    ancestryPerAim[chrom] = pd.concat([pd.DataFrame(gambscores).add_suffix("_gamb"), pd.DataFrame(coluscores).add_suffix("_colu")], axis=1)
+    ancestryPerAim[chrom]['contig'] = chrom
+
     # plot and store for each chromosome
     coludf = pd.DataFrame.from_dict(prop_colu, orient='index', columns=['AIM_fraction_coluzzii'])
     gambdf = pd.DataFrame.from_dict(prop_gambiae, orient='index', columns=['AIM_fraction_gambiae'])
@@ -135,6 +140,10 @@ for chrom in chroms:
 aims_chrom_gamb = flip_dict(aims_chrom_gamb)
 aims_chrom_colu = flip_dict(aims_chrom_colu)
 n_aims_per_chrom = flip_dict(n_aims_per_chrom)
+
+# get ancestry per aim for later plotting on chromosome
+ancestryPerAim = pd.concat(ancestryPerAim, axis=0)
+ancestryPerAim.to_csv("results/variantAnalysis/ancestry/ancestryScorePerAim.tsv", sep="\t")
 
 # get genome wide average AIM fractions
 for k in all_gamb:
@@ -259,6 +268,10 @@ if metadata['species'].isin(['arabiensis']).any():
         aims_chrom_arab[chrom] = dict(prop_arab)
         n_aims_per_chrom[chrom] = dict(n_aims_per_sample)
 
+        # Store ancestry score per aim
+        ancestryPerAim[chrom] = pd.concat([pd.DataFrame(gambscores).add_suffix("_gamb"), pd.DataFrame(coluscores).add_suffix("_colu")], axis=1)
+        ancestryPerAim[chrom]['contig'] = chrom
+
         # plot and store for each chromosome
         gambdf = pd.DataFrame.from_dict(prop_gambiae, orient='index', columns=['AIM_fraction_gambiae'])
         arabdf = pd.DataFrame.from_dict(prop_arab, orient='index', columns=['AIM_fraction_arabiensis'])
@@ -271,6 +284,10 @@ if metadata['species'].isin(['arabiensis']).any():
     aims_chrom_gamb = flip_dict(aims_chrom_gamb)
     aims_chrom_arab = flip_dict(aims_chrom_arab)
     n_aims_per_chrom = flip_dict(n_aims_per_chrom)
+
+    # get ancestry per aim for later plotting on chromosome
+    ancestryPerAim = pd.concat(ancestryPerAim, axis=0)
+    ancestryPerAim.to_csv("results/variantAnalysis/ancestry/ancestryScorePerAim.tsv", sep="\t")
 
     # get genome wide average AIM fractions
     for k in all_gamb:
