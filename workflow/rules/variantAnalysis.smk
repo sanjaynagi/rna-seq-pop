@@ -26,7 +26,7 @@ rule SNPstatistics:
     log:
         "logs/SNPstatistics.log"
     conda:
-        "../envs/fstpca.yaml"
+        "../envs/pythonGenomics.yaml"
     params:
         dataset=config['dataset'],
         chroms=config["chroms"],
@@ -56,7 +56,7 @@ rule PCA:
     log:
         "logs/pca.log"
     conda:
-        "../envs/fstpca.yaml"
+        "../envs/pythonGenomics.yaml"
     params:
         dataset=config["dataset"],
         chroms=config["chroms"],
@@ -86,7 +86,7 @@ rule SummaryStatistics:
     log:
         "logs/SummaryStatistics.log",
     conda:
-        "../envs/fstpca.yaml"
+        "../envs/pythonGenomics.yaml"
     params:
         dataset=config["dataset"],
         chroms=config["chroms"],
@@ -125,7 +125,7 @@ rule WindowedFstPBS:
             else []
         ),
     conda:
-        "../envs/fstpca.yaml"
+        "../envs/pythonGenomics.yaml"
     log:
         "logs/WindowedFstPBS.log",
     params:
@@ -162,7 +162,7 @@ rule PerGeneFstPBSDxyPi:
         "results/variantAnalysis/diversity/SequenceDivPerGene.tsv",
         "results/variantAnalysis/diversity/DxyPerGene.tsv"
     conda:
-        "../envs/fstpca.yaml"
+        "../envs/pythonGenomics.yaml"
     log:
         "logs/PerGeneFstPBSDxyPi.log",
     params:
@@ -199,7 +199,7 @@ rule AncestryInformativeMarkers:
     log:
         "logs/AncestryInformativeMarkers.log",
     conda:
-        "../envs/fstpca.yaml"
+        "../envs/pythonGenomics.yaml"
     params:
         dataset=config['dataset'],
         chroms=config["chroms"],
@@ -225,7 +225,7 @@ rule Karyotype:
     log:
         "logs/compKaryo/{dataset}.karyo.{karyo}.log",
     conda:
-        "../envs/fstpca.yaml"
+        "../envs/pythonGenomics.yaml"
     params:
         ploidy=config["VariantAnalysis"]["ploidy"],
         basedir=workflow.basedir,
@@ -249,7 +249,7 @@ rule KaryotypePlots:
     log:
         "logs/compKaryo/KaryotypePlots.log",
     conda:
-        "../envs/fstpca.yaml"
+        "../envs/pythonGenomics.yaml"
     params:
         metadata=config['metadata'],
         ploidy=config["VariantAnalysis"]["ploidy"],

@@ -7,7 +7,9 @@ Plots Karyotype data
 import sys
 sys.stderr = open(snakemake.log[0], "w")
 
-from tools import *
+import rnaseqpoptools as rnaseqpop
+import pandas as pd 
+import matplotlib.pyplot as plt
 
 # Read in parameters from snakemake
 ploidy = snakemake.params['ploidy']
@@ -15,28 +17,26 @@ invs = snakemake.params['inversions']
 metadata = pd.read_csv(snakemake.params['metadata'], sep="\t")
 metadata = metadata.sort_values(by='species')
 dataset = snakemake.params['dataset']
-##
 
 
 karyo = {}
 for inv in invs:
     df = pd.read_csv(f"results/karyotype/{inv}.{dataset}.karyo.txt", sep="\s+", header=None)
-    df = df.rename(columns={0:'Sample', 1:'KaryoScore', 2:'n_SNPtags'})
+    df = df.rename(columns={0:'sampleID', 1:'KaryoScore', 2:'n_SNPtags'})
     df[inv] = df['KaryoScore']/ploidy
-    df.rename({inv:f'{inv} frequency'}).to_csv(f"results/karyotype/{inv}.{dataset}.karyo.txt", sep="\t")
+    df.rename(columns={inv:f'{inv} frequency'}).to_csv(f"results/karyotype/{inv}.{dataset}.karyo.txt", sep="\t")
     
-    karyo[inv] = df[['Sample', inv]]
+    karyo[inv] = df[['sampleID', inv]]
 
 # concat all the dfs in the dict and remove duplicate cols
-karyo = pd.concat(karyo.values(), axis=1).T.drop_duplicates().T.set_index("Sample")
+karyo = pd.concat(karyo.values(), axis=1).T.drop_duplicates().T.set_index("sampleID")
 
 ## transpose and round to 2 decimals
 karyo = karyo.T.astype("float64").round(2)
-
-plotRectangular(karyo, path="results/karyotype/karyoFreqs.png" , cmap='mako_r', ylab='Inversion', figsize=[10,5])
+rnaseqpop.plotRectangular(karyo, path="results/karyotype/karyoFreqs.png" , cmap='mako_r', ylab='Inversion', figsize=[10,5])
 
 # Produce for average karyos per treatment
 df = karyo.T.reset_index()
-df['Sample'] = df['Sample'].str.strip('12345678910')
-df = df.groupby("Sample").agg('mean').T
-plotRectangular(df, path="results/karyotype/karyoOverallFreqs.png", ylab='Inversion', cbar=False, figsize=[2,len(invs)])
+df = df.merge(metadata[['sampleID', 'treatment']])
+df = df.groupby("treatment").agg('mean').T.astype("float64").round(2)
+rnaseqpop.plotRectangular(df, path="results/karyotype/karyoOverallFreqs.png", ylab='Inversion', cbar=False, figsize=[8,4])

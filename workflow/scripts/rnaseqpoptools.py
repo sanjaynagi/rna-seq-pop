@@ -1,16 +1,11 @@
-# tools.py
 import allel
-import zarr
-import numpy as np
-from scipy import stats
 import pandas as pd
+import numpy as np
 import matplotlib
-matplotlib.use('agg')
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import seaborn as sns
-from functools import partial, reduce
 from collections import defaultdict
-from adjustText import adjust_text
 
 
 def plotWindowed(statName, cohortText, cohortNoSpaceText, values, midpoints, prefix, chrom, ylim, colour, save=True):
