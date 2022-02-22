@@ -23,7 +23,7 @@ else:
     mutationData = pd.DataFrame({"Name": ["KDR"], "mut":["995F"], "Location": ["2L-28xxxxx"]})   # ignore this, just an dummy df for snakemake
 
 include: "rules/common.smk"
-welcome(version="v0.7.0")
+welcome(version="v0.8.0")
 include: "rules/qc.smk"
 include: "rules/diff.smk"
 include: "rules/variantsOfInterest.smk"

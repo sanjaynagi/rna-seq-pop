@@ -6,7 +6,12 @@ A script to determine the proportion of Anopheles gambiae/coluzzii alleles at An
 import sys
 sys.stderr = open(snakemake.log[0], "w")
 
-from tools import *
+import rnaseqpoptools as rnaseqpop
+import pandas as pd
+import numpy as np
+import zarr
+import allel
+from collections import defaultdict
 
 ### AIMS ###
 dataset = snakemake.params['dataset']
@@ -14,7 +19,7 @@ metadata = pd.read_csv(snakemake.input['metadata'], sep="\t")
 metadata = metadata.sort_values(by='species').reset_index(drop=True)
 chroms = snakemake.params['chroms']
 ploidy = snakemake.params['ploidy']
-numbers = get_numbers_dict(ploidy)
+numbers = rnaseqpop.get_numbers_dict(ploidy)
 qualflt = snakemake.params['qualflt']
 missingprop = snakemake.params['missingprop']
 
@@ -33,7 +38,7 @@ for chrom in chroms:
 
     # read in and filter data
     path = f"results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz"
-    vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops =  readAndFilterVcf(path=path,
+    vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops =  rnaseqpop.readAndFilterVcf(path=path,
                                                                chrom=chrom,
                                                                samples=metadata,
                                                                numbers=numbers,
@@ -82,7 +87,7 @@ for chrom in chroms:
                          2:alt_[0][1],
                          3:alt_[0][2],
                         -1:float("nan")}
-        gn = replace_with_dict2_generic(gn_aim, gn2nucleotide)
+        gn = rnaseqpop.replace_with_dict2_generic(gn_aim, gn2nucleotide)
 
         # for each sample, get proportion of gambiae/coluzzii alleles
         # alleles that are different to both will be missed here
@@ -100,8 +105,8 @@ for chrom in chroms:
         totalgambscore[aim] = dict(gambscore)
         totalcoluscore[aim] = dict(coluscore)
 
-        gambscores = flip_dict(totalgambscore)
-        coluscores = flip_dict(totalcoluscore)
+        gambscores = rnaseqpop.flip_dict(totalgambscore)
+        coluscores = rnaseqpop.flip_dict(totalcoluscore)
 
         prop_gambiae = {}
         prop_colu = {}
@@ -134,12 +139,12 @@ for chrom in chroms:
     aimsperchromdf = pd.DataFrame.from_dict(n_aims_per_sample, orient='index', columns=['n_AIMs'])
 
     perchromdf.to_csv(f"results/variantAnalysis/ancestry/AIM_fraction_{chrom}.tsv", sep="\t", index=True)
-    plot_aims(perchromdf, aimsperchromdf, species1="coluzzii", species2="gambiae", figtitle=f"AIM_fraction_{chrom}", total=False)
+    rnaseqpop.plot_aims(perchromdf, aimsperchromdf, species1="coluzzii", species2="gambiae", figtitle=f"AIM_fraction_{chrom}", total=False)
 
 
-aims_chrom_gamb = flip_dict(aims_chrom_gamb)
-aims_chrom_colu = flip_dict(aims_chrom_colu)
-n_aims_per_chrom = flip_dict(n_aims_per_chrom)
+aims_chrom_gamb = rnaseqpop.flip_dict(aims_chrom_gamb)
+aims_chrom_colu = rnaseqpop.flip_dict(aims_chrom_colu)
+n_aims_per_chrom = rnaseqpop.flip_dict(n_aims_per_chrom)
 
 # get ancestry per aim for later plotting on chromosome
 ancestryPerAim = pd.concat(ancestryPerAim, axis=0)
@@ -158,7 +163,7 @@ n_aimsdf.to_csv(f"results/variantAnalysis/ancestry/n_AIMS_per_chrom.tsv", sep="\
 df = df1.merge(df2, left_index=True, right_index=True)
 df.to_csv(f"results/variantAnalysis/ancestry/AIMs_summary.tsv", sep="\t", index=True)
 
-plot_aims(df, n_aimsdf, species1="coluzzii", species2="gambiae", figtitle="AIM_fraction_whole_genome", total=True)
+rnaseqpop.plot_aims(df, n_aimsdf, species1="coluzzii", species2="gambiae", figtitle="AIM_fraction_whole_genome", total=True)
 
 
 
@@ -180,7 +185,7 @@ if metadata['species'].isin(['arabiensis']).any():
 
         # read in and filter data
         path = f"results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz"
-        vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops =  readAndFilterVcf(path=path,
+        vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops = rnaseqpop.readAndFilterVcf(path=path,
                                                                 chrom=chrom,
                                                                 samples=metadata,
                                                                 numbers=numbers,
@@ -228,7 +233,7 @@ if metadata['species'].isin(['arabiensis']).any():
                             2:alt_[0][1],
                             3:alt_[0][2],
                             -1:float("nan")}
-            gn = replace_with_dict2_generic(gn_aim, gn2nucleotide)
+            gn = rnaseqpop.replace_with_dict2_generic(gn_aim, gn2nucleotide)
 
             # for each sample, get proportion of gambiae/arabiensis alleles
             # alleles that are different to both will be missed here
@@ -246,8 +251,8 @@ if metadata['species'].isin(['arabiensis']).any():
             totalgambscore[aim] = dict(gambscore)
             totalarabscore[aim] = dict(arabscore)
 
-            gambscores = flip_dict(totalgambscore)
-            arabscores = flip_dict(totalarabscore)
+            gambscores = rnaseqpop.flip_dict(totalgambscore)
+            arabscores = rnaseqpop.flip_dict(totalarabscore)
 
             prop_gambiae = {}
             prop_arab = {}
@@ -279,11 +284,11 @@ if metadata['species'].isin(['arabiensis']).any():
         aimsperchromdf = pd.DataFrame.from_dict(n_aims_per_sample, orient='index', columns=['n_AIMs'])
 
         perchromdf.to_csv(f"results/variantAnalysis/ancestry/AIM_fraction_{chrom}.arab.tsv", sep="\t", index=True)
-        plot_aims(perchromdf, aimsperchromdf, species1="arabiensis", species2="gambiae", figtitle=f"AIM_fraction_arab_{chrom}", total=False)
+        rnaseqpop.plot_aims(perchromdf, aimsperchromdf, species1="arabiensis", species2="gambiae", figtitle=f"AIM_fraction_arab_{chrom}", total=False)
 
-    aims_chrom_gamb = flip_dict(aims_chrom_gamb)
-    aims_chrom_arab = flip_dict(aims_chrom_arab)
-    n_aims_per_chrom = flip_dict(n_aims_per_chrom)
+    aims_chrom_gamb = rnaseqpop.flip_dict(aims_chrom_gamb)
+    aims_chrom_arab = rnaseqpop.flip_dict(aims_chrom_arab)
+    n_aims_per_chrom = rnaseqpop.flip_dict(n_aims_per_chrom)
 
     # get ancestry per aim for later plotting on chromosome
     ancestryPerAim = pd.concat(ancestryPerAim, axis=0)
@@ -302,4 +307,4 @@ if metadata['species'].isin(['arabiensis']).any():
     df = df1.merge(df2, left_index=True, right_index=True)
     df.to_csv(f"results/variantAnalysis/ancestry/AIMs_summary_arab.tsv", sep="\t", index=True)
 
-    plot_aims(df, n_aimsdf, species1="arabiensis", species2="gambiae", figtitle="AIM_fraction_whole_genome", total=True)
+    rnaseqpop.plot_aims(df, n_aimsdf, species1="arabiensis", species2="gambiae", figtitle="AIM_fraction_whole_genome", total=True)

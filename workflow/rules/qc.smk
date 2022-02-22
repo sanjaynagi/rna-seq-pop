@@ -21,7 +21,7 @@ rule CheckInputs:
     log:
         "logs/CheckInputs.log",
     conda:
-        "../envs/fstpca.yaml"
+        "../envs/pythonGenomics.yaml"
     priority: 50
     script:
         "../scripts/checkInputs.py"

@@ -79,7 +79,7 @@ VariantAnalysis:
                   windowsteps: [500, 1000]
 
       # For Anopheles gambiae s.l only - run Ancestry Informative Marker analysis.
-      AIMs:
+      ancestry:
             activate: True
             missingness: 0.5                                # proportion between 0 and 1 
             gambcolu: "resources/gamb_vs_colu.zarr"         # path to gambcolu AIMs

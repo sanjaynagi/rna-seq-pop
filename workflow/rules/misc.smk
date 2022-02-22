@@ -81,7 +81,7 @@ rule VennDiagrams:
         "results/RNA-Seq-full.xlsx",
         expand("results/venn/{name}_DE.Fst.venn.png", name=config["contrasts"]),
     conda:
-        "../envs/fstpca.yaml"
+        "../envs/pythonGenomics.yaml"
     log:
         "logs/VennDiagrams.log",
     params:

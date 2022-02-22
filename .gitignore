@@ -6,6 +6,7 @@
 logs/
 resources/reads/
 resources/reference/
+resources/regions/
 .test/results
 .test/resources
 docs/
@@ -22,3 +23,5 @@ workflow/scripts/misc
 workflow/notebooks
 .test/workflow/scripts/
 .ipynb_checkpoints
+workflow/scripts/snpEff
+workflow/scripts/*ipynb*

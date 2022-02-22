@@ -8,7 +8,10 @@ Currently not modularised further to reduce the repetition of loading and filter
 import sys
 sys.stderr = open(snakemake.log[0], "w")
 
-from tools import *
+import pandas as pd
+import numpy as np
+import allel
+import rnaseqpoptools as rnaseqpop
 
 # Read in parameters from snakemake
 dataset = snakemake.params['dataset']
@@ -16,7 +19,7 @@ metadata = pd.read_csv(snakemake.input['metadata'], sep="\t")
 metadata = metadata.sort_values(by='species')
 chroms = snakemake.params['chroms']
 ploidy = snakemake.params['ploidy']
-numbers = get_numbers_dict(ploidy)
+numbers = rnaseqpop.get_numbers_dict(ploidy)
 qualflt = snakemake.params['qualflt']
 missingprop = snakemake.params['missingprop']
 gffpath = snakemake.input['gff']
@@ -46,7 +49,7 @@ for i, chrom in enumerate(chroms):
     
     # Read in and Filter VCF
     path = f"results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz"
-    vcf, geno, acsubpops, pos, depth, snpeff, subpops, populations = readAndFilterVcf(path=path,
+    vcf, geno, acsubpops, pos, depth, snpeff, subpops, populations = rnaseqpop.readAndFilterVcf(path=path,
                                                            chrom=chrom,
                                                            samples=metadata,
                                                            numbers=numbers,
@@ -59,7 +62,7 @@ for i, chrom in enumerate(chroms):
     snpeffdict[chrom] = snpeff[1].value_counts(normalize=True)
 
     # Plot SNP density
-    plot_density(pos, 
+    rnaseqpop.plot_density(pos, 
                 window_size=100000, 
                 title=f"Variant Density | {dataset} | Chromosome {chrom}", 
                 path=f"results/variantAnalysis/diversity/{dataset}_SNPdensity_{chrom}.png")
@@ -71,7 +74,7 @@ for i, chrom in enumerate(chroms):
     exons = features.query("type == 'exon'").reset_index(drop=True)
     
     ## Proportion SNPs per GFF feature
-    snpsPerGff[chrom] = getSNPGffstats(gff,  pos)
+    snpsPerGff[chrom] = rnaseqpop.getSNPGffstats(gff,  pos)
     snpsPerGff[chrom]['chromosome'] = chrom
 
     ## Calculate missing SNPs per sample, SNPs per gene etc
@@ -101,7 +104,7 @@ for i, chrom in enumerate(chroms):
 
         snps_per_gene[gene['ID']] = dict(snps_per_sample)
 
-    snps_per_gene_allchroms[chrom] = pd.DataFrame.from_dict(flip_dict(snps_per_gene))
+    snps_per_gene_allchroms[chrom] = pd.DataFrame.from_dict(rnaseqpop.flip_dict(snps_per_gene))
 
 snpsPerGff = pd.concat(snpsPerGff).reset_index().rename(columns={'level_1':'feature'})
 snpsPerGff = snpsPerGff.groupby('feature').agg({'ReferenceGenomeProportion': 'mean', 'called':'sum', 'proportion': 'mean', 'total':'sum'})
