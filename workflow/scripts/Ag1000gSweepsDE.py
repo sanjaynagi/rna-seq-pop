@@ -7,7 +7,8 @@ A script that checks if DE genes lie underneath known selective sweeeps in the A
 import sys
 sys.stderr = open(snakemake.log[0], "w")
 
-from tools import *
+import pandas as pd
+import numpy as np
 
 # Read in parameters 
 pval_threshold = snakemake.params['pval']
