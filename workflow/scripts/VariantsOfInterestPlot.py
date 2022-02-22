@@ -6,13 +6,18 @@ A script to plot the frequencies of variants of interest as a heatmap
 import sys
 sys.stderr = open(snakemake.log[0], "w")
 
-from tools import *
+import pandas as pd
+import seaborn as sns
+import matplotlib
+matplotlib.use('agg')
+import matplotlib.pyplot as plt
+import rnaseqpoptools as rnaseqpop
 
-### AIMS ###
-voiData = snakemake.input['VariantsOfInterest']
 
+### Variants of Interest patjh ###
+voiPath = snakemake.input['VariantsOfInterest']
 ## Read VOI data
-muts = pd.read_csv(voiData, sep="\t")
+muts = pd.read_csv(voiPath, sep="\t")
 
 ## separate chrom and pos data and sort 
 muts['chrom'] = muts['Location'].str.split(":").str.get(0)
@@ -21,13 +26,13 @@ muts = muts.sort_values(['chrom', 'pos'])
 
 
 ## Run for all samples
-df, annot = getAlleleFreqTable(muts, "results/variantAnalysis/variantsOfInterest/csvs/{mut}_alleleBalance.csv", var="sample")
-plotRectangular(df, annot=annot, path="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerSample.png")
+df, annot = rnaseqpop.getAlleleFreqTable(muts, "results/variantAnalysis/variantsOfInterest/csvs/{mut}_alleleBalance.csv", var="sample")
+rnaseqpop.plotRectangular(df, annot=annot, path="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerSample.png")
 
 
 ## Run for avarage frequencies across treatments
-df2, annot2 = getAlleleFreqTable(muts, "results/variantAnalysis/variantsOfInterest/csvs/mean_{mut}_alleleBalance.csv", var="treatment", mean_=True)
-plotRectangular(df2, annot=annot2, path="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerTreatment.png", xlab="strain")
+df2, annot2 = rnaseqpop.getAlleleFreqTable(muts, "results/variantAnalysis/variantsOfInterest/csvs/mean_{mut}_alleleBalance.csv", var="treatment", mean_=True)
+rnaseqpop.plotRectangular(df2, annot=annot2, path="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerTreatment.png", xlab="strain")
 
 
-plotTwoRectangular(df, annot, df2, annot2, path="results/variantAnalysis/variantsOfInterest/VOI.heatmapBothPlots.png", ratio='auto')
+rnaseqpop.plotTwoRectangular(df, annot, df2, annot2, path="results/variantAnalysis/variantsOfInterest/VOI.heatmapBothPlots.png", ratio='auto')
