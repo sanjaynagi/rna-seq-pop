@@ -2,6 +2,8 @@
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥5.11.0-brightgreen.svg)](https://snakemake.bitbucket.io)
 [![Build Status](https://travis-ci.org/sanjaynagi/rna-seq-pop.svg?branch=master)](https://travis-ci.org/snakemake-workflows/rna-seq-pop)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6078337.svg)](https://doi.org/10.5281/zenodo.6078337)
+
 
 This snakemake workflow performs various analyses of illumina paired-end RNA-Sequencing data:
 
@@ -28,6 +30,8 @@ The workflow is still in construction, and not yet ready for release. If you hav
 ## Usage
 
 If you use this workflow in a paper, don't forget to give credits to the author by citing the URL of this (original) repository and, if available, its DOI (see above).
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6078337.svg)](https://doi.org/10.5281/zenodo.6078337)
 
 ### Step 1: Obtain a copy of this workflow
 
