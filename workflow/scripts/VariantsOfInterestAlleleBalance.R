@@ -24,7 +24,7 @@ for (m in mutation_data$Name){
   propstring = glue("proportion{base}")
   base2 = mutation_data[mutation_data$Name == m]$ALT2 #### add in if second alt
   propstring2 = glue("proportion{base2}")
-
+  
   #### load allele balance data ####
   allele_list = list()
   # read data for each sample and subset to what we want
@@ -39,21 +39,52 @@ for (m in mutation_data$Name){
     allele_list[[sample]] = allele_list[[sample]] %>% mutate(!!propstring := (!!sym(base))/cover) #new column, proportion of Alts to total.  
     
     if (!base2 %in% c("", NA)){
-    allele_list[[sample]] = allele_list[[sample]] %>% mutate(!!propstring2 := (!!sym(base2))/cover) #new column, proportion of Alts to total.  
+      allele_list[[sample]] = allele_list[[sample]] %>% mutate(!!propstring2 := (!!sym(base2))/cover) #new column, proportion of Alts to total.  
     }
   }
   
   # We have 24 separate dataframes in a list, bind them together into one big dataframe
   alleles = rbindlist(allele_list, fill = TRUE)
+  
+  # now lets calculate population means and lower and upper CIs
+  alleles_per_pop_list = list()
+  for (pop in unique(metadata$treatment)){
+    
+    alleles_per_pop = alleles %>% filter(treatment == pop) 
+    
+    pop_prop = sum(alleles_per_pop[, ..base])/ sum(alleles_per_pop[, 'cov'])
+    error = sqrt((pop_prop*(1-pop_prop))/nrow(alleles_per_pop))*1.96
+    lower = pmax(pop_prop - error, 0)
+    upper = pmin(pop_prop + error, 1)
+    
+    alleles_per_pop_list[[pop]] = alleles_per_pop %>% mutate(!!propstring := pop_prop, lowerCI = lower, upperCI = upper)
+    
+    # average across replicates
+    if (!base2 %in% c("", NA)){
+      pop_prop2 = sum(alleles_per_pop[, ..base2])/ sum(alleles_per_pop[, 'cov'])
+      error2 = sqrt((pop_prop*(1-pop_prop))/nrow(alleles_per_pop))*1.96
+      lower2 = pmax(pop_prop - error, 0)
+      upper2 = pmin(pop_prop + error, 1)
+      
+      alleles_per_pop_list[[pop]] = alleles_per_pop_list[[pop]] %>% mutate(!!propstring2 := pop_prop2, lowerCI_2 = lower2, upperCI_2 = upper2)
+    }
+  }
+  
+  mean_alleles = rbindlist(alleles_per_pop_list, fill=TRUE)
+  
   # average across replicates
   if (!base2 %in% c("", NA)){
-    mean_alleles = alleles %>% group_by(chrom, pos, ref, mutation, treatment) %>% summarise_at(.vars = c("cov","A","C","G","T", propstring, propstring2)
-                                                                                      , .funs = c(mean="mean"), na.rm = TRUE)
+    mean_alleles = mean_alleles %>% 
+      group_by(chrom, pos, ref, mutation, treatment, !!sym(propstring), lowerCI, upperCI, !!sym(propstring2), lowerCI_2, upperCI_2) %>% 
+      summarise_at(.vars = c("cov","A","C","G","T"), .funs = c(mean="mean"), na.rm = TRUE) %>% 
+      select(chrom, pos, ref, mutation, treatment, cov_mean, A_mean, C_mean, G_mean, T_mean, lowerCI, upperCI, !!propstring, !!propstring2, lowerCI_2, upperCI_2)
   } else {
-    mean_alleles = alleles %>% group_by(chrom, pos, ref, mutation, treatment) %>% summarise_at(.vars = c("cov","A","C","G","T", propstring)
-                                                                                               , .funs = c(mean="mean"), na.rm = TRUE)
+    mean_alleles = mean_alleles %>% 
+      group_by(chrom, pos, ref, mutation, treatment, !!sym(propstring), lowerCI, upperCI) %>% 
+      summarise_at(.vars = c("cov","A","C","G","T"), .funs = c(mean="mean"), na.rm = TRUE) %>% 
+      select(chrom,pos, ref, mutation, treatment, cov_mean, A_mean, C_mean, G_mean, T_mean, lowerCI, upperCI, !!propstring)
   }
-    
+  
   #write to file, reorder mean_kdr_alleles
   fwrite(alleles, glue("results/variantAnalysis/variantsOfInterest/csvs/{m}_alleleBalance.csv"))
   fwrite(mean_alleles, glue("results/variantAnalysis/variantsOfInterest/csvs/mean_{m}_alleleBalance.csv"))
