@@ -9,6 +9,7 @@ sys.stderr = open(snakemake.log[0], "w")
 
 import pandas as pd
 import numpy as np
+from collections import defaultdict
 
 # Read in parameters 
 pval_threshold = snakemake.params['pval']
