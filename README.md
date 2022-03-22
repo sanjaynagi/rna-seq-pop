@@ -3,7 +3,7 @@
 [![Snakemake](https://img.shields.io/badge/snakemake-≥5.11.0-brightgreen.svg)](https://snakemake.bitbucket.io)
 [![Build Status](https://travis-ci.org/sanjaynagi/rna-seq-pop.svg?branch=master)](https://travis-ci.org/snakemake-workflows/rna-seq-pop)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6078337.svg)](https://doi.org/10.5281/zenodo.6078337)
-![Image](./RNA-Seq-Pop-Logo.png, "RNA-Seq-Pop Logo")
+![Logo](https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True, "RNA-Seq-Pop Logo")
 
 This snakemake workflow performs various analyses of illumina paired-end RNA-Sequencing data:
 
