@@ -12,10 +12,11 @@ This snakemake workflow performs various analyses of illumina paired-end RNA-Seq
 * QC metrics integrated into one final QC report with [multiQC](https://multiqc.info/)
 * Differential expression analysis with [Kallisto](https://pachterlab.github.io/kallisto/) at the gene level ([DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)) and transcript level ([Sleuth](https://github.com/pachterlab/sleuth))
 * Variant calling with [freebayes](https://github.com/freebayes/freebayes), and an Fst and [Population branch statistic (PBS)](https://science.sciencemag.org/content/329/5987/75) analysis, both in windows and at the gene-level ([Scikit-allel](https://scikit-allel.readthedocs.io/en/stable/)).
+* Allele counts and frequencies at variants of interest (pre-specified loci of choice).
 * Various summary statistics are calculated (Wattersons Theta, Sequence Diversity, Dxy etc)
 * Differential SNP testing with the R package [kissDE](https://bioconductor.org/packages/release/bioc/html/kissDE.html), which accounts for allele-specific expression.
-* Gene Set Enrichment analyses and Venn diagrams.
-* Allele counts at pre-specified loci of choice.
+* Gene Set Enrichment analyses.
+  
 * *Anopheles gambiae s.l* - Analysis of Ancestry Informative Markers (AIMs) to determine relative ancestry of *An.gambiae/coluzzii/arabiensis*. 
 * *Anopheles gambiae s.l* - Reports if DE genes are found underneath known selective sweep signals in the [Ag1000g](https://www.nature.com/articles/nature24995).
 * *Anopheles gambiae s.l* - Determines Karyotype of chromosome 2 inversions using [compkaryo](https://academic.oup.com/g3journal/article/9/10/3249/6026680) - [GH](https://github.com/sanjaynagi/compkaryo)
