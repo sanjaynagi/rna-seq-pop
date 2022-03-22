@@ -1,6 +1,6 @@
 channels:
   - bioconda
 dependencies:
-  - snpeff=4.3.1
+  - snpeff=5.1
   - snpsift=4.3.1
   - tabix=0.2.6
