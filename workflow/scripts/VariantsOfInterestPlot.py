@@ -7,10 +7,7 @@ import sys
 sys.stderr = open(snakemake.log[0], "w")
 
 import pandas as pd
-import seaborn as sns
 import matplotlib
-matplotlib.use('agg')
-import matplotlib.pyplot as plt
 import rnaseqpoptools as rnaseqpop
 
 
