@@ -118,6 +118,7 @@ rule VariantCallingFreebayes:
             index=expand("results/alignments/{sample}.bam.bai", sample=samples),
             ref=config["ref"]["genome"],
             samples="resources/bam.list",
+            pops= "resources/populations.tsv",
             regions=ancient("resources/regions/genome.{chrom}.region.{i}.bed"),
         output:
             temp("results/variantAnalysis/vcfs/{chrom}/variants.{i}.vcf"),

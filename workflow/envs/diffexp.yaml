@@ -12,5 +12,4 @@ dependencies:
   - r-glue=1.4.2
   - r-rcolorbrewer=1.1_2
   - r-pheatmap=1.0.12
-  - bioconductor-enhancedvolcano=1.8.0
   - r-jsonlite
