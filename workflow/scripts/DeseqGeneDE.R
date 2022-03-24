@@ -127,13 +127,13 @@ for (sample in metadata$sampleID){
 
 # Rename columns
 colnames(counts) = c("TranscriptID", metadata$sampleID)
-
 ## Aggregate to gene level
 counts = left_join(counts, gene_names) %>% select(GeneID, metadata$sampleID)
 counts = counts %>% group_by(GeneID) %>% summarise_all(sum)
 gene_names = gene_names %>% select(-TranscriptID)
 
 ### Count total reads counted
+counts = counts[!is.na(counts$GeneID),]
 counts = counts %>% column_to_rownames('GeneID')
 #### Get count statistics for each sample and plot ####
 count_stats = apply(counts, 2, sum) %>% enframe(name="Sample", value="total_counts") # total counts
