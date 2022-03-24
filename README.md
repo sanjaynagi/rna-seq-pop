@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.org/sanjaynagi/rna-seq-pop.svg?branch=master)](https://travis-ci.org/snakemake-workflows/rna-seq-pop)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6078337.svg)](https://doi.org/10.5281/zenodo.6078337)
 
-[<img src="https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True" width="500"/>](https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True)
+[<img src="https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True" width="400"/>](https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True)
 
 This snakemake workflow performs various analyses of illumina paired-end RNA-Sequencing data:
 
@@ -21,7 +21,7 @@ This snakemake workflow performs various analyses of illumina paired-end RNA-Seq
 * *Anopheles gambiae s.l* - Reports if DE genes are found underneath known selective sweep signals in the [Ag1000g](https://www.nature.com/articles/nature24995).
 * *Anopheles gambiae s.l* - Determines Karyotype of chromosome 2 inversions using [compkaryo](https://academic.oup.com/g3journal/article/9/10/3249/6026680) - [GH](https://github.com/sanjaynagi/compkaryo)
 
-The workflow is generalised, and will function with any trimmed Illumina paired-end RNA-sequencing. However, certain modules, such as the AIMs analysis, are only appropriate for specific species. These can be activated in the configuration file (config.yaml). The workflow works with pooled samples, or diploid or haploid individuals. 
+The workflow is generalised, and will function with any trimmed Illumina paired-end RNA-sequencing. However, certain modules, such as the AIMs analysis, are only appropriate for specific species. These can be activated in the configuration file (config.yaml). The workflow works with pooled samples, diploid, or haploid individuals. 
 
 The workflow is still in construction, and not yet ready for release. If you have any feedback on how the workflow may be improved, please get in touch, or feel free to fork the github repo and create a pull request for any additional features you would like to implement. If you are using the workflow and would like to give feedback or troubleshoot, consider joining the discord server [here](https://discord.gg/RaXjP8APCq)
 
@@ -31,7 +31,7 @@ The workflow is still in construction, and not yet ready for release. If you hav
 
 ## Usage
 
-If you use this workflow in a paper, don't forget to give credits to the author by citing the URL of this (original) repository and, if available, its DOI (see above).
+If you use this workflow in a paper, don't forget to give credits to the author by citing the URL of this (original) repository and, if available, its DOI - 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6078337.svg)](https://doi.org/10.5281/zenodo.6078337)
 
 ## Workflow 
