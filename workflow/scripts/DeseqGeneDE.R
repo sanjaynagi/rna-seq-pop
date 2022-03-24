@@ -81,6 +81,33 @@ vst_pca = function(counts, samples, colourvar, name="PCA", st="", comparison="")
   return(list(vstcounts, dds, normcounts))
 }
 
+volcano = function(data, title){
+  
+  data = data %>% mutate(col = case_when(padj < 0.05 & abs(log2FoldChange) > 1 ~ "#ff6666",
+                                         padj > 0.05 & abs(log2FoldChange) > 1 ~ "#39e600",
+                                         padj < 0.05 & abs(log2FoldChange) < 1 ~ "#3385ff",
+                                         padj > 0.05 & abs(log2FoldChange) < 1 ~ "#b3b3b3"))
+  
+  data$labels = data %>% dplyr::mutate("Gene_name" = case_when(GeneName == "" ~ GeneID,
+                                                               is.na(GeneName) ~ GeneID,
+                                                               TRUE ~ GeneName)) %>% select(Gene_name) %>% deframe()
+  
+  plot = ggplot(data=data, aes(x=log2FoldChange, y=-log10(padj), color=col, alpha=0.4), size=2) + 
+    geom_point() + 
+    scale_color_identity() +
+    xlim(-10, 10) +
+    ylab("-log10(P)") +
+    xlab("log2 Fold Change") +
+    ggtitle(title) + 
+    theme_light() + 
+    theme(legend.position = "none")  +
+    geom_vline(xintercept = log2(2), linetype='dashed', colour='grey') + 
+    geom_vline(xintercept = log2(0.5), linetype='dashed', colour='grey') + 
+    geom_hline(yintercept = -log10(0.05), linetype='dashed', colour='grey') + 
+    geom_text_repel(data = subset(data, data[['padj']] < 0.01 & abs(data[['log2FoldChange']]) > 2), aes(label = subset(data, data[['padj']] < 0.01 & abs(data[['log2FoldChange']]) > 2)[["labels"]], colour='black'))
+  
+  print(plot)
+}
 
 #### main ####
 cat("\n", "------------- Kallisto - DESeq2 - RNASeq Differential expression ---------", "\n")
@@ -217,7 +244,7 @@ for (cont in contrasts){
   results = unique(left_join(results, gene_names))
   fwrite(results, glue("results/genediff/{cont}.csv")) #write to csv 
   # volcano plot for each comparison, using EnhancedVolcano. First make vector of labels which is AGAPs unless a gene name exists
-  labels = results %>% dplyr::mutate("Gene_name" = case_when(GeneName == "" ~ GeneID,
+  results$labels = results %>% dplyr::mutate("Gene_name" = case_when(GeneName == "" ~ GeneID,
                                      is.na(GeneName) ~ GeneID,
                                      TRUE ~ GeneName)) %>% select(Gene_name) %>% deframe()
   
@@ -241,11 +268,7 @@ for (cont in contrasts){
   names_list[[cont]] = cont
   
   pdf(glue("results/genediff/Volcano_plot_{cont}.pdf"))
-  print(EnhancedVolcano(results_list[[cont]],
-                        lab=labels,
-                        x='log2FoldChange',
-                        y='pvalue',
-                        title = cont))
+  volcano(data = results_list[[cont]], title = cont)
   null = dev.off()
   cat("\n", glue("{cont} complete!"), "\n")
 }
