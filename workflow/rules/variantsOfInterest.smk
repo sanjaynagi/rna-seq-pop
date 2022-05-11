@@ -64,8 +64,8 @@ rule PlotVariantsOfInterest:
         ),
         VariantsOfInterest=config['miscellaneous']["VariantsOfInterest"]["path"],
     output:
-        perSampleHeatmap="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerSample.png",
-        perTreatmentHeatmap="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerTreatment.png"
+        perSampleHeatmap="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerSample.svg",
+        perTreatmentHeatmap="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerTreatment.svg"
     conda:
         "../envs/pythonGenomics.yaml"
     priority: 10

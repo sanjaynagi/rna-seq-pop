@@ -84,19 +84,19 @@ if ploidy > 1: coefdictchrom = rnaseqpop.flip_dict(coefdictchrom)
 # Get stats per chromosome and plot heatmap
 pidf = pd.DataFrame.from_dict(seqdivdictchrom)
 pidf.to_csv("results/variantAnalysis/diversity/SequenceDiversity.tsv", sep="\t", index=True)
-rnaseqpop.plotRectangular(pidf.round(4), path="results/variantAnalysis/diversity/piPerChrom.png", ylab="Chromosome", xlab="Treatment", figsize=[5,5], title=r'$\pi$')
+rnaseqpop.plotRectangular(pidf.round(4), path="results/variantAnalysis/diversity/piPerChrom.svg", ylab="Chromosome", xlab="Treatment", figsize=[5,5], title=r'$\pi$')
 thetadf = pd.DataFrame.from_dict(thetadictchrom)
-rnaseqpop.plotRectangular(thetadf.round(4), path="results/variantAnalysis/diversity/thetaPerChrom.png", ylab="Chromosome", xlab="Treatment", figsize=[5,5], title=r'$\theta$')
+rnaseqpop.plotRectangular(thetadf.round(4), path="results/variantAnalysis/diversity/thetaPerChrom.svg", ylab="Chromosome", xlab="Treatment", figsize=[5,5], title=r'$\theta$')
 thetadf.to_csv("results/variantAnalysis/diversity/WattersonsTheta.tsv", sep="\t", index=True)
 
 thetamean = thetadf.apply(np.mean, axis=0).round(4)
 pimean = pidf.apply(np.mean, axis=0).round(4)
 summaryStats = pd.DataFrame({r'$\theta$':thetamean, r'$\pi$':pimean})
-rnaseqpop.plotRectangular(summaryStats, path="results/variantAnalysis/diversity/pi_theta.overall.png", ylab="", xlab="Statistic", figsize=[5,5], rotate=False)
+rnaseqpop.plotRectangular(summaryStats, path="results/variantAnalysis/diversity/pi_theta.overall.svg", ylab="", xlab="Statistic", figsize=[5,5], rotate=False)
 
 theta = pd.DataFrame(summaryStats.iloc[:,0]).round(4)
 pi = pd.DataFrame(summaryStats.iloc[:,1]).round(4)
-rnaseqpop.plotTwoRectangular(pi, True, theta, True, path="results/variantAnalysis/diversity/piThetaBoth.png", cmap="Greys", figsize=[5,5], annotFontsize=20, ytickfontsize=12, ylab="")
+rnaseqpop.plotTwoRectangular(pi, True, theta, True, path="results/variantAnalysis/diversity/piThetaBoth.svg", cmap="Greys", figsize=[5,5], annotFontsize=20, ytickfontsize=12, ylab="")
 
 if ploidy > 1: pd.DataFrame.from_dict(coefdictchrom).to_csv("results/variantAnalysis/diversity/inbreedingCoef.tsv", sep="\t", index=True)
 

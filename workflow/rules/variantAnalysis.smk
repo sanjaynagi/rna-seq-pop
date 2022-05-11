@@ -19,7 +19,7 @@ rule SNPstatistics:
         snpsPerGenomicFeature = "results/variantAnalysis/SNPstats/snpsPerGenomicFeature.tsv",
         snpsPerGene = "results/variantAnalysis/SNPstats/nSNPsPerGene.tsv",
         SNPdensityFig=expand(
-            "results/variantAnalysis/diversity/{dataset}_SNPdensity_{chrom}.png",
+            "results/variantAnalysis/diversity/{dataset}_SNPdensity_{chrom}.svg",
             chrom=config["chroms"],
             dataset=config["dataset"],
         ),
@@ -49,7 +49,7 @@ rule PCA:
         metadata=config["metadata"]
     output:
         PCAfig=expand(
-            "results/variantAnalysis/pca/PCA-{chrom}-{dataset}.png",
+            "results/variantAnalysis/pca/PCA-{chrom}-{dataset}.svg",
             chrom=config["chroms"],
             dataset=config["dataset"],
         ),
@@ -80,9 +80,9 @@ rule SummaryStatistics:
     output:
         inbreedingCoef="results/variantAnalysis/diversity/inbreedingCoef.tsv" if config['VariantAnalysis']['ploidy'] > 1 else [],
         pi="results/variantAnalysis/diversity/SequenceDiversity.tsv",
-        pi_png="results/variantAnalysis/diversity/piPerChrom.png",
+        pi_png="results/variantAnalysis/diversity/piPerChrom.svg",
         theta="results/variantAnalysis/diversity/WattersonsTheta.tsv",
-        theta_png="results/variantAnalysis/diversity/thetaPerChrom.png"
+        theta_png="results/variantAnalysis/diversity/thetaPerChrom.svg"
     log:
         "logs/SummaryStatistics.log",
     conda:
@@ -109,14 +109,14 @@ rule WindowedFstPBS:
         ),
     output:
         Fst=expand(
-            "results/variantAnalysis/selection/fst/Fst.{comp}.{wsize}.{chrom}.png",
+            "results/variantAnalysis/selection/fst/Fst.{comp}.{wsize}.{chrom}.svg",
             comp=config["contrasts"],
             chrom=config["chroms"],
             wsize=config['VariantAnalysis']['selection']["pbs"]["windownames"],
         ),
         PBS=(
             expand(
-                "results/variantAnalysis/selection/pbs/PBS.{pbscomp}.{wsize}.{chrom}.png",
+                "results/variantAnalysis/selection/pbs/PBS.{pbscomp}.{wsize}.{chrom}.svg",
                 pbscomp=config['VariantAnalysis']['selection']["pbs"]["contrasts"],
                 chrom=config["chroms"],
                 wsize=config['VariantAnalysis']['selection']["pbs"]["windownames"],
@@ -191,7 +191,7 @@ rule AncestryInformativeMarkers:
         aims_zarr_arab=config['VariantAnalysis']["ancestry"]["arab"],
     output:
         AIMs="results/variantAnalysis/ancestry/AIMs_summary.tsv",
-        AIMs_fig="results/variantAnalysis/ancestry/AIM_fraction_whole_genome.png",
+        AIMs_fig="results/variantAnalysis/ancestry/AIM_fraction_whole_genome.svg",
         n_AIMs="results/variantAnalysis/ancestry/n_AIMS_per_chrom.tsv",
         AIMs_chroms=expand(
             "results/variantAnalysis/ancestry/AIM_fraction_{chrom}.tsv", chrom=config["chroms"]
@@ -245,7 +245,7 @@ rule KaryotypePlots:
     input:
         expand("results/karyotype/{karyo}.{dataset}.karyo.txt", karyo=config['VariantAnalysis']['karyotype']['inversions'], dataset=config['dataset'])
     output:
-        "results/karyotype/karyoFreqs.png"
+        "results/karyotype/karyoFreqs.svg"
     log:
         "logs/compKaryo/KaryotypePlots.log",
     conda:
