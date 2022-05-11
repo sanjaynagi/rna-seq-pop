@@ -105,16 +105,16 @@ def GetDesiredOutputs(wildcards):
             expand(
                 [
                     "results/variantAnalysis/vcfs/stats/{chrom}.txt",
-                    "results/variantAnalysis/pca/PCA-{chrom}-{dataset}.png",
+                    "results/variantAnalysis/pca/PCA-{chrom}-{dataset}.svg",
                     "results/variantAnalysis/SNPstats/snpsPerGenomicFeature.tsv",
                     "results/variantAnalysis/SNPstats/nSNPsPerGene.tsv",
-                    "results/variantAnalysis/diversity/{dataset}_SNPdensity_{chrom}.png",
+                    "results/variantAnalysis/diversity/{dataset}_SNPdensity_{chrom}.svg",
                     "results/variantAnalysis/diversity/SequenceDiversity.tsv",
                     "results/variantAnalysis/selection/FstPerGene.tsv",
                     "results/variantAnalysis/selection/TajimasDPerGene.tsv",
                     "results/variantAnalysis/diversity/SequenceDivPerGene.tsv",
                     "results/variantAnalysis/diversity/DxyPerGene.tsv",
-                    "results/variantAnalysis/selection/fst/Fst.{comp}.{wsize}.{chrom}.png",
+                    "results/variantAnalysis/selection/fst/Fst.{comp}.{wsize}.{chrom}.svg",
                 ],
                 chrom=config["chroms"],
                 dataset=config["dataset"],
@@ -139,7 +139,7 @@ def GetDesiredOutputs(wildcards):
             expand(
                 [
                     "results/variantAnalysis/ancestry/AIMs_summary.tsv",
-                    "results/variantAnalysis/ancestry/AIM_fraction_whole_genome.png",
+                    "results/variantAnalysis/ancestry/AIM_fraction_whole_genome.svg",
                     "results/variantAnalysis/ancestry/n_AIMS_per_chrom.tsv",
                     "results/variantAnalysis/ancestry/AIM_fraction_{chrom}.tsv",
                 ],
@@ -151,8 +151,8 @@ def GetDesiredOutputs(wildcards):
         wanted_input.extend(
             [
                 "results/variantAnalysis/variantsOfInterest/alleleBalance.xlsx",
-                "results/variantAnalysis/variantsOfInterest/VOI.heatmapPerSample.png",
-                "results/variantAnalysis/variantsOfInterest/VOI.heatmapPerTreatment.png"
+                "results/variantAnalysis/variantsOfInterest/VOI.heatmapPerSample.svg",
+                "results/variantAnalysis/variantsOfInterest/VOI.heatmapPerTreatment.svg"
                 ]
             )
 
@@ -186,23 +186,23 @@ def GetDesiredOutputs(wildcards):
             )
         )
 
-    if config['miscellaneous']["venn"]["activate"]:
-        wanted_input.extend(
-            expand(
-                [
-                    "results/RNA-Seq-full.xlsx",
-                    "results/venn/{comp}_DE.Fst.venn.png",
-                ],
-                comp=config["contrasts"],
-            )
-        )
+    # if config['miscellaneous']["venn"]["activate"]:
+    #     wanted_input.extend(
+    #         expand(
+    #             [
+    #                 "results/RNA-Seq-full.xlsx",
+    #                 "results/venn/{comp}_DE.Fst.venn.png",
+    #             ],
+    #             comp=config["contrasts"],
+    #         )
+    #     )
 
     if config['VariantAnalysis']["karyotype"]["activate"]:
         wanted_input.extend(
             expand(
                 [
                     "results/karyotype/{karyo}.{dataset}.karyo.txt",
-                    "results/karyotype/karyoFreqs.png"
+                    "results/karyotype/karyoFreqs.svg"
                 ],
                 karyo=config['VariantAnalysis']["karyotype"]["inversions"],
 		dataset=config['dataset'],
