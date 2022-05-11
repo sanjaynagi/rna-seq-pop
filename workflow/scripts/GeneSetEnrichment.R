@@ -79,8 +79,8 @@ for (comp in comparisons$contrast){
   print(glue("Running KEGG and GO enrichment analyses for {comp}"))
   # make ranked list using DE results, rank based on log2foldchange
   rank = fread(glue("results/genediff/{comp}.csv")) %>% 
-    arrange("log2FoldChange") %>% 
-    dplyr::select(c('GeneID', all_of("log2FoldChange"))) %>% 
+    arrange("padj") %>% 
+    dplyr::select(c('GeneID', all_of("padj"))) %>% 
     deframe()
   runEnrich(rankedList = rank, GeneSetList = GeneSetList, outName = glue("genediff/{comp}.DE"))
 }

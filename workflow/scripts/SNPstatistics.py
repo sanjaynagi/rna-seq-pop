@@ -65,7 +65,7 @@ for i, chrom in enumerate(chroms):
     rnaseqpop.plot_density(pos, 
                 window_size=100000, 
                 title=f"Variant Density | {dataset} | Chromosome {chrom}", 
-                path=f"results/variantAnalysis/diversity/{dataset}_SNPdensity_{chrom}.png")
+                path=f"results/variantAnalysis/diversity/{dataset}_SNPdensity_{chrom}.svg")
 
     ######## SNP counts per gene ########
     # Subset GFF to appropriate chromosome

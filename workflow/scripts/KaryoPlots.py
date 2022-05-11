@@ -33,10 +33,10 @@ karyo = pd.concat(karyo.values(), axis=1).T.drop_duplicates().T.set_index("sampl
 
 ## transpose and round to 2 decimals
 karyo = karyo.T.astype("float64").round(2)
-rnaseqpop.plotRectangular(karyo, path="results/karyotype/karyoFreqs.png" , cmap='mako_r', ylab='Inversion', figsize=[10,5])
+rnaseqpop.plotRectangular(karyo, path="results/karyotype/karyoFreqs.svg" , cmap='mako_r', ylab='Inversion', figsize=[10,5])
 
 # Produce for average karyos per treatment
 df = karyo.T.reset_index()
 df = df.merge(metadata[['sampleID', 'treatment']])
 df = df.groupby("treatment").agg('mean').T.astype("float64").round(2)
-rnaseqpop.plotRectangular(df, path="results/karyotype/karyoOverallFreqs.png", ylab='Inversion', cbar=False, figsize=[8,4])
+rnaseqpop.plotRectangular(df, path="results/karyotype/karyoOverallFreqs.svg", ylab='Inversion', cbar=False, figsize=[8,4])

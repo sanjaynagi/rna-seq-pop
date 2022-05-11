@@ -24,14 +24,16 @@ def plotWindowed(statName, cohortText, cohortNoSpaceText, values, midpoints, pre
     xtick = np.arange(0, midpoints.max(), 2000000)
     ylim = np.max([ylim, values.max()])
     plt.figure(figsize=[20,10])
-    sns.lineplot(midpoints, values, color=colour, linewidth=2)
+    sns.lineplot(midpoints, values, color=colour, linewidth=2.5)
     plt.xlim(0, midpoints.max()+1000)
     plt.ylim(0, ylim)
     plt.yticks(fontsize=14)
     plt.xticks(xtick, rotation=45, ha='right', fontsize=14)
     plt.ticklabel_format(style='plain', axis='x')
     plt.title(f"{statName} | {cohortText} | Chromosome {chrom}", fontdict={'fontsize':20})
-    if save: plt.savefig(f"{prefix}/{statName}.{cohortNoSpaceText}.{chrom}.png",format="png")
+    if save: plt.savefig(f"{prefix}/{statName}.{cohortNoSpaceText}.{chrom}.svg",format="svg", dpi=300)
+    if save: plt.savefig(f"{prefix}/{statName}.{cohortNoSpaceText}.{chrom}.pdf",format="pdf", dpi=300)
+
     
 
 def plotRectangular(voiFreqTable, path, annot=True, xlab="Sample", ylab="Variant Of Interest", title=None, figsize=[10,10], cbar=True, vmax=None, rotate=True, cmap=sns.cubehelix_palette(start=.5, rot=-.75, as_cmap=True), dpi=100):
@@ -221,7 +223,6 @@ def readAndFilterVcf(path, chrom, samples, numbers, ploidy, qualflt=30, missingf
     #get sample names and indices
     samplenames = vcf['samples']
     ind = defaultdict(list)
-
     for s,names in enumerate(samplenames):
         idx = np.where(np.isin(samples['sampleID'],names))[0][0]
         t = samples.treatment[idx]
@@ -233,28 +234,28 @@ def readAndFilterVcf(path, chrom, samples, numbers, ploidy, qualflt=30, missingf
     print(f"------- Filtering VCF at QUAL={qualflt} and missingness proportion of {missingfltprop} -------")
     #apply quality filters
     qual = vcf['variants/QUAL']
-    passfilter = (qual >= qualflt)
+    passfilter = qual >= qualflt
+    print(f"QUAL filter will retain {passfilter.sum()} SNPs retained out of {passfilter.shape[0]} for chromosome {chrom}")
 
+       #missingness filters 
+    ac = allel.GenotypeArray(vcf['calldata/GT']).count_alleles()
+    snpcounts = ac.sum(axis=1)
+    missingflt = snpcounts.max()*missingfltprop # must have at least 1/p alleles present
+    missingness_flt = snpcounts >= missingflt
+    print(f"Missingness filter will retain {missingness_flt.sum()} SNPs out of {missingness_flt.shape[0]} for chromosome {chrom}")
+
+    passfilter = np.logical_and(passfilter, missingness_flt)
+    print(f"The combined filter will retain {passfilter.sum()} SNPs out of {passfilter.shape[0]} for chromosome {chrom}")
+    
     if ploidy == 1:
         geno = allel.HaplotypeArray(vcf['calldata/GT'].compress(passfilter, axis=0))
     else: 
         geno = allel.GenotypeArray(vcf['calldata/GT'].compress(passfilter, axis=0))
 
-    pos = allel.SortedIndex(vcf['variants/POS'].compress(passfilter, axis=0))
+    pos = allel.SortedIndex(vcf['variants/POS'].compress(passfilter, axis=0))     
     depth = vcf['variants/DP'].compress(passfilter, axis=0)
-    print(f"After QUAL filter, {passfilter.sum()} SNPs retained out of {passfilter.shape[0]} for chromosome {chrom}")
-      
-    #missingness filters 
-    ac = geno.count_alleles()
-    snpcounts = ac.sum(axis=1)
-    missingflt = snpcounts.max()*missingfltprop # must have at least 1/p alleles present
-    missingness_flt = snpcounts >= missingflt
-    geno = geno.compress(missingness_flt, axis=0)
-    pos = pos[missingness_flt]
-    print(f"After missingness filter, {missingness_flt.sum()} SNPs retained out of {missingness_flt.shape[0]} for chromosome {chrom}")
-    
     #extract snpeff info and filter   
-    snpeff = pd.DataFrame(vcf['variants/ANN'])[0].str.split("|", expand=True)[passfilter][missingness_flt]
+    snpeff = pd.DataFrame(vcf['variants/ANN'])[0].str.split("|", expand=True)[passfilter]
     
     ac_subpops = geno.count_alleles_subpops(subpops)
     
@@ -357,13 +358,15 @@ def fig_pca(coords, model, title, path, samples, pop_colours,sample_population=N
         legend_without_duplicate_labels(ax)
         fig.suptitle(title, y=1.02)
         
-        fig.savefig(path, bbox_inches='tight', dpi=300)
+        fig.savefig(path, format='svg', bbox_inches='tight', dpi=300)
+        fig.savefig(path, format='pdf', bbox_inches='tight', dpi=300)
+
 
 def pca(geno, chrom, ploidy, dataset, populations, samples, pop_colours, prune=True, scaler=None):
     if prune is True:
         if ploidy > 1:
             geno = geno.to_n_alt()
-        geno = ld_prune(geno, size=500, step=200,threshold=0.2)
+        geno = ld_prune(geno, size=500, step=250,threshold=0.01)
     else:
         if ploidy > 1:
             geno = geno.to_n_alt()
@@ -426,7 +429,8 @@ def plot_aims(df, n_aims, species1="coluzzii", species2="gambiae", figtitle="AIM
     
     # add title and save figure
     plt.title(f"{figtitle}", fontsize=22, pad=20)
-    plt.savefig(f"results/variantAnalysis/ancestry/{figtitle}.png")
+    plt.savefig(f"results/variantAnalysis/ancestry/{figtitle}.svg", dpi=300)
+    plt.savefig(f"results/variantAnalysis/ancestry/{figtitle}.pdf", dpi=300)
     plt.close()    
 
 def getSNPGffstats(gff, pos):
