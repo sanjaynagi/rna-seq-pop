@@ -50,8 +50,8 @@ rule cutAdapt:
     input:
         getFASTQs,
     output:
-        fastq1="resources/trimmed/{sample}.1.fastq.gz",
-        fastq2="resources/trimmed/{sample}.2.fastq.gz",
+        fastq1="resources/reads/trimmed/{sample}_1.fastq.gz",
+        fastq2="resources/reads/trimmed/{sample}_2.fastq.gz",
         qc="resources/trimmed/{sample}.qc.txt"
     params:
         # https://cutadapt.readthedocs.io/en/stable/guide.html#adapter-types

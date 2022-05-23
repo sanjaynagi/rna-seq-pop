@@ -13,7 +13,20 @@ def getFASTQs(wildcards, rules=None):
     If there are more than one wildcard (aka, sample), only return one fastq file
     If the rule is HISAT2align, then return the fastqs with -1 and -2 flags
     """
-    
+    if config['cutadapt']['activate'] == True:
+        if rules in ['KallistoQuant', 'HISAT2align', 'HISAT2align_input']:
+                units = pd.read_csv(config["metadata"], sep="\t")
+                units = (
+                    units.assign(fq1=f"resources/reads/trimmed/" + units["sampleID"] + "_1.fastq.gz")
+                    .assign(fq2=f"resources/reads/trimmed/" + units["sampleID"] + "_2.fastq.gz")
+                    .set_index("sampleID")
+                )
+                u = units.loc[wildcards.sample, ["fq1", "fq2"]].dropna()
+                if rules == "HISAT2align":
+                    return [f"-1 {u.fq1} -2 {u.fq2}"]
+                else:
+                    return [f"{u.fq1}", f"{u.fq2}"]
+
     if config["fastq"]["auto"]:
         units = pd.read_csv(config["metadata"], sep="\t")
         units = (

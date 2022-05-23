@@ -16,7 +16,6 @@ library(ggrepel)
 library(openxlsx)
 library(glue)
 library(RColorBrewer)
-library(EnhancedVolcano)
 library(tidyverse)
 library(jsonlite)
 
@@ -103,8 +102,8 @@ volcano = function(data, title){
     theme(legend.position = "none")  +
     geom_vline(xintercept = log2(2), linetype='dashed', colour='grey') + 
     geom_vline(xintercept = log2(0.5), linetype='dashed', colour='grey') + 
-    geom_hline(yintercept = -log10(0.05), linetype='dashed', colour='grey') + 
-    geom_text_repel(data = subset(data, data[['padj']] < 0.01 & abs(data[['log2FoldChange']]) > 2), aes(label = subset(data, data[['padj']] < 0.01 & abs(data[['log2FoldChange']]) > 2)[["labels"]], colour='black'))
+    geom_hline(yintercept = -log10(0.05), linetype='dashed', colour='grey')# + 
+    #geom_text_repel(data = subset(data, data[['padj']] < 0.01 & abs(data[['log2FoldChange']]) > 2), aes(label = subset(data, data[['padj']] < 0.01 & abs(data[['log2FoldChange']]) > 2)[["labels"]], colour='black'))
   
   print(plot)
 }

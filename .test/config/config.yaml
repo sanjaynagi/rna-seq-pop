@@ -8,6 +8,11 @@ fastq:
       table: config/fastq.tsv
       auto: True # set auto if your files follow 
 
+
+cutadapt:
+      activate: True
+      adaptors:
+
 # Paths for reference files 
 ref:
   genome:
@@ -54,7 +59,7 @@ DifferentialExpression:                       # Activate differential expression
 
 VariantAnalysis:
       activate: True
-      ploidy: 1
+      ploidy: 10
       chunks: 9 # Number of chunks to split the genome into when parallelising freebayes
 # Number of chunks to split the genome into when parallelising freebayes
       missingness: 0.3
@@ -74,9 +79,9 @@ VariantAnalysis:
                   activate: True
                   contrasts: 
                         - 'PiriTia_ContTia_Kisumu'
-                  windownames: ['small', 'large']
-                  windowsizes: [1000, 5000]
-                  windowsteps: [500, 1000]
+                  windownames: ['small']
+                  windowsizes: [1000]
+                  windowsteps: [500]
 
       # For Anopheles gambiae s.l only - run Ancestry Informative Marker analysis.
       ancestry:
