@@ -55,6 +55,8 @@ for i, chrom in enumerate(chroms):
                             acsubpops[res], 
                             size=size, step=step)
             midpoint = allel.moving_statistic(pos, np.median, size=size, step=step)
+            print(FstArray)
+            print(midpoint)
             
             cohortNoSpaceText = name + "." + wname
             rnaseqpop.plotWindowed(statName="Fst",

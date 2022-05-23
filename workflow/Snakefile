@@ -25,9 +25,11 @@ else:
 include: "rules/common.smk"
 welcome(version="v0.8.0")
 include: "rules/qc.smk"
-include: "rules/diff.smk"
+include: "rules/diffexp.smk"
 include: "rules/variantsOfInterest.smk"
+include: "rules/alignment.smk"
 include: "rules/variantCalling.smk"
+include: "rules/filterAnnotate.smk"
 include: "rules/variantAnalysis.smk"
 include: "rules/misc.smk"
 

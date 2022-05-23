@@ -78,7 +78,7 @@ if (!is.null(replaceString)){
 for (comp in comparisons$contrast){
   print(glue("Running KEGG and GO enrichment analyses for {comp}"))
   # make ranked list using DE results, rank based on log2foldchange
-  rank = fread(glue("results/genediff/{comp}.csv")) %>% 
+  rank = fread(glue("results/genediff/{comp}.csv")) %>% filter(FC > 1) %>%
     arrange("padj") %>% 
     dplyr::select(c('GeneID', all_of("padj"))) %>% 
     deframe()
