@@ -5,42 +5,6 @@
 ####################################################################################################
 
 
-rule KallistoIndex:
-    """
-    Create a kallisto index of the reference transcriptome
-    """
-    input:
-        fasta=config["ref"]["transcriptome"],
-    output:
-        index="resources/reference/kallisto.idx",
-    group:
-        "diffexp"
-    log:
-        "logs/kallisto/index.log",
-    wrapper:
-        "0.66.0/bio/kallisto/index"
-
-
-rule KallistoQuant:
-    """
-    Pseudo-align reads for each sample to the reference transcriptome.
-    Bootstrap to allow for isoform differential expression.
-    """
-    input:
-        fastq=getFASTQs,
-        index="resources/reference/kallisto.idx",
-    output:
-        directory("results/quant/{sample}"),
-    group:
-        "diffexp"
-    log:
-        "logs/kallisto/quant_{sample}.log",
-    params:
-        extra="-b 100",
-    threads: 24
-    wrapper:
-        "0.66.0/bio/kallisto/quant"
-
 
 rule DifferentialGeneExpression:
     """
