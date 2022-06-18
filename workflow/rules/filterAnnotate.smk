@@ -5,9 +5,9 @@ rule ConcatVCFs:
     Concatenate VCFs together
     """
     input:
-        calls=expand("results/variantAnalysis/vcfs/{{chrom}}/variants.{i}.vcf", i=chunks),
+        calls=expand("results/variantAnalysis/vcfs/freebayes/{{chrom}}/variants.{i}.vcf", i=chunks),
     output:
-        temp("results/variantAnalysis/vcfs/variants.{chrom}.vcf"),
+        temp("results/variantAnalysis/vcfs/freebayes/variants.{chrom}.vcf"),
     log:
         "logs/ConcatVCFs/{chrom}.log",
     conda:
@@ -22,9 +22,9 @@ rule RestrictToSNPs:
     Filter out indels
     """
     input:
-        "results/variantAnalysis/vcfs/variants.{chrom}.vcf"
+        getVCF
     output:
-        temp("results/variantAnalysis/vcfs/variants.{chrom}.snps.vcf")
+        temp("results/variantAnalysis/vcfs/variants.{chrom}.vcf")
     log:
         "logs/bcftoolsView/{chrom}.log",
     params:
@@ -55,7 +55,7 @@ rule snpEff:
     Run snpEff on the VCFs 
     """
     input:
-        calls="results/variantAnalysis/vcfs/variants.{chrom}.snps.vcf",
+        calls="results/variantAnalysis/vcfs/variants.{chrom}.vcf",
         dl="workflow/scripts/snpEff/db.dl",
     output:
         calls=expand("results/variantAnalysis/vcfs/{dataset}.{{chrom}}.vcf.gz", dataset=config['dataset']),
