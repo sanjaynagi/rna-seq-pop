@@ -10,7 +10,7 @@ fastq:
 
 
 cutadapt:
-      activate: True
+      activate: False
       adaptors:
 
 # Paths for reference files 
@@ -59,6 +59,7 @@ DifferentialExpression:                       # Activate differential expression
 
 VariantAnalysis:
       activate: True
+      caller: 'freebayes' # or 'freebayes'
       ploidy: 10
       chunks: 9 # Number of chunks to split the genome into when parallelising freebayes
 # Number of chunks to split the genome into when parallelising freebayes
