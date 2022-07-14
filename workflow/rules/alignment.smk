@@ -88,7 +88,7 @@ rule HISAT2align:
         readflags=lambda wildcards: getFASTQs(
             wildcards=wildcards, rules="HISAT2align"
         ),
-        extra="--dta -q --rg-id {sample} --rg SM:{sample} --new-summary",
+        extra="--dta -q --rg-id {sample} --rg SM:{sample} --rg PL:ILLUMINA --new-summary",
         idx="resources/reference/ht2index/idx",
     threads: 12
     shell:
@@ -117,21 +117,24 @@ rule genome_dict:
     input:
         ref=config['ref']['genome'],
     output:
-        "resources/reference/genome.dict",
+        dict=touch("resources/reference/.dict.complete")
     conda:
         "../envs/variants.yaml"
     log:
         "logs/samtools/create_dict.log",
+    params:
+        output = lambda x: os.path.splitext(config['ref']['genome'])[0] + ".dict",
     shell:
-        "samtools dict {input} > {output} 2> {log} "
+        "samtools dict {input} > {params.output} 2> {log} "
 
 
 rule splitNCigarReads:
     input:
         bam="results/alignments/{sample}.bam",
         ref=config['ref']['genome'],
+        dict="resources/reference/.dict.complete"
     output:
-        bam="results/alignments/{sample}.split.bam",
+        bam=temp("results/alignments/{sample}.split.bam"),
     log:
         "logs/gatk/splitNCIGARreads/{sample}.log",
     params:
@@ -148,8 +151,8 @@ rule gatkBaseRecalibrator:
     input:
         bam="results/alignments/{sample}.split.bam",
         ref=config['ref']['genome'],
-        dict="resources/reference/genome.dict",
-     #   known="resources/GCF_000001405.25.gz"
+        dict="resources/reference/.dict.complete",
+        known="resources/ag3_gaardian.biallelic.vcf.gz"
     output:
         recal_table="results/alignments/recal/{sample}.grp",
     log:
@@ -167,7 +170,7 @@ rule gatk_applybqsr:
         bam="results/alignments/{sample}.split.bam",
         bai="results/alignments/{sample}.split.bam.bai",
         ref=config['ref']['genome'],
-        dict="resources/reference/genome.dict",
+        dict="resources/reference/.dict.complete",
         recal_table="results/alignments/recal/{sample}.grp",
     output:
         bam="results/alignments/{sample}.split.bq.bam",

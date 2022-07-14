@@ -4,10 +4,10 @@ rule GenerateFreebayesParams:
     input:
         ref_idx = config['ref']['genome'],
         index = config['ref']['genome'] + ".fai",
-        bams = expand("resources/alignments/{sample}.bam", sample=samples)
+        bams = expand("results/alignments/{sample}.split.bq.bam", sample=samples)
     output:
-        bamlist = "resources/bam.list",
-        pops = "resources/populations.tsv",
+        bamlist = "results/alignments/bam.list",
+        pops = "results/alignments/populations.tsv",
         regions = expand("resources/regions/genome.{chrom}.region.{i}.bed", chrom=config['chroms'], i = chunks)
     log:
         "logs/GenerateFreebayesParams.log"
@@ -28,11 +28,11 @@ rule VariantCallingFreebayes:
             bams=expand("results/alignments/{sample}.split.bq.bam", sample=samples),
             index=expand("results/alignments/{sample}.split.bq.bam.bai", sample=samples),
             ref=config["ref"]["genome"],
-            samples="resources/bam.list",
-            pops= "resources/populations.tsv",
+            samples="results/alignments/bam.list",
+            pops= "results/alignments/populations.tsv",
             regions=ancient("resources/regions/genome.{chrom}.region.{i}.bed"),
         output:
-            temp("results/variantAnalysis/vcfs/{chrom}/variants.{i}.vcf"),
+            temp("results/variantAnalysis/vcfs/freebayes/{chrom}/variants.{i}.vcf"),
         log:
             "logs/VariantCallingFreebayes/{chrom}.{i}.log",
         params:
@@ -50,9 +50,10 @@ rule octopus:
         bam=expand("results/alignments/{sample}.split.bq.bam", sample=samples),
         bai=expand("results/alignments/{sample}.split.bq.bam.bai", sample=samples)
     output:
-        vcf=temp("results/variantAnalysis/vcfs/variants.{chrom}.vcf"),
-        vcf_index="results/variantAnalysis/vcfs/variants.{chrom}.vcf.gz.tbi",
+        vcf=temp("results/variantAnalysis/vcfs/octopus/variants.{chrom}.vcf"),
+        vcf_index="results/variantAnalysis/vcfs/octopus/variants.{chrom}.vcf.tbi",
     params:
+        ploidy= config['VariantAnalysis']['ploidy'],
         err_model = "PCRF.X10",
         forest = "resources/forests/germline.v0.7.4.forest",
         max_coverage = 1000
@@ -61,6 +62,6 @@ rule octopus:
     threads: 16
     shell:
         """
-        octopus -R {input.reference} -I {input.bam} -T {wildcards.contig} --downsample-above {params.max_coverage} \
+        octopus -R {input.reference} -I {input.bam} -T {wildcards.chrom} --organism-ploidy {params.ploidy} --downsample-above {params.max_coverage} \
          --sequence-error-model {params.err_model} --forest {params.forest} -o {output} --threads {threads} 2> {log}
         """
