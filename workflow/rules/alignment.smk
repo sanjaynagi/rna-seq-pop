@@ -105,108 +105,109 @@ rule IndexBams:
     input:
         "results/alignments/{sample}.bam",
     output:
-        "results/alignments/{sample, '^((?!split).)*$'}.bam.bai",
+        "results/alignments/{sample}.bam.bai",
     log:
         "logs/IndexBams/{sample}.log",
     wrapper:
         "0.65.0/bio/samtools/index"
 
 
+### GATK pre-processing ### removed for now for speed
 
-rule genome_dict:
-    input:
-        ref=config['ref']['genome'],
-    output:
-        dict=touch("resources/reference/.dict.complete")
-    conda:
-        "../envs/variants.yaml"
-    log:
-        "logs/samtools/create_dict.log",
-    params:
-        output = lambda x: os.path.splitext(config['ref']['genome'])[0] + ".dict",
-    shell:
-        "samtools dict {input} > {params.output} 2> {log} "
-
-
-rule splitNCigarReads:
-    input:
-        bam="results/alignments/{sample}.bam",
-        ref=config['ref']['genome'],
-        dict="resources/reference/.dict.complete"
-    output:
-        bam=temp("results/alignments/{sample}.split.bam"),
-    log:
-        "logs/gatk/splitNCIGARreads/{sample}.log",
-    params:
-        extra="",  # optional
-        java_opts="",  # optional
-    resources:
-        mem_mb=4096,
-    wrapper:
-        "v1.4.0/bio/gatk/splitncigarreads"
+# rule genome_dict:
+#     input:
+#         ref=config['ref']['genome'],
+#     output:
+#         dict=touch("resources/reference/.dict.complete")
+#     conda:
+#         "../envs/variants.yaml"
+#     log:
+#         "logs/samtools/create_dict.log",
+#     params:
+#         output = lambda x: os.path.splitext(config['ref']['genome'])[0] + ".dict",
+#     shell:
+#         "samtools dict {input} > {params.output} 2> {log} "
 
 
-
-rule gatkBaseRecalibrator:
-    input:
-        bam="results/alignments/{sample}.split.bam",
-        ref=config['ref']['genome'],
-        dict="resources/reference/.dict.complete",
-        known="resources/ag3_gaardian.biallelic.vcf.gz"
-    output:
-        recal_table="results/alignments/recal/{sample}.grp",
-    log:
-        "logs/gatk/baserecalibrator/{sample}.log",
-    params:
-        extra="",  # optional
-        java_opts="",  # optional
-    resources:
-        mem_mb=4096,
-    wrapper:
-        "v1.4.0/bio/gatk/baserecalibrator"
-
-rule gatk_applybqsr:
-    input:
-        bam="results/alignments/{sample}.split.bam",
-        bai="results/alignments/{sample}.split.bam.bai",
-        ref=config['ref']['genome'],
-        dict="resources/reference/.dict.complete",
-        recal_table="results/alignments/recal/{sample}.grp",
-    output:
-        bam="results/alignments/{sample}.split.bq.bam",
-    log:
-        "logs/gatk/gatk_applybqsr/{sample}.log",
-    params:
-        extra="",  # optional
-        java_opts="",  # optional
-    resources:
-        mem_mb=4096,
-    wrapper:
-        "v1.4.0/bio/gatk/applybqsr"
-
-rule IndexBams2:
-    """
-    Index bams with samtools
-    """
-    input:
-        bam="results/alignments/{sample}.split.bam",
-    output:
-        bai="results/alignments/{sample}.split.bam.bai",
-    log:
-        "logs/IndexBams2/{sample}.log",
-    wrapper:
-        "0.65.0/bio/samtools/index"
+# rule splitNCigarReads:
+#     input:
+#         bam="results/alignments/{sample}.bam",
+#         ref=config['ref']['genome'],
+#         dict="resources/reference/.dict.complete"
+#     output:
+#         bam=temp("results/alignments/{sample}.split.bam"),
+#     log:
+#         "logs/gatk/splitNCIGARreads/{sample}.log",
+#     params:
+#         extra="",  # optional
+#         java_opts="",  # optional
+#     resources:
+#         mem_mb=4096,
+#     wrapper:
+#         "v1.4.0/bio/gatk/splitncigarreads"
 
 
-rule IndexBams3:
-    """
-    Index bams with samtools
-    """
-    input:
-        bam="results/alignments/{sample}.split.bq.bam",
-    output:
-        bai="results/alignments/{sample}.split.bq.bam.bai",
-    log:
-        "logs/IndexBams2/{sample}.log",
-    wrapper:
-        "0.65.0/bio/samtools/index"
+
+# rule gatkBaseRecalibrator:
+#     input:
+#         bam="results/alignments/{sample}.split.bam",
+#         ref=config['ref']['genome'],
+#         dict="resources/reference/.dict.complete",
+#         known="resources/ag3_gaardian.biallelic.vcf.gz"
+#     output:
+#         recal_table="results/alignments/recal/{sample}.grp",
+#     log:
+#         "logs/gatk/baserecalibrator/{sample}.log",
+#     params:
+#         extra="",  # optional
+#         java_opts="",  # optional
+#     resources:
+#         mem_mb=4096,
+#     wrapper:
+#         "v1.4.0/bio/gatk/baserecalibrator"
+
+# rule gatk_applybqsr:
+#     input:
+#         bam="results/alignments/{sample}.split.bam",
+#         bai="results/alignments/{sample}.split.bam.bai",
+#         ref=config['ref']['genome'],
+#         dict="resources/reference/.dict.complete",
+#         recal_table="results/alignments/recal/{sample}.grp",
+#     output:
+#         bam="results/alignments/{sample}.split.bq.bam",
+#     log:
+#         "logs/gatk/gatk_applybqsr/{sample}.log",
+#     params:
+#         extra="",  # optional
+#         java_opts="",  # optional
+#     resources:
+#         mem_mb=4096,
+#     wrapper:
+#         "v1.4.0/bio/gatk/applybqsr"
+
+# rule IndexBams2:
+#     """
+#     Index bams with samtools
+#     """
+#     input:
+#         bam="results/alignments/{sample}.split.bam",
+#     output:
+#         bai="results/alignments/{sample}.split.bam.bai",
+#     log:
+#         "logs/IndexBams2/{sample}.log",
+#     wrapper:
+#         "0.65.0/bio/samtools/index"
+
+
+# rule IndexBams3:
+#     """
+#     Index bams with samtools
+#     """
+#     input:
+#         bam="results/alignments/{sample}.split.bq.bam",
+#     output:
+#         bai="results/alignments/{sample}.split.bq.bam.bai",
+#     log:
+#         "logs/IndexBams2/{sample}.log",
+#     wrapper:
+#         "0.65.0/bio/samtools/index"
