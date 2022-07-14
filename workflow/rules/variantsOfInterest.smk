@@ -3,8 +3,8 @@ rule mpileupVariantsOfInterest:
     Get allele count tables of variants of choice (specified in config file ("IRmutations.tsv"))
     """
     input:
-        bam="results/alignments/{sample}.split.bq.bam",
-        index="results/alignments/{sample}.split.bq.bam.bai"
+        bam="results/alignments/{sample}.bam",
+        index="results/alignments/{sample}.bam.bai"
     output:
         "results/variantAnalysis/variantsOfInterest/counts/{sample}_{mut}_allele_counts.tsv",
     conda:

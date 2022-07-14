@@ -4,7 +4,7 @@ rule GenerateFreebayesParams:
     input:
         ref_idx = config['ref']['genome'],
         index = config['ref']['genome'] + ".fai",
-        bams = expand("results/alignments/{sample}.split.bq.bam", sample=samples)
+        bams = expand("results/alignments/{sample}.bam", sample=samples)
     output:
         bamlist = "results/alignments/bam.list",
         pops = "results/alignments/populations.tsv",
@@ -25,8 +25,8 @@ rule VariantCallingFreebayes:
     Run freebayes on chunks of the genome, splitting the samples by population (strain)
     """
         input:
-            bams=expand("results/alignments/{sample}.split.bq.bam", sample=samples),
-            index=expand("results/alignments/{sample}.split.bq.bam.bai", sample=samples),
+            bams=expand("results/alignments/{sample}.bam", sample=samples),
+            index=expand("results/alignments/{sample}.bam.bai", sample=samples),
             ref=config["ref"]["genome"],
             samples="results/alignments/bam.list",
             pops= "results/alignments/populations.tsv",
@@ -47,8 +47,8 @@ rule VariantCallingFreebayes:
 rule octopus:
     input:
         reference = config['ref']['genome'],
-        bam=expand("results/alignments/{sample}.split.bq.bam", sample=samples),
-        bai=expand("results/alignments/{sample}.split.bq.bam.bai", sample=samples)
+        bam=expand("results/alignments/{sample}.bam", sample=samples),
+        bai=expand("results/alignments/{sample}.bam.bai", sample=samples)
     output:
         vcf=temp("results/variantAnalysis/vcfs/octopus/variants.{chrom}.vcf"),
         vcf_index="results/variantAnalysis/vcfs/octopus/variants.{chrom}.vcf.tbi",
