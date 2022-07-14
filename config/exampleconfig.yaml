@@ -1,5 +1,4 @@
-# RNA-Seq-IR
-# Author - Sanjay Curtis Nagi
+# RNA-Seq-Pop
 
 metadata: config/samples.tsv                    # samplesheet metadata file
 
@@ -14,6 +13,10 @@ dataset: 'Ag_Bouake'                            # Dataset name: Can be anything,
 fastq: 
       table: #config/fastq.tsv
       auto: True                                                              # set auto if your files follow the above rules
+
+cutadapt:
+      activate: False
+      adaptors:
 
 # Chromosome names for the appropriate species.
 # Currently, the variant calling and analysis part of workflow requires genes mapped to chromosomes and their physical location.
@@ -65,6 +68,7 @@ DifferentialExpression:
 
 VariantAnalysis:
       activate: True
+      caller: 'freebayes'
       ploidy: 10                          # Ploidy level for freebayes to call at (Generally we are using pooled samples).For diploid organisms, this should be 2 * number of individuals in each pool
       chunks: 9                           # Number of chunks to split each chromosome into when parallelising freebayes. 9 or less is recommended. 
 
