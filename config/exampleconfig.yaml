@@ -68,7 +68,11 @@ DifferentialExpression:
 
 VariantAnalysis:
       activate: True
+<<<<<<< HEAD
       caller: 'freebayes'
+=======
+      caller: 'freebayes'                 # or 'octopus' but requires octopus local install
+>>>>>>> 44ebad588c0d2ece20af419dc7fea203b835e2a8
       ploidy: 10                          # Ploidy level for freebayes to call at (Generally we are using pooled samples).For diploid organisms, this should be 2 * number of individuals in each pool
       chunks: 9                           # Number of chunks to split each chromosome into when parallelising freebayes. 9 or less is recommended. 
 

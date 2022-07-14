@@ -6,24 +6,27 @@
 [![Build Status](https://travis-ci.org/sanjaynagi/rna-seq-pop.svg?branch=master)](https://travis-ci.org/snakemake-workflows/rna-seq-pop)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6078337.svg)](https://doi.org/10.5281/zenodo.6078337)
 
-[<img src="https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True" width="400"/>](https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True)
+[<img src="https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True" width="200"/>](https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True)   
+   
+RNA-Seq-Pop: Exploiting the sequence in RNA-Seq - a Snakemake workflow reveals patterns of insecticide resistance in the malaria vector *Anopheles gambiae*    
+Sanjay C Nagi, Ambrose Oruni, David Weetman, Martin J Donnelly      
+bioRxiv 2022.06.17.493894; doi: https://doi.org/10.1101/2022.06.17.493894 
 
-This snakemake workflow performs various analyses of illumina paired-end RNA-Sequencing data:
 
-* Quality control of fastq reads with [FASTQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
-* QC metrics integrated into one final QC report with [multiQC](https://multiqc.info/)
+This snakemake workflow can perform various analyses of illumina paired-end RNA-Sequencing data:
+
+* Quality control of fastq reads with [FASTQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/), QC metrics integrated into one final QC report with [multiQC](https://multiqc.info/)
 * Differential expression analysis with [Kallisto](https://pachterlab.github.io/kallisto/) at the gene level ([DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)) and transcript level ([Sleuth](https://github.com/pachterlab/sleuth))
 * Variant calling with [freebayes](https://github.com/freebayes/freebayes), and an Fst and [Population branch statistic (PBS)](https://science.sciencemag.org/content/329/5987/75) analysis, both in windows and at the gene-level ([Scikit-allel](https://scikit-allel.readthedocs.io/en/stable/)).
 * Allele counts and frequencies at variants of interest (pre-specified loci of choice).
-* Various summary statistics are calculated (Wattersons Theta, Sequence Diversity, Dxy etc)
-* Differential SNP testing with the R package [kissDE](https://bioconductor.org/packages/release/bioc/html/kissDE.html), which accounts for allele-specific expression.
+* Calculation of various summary statistics (Wattersons Theta, Sequence Diversity, Dxy etc)
 * Gene Set Enrichment analyses.
   
 * *Anopheles gambiae s.l* - Analysis of Ancestry Informative Markers (AIMs) to determine relative ancestry of *An.gambiae/coluzzii/arabiensis*. 
 * *Anopheles gambiae s.l* - Reports if DE genes are found underneath known selective sweep signals in the [Ag1000g](https://www.nature.com/articles/nature24995).
-* *Anopheles gambiae s.l* - Determines Karyotype of chromosome 2 inversions using [compkaryo](https://academic.oup.com/g3journal/article/9/10/3249/6026680) - [GH](https://github.com/sanjaynagi/compkaryo)
+* *Anopheles gambiae s.l* - Determines Karyotype of chromosomal inversions using [compkaryo](https://academic.oup.com/g3journal/article/9/10/3249/6026680) - [GH](https://github.com/sanjaynagi/compkaryo)
 
-The workflow is generalised, and will function with any trimmed Illumina paired-end RNA-sequencing. However, certain modules, such as the AIMs analysis, are only appropriate for specific species. These can be activated in the configuration file (config.yaml). The workflow works with pooled samples, diploid, or haploid individuals. 
+The workflow is generalised, and will function with any trimmed Illumina paired-end RNA-sequencing. However, certain modules, such as the ancestry and karyotyping, are only appropriate for *An. gambiae s.l*. These can be activated in the configuration file (config.yaml). The workflow works with pooled samples, diploid, or haploid individuals. 
 
 The workflow is still in construction, and not yet ready for release. If you have any feedback on how the workflow may be improved, please get in touch, or feel free to fork the github repo and create a pull request for any additional features you would like to implement. If you are using the workflow and would like to give feedback or troubleshoot, consider joining the discord server [here](https://discord.gg/RaXjP8APCq)
 
@@ -31,7 +34,11 @@ The workflow is still in construction, and not yet ready for release. If you hav
 
 * Sanjay Curtis Nagi (@sanjaynagi) - sanjay.c.nagi@gmail.com
 
-## Usage
+## Citation
+
+RNA-Seq-Pop: Exploiting the sequence in RNA-Seq - a Snakemake workflow reveals patterns of insecticide resistance in the malaria vector *Anopheles gambiae*    
+Sanjay C Nagi, Ambrose Oruni, David Weetman, Martin J Donnelly      
+bioRxiv 2022.06.17.493894; doi: https://doi.org/10.1101/2022.06.17.493894 
 
 If you use this workflow in a paper, don't forget to give credits to the author by citing the URL of this (original) repository and, if available, its DOI - 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6078337.svg)](https://doi.org/10.5281/zenodo.6078337)
@@ -40,14 +47,12 @@ If you use this workflow in a paper, don't forget to give credits to the author 
 
 ### Step 1: Obtain a copy of this workflow
 
-1. Create a new github repository using this workflow [as a template](https://help.github.com/en/articles/creating-a-repository-from-a-template).
-2. [Clone](https://help.github.com/en/articles/cloning-a-repository) the newly created repository to your local system, into the place where you want to perform the data analysis.
-3. As the workflow contains submodules (compkaryo & mpileup2readcounts), `git clone --recursive` should be used to clone the repo. 
-4. If you want to run the differential SNPs analysis, please compile mpileup2readcounts by navigating to its folder in workflow/scripts and: `g++ -std=c++11 -O3 mpileup2readcounts.cc -o mpileup2readcounts`
+1. [Clone](https://help.github.com/en/articles/cloning-a-repository) this repository to your local system.
+2. As the workflow contains submodules (compkaryo & mpileup2readcounts), `git clone --recursive` should be used to clone the repo. 
 
 ### Step 2: Configure workflow
 
-Configure the workflow according to your needs via editing the files in the `config/` folder. Adjust the example `config.yaml` to configure the workflow execution, and `samples.tsv` to specify your sample setup.
+Configure the workflow according to your needs via editing the files in the `config/` folder. Adjust the example `config.yaml` to configure the workflow options and execution, and `samples.tsv` to specify your sample metadata.
 
 ### Step 3: Install Snakemake
 
@@ -74,14 +79,6 @@ Execute the workflow locally via
 using `$N` cores or run it in a cluster environment via
 
     snakemake --use-conda --cluster qsub --jobs 100
-
-or
-
-    snakemake --use-conda --drmaa --jobs 100
-
-If you not only want to fix the software stack but also the underlying OS, use
-
-    snakemake --use-conda --use-singularity
 
 in combination with any of the modes above.
 See the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/executable.html) for further details.
