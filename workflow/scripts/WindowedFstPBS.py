@@ -55,8 +55,6 @@ for i, chrom in enumerate(chroms):
                             acsubpops[res], 
                             size=size, step=step)
             midpoint = allel.moving_statistic(pos, np.median, size=size, step=step)
-            print(FstArray)
-            print(midpoint)
             
             cohortNoSpaceText = name + "." + wname
             rnaseqpop.plotWindowed(statName="Fst",
@@ -67,7 +65,7 @@ for i, chrom in enumerate(chroms):
                         colour='dodgerblue',
                         prefix="results/variantAnalysis/selection/fst", 
                         chrom=chrom, 
-                        ylim=0.5, 
+                        ylim=1, 
                         save=True)
 
         

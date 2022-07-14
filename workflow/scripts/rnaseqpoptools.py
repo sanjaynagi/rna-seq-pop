@@ -23,8 +23,8 @@ def plotWindowed(statName, cohortText, cohortNoSpaceText, values, midpoints, pre
 
     xtick = np.arange(0, midpoints.max(), 2000000)
     ylim = np.max([ylim, values.max()])
-    plt.figure(figsize=[20,10])
-    sns.lineplot(midpoints, values, color=colour, linewidth=2.5)
+    plt.figure(figsize=[16,8])
+    sns.lineplot(midpoints, values, color=colour, linewidth=3)
     plt.xlim(0, midpoints.max()+1000)
     plt.ylim(0, ylim)
     plt.yticks(fontsize=14)
@@ -38,16 +38,17 @@ def plotWindowed(statName, cohortText, cohortNoSpaceText, values, midpoints, pre
 
 def plotRectangular(voiFreqTable, path, annot=True, xlab="Sample", ylab="Variant Of Interest", title=None, figsize=[10,10], cbar=True, vmax=None, rotate=True, cmap=sns.cubehelix_palette(start=.5, rot=-.75, as_cmap=True), dpi=100):
     plt.figure(figsize=figsize)
+    voiFreqTable = (voiFreqTable*100).astype(int)
     sns.heatmap(voiFreqTable, cmap=cmap, vmax=vmax, cbar=cbar,
-                   linewidths=0.8,linecolor="white",annot=annot, fmt = '')
+                   linewidths=0.8,linecolor="white",annot=annot, fmt = '',annot_kws={"size": 18})
     if title != None: plt.title(title, pad=10)
     
     if rotate:
-        plt.xticks(fontsize=11, rotation=45, ha='right',rotation_mode="anchor")
+        plt.xticks(ticks=[0.5,1.5,2.5], fontsize=16, rotation=45, ha='right',rotation_mode="anchor", labels=['Busia Parental', 'Busia Selected', 'Kisumu'])
     else:
         plt.xticks(fontsize=13)
         
-    plt.yticks(fontsize=11)
+    plt.yticks(fontsize=14)
     plt.xlabel(xlab, fontdict={'fontsize':14}, labelpad=20)
     plt.ylabel(ylab, fontdict={'fontsize':14})
     plt.savefig(path, bbox_inches='tight', dpi=dpi)
@@ -71,12 +72,13 @@ def getAlleleFreqTable(muts, Path, var="sample", mean_=False, lowCov = 10):
     voiFreqTable = voiData.pivot(index="name", columns=var).round(2).droplevel(0, axis=1)
     voiCovTable = covData.pivot(index="name", columns=var).round(2).droplevel(0, axis=1)
 
-    #annotTable = (voiFreqTable*100).astype(int).astype(str) + "%" ## percentages
-    annotTable = voiFreqTable.astype(str).apply(lambda x: x.str.strip("0")).applymap(addZeros)  ## decimals
+    annotTable = (voiFreqTable*100).astype(int).astype(str) + "%" ## percentages
+    #annotTable = voiFreqTable.astype(str).apply(lambda x: x.str.strip("0")).applymap(addZeros)  ## decimals
     ## adding asterisks if low Cov 
     asteriskTable = voiCovTable.applymap(lambda x: "*" if x < lowCov else "")
     annotTable = annotTable + asteriskTable
-    annotTable = annotTable.applymap(lambda x: "" if x == "*" else x)
+    annotTable = annotTable.applymap(lambda x: "" if x == "0%*" else x)
+    annotTable = annotTable.applymap(lambda x: "" if x == "0%" else x)
     return(voiFreqTable, annotTable)
 
 def addZeros(x):
