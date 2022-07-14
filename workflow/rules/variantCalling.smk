@@ -37,12 +37,11 @@ rule VariantCallingFreebayes:
             "logs/VariantCallingFreebayes/{chrom}.{i}.log",
         params:
             ploidy=config["VariantAnalysis"]["ploidy"],
-            pops="resources/populations.tsv",
         conda:
             "../envs/variants.yaml"
         threads: 1
         shell:
-            "freebayes -f {input.ref} -t {input.regions} --ploidy {params.ploidy} --populations {params.pops} --pooled-discrete --use-best-n-alleles 5 -L {input.samples} > {output} 2> {log}"
+            "freebayes -f {input.ref} -t {input.regions} --ploidy {params.ploidy} --populations {input.pops} --pooled-discrete --use-best-n-alleles 5 -L {input.samples} > {output} 2> {log}"
 
 rule octopus:
     input:
