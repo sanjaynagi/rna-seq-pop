@@ -51,6 +51,15 @@ def getFASTQs(wildcards, rules=None):
             return [f"{u.fq1}", f"{u.fq2}"]
 
 
+def getVCF(wildcards):
+    if config['VariantAnalysis']['caller'] == 'octopus':
+        return("results/variantAnalysis/vcfs/octopus/variants.{chrom}.vcf")
+    elif config['VariantAnalysis']['caller'] == 'freebayes':
+        return("results/variantAnalysis/vcfs/freebayes/variants.{chrom}.vcf")
+    else:
+        assert config['VariantAnalysis']['caller'] in ['octopus', 'freebayes'], "please choose an appropriate variant caller ('octopus' or 'freebayes')"
+
+
 def GetDesiredOutputs(wildcards):
 
     """
@@ -113,7 +122,22 @@ def GetDesiredOutputs(wildcards):
             )
         )
 
-    if config["VariantAnalysis"]["activate"]:
+    # if config["VariantAnalysis"]["activate"]:
+    #     if config['VariantAnalysis']['caller'] == 'octopus':
+    #         wanted_input.extend(
+    #             expand
+    #                 [
+    #                     "results/variantAnalysis/vcfs/octopus/variant.{chrom}.vcf"
+    #                 ]
+    #                 chrom=chroms,
+    #         )
+    #     elif config['VariantAnalyis']['caller'] == 'freebayes':
+    #         wanted_input.extend(
+    #                 [
+    #                     "results/variantAnalysis/vcfs/freebayes/variant.{chrom}.vcf"
+    #                 ]
+    #         )
+
         wanted_input.extend(
             expand(
                 [
