@@ -15,8 +15,7 @@ bioRxiv 2022.06.17.493894; doi: https://doi.org/10.1101/2022.06.17.493894
 
 This snakemake workflow can perform various analyses of illumina paired-end RNA-Sequencing data:
 
-* Quality control of fastq reads with [FASTQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
-* QC metrics integrated into one final QC report with [multiQC](https://multiqc.info/)
+* Quality control of fastq reads with [FASTQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/), QC metrics integrated into one final QC report with [multiQC](https://multiqc.info/)
 * Differential expression analysis with [Kallisto](https://pachterlab.github.io/kallisto/) at the gene level ([DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)) and transcript level ([Sleuth](https://github.com/pachterlab/sleuth))
 * Variant calling with [freebayes](https://github.com/freebayes/freebayes), and an Fst and [Population branch statistic (PBS)](https://science.sciencemag.org/content/329/5987/75) analysis, both in windows and at the gene-level ([Scikit-allel](https://scikit-allel.readthedocs.io/en/stable/)).
 * Allele counts and frequencies at variants of interest (pre-specified loci of choice).
