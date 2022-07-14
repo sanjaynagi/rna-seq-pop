@@ -40,8 +40,6 @@ RNA-Seq-Pop: Exploiting the sequence in RNA-Seq - a Snakemake workflow reveals p
 Sanjay C Nagi, Ambrose Oruni, David Weetman, Martin J Donnelly      
 bioRxiv 2022.06.17.493894; doi: https://doi.org/10.1101/2022.06.17.493894 
 
-## Usage
-
 If you use this workflow in a paper, don't forget to give credits to the author by citing the URL of this (original) repository and, if available, its DOI - 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6078337.svg)](https://doi.org/10.5281/zenodo.6078337)
 
