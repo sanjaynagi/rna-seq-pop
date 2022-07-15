@@ -146,7 +146,7 @@ rule multiQC:
     """
     input:
         expand("resources/reads/qc/{sample}_{n}_fastqc.zip", sample=samples, n=[1, 2]),
-        expand("results/variantAnalysis/vcfs/stats/{chrom}.txt", chrom=config["chroms"]),
+        expand("results/variantAnalysis/vcfs/stats/{chrom}.txt", chrom=config["chroms"]) if config['VariantAnalysis']['activate'] else [],
         expand(
             "results/alignments/coverage/{sample}.mosdepth.summary.txt", sample=samples
         ),
