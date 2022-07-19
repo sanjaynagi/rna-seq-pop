@@ -130,7 +130,7 @@ rule Qualimap:
         idx="results/alignments/{sample}.bam.bai",
         gff=config['ref']['gff']
     output:
-        "results/alignments/qualimap/{sample}.pdf",
+        "results/alignments/{sample}_stats/genome_results.txt",
     log:
         "logs/qualimap/{sample}.log",
     conda:

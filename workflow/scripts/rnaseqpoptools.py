@@ -38,7 +38,7 @@ def plotWindowed(statName, cohortText, cohortNoSpaceText, values, midpoints, pre
 
 def plotRectangular(voiFreqTable, path, annot=True, xlab="Sample", ylab="Variant Of Interest", title=None, figsize=[10,10], cbar=True, vmax=None, rotate=True, cmap=sns.cubehelix_palette(start=.5, rot=-.75, as_cmap=True), dpi=100):
     plt.figure(figsize=figsize)
-    voiFreqTable = (voiFreqTable*100).astype(int)
+    #voiFreqTable = (voiFreqTable*100).astype(int)
     sns.heatmap(voiFreqTable, cmap=cmap, vmax=vmax, cbar=cbar,
                    linewidths=0.8,linecolor="white",annot=annot, fmt = '',annot_kws={"size": 18})
     if title != None: plt.title(title, pad=10)
@@ -62,7 +62,7 @@ def getAlleleFreqTable(muts, Path, var="sample", mean_=False, lowCov = 10):
         df = pd.read_csv(Path.format(mut=mut))
         if mean_:
             df['gene'] = muts[muts.Name == mut]['Gene'].iloc[0]
-        df['name'] = df['chrom'] + ":"+ df['pos'].astype(str) + "  " + df['gene'] + " | " + df['mutation']
+        df['name'] = df['chrom'].astype(str) + ":"+ df['pos'].astype(str) + "  " + df['gene'].astype(str) + " | " + df['mutation'].astype(str)
         df['frequency'] = df.filter(like="proportion").sum(axis=1)
         freqDict[mut] = df[['name', var, 'frequency']]
         covDict[mut] = df[['name', var, cov_var]]
@@ -72,13 +72,13 @@ def getAlleleFreqTable(muts, Path, var="sample", mean_=False, lowCov = 10):
     voiFreqTable = voiData.pivot(index="name", columns=var).round(2).droplevel(0, axis=1)
     voiCovTable = covData.pivot(index="name", columns=var).round(2).droplevel(0, axis=1)
 
-    annotTable = (voiFreqTable*100).astype(int).astype(str) + "%" ## percentages
-    #annotTable = voiFreqTable.astype(str).apply(lambda x: x.str.strip("0")).applymap(addZeros)  ## decimals
+    #annotTable = (voiFreqTable*100).astype(int).astype(str) + "%" ## percentages
+    annotTable = voiFreqTable.astype(str).apply(lambda x: x.str.strip("0")).applymap(addZeros)  ## decimals
     ## adding asterisks if low Cov 
     asteriskTable = voiCovTable.applymap(lambda x: "*" if x < lowCov else "")
     annotTable = annotTable + asteriskTable
-    annotTable = annotTable.applymap(lambda x: "" if x == "0%*" else x)
-    annotTable = annotTable.applymap(lambda x: "" if x == "0%" else x)
+    #annotTable = annotTable.applymap(lambda x: "" if x == "0%*" else x)
+    #annotTable = annotTable.applymap(lambda x: "" if x == "0%" else x)
     return(voiFreqTable, annotTable)
 
 def addZeros(x):
