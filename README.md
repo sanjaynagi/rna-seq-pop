@@ -8,9 +8,7 @@
 
 [<img src="https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True" width="200"/>](https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True)   
    
-RNA-Seq-Pop: Exploiting the sequence in RNA-Seq - a Snakemake workflow reveals patterns of insecticide resistance in the malaria vector *Anopheles gambiae*    
-Sanjay C Nagi, Ambrose Oruni, David Weetman, Martin J Donnelly      
-bioRxiv 2022.06.17.493894; doi: https://doi.org/10.1101/2022.06.17.493894 
+Sanjay C Nagi, Ambrose Oruni, David Weetman, Martin J Donnelly (2022). **RNA-Seq-Pop**: Exploiting the sequence in RNA-Seq - a Snakemake workflow reveals patterns of insecticide resistance in the malaria vector *Anopheles gambiae*. *bioRxiv* 2022.06.17.493894; doi: https://doi.org/10.1101/2022.06.17.493894 
 
 
 This snakemake workflow can perform various analyses of illumina paired-end RNA-Sequencing data:
@@ -26,9 +24,9 @@ This snakemake workflow can perform various analyses of illumina paired-end RNA-
 * *Anopheles gambiae s.l* - Reports if DE genes are found underneath known selective sweep signals in the [Ag1000g](https://www.nature.com/articles/nature24995).
 * *Anopheles gambiae s.l* - Determines Karyotype of chromosomal inversions using [compkaryo](https://academic.oup.com/g3journal/article/9/10/3249/6026680) - [GH](https://github.com/sanjaynagi/compkaryo)
 
-The workflow is generalised, and will function with any trimmed Illumina paired-end RNA-sequencing. However, certain modules, such as the ancestry and karyotyping, are only appropriate for *An. gambiae s.l*. These can be activated in the configuration file (config.yaml). The workflow works with pooled samples, diploid, or haploid individuals. 
+The workflow is generalised, and will function with any Illumina paired-end RNA-sequencing. However, certain modules, such as the ancestry and karyotyping, are only appropriate for *An. gambiae s.l*. These can be activated in the configuration file (config.yaml). The workflow works with pooled samples, diploid, or haploid individuals. 
 
-The workflow is still in construction, and not yet ready for release. If you have any feedback on how the workflow may be improved, please get in touch, or feel free to fork the github repo and create a pull request for any additional features you would like to implement. If you are using the workflow and would like to give feedback or troubleshoot, consider joining the discord server [here](https://discord.gg/RaXjP8APCq)
+If you have any feedback on how the workflow may be improved, please do get in touch, or feel free to fork the github repo and create a pull request for any additional features you would like to implement. If you are using the workflow and would like to give feedback or troubleshoot, consider joining the discord server [here](https://discord.gg/RaXjP8APCq), otherwise email or log an issue on github. 
 
 ## Authors
 
@@ -36,12 +34,9 @@ The workflow is still in construction, and not yet ready for release. If you hav
 
 ## Citation
 
-RNA-Seq-Pop: Exploiting the sequence in RNA-Seq - a Snakemake workflow reveals patterns of insecticide resistance in the malaria vector *Anopheles gambiae*    
-Sanjay C Nagi, Ambrose Oruni, David Weetman, Martin J Donnelly      
-bioRxiv 2022.06.17.493894; doi: https://doi.org/10.1101/2022.06.17.493894 
+Sanjay C Nagi, Ambrose Oruni, David Weetman, Martin J Donnelly (2022). **RNA-Seq-Pop**: Exploiting the sequence in RNA-Seq - a Snakemake workflow reveals patterns of insecticide resistance in the malaria vector *Anopheles gambiae*. *bioRxiv* 2022.06.17.493894; doi: https://doi.org/10.1101/2022.06.17.493894 
 
-If you use this workflow in a paper, don't forget to give credits to the author by citing the URL of this (original) repository and, if available, its DOI - 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6078337.svg)](https://doi.org/10.5281/zenodo.6078337)
+If you use this workflow in a paper, don't forget to give credits to the author by citing the preprint on bioRxiv and its DOI - https://doi.org/10.1101/2022.06.17.493894 
 
 ## Workflow 
 
@@ -116,3 +111,8 @@ In case you have also changed or added steps, please consider contributing them 
 
 Test cases are in the subfolder `.test`. They are automatically executed via continuous integration with [Github Actions](https://github.com/features/actions).
 
+## Acknowledgments
+
+The logo is an homage to Palace Skateboards :) 
+
+## Thank you!
