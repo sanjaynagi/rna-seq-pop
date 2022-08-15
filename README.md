@@ -36,12 +36,12 @@ If you have any feedback on how the workflow may be improved, please do get in t
 
 Sanjay C Nagi, Ambrose Oruni, David Weetman, Martin J Donnelly (2022). **RNA-Seq-Pop**: Exploiting the sequence in RNA-Seq - a Snakemake workflow reveals patterns of insecticide resistance in the malaria vector *Anopheles gambiae*. *bioRxiv* 2022.06.17.493894; doi: https://doi.org/10.1101/2022.06.17.493894 
 
-If you use this workflow in a paper, don't forget to give credits to the author by citing the preprint on bioRxiv and its DOI - https://doi.org/10.1101/2022.06.17.493894 
+If you use this workflow in a paper, please give credits to the author by citing the preprint on bioRxiv and its DOI - https://doi.org/10.1101/2022.06.17.493894 
 
-## Workflow 
+## Usage 
 
-Please see the wiki for instructions on how to run RNA-Seq-Pop. 
+Please see the [wiki](https://github.com/sanjaynagi/rna-seq-pop/wiki) for instructions on how to run RNA-Seq-Pop. 
 
 ## Release notes
 
-1.0.1 - New feature to plot a heatmap of various gene families 
+* 1.0.1 - New feature to plot a heatmap of various gene families 
