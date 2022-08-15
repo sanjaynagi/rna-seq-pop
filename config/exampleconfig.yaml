@@ -117,7 +117,12 @@ miscellaneous:
       VariantsOfInterest:                                # Creates allele count .xlsx reports on specific mutations of choice
             activate: True                             
             path: "resources/exampleMutations.tsv"          # Requires appropriate mutations.tsv file
-            
+      
+      GeneFamiliesHeatmap:
+            activate: True
+            eggnog: resources/Anogam_long.pep_eggnog_diamond.emapper.annotations.GO
+            pfam: resources/Anogam_long.pep_Pfamscan.seqs
+
       # find DE genes that lie under Ag1000g selective sweeps 
       # Only applicable for Anopheles gambiae s.l
       sweeps:

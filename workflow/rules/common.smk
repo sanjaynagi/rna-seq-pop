@@ -257,6 +257,15 @@ def GetDesiredOutputs(wildcards):
                 )
             )
 
+    if config['miscellaneous']["GeneFamiliesHeatmap"]["activate"]:
+        wanted_input.extend(
+            expand(
+                [
+                    "results/genediff/GeneFamiliesHeatmap.pdf",
+                ],
+            )
+        )
+
     # wanted_input.extend(["results/quant/percentageContributionGeneCategories.tsv"])
 
     return(wanted_input)
