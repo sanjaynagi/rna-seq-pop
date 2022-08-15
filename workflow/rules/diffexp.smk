@@ -175,18 +175,33 @@ rule Ag1000gSweepsDE:
         "../scripts/Ag1000gSweepsDE.py"
 
 
-rule GeneCategoryContribution:
-    """
-    Determine the proportion of read counts that come from P450s, COEs, GSTs, etc.
-    """
+# rule GeneCategoryContribution:
+#     """
+#     Determine the proportion of read counts that come from P450s, COEs, GSTs, etc.
+#     """
+#     input:
+#         normcounts="results/quant/normcounts.tsv",
+#         metadata=config["metadata"],
+#     output:
+#         "results/quant/percentageContributionGeneCategories.tsv",
+#     log:
+#         "logs/GeneCategoryContribution.log",
+#     conda:
+#         "../envs/diffexp.yaml"
+#     script:
+#         "../scripts/GeneCategoryContribution.R"
+
+rule geneFamilies:
     input:
-        normcounts="results/quant/normcounts.tsv",
-        metadata=config["metadata"],
+        genediff = expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
+        normcounts = "results/quant/normCounts.tsv",
+        eggnog = config['miscellaneous']['GeneFamiliesHeatmap']['eggnog'],
+        pfam = config['miscellaneous']['GeneFamiliesHeatmap']['pfam']
     output:
-        "results/quant/percentageContributionGeneCategories.tsv",
-    log:
-        "logs/GeneCategoryContribution.log",
-    conda:
-        "../envs/diffexp.yaml"
+        heatmaps="results/genediff/GeneFamiliesHeatmap.pdf"
+    log: 
+        "logs/geneFamilies.log"
+    params:
+        DEcontrasts=config["contrasts"],
     script:
-        "../scripts/GeneCategoryContribution.R"
+        "../scripts/GeneFamiliesHeatmap.py"
