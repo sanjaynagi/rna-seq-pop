@@ -54,7 +54,7 @@ vst_pca = function(counts, samples, colourvar, name="PCA", st="", comparison="")
   vstcounts = vstcounts[order(apply(vstcounts,1,sum),decreasing=TRUE),]
   
   #### write pca of samples to pdf
-  pca2=prcomp(t(vstcounts),center=TRUE)
+  pca2 = prcomp(t(vstcounts),center=TRUE)
   pc = data.frame(pca2$x) %>% rownames_to_column("sampleID")
   pc = left_join(pc, samples)
 
@@ -148,7 +148,7 @@ pdf("results/quant/total_reads_counted.pdf")
 ggplot(count_stats, aes(x=Sample, y=total_counts, fill=metadata$treatment)) + 
   geom_bar(stat='identity') + 
   theme_light() +
-  ggtitle("Total reads counted (mapped to Ag transcriptome (PEST))") +
+  ggtitle("Total reads counted to genes") +
   theme(axis.text.x = element_text(angle=45),
         plot.title = element_text(hjust = 0.5))
 null = dev.off() 

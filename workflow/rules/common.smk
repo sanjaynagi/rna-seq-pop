@@ -138,6 +138,8 @@ def GetDesiredOutputs(wildcards):
     #                 ]
     #         )
 
+
+    if config["VariantAnalysis"]["activate"]:
         wanted_input.extend(
             expand(
                 [
@@ -160,13 +162,17 @@ def GetDesiredOutputs(wildcards):
             )
         )
 
-
-        if config['VariantAnalysis']['ploidy'] > 1:
+        if config['VariantAnalysis']['selection']['activate']:
             wanted_input.extend(
                 expand(
                     [
-                        "results/variantAnalysis/diversity/inbreedingCoef.tsv",
-                    ]
+                        "results/variantAnalysis/selection/FstPerGene.tsv",
+                        "results/variantAnalysis/selection/TajimasDPerGene.tsv",
+                        "results/variantAnalysis/selection/fst/Fst.{comp}.{wsize}.{chrom}.svg",
+                    ],
+                    chrom=config["chroms"],
+                    comp=config["contrasts"],
+                    wsize=config['VariantAnalysis']['selection']["pbs"]["windownames"],
                 )
             )
 
@@ -265,8 +271,6 @@ def GetDesiredOutputs(wildcards):
                 ],
             )
         )
-
-    # wanted_input.extend(["results/quant/percentageContributionGeneCategories.tsv"])
 
     return(wanted_input)
 
