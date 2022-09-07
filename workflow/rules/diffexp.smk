@@ -175,22 +175,6 @@ rule Ag1000gSweepsDE:
         "../scripts/Ag1000gSweepsDE.py"
 
 
-# rule GeneCategoryContribution:
-#     """
-#     Determine the proportion of read counts that come from P450s, COEs, GSTs, etc.
-#     """
-#     input:
-#         normcounts="results/quant/normcounts.tsv",
-#         metadata=config["metadata"],
-#     output:
-#         "results/quant/percentageContributionGeneCategories.tsv",
-#     log:
-#         "logs/GeneCategoryContribution.log",
-#     conda:
-#         "../envs/diffexp.yaml"
-#     script:
-#         "../scripts/GeneCategoryContribution.R"
-
 rule geneFamilies:
     input:
         genediff = expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
