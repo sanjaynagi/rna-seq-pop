@@ -112,6 +112,11 @@ miscellaneous:
       VariantsOfInterest: 
             activate: False
             path: "resources/test-IRmutations.tsv"
+            
+      GeneFamiliesHeatmap:
+            activate: True
+            eggnog: resources/Anogam_long.pep_eggnog_diamond.emapper.annotations.GO
+            pfam: resources/Anogam_long.pep_Pfamscan.seqs
 
       sweeps:
             activate: False
