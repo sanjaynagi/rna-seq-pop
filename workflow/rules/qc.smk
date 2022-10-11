@@ -17,7 +17,7 @@ rule CheckInputs:
         contrasts=config["contrasts"],
         fastq=config["fastq"]["auto"],
         table=config["fastq"]["table"],
-        sweeps=config['miscellaneous']["sweeps"]["activate"],
+        sweeps=config["miscellaneous"]["sweeps"]["activate"],
     log:
         "logs/CheckInputs.log",
     conda:
@@ -44,28 +44,23 @@ rule FastQC:
         "0.74.0/bio/fastqc"
 
 
-
-
 rule cutAdapt:
     input:
         getFASTQs,
     output:
         fastq1="resources/reads/trimmed/{sample}_1.fastq.gz",
         fastq2="resources/reads/trimmed/{sample}_2.fastq.gz",
-        qc="resources/trimmed/{sample}.qc.txt"
+        qc="resources/trimmed/{sample}.qc.txt",
     params:
         # https://cutadapt.readthedocs.io/en/stable/guide.html#adapter-types
         adapters="-a AGAGCACACGTCTGAACTCCAGTCAC -g AGATCGGAAGAGCACACGT -A AGAGCACACGTCTGAACTCCAGTCAC -G AGATCGGAAGAGCACACGT",
         # https://cutadapt.readthedocs.io/en/stable/guide.html#
-        extra="--minimum-length 1 -q 20"
+        extra="--minimum-length 1 -q 20",
     log:
-        "logs/cutadapt/{sample}.log"
-    threads: 4 # set desired number of threads here
+        "logs/cutadapt/{sample}.log",
+    threads: 4  # set desired number of threads here
     wrapper:
         "v0.86.0/bio/cutadapt/pe"
-
-
-
 
 
 rule BamStats:
@@ -109,7 +104,10 @@ rule vcfStats:
     QC stats of VCF files
     """
     input:
-        vcf=expand("results/variantAnalysis/vcfs/{dataset}.{{chrom}}.vcf.gz", dataset=config['dataset']),
+        vcf=expand(
+            "results/variantAnalysis/vcfs/{dataset}.{{chrom}}.vcf.gz",
+            dataset=config["dataset"],
+        ),
     output:
         vcfStats="results/variantAnalysis/vcfs/stats/{chrom}.txt",
     conda:
@@ -121,6 +119,7 @@ rule vcfStats:
         bcftools stats {input} > {output} 2> {log}
         """
 
+
 rule Qualimap:
     """
     QC of bam files
@@ -128,7 +127,7 @@ rule Qualimap:
     input:
         bam="results/alignments/{sample}.bam",
         idx="results/alignments/{sample}.bam.bai",
-        gff=config['ref']['gff']
+        gff=config["ref"]["gff"],
     output:
         "results/alignments/{sample}_stats/genome_results.txt",
     log:
@@ -139,14 +138,17 @@ rule Qualimap:
         "qualimap bamqc -bam {input.bam} -c -gff {input.gff} -outfile {output} 2> {log}"
 
 
-
 rule multiQC:
     """
     Integrate QC statistics from other tools into a final .html report
     """
     input:
         expand("resources/reads/qc/{sample}_{n}_fastqc.zip", sample=samples, n=[1, 2]),
-        expand("results/variantAnalysis/vcfs/stats/{chrom}.txt", chrom=config["chroms"]) if config['VariantAnalysis']['activate'] else [],
+        expand(
+            "results/variantAnalysis/vcfs/stats/{chrom}.txt", chrom=config["chroms"]
+        )
+        if config["VariantAnalysis"]["activate"]
+        else [],
         expand(
             "results/alignments/coverage/{sample}.mosdepth.summary.txt", sample=samples
         ),

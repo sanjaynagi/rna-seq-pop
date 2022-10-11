@@ -1,11 +1,15 @@
-chunks = np.arange(1, config['VariantAnalysis']['chunks'])
+chunks = np.arange(1, config["VariantAnalysis"]["chunks"])
+
 
 rule ConcatVCFs:
     """
     Concatenate VCFs together
     """
     input:
-        calls=expand("results/variantAnalysis/vcfs/freebayes/{{chrom}}/variants.{i}.vcf", i=chunks),
+        calls=expand(
+            "results/variantAnalysis/vcfs/freebayes/{{chrom}}/variants.{i}.vcf",
+            i=chunks,
+        ),
     output:
         temp("results/variantAnalysis/vcfs/freebayes/variants.{chrom}.vcf"),
     log:
@@ -22,15 +26,15 @@ rule RestrictToSNPs:
     Filter out indels
     """
     input:
-        getVCF
+        getVCF,
     output:
-        temp("results/variantAnalysis/vcfs/variants.{chrom}.vcf")
+        temp("results/variantAnalysis/vcfs/variants.{chrom}.vcf"),
     log:
         "logs/bcftoolsView/{chrom}.log",
     params:
         extra="-v snps",
     wrapper:
-        "v1.0.0/bio/bcftools/view"
+        "v1.15.0/bio/bcftools/view"
 
 
 rule snpEffDbDownload:
@@ -45,7 +49,7 @@ rule snpEffDbDownload:
         "../envs/snpeff.yaml"
     params:
         ref=config["ref"]["snpeffdb"],
-        dir="resources/snpEffdb"
+        dir="resources/snpEffdb",
     shell:
         "snpEff download {params.ref} -dataDir {params.dir} 2> {log}"
 
@@ -58,7 +62,10 @@ rule snpEff:
         calls="results/variantAnalysis/vcfs/variants.{chrom}.vcf",
         dl="workflow/scripts/snpEff/db.dl",
     output:
-        calls=expand("results/variantAnalysis/vcfs/{dataset}.{{chrom}}.vcf.gz", dataset=config['dataset']),
+        calls=expand(
+            "results/variantAnalysis/vcfs/{dataset}.{{chrom}}.vcf.gz",
+            dataset=config["dataset"],
+        ),
         csvStats="results/variantAnalysis/vcfs/snpEff.summary.{chrom}.csv",
     log:
         "logs/snpEff/snpEff.{chrom}.log",
@@ -67,7 +74,7 @@ rule snpEff:
     params:
         db=config["ref"]["snpeffdb"],
         prefix=lambda w, output: os.path.splitext(output[0])[0],
-        dir="resources/snpEffdb"
+        dir="resources/snpEffdb",
     shell:
         """
         snpEff eff {params.db} -dataDir {params.dir} -csvStats {output.csvStats} {input.calls} > {params.prefix} 2> {log}
@@ -101,12 +108,11 @@ rule ExtractBedVCF:
     """
     input:
         vcf=expand(
-            "results/variantAnalysis/vcfs/annot.missense.{chrom}.vcf", chrom=config["chroms"]
+            "results/variantAnalysis/vcfs/annot.missense.{chrom}.vcf",
+            chrom=config["chroms"],
         ),
     output:
-        bed=expand(
-            "resources/regions/missense.pos.{chrom}.bed", chrom=config["chroms"]
-        ),
+        bed=expand("resources/regions/missense.pos.{chrom}.bed", chrom=config["chroms"]),
     conda:
         "../envs/pythonGenomics.yaml"
     log:
