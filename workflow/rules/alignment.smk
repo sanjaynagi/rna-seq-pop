@@ -41,9 +41,9 @@ rule GenomeIndex:
     Index the reference genome with samtools
     """
     input:
-        ref=config["ref"]["genome"],
+        config["ref"]["genome"],
     output:
-        idx=config["ref"]["genome"] + ".fai",
+        config["ref"]["genome"] + ".fai",
     log:
         "logs/GenomeIndex.log",
     wrapper:
