@@ -277,6 +277,51 @@ def meanPBS(ac1, ac2, ac3, window_size, normalise):
     
     return(meanpbs, se, pbs, stats)
 
+
+def windowedDiversity(geno, pos, subpops, statistic='pi', window_size=20000):
+    ### Estimate in windows separately
+    pi_dict = {}
+    for pop, idx in subpops.items():
+        ac = geno.take(idx, axis=1).count_alleles()
+        if statistic == 'pi':
+            pi, windows, d, f = allel.windowed_diversity(pos, ac, size=window_size)
+        elif statistic == 'theta':
+            pi, windows, d, f = allel.windowed_watterson_theta(pos, ac, size=window_size)
+        else:
+            assert "statistic is neither pi or theta"
+        pi_dict[pop] = pd.DataFrame(pi).rename(columns={0:statistic})
+
+    pi = pd.concat(pi_dict).reset_index().rename(columns={'level_0':'treatment'})
+    return(pi)
+
+def diversity_ci_table(div_dict, statistic='pi'):
+    import math
+    div_stat = pd.concat(div_dict)
+    stats = div_stat.groupby(['treatment'])[statistic].agg(['mean', 'count', 'std'])
+
+    ci95_hi = []
+    ci95_lo = []
+    for i in stats.index:
+        m, c, s = stats.loc[i]
+        ci95_hi.append(m + 1.96*s/math.sqrt(c))
+        ci95_lo.append(m - 1.96*s/math.sqrt(c))
+
+    stats['ci95_hi'] = ci95_hi
+    stats['ci95_lo'] = ci95_lo
+    return(stats)
+
+
+
+
+
+
+
+
+
+
+
+
+
 def flip_dict(dict_):
     """
     Inverts a nested dictionary

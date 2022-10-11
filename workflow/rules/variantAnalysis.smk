@@ -80,9 +80,7 @@ rule SummaryStatistics:
     output:
         inbreedingCoef="results/variantAnalysis/diversity/inbreedingCoef.tsv" if config['VariantAnalysis']['ploidy'] > 1 else [],
         pi="results/variantAnalysis/diversity/SequenceDiversity.tsv",
-        pi_png="results/variantAnalysis/diversity/piPerChrom.svg",
         theta="results/variantAnalysis/diversity/WattersonsTheta.tsv",
-        theta_png="results/variantAnalysis/diversity/thetaPerChrom.svg"
     log:
         "logs/SummaryStatistics.log",
     conda:
