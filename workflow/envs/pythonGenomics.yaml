@@ -1,7 +1,7 @@
 channels:  
   - conda-forge
-  - anaconda  
   - bioconda
+  - anaconda  
 dependencies:
   - python=3.7
   - scikit-allel=1.2.1
