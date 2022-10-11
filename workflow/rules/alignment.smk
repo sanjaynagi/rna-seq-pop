@@ -12,7 +12,7 @@ rule KallistoIndex:
     log:
         "logs/kallisto/index.log",
     wrapper:
-        "0.66.0/bio/kallisto/index"
+        "v1.15.0/bio/kallisto/index"
 
 
 rule KallistoQuant:
@@ -33,7 +33,7 @@ rule KallistoQuant:
         extra="-b 100",
     threads: 24
     wrapper:
-        "0.66.0/bio/kallisto/quant"
+        "v1.15.0/bio/kallisto/quant"
 
 
 rule GenomeIndex:
@@ -41,13 +41,13 @@ rule GenomeIndex:
     Index the reference genome with samtools
     """
     input:
-        ref=config["ref"]["genome"],
+        config["ref"]["genome"],
     output:
-        idx=config["ref"]["genome"] + ".fai",
+        config["ref"]["genome"] + ".fai",
     log:
         "logs/GenomeIndex.log",
     wrapper:
-        "v0.69.0/bio/samtools/faidx"
+        "v1.15.0/bio/samtools/faidx"
 
 
 rule HISAT2index:
@@ -55,7 +55,7 @@ rule HISAT2index:
     Make a HISAT2 index of the reference genome
     """
     input:
-        fasta=config["ref"]["genome"]
+        fasta=config["ref"]["genome"],
     output:
         "resources/reference/ht2index/idx.1.ht2",
         touch("resources/reference/ht2index/.complete"),
@@ -75,7 +75,9 @@ rule HISAT2align:
     Align reads to the genome with HISAT2, mark duplicates with samblaster and sort with samtools
     """
     input:
-        reads=lambda wildcards:getFASTQs(wildcards=wildcards, rules="HISAT2align_input"),
+        reads=lambda wildcards: getFASTQs(
+            wildcards=wildcards, rules="HISAT2align_input"
+        ),
         idx="resources/reference/ht2index/.complete",
     output:
         "results/alignments/{sample}.bam",
@@ -85,9 +87,7 @@ rule HISAT2align:
     conda:
         "../envs/variants.yaml"
     params:
-        readflags=lambda wildcards: getFASTQs(
-            wildcards=wildcards, rules="HISAT2align"
-        ),
+        readflags=lambda wildcards: getFASTQs(wildcards=wildcards, rules="HISAT2align"),
         extra="--dta -q --rg-id {sample} --rg SM:{sample} --rg PL:ILLUMINA --new-summary",
         idx="resources/reference/ht2index/idx",
     threads: 12
@@ -109,11 +109,10 @@ rule IndexBams:
     log:
         "logs/IndexBams/{sample}.log",
     wrapper:
-        "0.65.0/bio/samtools/index"
+        "v1.15.0/bio/samtools/index"
 
 
 ### GATK pre-processing ### removed for now for speed
-
 # rule genome_dict:
 #     input:
 #         ref=config['ref']['genome'],
@@ -127,8 +126,6 @@ rule IndexBams:
 #         output = lambda x: os.path.splitext(config['ref']['genome'])[0] + ".dict",
 #     shell:
 #         "samtools dict {input} > {params.output} 2> {log} "
-
-
 # rule splitNCigarReads:
 #     input:
 #         bam="results/alignments/{sample}.bam",
@@ -145,9 +142,6 @@ rule IndexBams:
 #         mem_mb=4096,
 #     wrapper:
 #         "v1.4.0/bio/gatk/splitncigarreads"
-
-
-
 # rule gatkBaseRecalibrator:
 #     input:
 #         bam="results/alignments/{sample}.split.bam",
@@ -165,7 +159,6 @@ rule IndexBams:
 #         mem_mb=4096,
 #     wrapper:
 #         "v1.4.0/bio/gatk/baserecalibrator"
-
 # rule gatk_applybqsr:
 #     input:
 #         bam="results/alignments/{sample}.split.bam",
@@ -184,7 +177,6 @@ rule IndexBams:
 #         mem_mb=4096,
 #     wrapper:
 #         "v1.4.0/bio/gatk/applybqsr"
-
 # rule IndexBams2:
 #     """
 #     Index bams with samtools
@@ -197,8 +189,6 @@ rule IndexBams:
 #         "logs/IndexBams2/{sample}.log",
 #     wrapper:
 #         "0.65.0/bio/samtools/index"
-
-
 # rule IndexBams3:
 #     """
 #     Index bams with samtools

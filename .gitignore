@@ -12,6 +12,7 @@ resources/regions/
 docs/
 results/
 oldResults/
+miscResults/
 x-pca.png
 glmfst/
 *Rproj
