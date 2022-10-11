@@ -4,7 +4,7 @@ rule mpileupVariantsOfInterest:
     """
     input:
         bam="results/alignments/{sample}.bam",
-        index="results/alignments/{sample}.bam.bai"
+        index="results/alignments/{sample}.bam.bai",
     output:
         "results/variantAnalysis/variantsOfInterest/counts/{sample}_{mut}_allele_counts.tsv",
     conda:
@@ -36,7 +36,7 @@ rule AlleleBalanceVariantsOfInterest:
             mut=mutationData.Name,
         ),
         metadata=config["metadata"],
-        mutations=config['miscellaneous']["VariantsOfInterest"]["path"],
+        mutations=config["miscellaneous"]["VariantsOfInterest"]["path"],
     output:
         expand(
             "results/variantAnalysis/variantsOfInterest/csvs/{mut}_alleleBalance.csv",
@@ -62,10 +62,10 @@ rule PlotVariantsOfInterest:
             "results/variantAnalysis/variantsOfInterest/csvs/{mut}_alleleBalance.csv",
             mut=mutationData.Name,
         ),
-        VariantsOfInterest=config['miscellaneous']["VariantsOfInterest"]["path"],
+        VariantsOfInterest=config["miscellaneous"]["VariantsOfInterest"]["path"],
     output:
         perSampleHeatmap="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerSample.svg",
-        perTreatmentHeatmap="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerTreatment.svg"
+        perTreatmentHeatmap="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerTreatment.svg",
     conda:
         "../envs/pythonGenomics.yaml"
     priority: 10

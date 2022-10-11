@@ -32,7 +32,7 @@ rule DifferentialSNPs:
     input:
         metadata=config["metadata"],
         gff=config["ref"]["gff"],
-        geneNames=config['ref']['genes2transcripts'],
+        geneNames=config["ref"]["genes2transcripts"],
         tables=expand(
             "results/variantAnalysis/alleleTables/{sample}.chr{chrom}.allele.table",
             sample=samples,
@@ -40,11 +40,16 @@ rule DifferentialSNPs:
         ),
     output:
         expand(
-            "results/variantAnalysis/diffsnps/{name}.sig.kissDE.tsv", name=config["contrasts"]
+            "results/variantAnalysis/diffsnps/{name}.sig.kissDE.tsv",
+            name=config["contrasts"],
         ),
-        expand("results/variantAnalysis/diffsnps/{name}.kissDE.tsv", name=config["contrasts"]),
         expand(
-            "results/variantAnalysis/diffsnps/{name}.normcounts.tsv", name=config["contrasts"]
+            "results/variantAnalysis/diffsnps/{name}.kissDE.tsv",
+            name=config["contrasts"],
+        ),
+        expand(
+            "results/variantAnalysis/diffsnps/{name}.normcounts.tsv",
+            name=config["contrasts"],
         ),
     conda:
         "../envs/diffsnps.yaml"
@@ -65,16 +70,14 @@ rule VennDiagrams:
     Not working May 2021, v0.3.0 
     """
     input:
-        DE=expand(
-            "results/genediff/{dataset}_diffexp.xlsx", dataset=config["dataset"]
-        ),
+        DE=expand("results/genediff/{dataset}_diffexp.xlsx", dataset=config["dataset"]),
         Fst="results/variantAnalysis/FstPerGene.tsv",
         diffsnps=(
             expand(
                 "results/variantAnalysis/diffsnps/{name}.sig.kissDE.tsv",
                 name=config["contrasts"],
             )
-            if config['miscellaneous']["diffsnps"]["activate"]
+            if config["miscellaneous"]["diffsnps"]["activate"]
             else []
         ),
     output:
@@ -86,7 +89,7 @@ rule VennDiagrams:
         "logs/VennDiagrams.log",
     params:
         DEcontrasts=config["contrasts"],
-        diffsnps=config['miscellaneous']["diffsnps"]["activate"],
+        diffsnps=config["miscellaneous"]["diffsnps"]["activate"],
         percentile=0.05,
     script:
         "../scripts/VennDiagrams.py"

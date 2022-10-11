@@ -1,7 +1,7 @@
 ################################          Common functions           ##################################
 
 ## If PBS is activated
-if config['VariantAnalysis']['selection']["pbs"]["activate"]:
+if config["VariantAnalysis"]["selection"]["pbs"]["activate"]:
     windowedStats = ["Fst", "Pbs"]
 else:
     windowedStats = ["Fst"]
@@ -13,19 +13,23 @@ def getFASTQs(wildcards, rules=None):
     If there are more than one wildcard (aka, sample), only return one fastq file
     If the rule is HISAT2align, then return the fastqs with -1 and -2 flags
     """
-    if config['cutadapt']['activate'] == True:
-        if rules in ['KallistoQuant', 'HISAT2align', 'HISAT2align_input']:
-                units = pd.read_csv(config["metadata"], sep="\t")
-                units = (
-                    units.assign(fq1=f"resources/reads/trimmed/" + units["sampleID"] + "_1.fastq.gz")
-                    .assign(fq2=f"resources/reads/trimmed/" + units["sampleID"] + "_2.fastq.gz")
-                    .set_index("sampleID")
+    if config["cutadapt"]["activate"] == True:
+        if rules in ["KallistoQuant", "HISAT2align", "HISAT2align_input"]:
+            units = pd.read_csv(config["metadata"], sep="\t")
+            units = (
+                units.assign(
+                    fq1=f"resources/reads/trimmed/" + units["sampleID"] + "_1.fastq.gz"
                 )
-                u = units.loc[wildcards.sample, ["fq1", "fq2"]].dropna()
-                if rules == "HISAT2align":
-                    return [f"-1 {u.fq1} -2 {u.fq2}"]
-                else:
-                    return [f"{u.fq1}", f"{u.fq2}"]
+                .assign(
+                    fq2=f"resources/reads/trimmed/" + units["sampleID"] + "_2.fastq.gz"
+                )
+                .set_index("sampleID")
+            )
+            u = units.loc[wildcards.sample, ["fq1", "fq2"]].dropna()
+            if rules == "HISAT2align":
+                return [f"-1 {u.fq1} -2 {u.fq2}"]
+            else:
+                return [f"{u.fq1}", f"{u.fq2}"]
 
     if config["fastq"]["auto"]:
         units = pd.read_csv(config["metadata"], sep="\t")
@@ -52,12 +56,15 @@ def getFASTQs(wildcards, rules=None):
 
 
 def getVCF(wildcards):
-    if config['VariantAnalysis']['caller'] == 'octopus':
-        return("results/variantAnalysis/vcfs/octopus/variants.{chrom}.vcf")
-    elif config['VariantAnalysis']['caller'] == 'freebayes':
-        return("results/variantAnalysis/vcfs/freebayes/variants.{chrom}.vcf")
+    if config["VariantAnalysis"]["caller"] == "octopus":
+        return "results/variantAnalysis/vcfs/octopus/variants.{chrom}.vcf"
+    elif config["VariantAnalysis"]["caller"] == "freebayes":
+        return "results/variantAnalysis/vcfs/freebayes/variants.{chrom}.vcf"
     else:
-        assert config['VariantAnalysis']['caller'] in ['octopus', 'freebayes'], "please choose an appropriate variant caller ('octopus' or 'freebayes')"
+        assert config["VariantAnalysis"]["caller"] in [
+            "octopus",
+            "freebayes",
+        ], "please choose an appropriate variant caller ('octopus' or 'freebayes')"
 
 
 def GetDesiredOutputs(wildcards):
@@ -86,17 +93,17 @@ def GetDesiredOutputs(wildcards):
         )
         if config["VariantAnalysis"]["activate"]:
             wanted_input.extend(
-            expand(
-                [
-                    "results/alignments/coverage/{sample}.mosdepth.summary.txt",
-                    "results/alignments/bamStats/{sample}.flagstat",
-                ],
-                sample=samples,
+                expand(
+                    [
+                        "results/alignments/coverage/{sample}.mosdepth.summary.txt",
+                        "results/alignments/bamStats/{sample}.flagstat",
+                    ],
+                    sample=samples,
+                )
             )
-        )   
-    
-    if config['DifferentialExpression']['activate']:
-        
+
+    if config["DifferentialExpression"]["activate"]:
+
         # Differential Expression outputs
         wanted_input.extend(
             expand(
@@ -113,11 +120,11 @@ def GetDesiredOutputs(wildcards):
             )
         )
 
-    if config['DifferentialExpression']["progressiveGenes"]["activate"]:
+    if config["DifferentialExpression"]["progressiveGenes"]["activate"]:
         wanted_input.extend(
             expand(
                 "results/genediff/{name}.{direction}.progressive.tsv",
-                name=config['DifferentialExpression']["progressiveGenes"]["groups"],
+                name=config["DifferentialExpression"]["progressiveGenes"]["groups"],
                 direction=["up", "down"],
             )
         )
@@ -138,7 +145,6 @@ def GetDesiredOutputs(wildcards):
     #                 ]
     #         )
 
-
     if config["VariantAnalysis"]["activate"]:
         wanted_input.extend(
             expand(
@@ -158,11 +164,11 @@ def GetDesiredOutputs(wildcards):
                 chrom=config["chroms"],
                 dataset=config["dataset"],
                 comp=config["contrasts"],
-                wsize=config['VariantAnalysis']['selection']["pbs"]["windownames"],
+                wsize=config["VariantAnalysis"]["selection"]["pbs"]["windownames"],
             )
         )
 
-        if config['VariantAnalysis']['selection']['activate']:
+        if config["VariantAnalysis"]["selection"]["activate"]:
             wanted_input.extend(
                 expand(
                     [
@@ -172,12 +178,11 @@ def GetDesiredOutputs(wildcards):
                     ],
                     chrom=config["chroms"],
                     comp=config["contrasts"],
-                    wsize=config['VariantAnalysis']['selection']["pbs"]["windownames"],
+                    wsize=config["VariantAnalysis"]["selection"]["pbs"]["windownames"],
                 )
             )
 
-
-    if config['VariantAnalysis']["ancestry"]["activate"]:
+    if config["VariantAnalysis"]["ancestry"]["activate"]:
         wanted_input.extend(
             expand(
                 [
@@ -190,16 +195,16 @@ def GetDesiredOutputs(wildcards):
             )
         )
 
-    if config['miscellaneous']["VariantsOfInterest"]["activate"]:
+    if config["miscellaneous"]["VariantsOfInterest"]["activate"]:
         wanted_input.extend(
             [
                 "results/variantAnalysis/variantsOfInterest/alleleBalance.xlsx",
                 "results/variantAnalysis/variantsOfInterest/VOI.heatmapPerSample.svg",
-                "results/variantAnalysis/variantsOfInterest/VOI.heatmapPerTreatment.svg"
-                ]
-            )
+                "results/variantAnalysis/variantsOfInterest/VOI.heatmapPerTreatment.svg",
+            ]
+        )
 
-    if config['DifferentialExpression']["GSEA"]["activate"]:
+    if config["DifferentialExpression"]["GSEA"]["activate"]:
         wanted_input.extend(
             expand(
                 [
@@ -210,7 +215,10 @@ def GetDesiredOutputs(wildcards):
             )
         )
 
-    if config["VariantAnalysis"]["activate"] and config['DifferentialExpression']["GSEA"]["activate"]:
+    if (
+        config["VariantAnalysis"]["activate"]
+        and config["DifferentialExpression"]["GSEA"]["activate"]
+    ):
         wanted_input.extend(
             expand(
                 ["results/gsea/fst/{comp}.FST.{pathway}.tsv"],
@@ -219,7 +227,7 @@ def GetDesiredOutputs(wildcards):
             )
         )
 
-    if config['miscellaneous']["diffsnps"]["activate"]:
+    if config["miscellaneous"]["diffsnps"]["activate"]:
         wanted_input.extend(
             expand(
                 [
@@ -240,20 +248,20 @@ def GetDesiredOutputs(wildcards):
     #         )
     #     )
 
-    if config['VariantAnalysis']["karyotype"]["activate"]:
+    if config["VariantAnalysis"]["karyotype"]["activate"]:
         wanted_input.extend(
             expand(
                 [
                     "results/karyotype/{karyo}.{dataset}.karyo.txt",
-                    "results/karyotype/karyoFreqs.svg"
+                    "results/karyotype/karyoFreqs.svg",
                 ],
-                karyo=config['VariantAnalysis']["karyotype"]["inversions"],
-		dataset=config['dataset'],
+                karyo=config["VariantAnalysis"]["karyotype"]["inversions"],
+                dataset=config["dataset"],
             )
         )
 
-    if config['miscellaneous']["sweeps"]["activate"]:
-        if config['DifferentialExpression']['activate']:
+    if config["miscellaneous"]["sweeps"]["activate"]:
+        if config["DifferentialExpression"]["activate"]:
             wanted_input.extend(
                 expand(
                     [
@@ -263,7 +271,7 @@ def GetDesiredOutputs(wildcards):
                 )
             )
 
-    if config['miscellaneous']["GeneFamiliesHeatmap"]["activate"]:
+    if config["miscellaneous"]["GeneFamiliesHeatmap"]["activate"]:
         wanted_input.extend(
             expand(
                 [
@@ -272,7 +280,7 @@ def GetDesiredOutputs(wildcards):
             )
         )
 
-    return(wanted_input)
+    return wanted_input
 
 
 def welcome(version):
