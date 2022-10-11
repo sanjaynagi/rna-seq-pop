@@ -9,8 +9,8 @@ rule SNPstatistics:
     """
     input:
         vcf=expand(
-            "results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz",
-            chrom=config["chroms"],
+            "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
+            contig=config["chroms"],
             dataset=config["dataset"],
         ),
         metadata=config["metadata"],
@@ -19,8 +19,8 @@ rule SNPstatistics:
         snpsPerGenomicFeature="results/variantAnalysis/SNPstats/snpsPerGenomicFeature.tsv",
         snpsPerGene="results/variantAnalysis/SNPstats/nSNPsPerGene.tsv",
         SNPdensityFig=expand(
-            "results/variantAnalysis/diversity/{dataset}_SNPdensity_{chrom}.svg",
-            chrom=config["chroms"],
+            "results/variantAnalysis/diversity/{dataset}_SNPdensity_{contig}.svg",
+            contig=config["chroms"],
             dataset=config["dataset"],
         ),
     log:
@@ -43,15 +43,15 @@ rule PCA:
     """
     input:
         vcf=expand(
-            "results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz",
-            chrom=config["chroms"],
+            "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
+            contig=config["chroms"],
             dataset=config["dataset"],
         ),
         metadata=config["metadata"],
     output:
         PCAfig=expand(
-            "results/variantAnalysis/pca/PCA-{chrom}-{dataset}.svg",
-            chrom=config["chroms"],
+            "results/variantAnalysis/pca/PCA-{contig}-{dataset}.svg",
+            contig=config["chroms"],
             dataset=config["dataset"],
         ),
     log:
@@ -74,8 +74,8 @@ rule SummaryStatistics:
     """
     input:
         vcf=expand(
-            "results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz",
-            chrom=config["chroms"],
+            "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
+            contig=config["chroms"],
             dataset=config["dataset"],
         ),
         metadata=config["metadata"],
@@ -106,22 +106,22 @@ rule WindowedFstPBS:
     input:
         metadata=config["metadata"],
         vcf=expand(
-            "results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz",
-            chrom=config["chroms"],
+            "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
+            contig=config["chroms"],
             dataset=config["dataset"],
         ),
     output:
         Fst=expand(
-            "results/variantAnalysis/selection/fst/Fst.{comp}.{wsize}.{chrom}.svg",
+            "results/variantAnalysis/selection/fst/Fst.{comp}.{wsize}.{contig}.svg",
             comp=config["contrasts"],
-            chrom=config["chroms"],
+            contig=config["chroms"],
             wsize=config["VariantAnalysis"]["selection"]["pbs"]["windownames"],
         ),
         PBS=(
             expand(
-                "results/variantAnalysis/selection/pbs/PBS.{pbscomp}.{wsize}.{chrom}.svg",
+                "results/variantAnalysis/selection/pbs/PBS.{pbscomp}.{wsize}.{contig}.svg",
                 pbscomp=config["VariantAnalysis"]["selection"]["pbs"]["contrasts"],
-                chrom=config["chroms"],
+                contig=config["chroms"],
                 wsize=config["VariantAnalysis"]["selection"]["pbs"]["windownames"],
             )
             if config["VariantAnalysis"]["selection"]["pbs"]["activate"]
@@ -156,8 +156,8 @@ rule PerGeneFstPBSDxyPi:
         gff=config["ref"]["gff"],
         geneNames=config["ref"]["genes2transcripts"],
         vcf=expand(
-            "results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz",
-            chrom=config["chroms"],
+            "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
+            contig=config["chroms"],
             dataset=config["dataset"],
         ),
     output:
@@ -189,8 +189,8 @@ rule AncestryInformativeMarkers:
     """
     input:
         vcf=expand(
-            "results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz",
-            chrom=config["chroms"],
+            "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
+            contig=config["chroms"],
             dataset=config["dataset"],
         ),
         metadata=config["metadata"],
@@ -201,8 +201,8 @@ rule AncestryInformativeMarkers:
         AIMs_fig="results/variantAnalysis/ancestry/AIM_fraction_whole_genome.svg",
         n_AIMs="results/variantAnalysis/ancestry/n_AIMS_per_chrom.tsv",
         AIMs_chroms=expand(
-            "results/variantAnalysis/ancestry/AIM_fraction_{chrom}.tsv",
-            chrom=config["chroms"],
+            "results/variantAnalysis/ancestry/AIM_fraction_{contig}.tsv",
+            contig=config["chroms"],
         ),
     log:
         "logs/AncestryInformativeMarkers.log",

@@ -105,15 +105,15 @@ rule vcfStats:
     """
     input:
         vcf=expand(
-            "results/variantAnalysis/vcfs/{dataset}.{{chrom}}.vcf.gz",
+            "results/variantAnalysis/vcfs/{dataset}.{{contig}}.vcf.gz",
             dataset=config["dataset"],
         ),
     output:
-        vcfStats="results/variantAnalysis/vcfs/stats/{chrom}.txt",
+        vcfStats="results/variantAnalysis/vcfs/stats/{contig}.txt",
     conda:
         "../envs/variants.yaml"
     log:
-        "logs/vcfStats/{chrom}.log",
+        "logs/vcfStats/{contig}.log",
     shell:
         """
         bcftools stats {input} > {output} 2> {log}
@@ -145,7 +145,7 @@ rule multiQC:
     input:
         expand("resources/reads/qc/{sample}_{n}_fastqc.zip", sample=samples, n=[1, 2]),
         expand(
-            "results/variantAnalysis/vcfs/stats/{chrom}.txt", chrom=config["chroms"]
+            "results/variantAnalysis/vcfs/stats/{contig}.txt", contig=config["chroms"]
         )
         if config["VariantAnalysis"]["activate"]
         else [],

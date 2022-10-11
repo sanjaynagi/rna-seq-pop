@@ -29,11 +29,11 @@ pi = {}
 theta = {}
 coefdictchrom= {}
 
-for i, chrom in enumerate(chroms):
+for i, contig in enumerate(chroms):
     # Read in and Filter VCF
-    path = f"results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz"
+    path = f"results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz"
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, populations = rnaseqpop.readAndFilterVcf(path=path,
-                                                           chrom=chrom,
+                                                           contig=contig,
                                                            samples=metadata,
                                                            numbers=numbers,
                                                            ploidy=ploidy,
@@ -42,8 +42,8 @@ for i, chrom in enumerate(chroms):
 
 
     # Genome-wide statistics (Pi, Wattersons Theta, inbreeding coefficient)
-    pi[chrom] = rnaseqpop.windowedDiversity(geno=geno, pos=pos, subpops=subpops, statistic='pi', window_size=20_000)
-    theta[chrom] = rnaseqpop.windowedDiversity(geno=geno, pos=pos, subpops=subpops, statistic='theta', window_size=20_000)    
+    pi[contig] = rnaseqpop.windowedDiversity(geno=geno, pos=pos, subpops=subpops, statistic='pi', window_size=20_000)
+    theta[contig] = rnaseqpop.windowedDiversity(geno=geno, pos=pos, subpops=subpops, statistic='theta', window_size=20_000)    
     
     coefdict= {}
     allcoef = defaultdict(list)
@@ -56,8 +56,8 @@ for i, chrom in enumerate(chroms):
             coefdict[pop] = np.mean(coef)
             allcoef[pop].append(np.array(coef))
 
-        if ploidy > 1: print(f"{pop} | {chrom} | Inbreeding Coef =", np.mean(coef), "\n")
-    if ploidy > 1: coefdictchrom[chrom] = dict(coefdict)
+        if ploidy > 1: print(f"{pop} | {contig} | Inbreeding Coef =", np.mean(coef), "\n")
+    if ploidy > 1: coefdictchrom[contig] = dict(coefdict)
 
 # Concat contigs, get CIs for Pi and Theta and save to file
 pi_df = rnaseqpop.diversity_ci_table(div_dict=pi, statistic='pi').to_csv("results/variantAnalysis/diversity/SequenceDiversity.tsv", sep="\t", index=True)

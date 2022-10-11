@@ -49,20 +49,20 @@ tajdbychrom={}
 gdivbychrom = {}
 dxybychrom = {}
 
-for chrom in chroms:
+for contig in chroms:
 
     # path to vcf
-    path = f"results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz"
+    path = f"results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz"
     # function to read in vcfs and associated SNP data
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops = rnaseqpop.readAndFilterVcf(path=path,
-                                                               chrom=chrom, 
+                                                               contig=contig, 
                                                                samples=metadata,
                                                                numbers=numbers,
                                                                ploidy=ploidy,
                                                                qualflt=30,
                                                                missingfltprop=missingprop)
-    # subset gff to appropriate chrom
-    genes = gff[gff.seqid == chrom].sort_values('start').reset_index(drop=True)
+    # subset gff to appropriate contig
+    genes = gff[gff.seqid == contig].sort_values('start').reset_index(drop=True)
 
     ### Average Fst, pbs, tajima d for each gene
     fst_per_comp = {}
@@ -138,11 +138,11 @@ for chrom in chroms:
     gdiv_per_gene = rnaseqpop.flip_dict(gdiv_per_gene)
     dxy_per_gene = rnaseqpop.flip_dict(dxy_per_gene)
 
-    print(f"Chromosome {chrom} complete...\n")
+    print(f"Chromosome {contig} complete...\n")
     for comp1,comp2 in comparisons:
         name = comp1 + "_" + comp2
         a = np.array(list(fst_per_gene[name].values()))
-        print(f"Overall Fst (averaged across genes) for chromosome {chrom} between {name} is {np.nanmean(a)}")
+        print(f"Overall Fst (averaged across genes) for chromosome {contig} between {name} is {np.nanmean(a)}")
 
     # Make dataframe of number of snps per gene (that pass quality and missingness filters)
     ndf = pd.DataFrame.from_dict(n_dict, orient='index').reset_index(drop=False)
@@ -175,9 +175,9 @@ for chrom in chroms:
     fst_allcomparisons = reduce(my_reduce, fst_dfs.values())
     se_allcomparisons = reduce(my_reduce, se_dfs.values())
     fst_allcomparisons = reduce(my_reduce, [fst_allcomparisons, se_allcomparisons])
-    fst_allcomparisons['chrom'] = chrom
+    fst_allcomparisons['contig'] = contig
     dxy_allcomparisons = reduce(my_reduce, dxy_dfs.values())
-    dxy_allcomparisons['chrom'] = chrom
+    dxy_allcomparisons['contig'] = contig
 
     tajd_dfs = {}
     gdiv_dfs = {}
@@ -193,8 +193,8 @@ for chrom in chroms:
     # Combine tajimas d and sequence diversity for each sample
     tajdall = reduce(my_reduce, tajd_dfs.values())
     gdivall = reduce(my_reduce, gdiv_dfs.values())
-    tajdall['chrom'] = chrom
-    gdivall['chrom'] = chrom
+    tajdall['contig'] = contig
+    gdivall['contig'] = contig
 
     if pbs is True:
         # PBS store as dataframes 
@@ -205,18 +205,18 @@ for chrom in chroms:
             pbs_dfs[pbscomp] = pbs_df
 
         pbs_allcomparisons = reduce(my_reduce, pbs_dfs.values())
-        pbs_allcomparisons['chrom'] = chrom
+        pbs_allcomparisons['contig'] = contig
 
-    fstbychrom[chrom] = reduce(lambda left, right: pd.merge(left,right, on=['GeneID'],
+    fstbychrom[contig] = reduce(lambda left, right: pd.merge(left,right, on=['GeneID'],
                                                 how='inner'), [fst_allcomparisons, gene_names, ndf, posdf])
-    tajdbychrom[chrom] = reduce(lambda left, right: pd.merge(left,right, on=['GeneID'],
+    tajdbychrom[contig] = reduce(lambda left, right: pd.merge(left,right, on=['GeneID'],
                                                 how='inner'), [tajdall, gene_names, ndf,posdf])
-    gdivbychrom[chrom] = reduce(lambda left, right: pd.merge(left,right, on=['GeneID'],
+    gdivbychrom[contig] = reduce(lambda left, right: pd.merge(left,right, on=['GeneID'],
                                                 how='inner'), [gdivall, gene_names, ndf, posdf])
-    dxybychrom[chrom] = reduce(lambda left, right: pd.merge(left, right, on=['GeneID'],
+    dxybychrom[contig] = reduce(lambda left, right: pd.merge(left, right, on=['GeneID'],
                                                 how='inner'), [dxy_allcomparisons, gene_names, ndf, posdf])
     if pbs is True:
-        pbsbychrom[chrom] = reduce(lambda left,right: pd.merge(left,right,on=['GeneID'],
+        pbsbychrom[contig] = reduce(lambda left,right: pd.merge(left,right,on=['GeneID'],
                                                     how='inner'), [pbs_allcomparisons, gene_names, ndf, posdf])
     
 

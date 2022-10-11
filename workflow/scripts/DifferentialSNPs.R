@@ -31,10 +31,10 @@ gff = rtracklayer::import(gffpath) %>%
   as.data.frame() %>% 
   filter(type == 'gene') %>% 
   select(seqnames, start, end, ID) %>% 
-  dplyr::rename("chrom" = 'seqnames') %>% 
-  arrange(chrom, start) %>% 
+  dplyr::rename("contig" = 'seqnames') %>% 
+  arrange(contig, start) %>% 
   as.data.table()
-#remove prefix for chrom column, so it matches the bed file 
+#remove prefix for contig column, so it matches the bed file 
 
 #for each contrast/comparison, perform differential SNP analysis 
 for (i in 1:nrow(comparisons)){
@@ -52,11 +52,11 @@ for (i in 1:nrow(comparisons)){
   for (sample in samples){
     
     chrom_list = list()
-    for (chrom in chroms){
+    for (contig in chroms){
       #read in data 
-      alleles  = fread(glue("results/variantAnalysis/alleleTables/{sample}.chr{chrom}.allele.table"))
+      alleles  = fread(glue("results/variantAnalysis/alleleTables/{sample}.chr{contig}.allele.table"))
       #sum lowercase and uppercase alleles, make new column (refcount)
-      chrom_list[[chrom]] = alleles %>% 
+      chrom_list[[contig]] = alleles %>% 
         mutate("A" = A+a,"T" = T+t,"G" = G+g,"C" = C+c) %>% 
         select(-c(a,t,c,g,V15)) %>% 
         mutate(refcount = case_when(ref == 'T' ~ T,
@@ -121,22 +121,22 @@ for (i in 1:nrow(comparisons)){
   de_Vars = diffExpressedVariants(counts, conditions = conditionsde)                    
   
   #parse results to more readable, filterable form 
-  results = de_Vars[[1]] %>% separate(ID, into = c("chrom", "pos", "REF>ALT"), sep="_") %>% 
-    mutate("pos" = as.numeric(pos), "chrom" = str_remove(chrom, "chr")) %>% 
-    arrange(chrom, pos)
+  results = de_Vars[[1]] %>% separate(ID, into = c("contig", "pos", "REF>ALT"), sep="_") %>% 
+    mutate("pos" = as.numeric(pos), "contig" = str_remove(contig, "chr")) %>% 
+    arrange(contig, pos)
   
   ##### intersect (data.table::foverlap) gff and results to get gene names and descriptions of snps #######
   bed = results %>% 
-    select(chrom, pos, Adjusted_pvalue, `Deltaf/DeltaPSI`, `REF>ALT`) %>% 
-    mutate("chrom" = as.character(chrom), "start" = as.numeric(pos) -1, "end" = as.numeric(pos)) %>% 
-    select(chrom, start, end, Adjusted_pvalue, `Deltaf/DeltaPSI`,`REF>ALT`, -pos) %>% 
+    select(contig, pos, Adjusted_pvalue, `Deltaf/DeltaPSI`, `REF>ALT`) %>% 
+    mutate("contig" = as.character(contig), "start" = as.numeric(pos) -1, "end" = as.numeric(pos)) %>% 
+    select(contig, start, end, Adjusted_pvalue, `Deltaf/DeltaPSI`,`REF>ALT`, -pos) %>% 
     as.data.table()
   
   # Data table fast overlaps, useful to find intersections and join  
-  setkey(gff, chrom, start, end)
+  setkey(gff, contig, start, end)
   de_variants = foverlaps(bed, gff, 
-                          by.x=c("chrom", "start", "end"), 
-                          by.y=c("chrom", "start", "end"),
+                          by.x=c("contig", "start", "end"), 
+                          by.y=c("contig", "start", "end"),
                           type = "within",
                           nomatch = 0L) %>% 
     dplyr::rename("GeneID" = "ID")
