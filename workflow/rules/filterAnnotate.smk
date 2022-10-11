@@ -34,7 +34,7 @@ rule RestrictToSNPs:
     params:
         extra="-v snps",
     wrapper:
-        "v1.0.0/bio/bcftools/view"
+        "v1.15.0/bio/bcftools/view"
 
 
 rule snpEffDbDownload:
