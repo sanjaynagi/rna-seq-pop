@@ -11,7 +11,7 @@ rule CheckInputs:
         touch("results/.input.check"),
     params:
         metadata=config["metadata"],
-        chroms=config["chroms"],
+        contigs=config["contigs"],
         gffpath=config["ref"]["gff"],
         gene_names=config["ref"]["genes2transcripts"],
         contrasts=config["contrasts"],
@@ -145,7 +145,7 @@ rule multiQC:
     input:
         expand("resources/reads/qc/{sample}_{n}_fastqc.zip", sample=samples, n=[1, 2]),
         expand(
-            "results/variantAnalysis/vcfs/stats/{contig}.txt", contig=config["chroms"]
+            "results/variantAnalysis/vcfs/stats/{contig}.txt", contig=config["contigs"]
         )
         if config["VariantAnalysis"]["activate"]
         else [],

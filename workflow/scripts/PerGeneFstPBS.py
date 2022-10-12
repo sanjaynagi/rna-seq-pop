@@ -22,7 +22,7 @@ metadata = pd.read_csv(metadata_path, sep="\s+")
 gffpath = snakemake.input['gff']
 pbs = snakemake.params['pbs']
 pbscomps = snakemake.params['pbscomps']
-chroms = snakemake.params['chroms']
+contigs = snakemake.params['contigs']
 ploidy = snakemake.params['ploidy']
 numbers = rnaseqpop.get_numbers_dict(ploidy)
 missingprop = snakemake.params['missingprop']
@@ -49,7 +49,7 @@ tajdbychrom={}
 gdivbychrom = {}
 dxybychrom = {}
 
-for contig in chroms:
+for contig in contigs:
 
     # path to vcf
     path = f"results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz"

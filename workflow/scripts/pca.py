@@ -18,14 +18,14 @@ from adjustText import adjust_text
 dataset = snakemake.params['dataset']
 metadata = pd.read_csv(snakemake.input['metadata'], sep="\t")
 metadata = metadata.sort_values(by='species')
-chroms = snakemake.params['chroms']
+contigs = snakemake.params['contigs']
 ploidy = snakemake.params['ploidy']
 numbers = rnaseqpop.get_numbers_dict(ploidy)
 qualflt = snakemake.params['qualflt']
 missingprop = snakemake.params['missingprop']
 
 
-for i, contig in enumerate(chroms):
+for i, contig in enumerate(contigs):
     
     # Read in and Filter VCF
     path = f"results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz"

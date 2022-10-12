@@ -17,7 +17,7 @@ library(rtracklayer)
 
 
 ######## parse inputs #############
-chroms = snakemake@params[['chroms']]
+contigs = snakemake@params[['contigs']]
 metadata = fread(snakemake@input[['metadata']])
 contrasts = data.frame("contrast" = snakemake@params[['DEcontrasts']])
 comparisons = contrasts %>% separate(contrast, into = c("control", "case"), sep = "_")
@@ -52,7 +52,7 @@ for (i in 1:nrow(comparisons)){
   for (sample in samples){
     
     chrom_list = list()
-    for (contig in chroms){
+    for (contig in contigs){
       #read in data 
       alleles  = fread(glue("results/variantAnalysis/alleleTables/{sample}.chr{contig}.allele.table"))
       #sum lowercase and uppercase alleles, make new column (refcount)
@@ -64,7 +64,7 @@ for (i in 1:nrow(comparisons)){
                                     ref == 'A' ~ A,
                                     ref == 'C' ~ C))
     }
-    #bind chroms together
+    #bind contigs together
     alleles = rbindlist(chrom_list)
     #this step find the most abundant ALT base, whether A,T,C or G, assigns its count as 'altcount'
     list_ = list()

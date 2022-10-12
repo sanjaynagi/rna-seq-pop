@@ -7,9 +7,9 @@ import numpy as np
 import pandas as pd
 import allel
 
-chroms = snakemake.params['chroms']
+contigs = snakemake.params['contigs']
 
-for contig in chroms:
+for contig in contigs:
     vcf = allel.read_vcf(f"results/variantAnalysis/vcfs/annot.missense.{contig}.vcf")
         
     pos = vcf['variants/POS']

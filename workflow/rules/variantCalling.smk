@@ -11,14 +11,14 @@ rule GenerateFreebayesParams:
         pops="results/alignments/populations.tsv",
         regions=expand(
             "resources/regions/genome.{contig}.region.{i}.bed",
-            contig=config["chroms"],
+            contig=config["contigs"],
             i=chunks,
         ),
     log:
         "logs/GenerateFreebayesParams.log",
     params:
         metadata=config["metadata"],
-        chroms=config["chroms"],
+        contigs=config["contigs"],
         chunks=config["VariantAnalysis"]["chunks"],
     conda:
         "../envs/diffexp.yaml"

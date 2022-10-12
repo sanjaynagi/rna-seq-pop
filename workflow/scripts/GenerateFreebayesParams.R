@@ -10,15 +10,15 @@ library(data.table)
 library(glue)
 
 # read inputs
-chroms = snakemake@params[['chroms']]
+contigs = snakemake@params[['contigs']]
 chunks = snakemake@params[['chunks']]
 fai = fread(snakemake@input[['index']])
 
-# select chroms we want, and start, end columns
-fai = fai[fai$V1 %in% chroms, c(1,2)]
+# select contigs we want, and start, end columns
+fai = fai[fai$V1 %in% contigs, c(1,2)]
 
 # for each chromsome
-for (contig in chroms){
+for (contig in contigs){
    #subset index to desired contig
    f = fai[fai$V1 == contig]
    #get sequence of n chunks from 0 to length of contig

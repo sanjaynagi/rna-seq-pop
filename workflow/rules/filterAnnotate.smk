@@ -109,15 +109,15 @@ rule ExtractBedVCF:
     input:
         vcf=expand(
             "results/variantAnalysis/vcfs/annot.missense.{contig}.vcf",
-            contig=config["chroms"],
+            contig=config["contigs"],
         ),
     output:
-        bed=expand("resources/regions/missense.pos.{contig}.bed", contig=config["chroms"]),
+        bed=expand("resources/regions/missense.pos.{contig}.bed", contig=config["contigs"]),
     conda:
         "../envs/pythonGenomics.yaml"
     log:
         "logs/ExtractBedVCF.log",
     params:
-        chroms=config["chroms"],
+        contigs=config["contigs"],
     script:
         "../scripts/ExtractBedVCF.py"

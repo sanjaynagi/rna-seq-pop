@@ -10,7 +10,7 @@ rule SNPstatistics:
     input:
         vcf=expand(
             "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
-            contig=config["chroms"],
+            contig=config["contigs"],
             dataset=config["dataset"],
         ),
         metadata=config["metadata"],
@@ -20,7 +20,7 @@ rule SNPstatistics:
         snpsPerGene="results/variantAnalysis/SNPstats/nSNPsPerGene.tsv",
         SNPdensityFig=expand(
             "results/variantAnalysis/diversity/{dataset}_SNPdensity_{contig}.svg",
-            contig=config["chroms"],
+            contig=config["contigs"],
             dataset=config["dataset"],
         ),
     log:
@@ -29,7 +29,7 @@ rule SNPstatistics:
         "../envs/pythonGenomics.yaml"
     params:
         dataset=config["dataset"],
-        chroms=config["chroms"],
+        contigs=config["contigs"],
         ploidy=config["VariantAnalysis"]["ploidy"],
         missingprop=config["VariantAnalysis"]["selection"]["missingness"],
         qualflt=30,
@@ -44,14 +44,14 @@ rule PCA:
     input:
         vcf=expand(
             "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
-            contig=config["chroms"],
+            contig=config["contigs"],
             dataset=config["dataset"],
         ),
         metadata=config["metadata"],
     output:
         PCAfig=expand(
             "results/variantAnalysis/pca/PCA-{contig}-{dataset}.svg",
-            contig=config["chroms"],
+            contig=config["contigs"],
             dataset=config["dataset"],
         ),
     log:
@@ -60,7 +60,7 @@ rule PCA:
         "../envs/pythonGenomics.yaml"
     params:
         dataset=config["dataset"],
-        chroms=config["chroms"],
+        contigs=config["contigs"],
         ploidy=config["VariantAnalysis"]["ploidy"],
         missingprop=config["VariantAnalysis"]["pca"]["missingness"],
         qualflt=30,
@@ -75,7 +75,7 @@ rule SummaryStatistics:
     input:
         vcf=expand(
             "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
-            contig=config["chroms"],
+            contig=config["contigs"],
             dataset=config["dataset"],
         ),
         metadata=config["metadata"],
@@ -91,7 +91,7 @@ rule SummaryStatistics:
         "../envs/pythonGenomics.yaml"
     params:
         dataset=config["dataset"],
-        chroms=config["chroms"],
+        contigs=config["contigs"],
         ploidy=config["VariantAnalysis"]["ploidy"],
         missingprop=config["VariantAnalysis"]["summaryStatistics"]["missingness"],
         qualflt=30,
@@ -107,21 +107,21 @@ rule WindowedFstPBS:
         metadata=config["metadata"],
         vcf=expand(
             "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
-            contig=config["chroms"],
+            contig=config["contigs"],
             dataset=config["dataset"],
         ),
     output:
         Fst=expand(
             "results/variantAnalysis/selection/fst/Fst.{comp}.{wsize}.{contig}.svg",
             comp=config["contrasts"],
-            contig=config["chroms"],
+            contig=config["contigs"],
             wsize=config["VariantAnalysis"]["selection"]["pbs"]["windownames"],
         ),
         PBS=(
             expand(
                 "results/variantAnalysis/selection/pbs/PBS.{pbscomp}.{wsize}.{contig}.svg",
                 pbscomp=config["VariantAnalysis"]["selection"]["pbs"]["contrasts"],
-                contig=config["chroms"],
+                contig=config["contigs"],
                 wsize=config["VariantAnalysis"]["selection"]["pbs"]["windownames"],
             )
             if config["VariantAnalysis"]["selection"]["pbs"]["activate"]
@@ -136,7 +136,7 @@ rule WindowedFstPBS:
         DEcontrasts=config["contrasts"],
         pbs=config["VariantAnalysis"]["selection"]["pbs"]["activate"],
         pbscomps=config["VariantAnalysis"]["selection"]["pbs"]["contrasts"],
-        chroms=config["chroms"],
+        contigs=config["contigs"],
         ploidy=config["VariantAnalysis"]["ploidy"],
         missingprop=config["VariantAnalysis"]["selection"]["missingness"],
         qualflt=30,
@@ -157,7 +157,7 @@ rule PerGeneFstPBSDxyPi:
         geneNames=config["ref"]["genes2transcripts"],
         vcf=expand(
             "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
-            contig=config["chroms"],
+            contig=config["contigs"],
             dataset=config["dataset"],
         ),
     output:
@@ -176,7 +176,7 @@ rule PerGeneFstPBSDxyPi:
         DEcontrasts=config["contrasts"],
         pbs=config["VariantAnalysis"]["selection"]["pbs"]["activate"],
         pbscomps=config["VariantAnalysis"]["selection"]["pbs"]["contrasts"],
-        chroms=config["chroms"],
+        contigs=config["contigs"],
         ploidy=config["VariantAnalysis"]["ploidy"],
         missingprop=config["VariantAnalysis"]["selection"]["missingness"],
     script:
@@ -190,7 +190,7 @@ rule AncestryInformativeMarkers:
     input:
         vcf=expand(
             "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
-            contig=config["chroms"],
+            contig=config["contigs"],
             dataset=config["dataset"],
         ),
         metadata=config["metadata"],
@@ -202,7 +202,7 @@ rule AncestryInformativeMarkers:
         n_AIMs="results/variantAnalysis/ancestry/n_AIMS_per_chrom.tsv",
         AIMs_chroms=expand(
             "results/variantAnalysis/ancestry/AIM_fraction_{contig}.tsv",
-            contig=config["chroms"],
+            contig=config["contigs"],
         ),
     log:
         "logs/AncestryInformativeMarkers.log",
@@ -210,7 +210,7 @@ rule AncestryInformativeMarkers:
         "../envs/pythonGenomics.yaml"
     params:
         dataset=config["dataset"],
-        chroms=config["chroms"],
+        contigs=config["contigs"],
         ploidy=config["VariantAnalysis"]["ploidy"],
         missingprop=config["VariantAnalysis"]["ancestry"]["missingness"],
         qualflt=30,

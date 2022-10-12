@@ -17,7 +17,7 @@ from collections import defaultdict
 dataset = snakemake.params['dataset']
 metadata = pd.read_csv(snakemake.input['metadata'], sep="\t")
 metadata = metadata.sort_values(by='species').reset_index(drop=True)
-chroms = snakemake.params['chroms']
+contigs = snakemake.params['contigs']
 ploidy = snakemake.params['ploidy']
 numbers = rnaseqpop.get_numbers_dict(ploidy)
 qualflt = snakemake.params['qualflt']
@@ -34,7 +34,7 @@ all_gamb = defaultdict(list)
 all_colu = defaultdict(list)
 n_aims_per_chrom = {}
 
-for contig in chroms:
+for contig in contigs:
 
     # read in and filter data
     path = f"results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz"
@@ -181,7 +181,7 @@ if metadata['species'].isin(['arabiensis']).any():
     all_arab = defaultdict(list)
     n_aims_per_chrom = {}
 
-    for contig in chroms:
+    for contig in contigs:
 
         # read in and filter data
         path = f"results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz"

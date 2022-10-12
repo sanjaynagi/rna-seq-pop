@@ -135,7 +135,7 @@ def GetDesiredOutputs(wildcards):
     #                 [
     #                     "results/variantAnalysis/vcfs/octopus/variant.{contig}.vcf"
     #                 ]
-    #                 contig=chroms,
+    #                 contig=contigs,
     #         )
     #     elif config['VariantAnalyis']['caller'] == 'freebayes':
     #         wanted_input.extend(
@@ -160,7 +160,7 @@ def GetDesiredOutputs(wildcards):
                     "results/variantAnalysis/diversity/DxyPerGene.tsv",
                     "results/variantAnalysis/selection/fst/Fst.{comp}.{wsize}.{contig}.svg",
                 ],
-                contig=config["chroms"],
+                contig=config["contigs"],
                 dataset=config["dataset"],
                 comp=config["contrasts"],
                 wsize=config["VariantAnalysis"]["selection"]["pbs"]["windownames"],
@@ -175,7 +175,7 @@ def GetDesiredOutputs(wildcards):
                         "results/variantAnalysis/selection/TajimasDPerGene.tsv",
                         "results/variantAnalysis/selection/fst/Fst.{comp}.{wsize}.{contig}.svg",
                     ],
-                    contig=config["chroms"],
+                    contig=config["contigs"],
                     comp=config["contrasts"],
                     wsize=config["VariantAnalysis"]["selection"]["pbs"]["windownames"],
                 )
@@ -190,7 +190,7 @@ def GetDesiredOutputs(wildcards):
                     "results/variantAnalysis/ancestry/n_AIMS_per_chrom.tsv",
                     "results/variantAnalysis/ancestry/AIM_fraction_{contig}.tsv",
                 ],
-                contig=config["chroms"],
+                contig=config["contigs"],
             )
         )
 

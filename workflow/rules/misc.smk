@@ -36,7 +36,7 @@ rule DifferentialSNPs:
         tables=expand(
             "results/variantAnalysis/alleleTables/{sample}.chr{contig}.allele.table",
             sample=samples,
-            contig=config["chroms"],
+            contig=config["contigs"],
         ),
     output:
         expand(
@@ -57,7 +57,7 @@ rule DifferentialSNPs:
         "logs/DifferentialSNPs.log",
     params:
         DEcontrasts=config["contrasts"],
-        chroms=config["chroms"],
+        contigs=config["contigs"],
         mincounts=100,
         pval_flt=0.001,  # pvalues already adjusted but way want extra filter for sig file
     script:
