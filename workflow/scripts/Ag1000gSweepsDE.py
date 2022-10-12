@@ -69,7 +69,7 @@ for comp in comparisons['contrast']:
             sweptgenes = np.array(cols['overlapping_DE_genes'].split(" "))
 
             if np.isin(sweptgenes, gene).any():
-                wheresweep[gene]['chrom'] = cols['chromosome']
+                wheresweep[gene]['contig'] = cols['chromosome']
                 wheresweep[gene]['epicenter'] = cols['epicenter']
                 wheresweep[gene]['known_loci'] = cols['known_loci']
 

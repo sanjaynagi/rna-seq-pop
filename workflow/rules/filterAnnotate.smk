@@ -7,13 +7,13 @@ rule ConcatVCFs:
     """
     input:
         calls=expand(
-            "results/variantAnalysis/vcfs/freebayes/{{chrom}}/variants.{i}.vcf",
+            "results/variantAnalysis/vcfs/freebayes/{{contig}}/variants.{i}.vcf",
             i=chunks,
         ),
     output:
-        temp("results/variantAnalysis/vcfs/freebayes/variants.{chrom}.vcf"),
+        temp("results/variantAnalysis/vcfs/freebayes/variants.{contig}.vcf"),
     log:
-        "logs/ConcatVCFs/{chrom}.log",
+        "logs/ConcatVCFs/{contig}.log",
     conda:
         "../envs/variants.yaml"
     threads: 4
@@ -28,9 +28,9 @@ rule RestrictToSNPs:
     input:
         getVCF,
     output:
-        temp("results/variantAnalysis/vcfs/variants.{chrom}.vcf"),
+        temp("results/variantAnalysis/vcfs/variants.{contig}.vcf"),
     log:
-        "logs/bcftoolsView/{chrom}.log",
+        "logs/bcftoolsView/{contig}.log",
     params:
         extra="-v snps",
     wrapper:
@@ -59,16 +59,16 @@ rule snpEff:
     Run snpEff on the VCFs 
     """
     input:
-        calls="results/variantAnalysis/vcfs/variants.{chrom}.vcf",
+        calls="results/variantAnalysis/vcfs/variants.{contig}.vcf",
         dl="workflow/scripts/snpEff/db.dl",
     output:
         calls=expand(
-            "results/variantAnalysis/vcfs/{dataset}.{{chrom}}.vcf.gz",
+            "results/variantAnalysis/vcfs/{dataset}.{{contig}}.vcf.gz",
             dataset=config["dataset"],
         ),
-        csvStats="results/variantAnalysis/vcfs/snpEff.summary.{chrom}.csv",
+        csvStats="results/variantAnalysis/vcfs/snpEff.summary.{contig}.csv",
     log:
-        "logs/snpEff/snpEff.{chrom}.log",
+        "logs/snpEff/snpEff.{contig}.log",
     conda:
         "../envs/snpeff.yaml"
     params:
@@ -87,11 +87,11 @@ rule MissenseAndQualFilter:
     Filter VCFs for missense variants and quality (used later for diffsnps analysis)
     """
     input:
-        vcf="results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz",
+        vcf="results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
     output:
-        "results/variantAnalysis/vcfs/annot.missense.{chrom}.vcf",
+        "results/variantAnalysis/vcfs/annot.missense.{contig}.vcf",
     log:
-        "logs/snpSift/missense_vcf_{chrom}.log",
+        "logs/snpSift/missense_vcf_{contig}.log",
     conda:
         "../envs/snpeff.yaml"
     params:
@@ -108,16 +108,16 @@ rule ExtractBedVCF:
     """
     input:
         vcf=expand(
-            "results/variantAnalysis/vcfs/annot.missense.{chrom}.vcf",
-            chrom=config["chroms"],
+            "results/variantAnalysis/vcfs/annot.missense.{contig}.vcf",
+            contig=config["contigs"],
         ),
     output:
-        bed=expand("resources/regions/missense.pos.{chrom}.bed", chrom=config["chroms"]),
+        bed=expand("resources/regions/missense.pos.{contig}.bed", contig=config["contigs"]),
     conda:
         "../envs/pythonGenomics.yaml"
     log:
         "logs/ExtractBedVCF.log",
     params:
-        chroms=config["chroms"],
+        contigs=config["contigs"],
     script:
         "../scripts/ExtractBedVCF.py"

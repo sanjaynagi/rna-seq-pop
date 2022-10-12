@@ -17,7 +17,7 @@ from collections import defaultdict
 dataset = snakemake.params['dataset']
 metadata = pd.read_csv(snakemake.input['metadata'], sep="\t")
 metadata = metadata.sort_values(by='species').reset_index(drop=True)
-chroms = snakemake.params['chroms']
+contigs = snakemake.params['contigs']
 ploidy = snakemake.params['ploidy']
 numbers = rnaseqpop.get_numbers_dict(ploidy)
 qualflt = snakemake.params['qualflt']
@@ -34,27 +34,27 @@ all_gamb = defaultdict(list)
 all_colu = defaultdict(list)
 n_aims_per_chrom = {}
 
-for chrom in chroms:
+for contig in contigs:
 
     # read in and filter data
-    path = f"results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz"
+    path = f"results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz"
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops =  rnaseqpop.readAndFilterVcf(path=path,
-                                                               chrom=chrom,
+                                                               contig=contig,
                                                                samples=metadata,
                                                                numbers=numbers,
                                                                ploidy=ploidy,
                                                                qualflt=qualflt,
                                                                missingfltprop=missingprop)
-    aimspos = aims[chrom]['POS'][:]
+    aimspos = aims[contig]['POS'][:]
 
     # get intersection of aims and our SNPs
     aims_pos_mask, aims_mask_2 = pos.locate_intersection(aimspos)
     our_aims = pos[aims_pos_mask]
-    print(f"\n In the data, across all samples there are {our_aims.shape[0]} Ancestry Informative markers on Chromosome {chrom}")
+    print(f"\n In the data, across all samples there are {our_aims.shape[0]} Ancestry Informative markers on Chromosome {contig}")
 
     # get gamb and colu alleles, and subset to aims that we have in the rna-seq data 
-    aimscolu = aims[chrom]['colu_allele'][:][aims_mask_2]
-    aimsgamb = aims[chrom]['gamb_allele'][:][aims_mask_2]
+    aimscolu = aims[contig]['colu_allele'][:][aims_mask_2]
+    aimsgamb = aims[contig]['gamb_allele'][:][aims_mask_2]
 
     # get mask that was used in readAndFilterVcf()
     mask = pos.locate_intersection(vcf['variants/POS'])[1]
@@ -124,13 +124,13 @@ for chrom in chroms:
             n_aims_per_sample[sample] = dim-np.sum(np.isnan(arr))
             
     # store AIM fractions for each chromosome in outer dict 
-    aims_chrom_gamb[chrom] = dict(prop_gambiae)
-    aims_chrom_colu[chrom] = dict(prop_colu)
-    n_aims_per_chrom[chrom] = dict(n_aims_per_sample)
+    aims_chrom_gamb[contig] = dict(prop_gambiae)
+    aims_chrom_colu[contig] = dict(prop_colu)
+    n_aims_per_chrom[contig] = dict(n_aims_per_sample)
 
     # Store ancestry score per aim
-    ancestryPerAim[chrom] = pd.concat([pd.DataFrame(gambscores).add_suffix("_gamb"), pd.DataFrame(coluscores).add_suffix("_colu")], axis=1)
-    ancestryPerAim[chrom]['contig'] = chrom
+    ancestryPerAim[contig] = pd.concat([pd.DataFrame(gambscores).add_suffix("_gamb"), pd.DataFrame(coluscores).add_suffix("_colu")], axis=1)
+    ancestryPerAim[contig]['contig'] = contig
 
     # plot and store for each chromosome
     coludf = pd.DataFrame.from_dict(prop_colu, orient='index', columns=['AIM_fraction_coluzzii'])
@@ -138,8 +138,8 @@ for chrom in chroms:
     perchromdf = gambdf.merge(coludf, left_index=True, right_index=True)
     aimsperchromdf = pd.DataFrame.from_dict(n_aims_per_sample, orient='index', columns=['n_AIMs'])
 
-    perchromdf.to_csv(f"results/variantAnalysis/ancestry/AIM_fraction_{chrom}.tsv", sep="\t", index=True)
-    rnaseqpop.plot_aims(perchromdf, aimsperchromdf, species1="coluzzii", species2="gambiae", figtitle=f"AIM_fraction_{chrom}", total=False)
+    perchromdf.to_csv(f"results/variantAnalysis/ancestry/AIM_fraction_{contig}.tsv", sep="\t", index=True)
+    rnaseqpop.plot_aims(perchromdf, aimsperchromdf, species1="coluzzii", species2="gambiae", figtitle=f"AIM_fraction_{contig}", total=False)
 
 
 aims_chrom_gamb = rnaseqpop.flip_dict(aims_chrom_gamb)
@@ -181,26 +181,26 @@ if metadata['species'].isin(['arabiensis']).any():
     all_arab = defaultdict(list)
     n_aims_per_chrom = {}
 
-    for chrom in chroms:
+    for contig in contigs:
 
         # read in and filter data
-        path = f"results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz"
+        path = f"results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz"
         vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops = rnaseqpop.readAndFilterVcf(path=path,
-                                                                chrom=chrom,
+                                                                contig=contig,
                                                                 samples=metadata,
                                                                 numbers=numbers,
                                                                 qualflt=qualflt,
                                                                 missingfltprop=missingprop)
-        aimspos = aims[chrom]['POS'][:]
+        aimspos = aims[contig]['POS'][:]
 
         # get intersection of aims and our SNPs
         aims_pos_mask, aims_mask_2 = pos.locate_intersection(aimspos)
         our_aims = pos[aims_pos_mask]
-        print(f"\n In the data, across all samples there are {our_aims.shape[0]} gamb-arab Ancestry Informative markers on Chromosome {chrom}")
+        print(f"\n In the data, across all samples there are {our_aims.shape[0]} gamb-arab Ancestry Informative markers on Chromosome {contig}")
 
         # get gamb and colu alleles, and subset to aims that we have in the rna-seq data 
-        aimsgamb = aims[chrom]['gambcolu_allele'][:][aims_mask_2]
-        aimsarab = aims[chrom]['arab_allele'][:][aims_mask_2]
+        aimsgamb = aims[contig]['gambcolu_allele'][:][aims_mask_2]
+        aimsarab = aims[contig]['arab_allele'][:][aims_mask_2]
 
         # get mask that was used in readAndFilterVcf()
         mask = pos.locate_intersection(vcf['variants/POS'])[1]
@@ -269,13 +269,13 @@ if metadata['species'].isin(['arabiensis']).any():
                 dim = arr.shape[0]
                 n_aims_per_sample[sample] = dim-np.sum(np.isnan(arr))
 
-        aims_chrom_gamb[chrom] = dict(prop_gambiae)
-        aims_chrom_arab[chrom] = dict(prop_arab)
-        n_aims_per_chrom[chrom] = dict(n_aims_per_sample)
+        aims_chrom_gamb[contig] = dict(prop_gambiae)
+        aims_chrom_arab[contig] = dict(prop_arab)
+        n_aims_per_chrom[contig] = dict(n_aims_per_sample)
 
         # Store ancestry score per aim
-        ancestryPerAim[chrom] = pd.concat([pd.DataFrame(gambscores).add_suffix("_gamb"), pd.DataFrame(coluscores).add_suffix("_colu")], axis=1)
-        ancestryPerAim[chrom]['contig'] = chrom
+        ancestryPerAim[contig] = pd.concat([pd.DataFrame(gambscores).add_suffix("_gamb"), pd.DataFrame(coluscores).add_suffix("_colu")], axis=1)
+        ancestryPerAim[contig]['contig'] = contig
 
         # plot and store for each chromosome
         gambdf = pd.DataFrame.from_dict(prop_gambiae, orient='index', columns=['AIM_fraction_gambiae'])
@@ -283,8 +283,8 @@ if metadata['species'].isin(['arabiensis']).any():
         perchromdf = gambdf.merge(arabdf, left_index=True, right_index=True)
         aimsperchromdf = pd.DataFrame.from_dict(n_aims_per_sample, orient='index', columns=['n_AIMs'])
 
-        perchromdf.to_csv(f"results/variantAnalysis/ancestry/AIM_fraction_{chrom}.arab.tsv", sep="\t", index=True)
-        rnaseqpop.plot_aims(perchromdf, aimsperchromdf, species1="arabiensis", species2="gambiae", figtitle=f"AIM_fraction_arab_{chrom}", total=False)
+        perchromdf.to_csv(f"results/variantAnalysis/ancestry/AIM_fraction_{contig}.arab.tsv", sep="\t", index=True)
+        rnaseqpop.plot_aims(perchromdf, aimsperchromdf, species1="arabiensis", species2="gambiae", figtitle=f"AIM_fraction_arab_{contig}", total=False)
 
     aims_chrom_gamb = rnaseqpop.flip_dict(aims_chrom_gamb)
     aims_chrom_arab = rnaseqpop.flip_dict(aims_chrom_arab)

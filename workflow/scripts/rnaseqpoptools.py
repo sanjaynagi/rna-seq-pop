@@ -8,7 +8,7 @@ import seaborn as sns
 from collections import defaultdict
 
 
-def plotWindowed(statName, cohortText, cohortNoSpaceText, values, midpoints, prefix, chrom, ylim, colour, save=True):
+def plotWindowed(statName, cohortText, cohortNoSpaceText, values, midpoints, prefix, contig, ylim, colour, save=True):
 
     """
     Saves to .tsv and plots windowed statistics
@@ -19,7 +19,7 @@ def plotWindowed(statName, cohortText, cohortNoSpaceText, values, midpoints, pre
     if save:
         # store windowed statistics as .tsv 
         df = pd.DataFrame({'midpoint':midpoints, statName:values})
-        df.to_csv(f"{prefix}/{statName}_{cohortNoSpaceText}.{chrom}.tsv", sep="\t", index=False)
+        df.to_csv(f"{prefix}/{statName}_{cohortNoSpaceText}.{contig}.tsv", sep="\t", index=False)
 
     xtick = np.arange(0, midpoints.max(), 2000000)
     ylim = np.max([ylim, values.max()])
@@ -30,9 +30,9 @@ def plotWindowed(statName, cohortText, cohortNoSpaceText, values, midpoints, pre
     plt.yticks(fontsize=14)
     plt.xticks(xtick, rotation=45, ha='right', fontsize=14)
     plt.ticklabel_format(style='plain', axis='x')
-    plt.title(f"{statName} | {cohortText} | Chromosome {chrom}", fontdict={'fontsize':20})
-    if save: plt.savefig(f"{prefix}/{statName}.{cohortNoSpaceText}.{chrom}.svg",format="svg", dpi=300)
-    if save: plt.savefig(f"{prefix}/{statName}.{cohortNoSpaceText}.{chrom}.pdf",format="pdf", dpi=300)
+    plt.title(f"{statName} | {cohortText} | Chromosome {contig}", fontdict={'fontsize':20})
+    if save: plt.savefig(f"{prefix}/{statName}.{cohortNoSpaceText}.{contig}.svg",format="svg", dpi=300)
+    if save: plt.savefig(f"{prefix}/{statName}.{cohortNoSpaceText}.{contig}.pdf",format="pdf", dpi=300)
 
     
 
@@ -62,7 +62,7 @@ def getAlleleFreqTable(muts, Path, var="sample", mean_=False, lowCov = 10):
         df = pd.read_csv(Path.format(mut=mut))
         if mean_:
             df['gene'] = muts[muts.Name == mut]['Gene'].iloc[0]
-        df['name'] = df['chrom'].astype(str) + ":"+ df['pos'].astype(str) + "  " + df['gene'].astype(str) + " | " + df['mutation'].astype(str)
+        df['name'] = df['contig'].astype(str) + ":"+ df['pos'].astype(str) + "  " + df['gene'].astype(str) + " | " + df['mutation'].astype(str)
         df['frequency'] = df.filter(like="proportion").sum(axis=1)
         freqDict[mut] = df[['name', var, 'frequency']]
         covDict[mut] = df[['name', var, cov_var]]
@@ -211,13 +211,13 @@ def get_numbers_dict(ploidy):
     return(numbers)
 
 
-def readAndFilterVcf(path, chrom, samples, numbers, ploidy, qualflt=30, missingfltprop=0.6, verbose=False):
+def readAndFilterVcf(path, contig, samples, numbers, ploidy, qualflt=30, missingfltprop=0.6, verbose=False):
 
     """
     This function reads a VCF file, and filters it to a given quality and missingness proportion
     """
     
-    print(f"\n-------------- Reading VCF for chromosome {chrom} --------------")
+    print(f"\n-------------- Reading VCF for chromosome {contig} --------------")
     vcf = allel.read_vcf(path, 
                       numbers=numbers,
                      fields=['calldata/*', 'variants/*', 'samples'])
@@ -237,17 +237,17 @@ def readAndFilterVcf(path, chrom, samples, numbers, ploidy, qualflt=30, missingf
     #apply quality filters
     qual = vcf['variants/QUAL']
     passfilter = qual >= qualflt
-    print(f"QUAL filter will retain {passfilter.sum()} SNPs retained out of {passfilter.shape[0]} for chromosome {chrom}")
+    print(f"QUAL filter will retain {passfilter.sum()} SNPs retained out of {passfilter.shape[0]} for chromosome {contig}")
 
        #missingness filters 
     ac = allel.GenotypeArray(vcf['calldata/GT']).count_alleles()
     snpcounts = ac.sum(axis=1)
     missingflt = snpcounts.max()*missingfltprop # must have at least 1/p alleles present
     missingness_flt = snpcounts >= missingflt
-    print(f"Missingness filter will retain {missingness_flt.sum()} SNPs out of {missingness_flt.shape[0]} for chromosome {chrom}")
+    print(f"Missingness filter will retain {missingness_flt.sum()} SNPs out of {missingness_flt.shape[0]} for chromosome {contig}")
 
     passfilter = np.logical_and(passfilter, missingness_flt)
-    print(f"The combined filter will retain {passfilter.sum()} SNPs out of {passfilter.shape[0]} for chromosome {chrom}")
+    print(f"The combined filter will retain {passfilter.sum()} SNPs out of {passfilter.shape[0]} for chromosome {contig}")
     
     if ploidy == 1:
         geno = allel.HaplotypeArray(vcf['calldata/GT'].compress(passfilter, axis=0))
@@ -409,7 +409,7 @@ def fig_pca(coords, model, title, path, samples, pop_colours,sample_population=N
         fig.savefig("{path}.pdf", format='pdf', bbox_inches='tight', dpi=300)
 
 
-def pca(geno, chrom, ploidy, dataset, populations, samples, pop_colours, prune=True, scaler=None):
+def pca(geno, contig, ploidy, dataset, populations, samples, pop_colours, prune=True, scaler=None):
     if prune is True:
         if ploidy > 1:
             geno = geno.to_n_alt()
@@ -420,7 +420,7 @@ def pca(geno, chrom, ploidy, dataset, populations, samples, pop_colours, prune=T
         
     coords1, model1 = allel.pca(geno, n_components=10, scaler=scaler)
 
-    fig_pca(coords1, model1, f"PCA {chrom} {dataset}", f"results/variantAnalysis/pca/PCA-{chrom}-{dataset}", samples, pop_colours, sample_population=populations)
+    fig_pca(coords1, model1, f"PCA {contig} {dataset}", f"results/variantAnalysis/pca/PCA-{contig}-{dataset}", samples, pop_colours, sample_population=populations)
 
 
 
@@ -431,7 +431,7 @@ def pca(geno, chrom, ploidy, dataset, populations, samples, pop_colours, prune=T
 
 def plot_aims(df, n_aims, species1="coluzzii", species2="gambiae", figtitle="AIM_fraction_overall", total=True):
     
-    # if we are plotting the total genome wide AIM fraction, sum the number of obs for each chrom
+    # if we are plotting the total genome wide AIM fraction, sum the number of obs for each contig
     if total:
         n_aims = n_aims.sum(axis=0)
     else:
