@@ -17,7 +17,7 @@ import rnaseqpoptools as rnaseqpop
 dataset = snakemake.params['dataset']
 metadata = pd.read_csv(snakemake.input['metadata'], sep="\t")
 metadata = metadata.sort_values(by='species')
-chroms = snakemake.params['chroms']
+contigs = snakemake.params['contigs']
 ploidy = snakemake.params['ploidy']
 numbers = rnaseqpop.get_numbers_dict(ploidy)
 qualflt = snakemake.params['qualflt']
@@ -45,12 +45,12 @@ seqdivdictchrom = {}
 thetadictchrom = {}
 coefdictchrom= {}
 
-for i, chrom in enumerate(chroms):
+for i, contig in enumerate(contigs):
     
     # Read in and Filter VCF
-    path = f"results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz"
+    path = f"results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz"
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, populations = rnaseqpop.readAndFilterVcf(path=path,
-                                                           chrom=chrom,
+                                                           contig=contig,
                                                            samples=metadata,
                                                            numbers=numbers,
                                                            ploidy=ploidy,
@@ -58,24 +58,24 @@ for i, chrom in enumerate(chroms):
                                                            missingfltprop=missingprop)
     # Store total SNPs per chromosome
     # And summaries from SnpEff
-    total_snps_per_chrom[chrom] = geno.shape[0]
-    snpeffdict[chrom] = snpeff[1].value_counts(normalize=True)
+    total_snps_per_chrom[contig] = geno.shape[0]
+    snpeffdict[contig] = snpeff[1].value_counts(normalize=True)
 
     # Plot SNP density
     rnaseqpop.plot_density(pos, 
                 window_size=100000, 
-                title=f"Variant Density | {dataset} | Chromosome {chrom}", 
-                path=f"results/variantAnalysis/diversity/{dataset}_SNPdensity_{chrom}.svg")
+                title=f"Variant Density | {dataset} | Chromosome {contig}", 
+                path=f"results/variantAnalysis/diversity/{dataset}_SNPdensity_{contig}.svg")
 
     ######## SNP counts per gene ########
     # Subset GFF to appropriate chromosome
-    gff = features.query("seqid == @chrom").sort_values('start').reset_index(drop=True)
+    gff = features.query("seqid == @contig").sort_values('start').reset_index(drop=True)
     genes = gff.query("type == 'gene'")
     exons = features.query("type == 'exon'").reset_index(drop=True)
     
     ## Proportion SNPs per GFF feature
-    snpsPerGff[chrom] = rnaseqpop.getSNPGffstats(gff,  pos)
-    snpsPerGff[chrom]['chromosome'] = chrom
+    snpsPerGff[contig] = rnaseqpop.getSNPGffstats(gff,  pos)
+    snpsPerGff[contig]['chromosome'] = contig
 
     ## Calculate missing SNPs per sample, SNPs per gene etc
     snpsnotmissing = {}
@@ -104,13 +104,13 @@ for i, chrom in enumerate(chroms):
 
         snps_per_gene[gene['ID']] = dict(snps_per_sample)
 
-    snps_per_gene_allchroms[chrom] = pd.DataFrame.from_dict(rnaseqpop.flip_dict(snps_per_gene))
+    snps_per_gene_allchroms[contig] = pd.DataFrame.from_dict(rnaseqpop.flip_dict(snps_per_gene))
 
 snpsPerGff = pd.concat(snpsPerGff).reset_index().rename(columns={'level_1':'feature'})
 snpsPerGff = snpsPerGff.groupby('feature').agg({'ReferenceGenomeProportion': 'mean', 'called':'sum', 'proportion': 'mean', 'total':'sum'})
 snpsPerGff.to_csv(snakemake.output['snpsPerGenomicFeature'], sep="\t", index=True)
 
-# Total SNPs per chrom, all samples
+# Total SNPs per contig, all samples
 totalsnpsdf = pd.DataFrame.from_dict(total_snps_per_chrom, orient='index', columns=['Total_SNPs'])
 totalsnpsdf.to_csv(f"results/variantAnalysis/SNPstats/totalSNPs.tsv", sep="\t", index=True)
 

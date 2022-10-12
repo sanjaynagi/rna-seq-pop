@@ -14,7 +14,7 @@ import rnaseqpoptools as rnaseqpop
 dataset = snakemake.params['dataset']
 metadata = pd.read_csv(snakemake.input['metadata'], sep="\t")
 metadata = metadata.sort_values(by='species')
-chroms = snakemake.params['chroms']
+contigs = snakemake.params['contigs']
 ploidy = snakemake.params['ploidy']
 numbers = rnaseqpop.get_numbers_dict(ploidy)
 pbs = snakemake.params['pbs']
@@ -33,11 +33,11 @@ comparisons = comparisons.contrast.str.split("_", expand=True)
 comparisons.columns = ['sus', 'res']
 comparisons = [list(row) for i,row in comparisons.iterrows()]
 
-for i, chrom in enumerate(chroms):
+for i, contig in enumerate(contigs):
 
-    path = f"results/variantAnalysis/vcfs/{dataset}.{chrom}.vcf.gz"
+    path = f"results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz"
     vcf, geno, acsubpops, pos, depth, snpeff, subpops, populations = rnaseqpop.readAndFilterVcf(path=path,
-                                                           chrom=chrom,
+                                                           contig=contig,
                                                            samples=metadata,
                                                            numbers=numbers,
                                                            ploidy=ploidy,
@@ -64,7 +64,7 @@ for i, chrom in enumerate(chroms):
                         midpoints=midpoint,
                         colour='dodgerblue',
                         prefix="results/variantAnalysis/selection/fst", 
-                        chrom=chrom, 
+                        contig=contig, 
                         ylim=1, 
                         save=True)
 
@@ -91,6 +91,6 @@ for i, chrom in enumerate(chroms):
                             midpoints=midpoint, 
                             colour='dodgerblue',
                             prefix="results/variantAnalysis/selection/pbs",
-                            chrom=chrom, 
+                            contig=contig, 
                             ylim=0.5, 
                             save=True)

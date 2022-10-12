@@ -4,14 +4,14 @@ rule AlleleTables:
     """
     input:
         bam="results/alignments/{sample}.bam",
-        bed="resources/regions/missense.pos.{chrom}.bed",
+        bed="resources/regions/missense.pos.{contig}.bed",
         ref=config["ref"]["genome"],
     output:
-        "results/variantAnalysis/alleleTables/{sample}.chr{chrom}.allele.table",
+        "results/variantAnalysis/alleleTables/{sample}.chr{contig}.allele.table",
     conda:
         "../envs/variants.yaml"
     log:
-        "logs/AlleleTables/{sample}.{chrom}.log",
+        "logs/AlleleTables/{sample}.{contig}.log",
     params:
         basedir=workflow.basedir,
         ignore_indels="false",
@@ -34,9 +34,9 @@ rule DifferentialSNPs:
         gff=config["ref"]["gff"],
         geneNames=config["ref"]["genes2transcripts"],
         tables=expand(
-            "results/variantAnalysis/alleleTables/{sample}.chr{chrom}.allele.table",
+            "results/variantAnalysis/alleleTables/{sample}.chr{contig}.allele.table",
             sample=samples,
-            chrom=config["chroms"],
+            contig=config["contigs"],
         ),
     output:
         expand(
@@ -57,7 +57,7 @@ rule DifferentialSNPs:
         "logs/DifferentialSNPs.log",
     params:
         DEcontrasts=config["contrasts"],
-        chroms=config["chroms"],
+        contigs=config["contigs"],
         mincounts=100,
         pval_flt=0.001,  # pvalues already adjusted but way want extra filter for sig file
     script:
