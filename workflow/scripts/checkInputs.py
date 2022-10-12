@@ -22,7 +22,7 @@ import allel
 metadata = pd.read_csv(snakemake.params['metadata'], sep="\t")
 ref = snakemake.input['ref']
 gffpath = snakemake.params['gffpath']
-chroms = snakemake.params['chroms']
+contigs = snakemake.params['contigs']
 autofastq = snakemake.params['fastq']
 sweeps = snakemake.params['sweeps']
 signalpath = "resources/signals.csv"
@@ -34,7 +34,7 @@ refchroms = []
 for line in file:
     if re.search(">", line):
         refchroms.append(line.split()[0].replace(">", ""))
-assert (np.isin(chroms, refchroms)).all(), f"Not all chromosome names specified in config.yaml are found in the reference fasta file ({ref})"
+assert (np.isin(contigs, refchroms)).all(), f"Not all chromosome names specified in config.yaml are found in the reference fasta file ({ref})"
 
 
 # Check that the contrasts specified in config.yaml are all in the treatment column
@@ -64,4 +64,4 @@ assert (gene_names.columns.isin(colnames)).all(), f"Column names of gene_names.t
 
 # Check that the chromosomes are present in the gff file 
 gff = allel.gff3_to_dataframe(gffpath)
-assert np.isin(chroms, gff.seqid).all(), f"All provided chromosome names ({chroms}) are not present in the reference GFF file"
+assert np.isin(contigs, gff.seqid).all(), f"All provided chromosome names ({contigs}) are not present in the reference GFF file"

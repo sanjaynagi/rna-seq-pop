@@ -2,7 +2,7 @@ metadata: config/samples.tsv
 units: config/units.tsv
 
 # Dataset name
-dataset: 'Test-TravisCI'
+dataset: 'Test-GithubActionsCI'
 
 fastq: 
       table: config/fastq.tsv
@@ -29,7 +29,7 @@ ref:
         "resources/Gene2TranscriptMap.tsv"
 
 # Chromosome names for the appropriate species. Should correspond to the reference fasta/gff files. 
-chroms: ['X']
+contigs: ['X']
 
 # List of contrasts to do DE and Fst analysis on. Should correspond to the 'treatment' columns of the samples.tsv file, and be separated by an underscore "_". i.e ['control_case'], or ['Kisumu_Tiassale'].
 # The treatment names themselves must not contain underscores

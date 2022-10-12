@@ -57,9 +57,9 @@ def getFASTQs(wildcards, rules=None):
 
 def getVCF(wildcards):
     if config["VariantAnalysis"]["caller"] == "octopus":
-        return "results/variantAnalysis/vcfs/octopus/variants.{chrom}.vcf"
+        return "results/variantAnalysis/vcfs/octopus/variants.{contig}.vcf"
     elif config["VariantAnalysis"]["caller"] == "freebayes":
-        return "results/variantAnalysis/vcfs/freebayes/variants.{chrom}.vcf"
+        return "results/variantAnalysis/vcfs/freebayes/variants.{contig}.vcf"
     else:
         assert config["VariantAnalysis"]["caller"] in [
             "octopus",
@@ -88,7 +88,6 @@ def GetDesiredOutputs(wildcards):
                 ],
                 sample=samples,
                 n=[1, 2],
-                chrom=config["chroms"],
             )
         )
         if config["VariantAnalysis"]["activate"]:
@@ -134,14 +133,14 @@ def GetDesiredOutputs(wildcards):
     #         wanted_input.extend(
     #             expand
     #                 [
-    #                     "results/variantAnalysis/vcfs/octopus/variant.{chrom}.vcf"
+    #                     "results/variantAnalysis/vcfs/octopus/variant.{contig}.vcf"
     #                 ]
-    #                 chrom=chroms,
+    #                 contig=contigs,
     #         )
     #     elif config['VariantAnalyis']['caller'] == 'freebayes':
     #         wanted_input.extend(
     #                 [
-    #                     "results/variantAnalysis/vcfs/freebayes/variant.{chrom}.vcf"
+    #                     "results/variantAnalysis/vcfs/freebayes/variant.{contig}.vcf"
     #                 ]
     #         )
 
@@ -149,19 +148,19 @@ def GetDesiredOutputs(wildcards):
         wanted_input.extend(
             expand(
                 [
-                    "results/variantAnalysis/vcfs/stats/{chrom}.txt",
-                    "results/variantAnalysis/pca/PCA-{chrom}-{dataset}.svg",
+                    "results/variantAnalysis/vcfs/stats/{contig}.txt",
+                    "results/variantAnalysis/pca/PCA-{contig}-{dataset}.svg",
                     "results/variantAnalysis/SNPstats/snpsPerGenomicFeature.tsv",
                     "results/variantAnalysis/SNPstats/nSNPsPerGene.tsv",
-                    "results/variantAnalysis/diversity/{dataset}_SNPdensity_{chrom}.svg",
+                    "results/variantAnalysis/diversity/{dataset}_SNPdensity_{contig}.svg",
                     "results/variantAnalysis/diversity/SequenceDiversity.tsv",
                     "results/variantAnalysis/selection/FstPerGene.tsv",
                     "results/variantAnalysis/selection/TajimasDPerGene.tsv",
                     "results/variantAnalysis/diversity/SequenceDivPerGene.tsv",
                     "results/variantAnalysis/diversity/DxyPerGene.tsv",
-                    "results/variantAnalysis/selection/fst/Fst.{comp}.{wsize}.{chrom}.svg",
+                    "results/variantAnalysis/selection/fst/Fst.{comp}.{wsize}.{contig}.svg",
                 ],
-                chrom=config["chroms"],
+                contig=config["contigs"],
                 dataset=config["dataset"],
                 comp=config["contrasts"],
                 wsize=config["VariantAnalysis"]["selection"]["pbs"]["windownames"],
@@ -174,9 +173,9 @@ def GetDesiredOutputs(wildcards):
                     [
                         "results/variantAnalysis/selection/FstPerGene.tsv",
                         "results/variantAnalysis/selection/TajimasDPerGene.tsv",
-                        "results/variantAnalysis/selection/fst/Fst.{comp}.{wsize}.{chrom}.svg",
+                        "results/variantAnalysis/selection/fst/Fst.{comp}.{wsize}.{contig}.svg",
                     ],
-                    chrom=config["chroms"],
+                    contig=config["contigs"],
                     comp=config["contrasts"],
                     wsize=config["VariantAnalysis"]["selection"]["pbs"]["windownames"],
                 )
@@ -189,9 +188,9 @@ def GetDesiredOutputs(wildcards):
                     "results/variantAnalysis/ancestry/AIMs_summary.tsv",
                     "results/variantAnalysis/ancestry/AIM_fraction_whole_genome.svg",
                     "results/variantAnalysis/ancestry/n_AIMS_per_chrom.tsv",
-                    "results/variantAnalysis/ancestry/AIM_fraction_{chrom}.tsv",
+                    "results/variantAnalysis/ancestry/AIM_fraction_{contig}.tsv",
                 ],
-                chrom=config["chroms"],
+                contig=config["contigs"],
             )
         )
 
