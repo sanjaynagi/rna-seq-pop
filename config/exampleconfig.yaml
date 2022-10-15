@@ -4,14 +4,13 @@ metadata: config/samples.tsv                    # samplesheet metadata file
 
 dataset: 'Ag_Bouake'                            # Dataset name: Can be anything, will be used to name some main output files
 
-## Fastq filenames and locations can either be specified in the config/fastq.tsv file. 
-## OR if auto: True -
+## Fastq filenames and locations can either be specified in the config/samples.tsv file in columns called
+## fq1 and fq2 (paired end reads) OR if auto: True -
 ## gzipped fastq files should be stored in the resources/reads/ directory
 ## If the sample name is Kisumu1 in the samples.tsv file, the paired-end reads 
 ## should be named Kisumu1_1.fastq.gz, and Kisumu1_2.fastq.gz. 
 ## Treatment names in samples.tsv should not contain underscores
-fastq: 
-      table: #config/fastq.tsv
+fastq:
       auto: True                                                              # set auto if your files follow the above rules
 
 cutadapt:
@@ -68,11 +67,7 @@ DifferentialExpression:
 
 VariantAnalysis:
       activate: True
-<<<<<<< HEAD
       caller: 'freebayes'
-=======
-      caller: 'freebayes'                 # or 'octopus' but requires octopus local install
->>>>>>> 44ebad588c0d2ece20af419dc7fea203b835e2a8
       ploidy: 10                          # Ploidy level for freebayes to call at (Generally we are using pooled samples).For diploid organisms, this should be 2 * number of individuals in each pool
       chunks: 9                           # Number of chunks to split each chromosome into when parallelising freebayes. 9 or less is recommended. 
 

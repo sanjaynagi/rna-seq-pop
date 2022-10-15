@@ -13,11 +13,12 @@ def getFASTQs(wildcards, rules=None):
     If there are more than one wildcard (aka, sample), only return one fastq file
     If the rule is HISAT2align, then return the fastqs with -1 and -2 flags
     """
+    metadata = pd.read_csv(config["metadata"], sep="\t")
+
     if config["cutadapt"]["activate"] == True:
         if rules in ["KallistoQuant", "HISAT2align", "HISAT2align_input"]:
-            units = pd.read_csv(config["metadata"], sep="\t")
-            units = (
-                units.assign(
+            metadata = (
+                metadata.assign(
                     fq1=f"resources/reads/trimmed/" + units["sampleID"] + "_1.fastq.gz"
                 )
                 .assign(
@@ -25,30 +26,27 @@ def getFASTQs(wildcards, rules=None):
                 )
                 .set_index("sampleID")
             )
-            u = units.loc[wildcards.sample, ["fq1", "fq2"]].dropna()
+            u = metadata.loc[wildcards.sample, ["fq1", "fq2"]].dropna()
             if rules == "HISAT2align":
                 return [f"-1 {u.fq1} -2 {u.fq2}"]
             else:
                 return [f"{u.fq1}", f"{u.fq2}"]
 
     if config["fastq"]["auto"]:
-        units = pd.read_csv(config["metadata"], sep="\t")
-        units = (
-            units.assign(fq1=f"resources/reads/" + units["sampleID"] + "_1.fastq.gz")
-            .assign(fq2=f"resources/reads/" + units["sampleID"] + "_2.fastq.gz")
+        metadata = (
+            metadata.assign(fq1=f"resources/reads/" + metadata["sampleID"] + "_1.fastq.gz")
+            .assign(fq2=f"resources/reads/" + metadata["sampleID"] + "_2.fastq.gz")
             .set_index("sampleID")
         )
     else:
-        assert os.path.isfile(
-            config["fastq"]["table"]
-        ), f"config['fastq']['table'] (the config/fastq.tsv file) does not seem to exist. Please create one, or use the 'auto' option and name the fastq files as specified in the config/README.md"
-        units = pd.read_csv(config["fastq"]["table"], sep="\t", index_col="sampleID")
+        assert 'fq1' in metadata.columns, f"The fq1 column in the metadata does not seem to exist. Please create one, or use the 'auto' option and name the fastq files as specified in the config/README.md"
+        assert 'fq2' in metadata.columns, f"The fq2 column in the metadata does not seem to exist. Please create one, or use the 'auto' option and name the fastq files as specified in the config/README.md"
 
     if len(wildcards) > 1:
-        u = units.loc[wildcards.sample, f"fq{wildcards.n}"]
+        u = metadata.loc[wildcards.sample, f"fq{wildcards.n}"]
         return u
     else:
-        u = units.loc[wildcards.sample, ["fq1", "fq2"]].dropna()
+        u = metadata.loc[wildcards.sample, ["fq1", "fq2"]].dropna()
         if rules == "HISAT2align":
             return [f"-1 {u.fq1} -2 {u.fq2}"]
         else:
