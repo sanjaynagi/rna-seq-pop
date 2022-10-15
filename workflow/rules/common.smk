@@ -43,10 +43,10 @@ def getFASTQs(wildcards, rules=None):
         assert 'fq2' in metadata.columns, f"The fq2 column in the metadata does not seem to exist. Please create one, or use the 'auto' option and name the fastq files as specified in the config/README.md"
 
     if len(wildcards) > 1:
-        u = units.loc[wildcards.sample, f"fq{wildcards.n}"]
+        u = metadata.loc[wildcards.sample, f"fq{wildcards.n}"]
         return u
     else:
-        u = units.loc[wildcards.sample, ["fq1", "fq2"]].dropna()
+        u = metadata.loc[wildcards.sample, ["fq1", "fq2"]].dropna()
         if rules == "HISAT2align":
             return [f"-1 {u.fq1} -2 {u.fq2}"]
         else:
