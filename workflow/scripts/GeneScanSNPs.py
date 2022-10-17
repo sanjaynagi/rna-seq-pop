@@ -8,9 +8,9 @@ import sys
 
 geneID=sys.argv[1]
 gffpath=sys.argv[2]
-vcfpath= sys.argv[3]
+vcfpath=sys.argv[3]
 metadatapath=sys.argv[4]
-ploidy = int(sys.argv[5])
+ploidy=int(sys.argv[5])
 
 metadata = pd.read_csv(metadatapath, sep="\t")
 gff = allel.gff3_to_dataframe(gffpath, attributes=['Parent', 'ID'])
