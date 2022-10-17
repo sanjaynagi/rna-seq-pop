@@ -9,7 +9,7 @@ import numpy as np
 
 def load_data(args):
     normcounts = pd.read_csv(args[1], sep="\t")
-    gene_list = pd.read_csv(args[2], sep="\t", index_col=0).iloc[:,0].to_list()
+    gene_list = pd.read_csv(args[2], sep="\t", header=None).iloc[:,0].to_list()
     out_file = args[3]
     return(normcounts, gene_list, out_file)
 
