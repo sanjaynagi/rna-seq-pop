@@ -2,11 +2,12 @@
   RNA-Seq-Pop
 </h1>
 
+[<img src="https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True" width="200"/>](https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True)   
+
 [![Snakemake](https://img.shields.io/badge/snakemake-≥5.11.0-brightgreen.svg)](https://snakemake.bitbucket.io)
 [![Build Status](https://travis-ci.org/sanjaynagi/rna-seq-pop.svg?branch=master)](https://travis-ci.org/snakemake-workflows/rna-seq-pop)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6078337.svg)](https://doi.org/10.5281/zenodo.6078337)
 
-[<img src="https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True" width="200"/>](https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True)   
    
 Sanjay C Nagi, Ambrose Oruni, David Weetman, Martin J Donnelly (2022). **RNA-Seq-Pop**: Exploiting the sequence in RNA-Seq - a Snakemake workflow reveals patterns of insecticide resistance in the malaria vector *Anopheles gambiae*. *bioRxiv* 2022.06.17.493894; doi: https://doi.org/10.1101/2022.06.17.493894 
 
