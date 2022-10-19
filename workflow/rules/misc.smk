@@ -63,33 +63,23 @@ rule DifferentialSNPs:
     script:
         "../scripts/DifferentialSNPs.R"
 
-
+comp_list = get_venn_list()
 rule VennDiagrams:
     """
     Find intersection of DE analyses between comparisons and plot
-    Not working May 2021, v0.3.0 
     """
     input:
-        DE=expand("results/genediff/{dataset}_diffexp.xlsx", dataset=config["dataset"]),
-        Fst="results/variantAnalysis/FstPerGene.tsv",
-        diffsnps=(
-            expand(
-                "results/variantAnalysis/diffsnps/{name}.sig.kissDE.tsv",
-                name=config["contrasts"],
-            )
-            if config["miscellaneous"]["diffsnps"]["activate"]
-            else []
-        ),
+        DE=expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
     output:
-        "results/RNA-Seq-full.xlsx",
-        expand("results/venn/{name}_DE.Fst.venn.png", name=config["contrasts"]),
+        venn=expand("results/genediff/venn/{comparisons}-{{dir_}}-Venn.png", comparisons=comp_list)
     conda:
-        "../envs/pythonGenomics.yaml"
+        "../envs/venn.yaml"
     log:
-        "logs/VennDiagrams.log",
+        "logs/VennDiagrams_{dir_}.log",
     params:
-        DEcontrasts=config["contrasts"],
-        diffsnps=config["miscellaneous"]["diffsnps"]["activate"],
-        percentile=0.05,
+        comparisons=config["contrasts"],
+        padj_threshold=config['DifferentialExpression']['venn']['padj_threshold'],
+        dataset = config['dataset'],
+
     script:
         "../scripts/VennDiagrams.py"

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Construct heatmap of different gene families
+A script that checks if DE genes lie underneath known selective sweeeps in the Ag1000g
 """
 
 import sys
@@ -9,15 +9,17 @@ sys.stderr = open(snakemake.log[0], "w")
 
 import pandas as pd
 import numpy as np
-from matplotlib.collections import LineCollection
-import seaborn as sns
-import matplotlib.pyplot as plt
+from collections import defaultdict
 
+# Read in parameters 
+pval_threshold = snakemake.params['pval']
+upper_fc = snakemake.params['fc']
+lower_fc = 1/upper_fc # if someone wants a FC threshold of 2, need to have lower threshold of 0.5.
+# Read in list of contrasts
 comparisons = pd.DataFrame(snakemake.params['DEcontrasts'], columns=['contrast'])
 
 # Read in .csv file containing selection signals and associated metadata
-pfam = pd.read_csv(snakemake.input['pfam'])
-eggnog = pd.read_csv(snakemake.input['eggnog'])
+signals = pd.read_csv("resources/signals.csv")
 
 for comp in comparisons['contrast']:
     
