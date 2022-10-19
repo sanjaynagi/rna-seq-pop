@@ -53,6 +53,14 @@ QualityControl:                               # Activate Quality control analyse
 DifferentialExpression:
       activate: True                          # Activate differential expression analyses
 
+      venn:
+            padj_threshold: 0.05
+            groups: ['gambiaeCont_gambiaePM', 'Kisumu_gambiaeCont']
+
+      geneHeatmaps:
+            activate: False
+            gene_list_tsv: "resources/example_heatmap_gene_list.tsv"
+
       progressiveGenes:                       # Activate progressiveGenes analysis. Will find genes that are consistently up or downregulated across two comparisons. 
             activate: True                    # For example - which genes upregulated in Kisumu v gambiaeCont, are also upregulated in gambiaeCont v gambiaePM
             padj_threshold: 0.05
@@ -128,7 +136,3 @@ miscellaneous:
       # Activate differential SNPs analysis with kissde
       diffsnps:
             activate: False
-      # Activate Venn diagram - not working as of v0.3.0
-      venn:
-            activate: False
-
