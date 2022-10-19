@@ -1,0 +1,1 @@
+/home/sanj/projects/IR/rna-seq-antennae/resources/Anogam_long.pep_eggnog_diamond.emapper.annotations.GO

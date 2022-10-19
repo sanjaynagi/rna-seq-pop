@@ -44,6 +44,11 @@ QualityControl:                               # Activate Quality control analyse
 DifferentialExpression:                       # Activate differential expression analyses
       activate: False   
 
+      venn:
+            activate: True
+            padj_threshold: 0.05
+            groups: ['Kisumu_ContTia', 'ContTia_PiriTia']
+
       progressiveGenes:
             activate: True
             padj_threshold: 0.05
