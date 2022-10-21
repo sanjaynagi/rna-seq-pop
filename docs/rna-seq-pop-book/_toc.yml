@@ -1,0 +1,25 @@
+format: jb-book
+root: landing-page
+parts:
+- caption: Getting started
+  chapters:
+    - file: notebooks/installation
+    - file: notebooks/input_data
+    - file: notebooks/configuring_the_workflow
+    - file: notebooks/running_the_workflow
+- caption: The RNA-Seq-Pop workflow
+  chapters:
+      - file: notebooks/rna-seq-pop
+        sections:
+        - file: notebooks/quality_control
+        - file: notebooks/differential_expression
+        - file: notebooks/gene_families
+        - file: notebooks/variant_calling
+        - file: notebooks/genetic_diversity
+        - file: notebooks/selection
+        - file: notebooks/ancestry_informative_markers
+        - file: notebooks/karyotyping
+- caption: Troubleshooting and contributing
+  chapters:
+    - file: notebooks/troubleshooting
+    - file: notebooks/contributing
