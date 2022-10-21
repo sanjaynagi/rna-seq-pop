@@ -1,0 +1,730 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Configuring the workflow &#8212; RNA-Seq-Pop</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=5115cc725059bd94278eecd172e13a965bf8f5a9" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script kind="utterances">
+
+    var commentsRunWhenDOMLoaded = cb => {
+    if (document.readyState != 'loading') {
+        cb()
+    } else if (document.addEventListener) {
+        document.addEventListener('DOMContentLoaded', cb)
+    } else {
+        document.attachEvent('onreadystatechange', function() {
+        if (document.readyState == 'complete') cb()
+        })
+    }
+}
+
+var addUtterances = () => {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "https://utteranc.es/client.js";
+    script.async = "async";
+
+    script.setAttribute("repo", "sanjaynagi/rna-seq-pop");
+    script.setAttribute("issue-term", "pathname");
+    script.setAttribute("theme", "github-light");
+    script.setAttribute("label", "comment");
+    script.setAttribute("crossorigin", "anonymous");
+
+    sections = document.querySelectorAll("div.section");
+    if (sections !== null) {
+        section = sections[sections.length-1];
+        section.appendChild(script);
+    }
+}
+commentsRunWhenDOMLoaded(addUtterances);
+</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Running the workflow" href="running_the_workflow.html" />
+    <link rel="prev" title="Input files" href="input_data.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+<!-- Checkboxes to toggle the left sidebar -->
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle navigation sidebar">
+<label class="overlay overlay-navbar" for="__navigation">
+    <div class="visually-hidden">Toggle navigation sidebar</div>
+</label>
+<!-- Checkboxes to toggle the in-page toc -->
+<input type="checkbox" class="sidebar-toggle" name="__page-toc" id="__page-toc" aria-label="Toggle in-page Table of Contents">
+<label class="overlay overlay-pagetoc" for="__page-toc">
+    <div class="visually-hidden">Toggle in-page Table of Contents</div>
+</label>
+<!-- Headers at the top -->
+<div class="announcement header-item noprint"></div>
+<div class="header header-item noprint"></div>
+
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<!-- Sidebar -->
+<div class="bd-sidebar noprint" id="site-navigation">
+    <div class="bd-sidebar__content">
+        <div class="bd-sidebar__top"><div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="../_static/logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">RNA-Seq-Pop</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../landing-page.html">
+                    RNA-Seq-Pop
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Getting started
+ </span>
+</p>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="installation.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="input_data.html">
+   Input files
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Configuring the workflow
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="running_the_workflow.html">
+   Running the workflow
+  </a>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  The RNA-Seq-Pop workflow
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="rna-seq-pop.html">
+   <strong>
+    RNA-Seq-Pop modules
+   </strong>
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="quality_control.html">
+     Quality control
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="differential_expression.html">
+     Differential expression
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="gene_families.html">
+     Gene family heatmaps
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="variant_calling.html">
+     Variant calling
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="genetic_diversity.html">
+     Genetic diversity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="selection.html">
+     Selection
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="ancestry_informative_markers.html">
+     Ancestry
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="karyotyping.html">
+     Karyotyping
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+<p aria-level="2" class="caption" role="heading">
+ <span class="caption-text">
+  Troubleshooting and contributing
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="troubleshooting.html">
+   Troubleshooting
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="contributing.html">
+   Contributing to the workflow
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav></div>
+        <div class="bd-sidebar__bottom">
+             <!-- To handle the deprecated key -->
+            
+            <div class="navbar_extra_footer">
+            Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+            </div>
+            
+        </div>
+    </div>
+    <div id="rtd-footer-container"></div>
+</div>
+
+
+          
+
+
+          
+<!-- A tiny helper pixel to detect if we've scrolled -->
+<div class="sbt-scroll-pixel-helper"></div>
+<!-- Main content -->
+<div class="col py-0 content-container">
+    
+    <div class="header-article row sticky-top noprint">
+        
+
+
+
+<div class="col py-1 d-flex header-article-main">
+    <div class="header-article__left">
+        
+        <label for="__navigation"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="right"
+title="Toggle navigation"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-bars"></i>
+  </span>
+
+</label>
+
+        
+    </div>
+    <div class="header-article__right">
+<div class="menu-dropdown menu-dropdown-launch-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Launch interactive content">
+      <i class="fas fa-rocket"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://mybinder.org/v2/gh/sanjaynagi/rna-seq-pop/master?urlpath=tree/docs/rna-seq-pop-book/notebooks/configuring_the_workflow.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Launch on Binder"
+>
+  
+
+<span class="headerbtn__icon-container">
+  
+    <img src="../_static/images/logo_binder.svg">
+  </span>
+<span class="headerbtn__text-container">Binder</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<button onclick="toggleFullScreen()"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="bottom"
+title="Fullscreen mode"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+<div class="menu-dropdown menu-dropdown-repository-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Source repositories">
+      <i class="fab fa-github"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://github.com/sanjaynagi/rna-seq-pop"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Source repository"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="headerbtn__text-container">repository</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://github.com/sanjaynagi/rna-seq-pop/issues/new?title=Issue%20on%20page%20%2Fnotebooks/configuring_the_workflow.html&body=Your%20issue%20content%20here."
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Open an issue"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="headerbtn__text-container">open issue</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
+<div class="menu-dropdown menu-dropdown-download-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Download this page">
+      <i class="fas fa-download"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="../_sources/notebooks/configuring_the_workflow.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Download source file"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="headerbtn__text-container">.ipynb</span>
+</a>
+
+      </li>
+      
+      <li>
+        
+<button onclick="printPdf(this)"
+  class="headerbtn"
+  data-toggle="tooltip"
+data-placement="left"
+title="Print to PDF"
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="headerbtn__text-container">.pdf</span>
+</button>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
+
+    </div>
+</div>
+
+<!-- Table of contents -->
+<div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#documentation">
+   documentation
+  </a>
+ </li>
+</ul>
+
+    </nav>
+</div>
+    </div>
+    <div class="article row">
+        <div class="col pl-md-3 pl-lg-5 content-container">
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Configuring the workflow</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#documentation">
+   documentation
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <main id="main-content" role="main">
+                
+              <div>
+                
+  <section id="configuring-the-workflow">
+<h1>Configuring the workflow<a class="headerlink" href="#configuring-the-workflow" title="Permalink to this heading">#</a></h1>
+<p>RNA-Seq-Pop, like all snakemake workflows, should be configured with a configuration file (config.yaml).</p>
+<p>The configuration file looks like the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">metadata</span><span class="p">:</span> <span class="n">config</span><span class="o">/</span><span class="n">samples</span><span class="o">.</span><span class="n">tsv</span>                    <span class="c1"># samplesheet metadata file</span>
+
+<span class="n">dataset</span><span class="p">:</span> <span class="s1">&#39;Ag_Bouake&#39;</span>                            <span class="c1"># Dataset name: Can be anything, will be used to name some main output files</span>
+
+<span class="c1">## Fastq filenames and locations can either be specified in the config/samples.tsv file in columns called</span>
+<span class="c1">## fq1 and fq2 (paired end reads) OR if auto: True -</span>
+<span class="c1">## gzipped fastq files should be stored in the resources/reads/ directory</span>
+<span class="c1">## If the sample name is Kisumu1 in the samples.tsv file, the paired-end reads </span>
+<span class="c1">## should be named Kisumu1_1.fastq.gz, and Kisumu1_2.fastq.gz. </span>
+<span class="c1">## Treatment names in samples.tsv should not contain underscores</span>
+<span class="n">fastq</span><span class="p">:</span>
+      <span class="n">auto</span><span class="p">:</span> <span class="kc">True</span>                                           <span class="c1"># set auto if your files follow the above rules</span>
+
+</pre></div>
+</div>
+<p><strong>metadata</strong>: path to the sample metadata file<br />
+<strong>dataset</strong>: give this dataset a name<br />
+<strong>fastq</strong>:auto: If true, fastq files are in resources/reads/ and following <code class="docutils literal notranslate"><span class="pre">{sampleID_1.fastq.gz}</span></code> pattern. If False,             there are fq1 and fq2 columns pointing to the reads files for each sample.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Chromosome names for the appropriate species.</span>
+<span class="c1"># Currently, the variant calling and analysis part of workflow requires genes mapped to chromosomes and their physical location.</span>
+<span class="c1"># Please ensure that these correspond exactly to the reference fasta/gff files. Extra unwanted chromosomes (unplaced contigs) can be ignored. </span>
+<span class="c1"># if you need to remove a prefix (Such as &quot;AgamP4_&quot;or &quot;AaegL5_&quot;) from a file, use this sed command - i.e - &quot;sed s/AgamP4_// An.gambiae.fasta &gt; An.gambiae_clean.fasta&quot;</span>
+<span class="n">contigs</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;2L&#39;</span><span class="p">,</span> <span class="s1">&#39;2R&#39;</span><span class="p">,</span> <span class="s1">&#39;3L&#39;</span><span class="p">,</span> <span class="s1">&#39;3R&#39;</span><span class="p">,</span> <span class="s1">&#39;X&#39;</span><span class="p">]</span>
+
+<span class="c1"># Paths for reference files </span>
+<span class="n">reference</span><span class="p">:</span>
+  <span class="n">genome</span><span class="p">:</span>
+        <span class="s2">&quot;resources/reference/Anopheles-gambiae-PEST_CHROMOSOMES_AgamP4.fa&quot;</span>        <span class="c1"># Path to genome reference FASTA file</span>
+  <span class="n">transcriptome</span><span class="p">:</span>
+        <span class="s2">&quot;resources/reference/Anopheles-gambiae-PEST_TRANSCRIPTS_AgamP4.12.fa&quot;</span>     <span class="c1"># Path to transcriptome reference FASTA file</span>
+  <span class="n">gff</span><span class="p">:</span>
+        <span class="s2">&quot;resources/reference/Anopheles-gambiae-PEST_BASEFEATURES_AgamP4.12.gff3&quot;</span>  <span class="c1"># Path to GFF annotation file</span>
+  <span class="n">snpeffdb</span><span class="p">:</span>
+        <span class="s2">&quot;Anopheles_gambiae&quot;</span>                                                       <span class="c1"># SNPeff database name</span>
+  <span class="n">genes2transcripts</span><span class="p">:</span>                                                                
+        <span class="s2">&quot;resources/exampleGene2TranscriptMap.tsv&quot;</span>                                 <span class="c1"># gene names file with gene and transcript names</span>
+</pre></div>
+</div>
+<p><strong>contigs:</strong> a list of contigs you wish to analyse, must match reference files.</p>
+<p>reference files:<br />
+<strong>genome:</strong> path to the genome (.fa)<br />
+<strong>transcriptome:</strong> path to the transcriptome (.fa)<br />
+<strong>gff:</strong> path to the genome feature file (.gff3)<br />
+<strong>genes2transcripts:</strong> path to the gene to transcript map (.tsv)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># List of contrasts to do Differential Expression and Fst analysis on. </span>
+<span class="c1"># Should correspond to the &#39;treatment&#39; columns of the samples.tsv file, and be separated by an underscore &quot;_&quot;. i.e &#39;control_case&#39;, or &#39;Kisumu_Tiassale&#39;.</span>
+<span class="c1"># The treatment names themselves must not contain underscores</span>
+<span class="n">contrasts</span><span class="p">:</span>
+      <span class="o">-</span> <span class="s1">&#39;Kisumu_gambiaeCont&#39;</span>
+      <span class="o">-</span> <span class="s1">&#39;gambiaeCont_gambiaePM&#39;</span>
+
+<span class="n">cutadapt</span><span class="p">:</span>
+      <span class="n">activate</span><span class="p">:</span> <span class="kc">False</span>
+      <span class="n">adaptors</span><span class="p">:</span>
+
+<span class="n">QualityControl</span><span class="p">:</span>                               <span class="c1"># Activate Quality control analyses</span>
+      <span class="n">activate</span><span class="p">:</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p><strong>contrasts</strong>: a list of the pairwise contrasts you wish to run, from values in the treatment column of the sample metadata file. The format is <code class="docutils literal notranslate"><span class="pre">control_case</span></code>.<br />
+<strong>cutadapt</strong>:<br />
+<em>activate</em>: if True trim reads<br />
+<em>adaptors</em>: adaptors to be trimmed<br />
+<strong>QualityControl</strong>:<br />
+<em>activate</em>: If True run quality control analyses</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DifferentialExpression</span><span class="p">:</span>
+      <span class="n">activate</span><span class="p">:</span> <span class="kc">True</span>                          <span class="c1"># Activate differential expression analyses</span>
+
+      <span class="n">venn</span><span class="p">:</span>
+            <span class="n">padj_threshold</span><span class="p">:</span> <span class="mf">0.05</span>
+            <span class="n">groups</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;gambiaeCont_gambiaePM&#39;</span><span class="p">,</span> <span class="s1">&#39;Kisumu_gambiaeCont&#39;</span><span class="p">]</span>
+
+      <span class="n">geneHeatmaps</span><span class="p">:</span>
+            <span class="n">activate</span><span class="p">:</span> <span class="kc">False</span>
+            <span class="n">gene_list_tsv</span><span class="p">:</span> <span class="s2">&quot;resources/example_heatmap_gene_list.tsv&quot;</span>
+
+      <span class="n">progressiveGenes</span><span class="p">:</span>                       <span class="c1"># Activate progressiveGenes analysis. Will find genes that are consistently up or downregulated across two comparisons. </span>
+            <span class="n">activate</span><span class="p">:</span> <span class="kc">True</span>                    <span class="c1"># For example - which genes upregulated in Kisumu v gambiaeCont, are also upregulated in gambiaeCont v gambiaePM</span>
+            <span class="n">padj_threshold</span><span class="p">:</span> <span class="mf">0.05</span>
+            <span class="n">fc_threshold</span><span class="p">:</span> <span class="mi">1</span>
+            <span class="n">groups</span><span class="p">:</span> <span class="s2">&quot;Kisumu_gambiaeCont_gambiaePM&quot;</span>
+
+      <span class="n">GSEA</span><span class="p">:</span>                                 <span class="c1"># Activate fgsea Gene set enrichment analysis </span>
+            <span class="n">activate</span><span class="p">:</span> <span class="kc">True</span>
+            <span class="n">gaf</span><span class="p">:</span> <span class="s2">&quot;resources/reference/VectorBase-50_AgambiaePEST_GO.gaf&quot;</span>
+            <span class="n">KeggSpeciesID</span><span class="p">:</span> <span class="s2">&quot;aga&quot;</span>            <span class="c1"># 3 letter KEGG species identifier. &quot;aga&quot; = Anopheles gambiae/coluzzii. </span>
+            <span class="n">replaceString</span><span class="p">:</span> <span class="s2">&quot;AgaP_&quot;</span>          <span class="c1"># An.gambiae KEGG pathways have this string appended which needs removing</span>
+</pre></div>
+</div>
+<p><strong>Differential Expression</strong>: if true run differential expression analysis
+<strong>venn</strong>: if true make venn diagrams of de expressed genes
+<strong>progressiveGenes</strong>:
+<strong>gsea</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">VariantAnalysis</span><span class="p">:</span>
+      <span class="n">activate</span><span class="p">:</span> <span class="kc">True</span>
+      <span class="n">caller</span><span class="p">:</span> <span class="s1">&#39;freebayes&#39;</span>
+      <span class="n">ploidy</span><span class="p">:</span> <span class="mi">10</span>                          <span class="c1"># Ploidy level for freebayes to call at (Generally we are using pooled samples).For diploid organisms, this should be 2 * number of individuals in each pool</span>
+      <span class="n">chunks</span><span class="p">:</span> <span class="mi">9</span>                           <span class="c1"># Number of chunks to split each chromosome into when parallelising freebayes. 9 or less is recommended. </span>
+
+      <span class="n">pca</span><span class="p">:</span>                                <span class="c1"># Run PCA on the genotype data?</span>
+            <span class="n">activate</span><span class="p">:</span> <span class="kc">True</span>
+            <span class="n">missingness</span><span class="p">:</span> <span class="mi">1</span> 
+      
+      <span class="n">summaryStatistics</span><span class="p">:</span>                  <span class="c1"># Estimate Population Genetic Summary Statistics such as Dxy, Pi</span>
+            <span class="n">activate</span><span class="p">:</span> <span class="kc">True</span>
+            <span class="n">missingness</span><span class="p">:</span> <span class="mi">1</span>
+      
+      <span class="n">selection</span><span class="p">:</span>                          <span class="c1"># Calculate Fst and PBS per gene and in windows</span>
+            <span class="n">activate</span><span class="p">:</span> <span class="kc">True</span>
+            <span class="n">missingness</span><span class="p">:</span> <span class="mi">1</span>
+            
+            <span class="c1"># Population Branch Statistic analysis (Needs three conditions, two closely related and an outgroup)</span>
+            <span class="n">pbs</span><span class="p">:</span>
+                  <span class="n">activate</span><span class="p">:</span> <span class="kc">True</span>          
+                  <span class="n">contrasts</span><span class="p">:</span> 
+                        <span class="o">-</span> <span class="s1">&#39;gambiaePM_gambiaeCont_Kisumu&#39;</span>
+                  <span class="n">windownames</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;small&#39;</span><span class="p">,</span> <span class="s1">&#39;large&#39;</span><span class="p">]</span>
+                  <span class="n">windowsizes</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">5000</span><span class="p">]</span>
+                  <span class="n">windowsteps</span><span class="p">:</span> <span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">1000</span><span class="p">]</span>
+
+    <span class="c1"># For An.gambiae s.l only - run Ancestry Informative Marker analysis. AIM datasets included in git repo.</span>
+      <span class="n">ancestry</span><span class="p">:</span>                                
+            <span class="n">activate</span><span class="p">:</span> <span class="kc">True</span>
+            <span class="n">missingness</span><span class="p">:</span> <span class="mf">0.5</span>                                <span class="c1"># proportion between 0 and 1 </span>
+            <span class="n">gambcolu</span><span class="p">:</span> <span class="s2">&quot;resources/gamb_vs_colu.zarr&quot;</span>         <span class="c1"># path to gambcolu AIMs</span>
+            <span class="n">arab</span><span class="p">:</span> <span class="s2">&quot;resources/gambcolu_vs_arab.zarr&quot;</span>         <span class="c1"># path to arab AIMs</span>
+
+      <span class="c1"># For Anopheles gambiae s.l only - Run analysis with compkaryo to determine proportion % karyotype</span>
+      <span class="n">karyotype</span><span class="p">:</span>                            
+            <span class="n">activate</span><span class="p">:</span> <span class="kc">True</span>
+            <span class="n">inversions</span><span class="p">:</span>
+                  <span class="o">-</span> <span class="s2">&quot;2La&quot;</span>
+                  <span class="o">-</span> <span class="s2">&quot;2Rb&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">miscellaneous</span><span class="p">:</span>
+      <span class="c1"># Creates allele count .xlsx reports on specific mutations of choice</span>
+      <span class="n">VariantsOfInterest</span><span class="p">:</span>             
+            <span class="n">activate</span><span class="p">:</span> <span class="kc">True</span>                             
+            <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;resources/exampleMutations.tsv&quot;</span>         
+      
+      <span class="n">GeneFamiliesHeatmap</span><span class="p">:</span>
+            <span class="n">activate</span><span class="p">:</span> <span class="kc">True</span>
+            <span class="n">eggnog</span><span class="p">:</span> <span class="n">resources</span><span class="o">/</span><span class="n">Anogam_long</span><span class="o">.</span><span class="n">pep_eggnog_diamond</span><span class="o">.</span><span class="n">emapper</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">GO</span>
+            <span class="n">pfam</span><span class="p">:</span> <span class="n">resources</span><span class="o">/</span><span class="n">Anogam_long</span><span class="o">.</span><span class="n">pep_Pfamscan</span><span class="o">.</span><span class="n">seqs</span>
+
+      <span class="c1"># find DE genes that lie under Ag1000g selective sweeps </span>
+      <span class="c1"># Only applicable for Anopheles gambiae s.l</span>
+      <span class="n">sweeps</span><span class="p">:</span>
+            <span class="n">activate</span><span class="p">:</span> <span class="kc">True</span>
+            <span class="n">padj_threshold</span><span class="p">:</span> <span class="mf">0.05</span>
+            <span class="n">fc_threshold</span><span class="p">:</span> <span class="mf">1.5</span>
+</pre></div>
+</div>
+<section id="documentation">
+<h2>documentation<a class="headerlink" href="#documentation" title="Permalink to this heading">#</a></h2>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+            </main>
+            <footer class="footer-article noprint">
+                
+    <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="input_data.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Input files</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="running_the_workflow.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Running the workflow</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+            </footer>
+        </div>
+    </div>
+    <div class="footer-content row">
+        <footer class="col footer"><p>
+  
+    By Sanjay Curtis Nagi<br/>
+  
+      &copy; Copyright 2022.<br/>
+</p>
+        </footer>
+    </div>
+    
+</div>
+
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+
+
+  </body>
+</html>
