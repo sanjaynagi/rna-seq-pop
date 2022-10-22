@@ -11,6 +11,7 @@
    
 Sanjay C Nagi, Ambrose Oruni, David Weetman, Martin J Donnelly (2022). **RNA-Seq-Pop**: Exploiting the sequence in RNA-Seq - a Snakemake workflow reveals patterns of insecticide resistance in the malaria vector *Anopheles gambiae*. *bioRxiv* 2022.06.17.493894; doi: https://doi.org/10.1101/2022.06.17.493894 
 
+* Documentation: https://sanjaynagi.github.io/rna-seq-pop/    
 
 This snakemake workflow can perform various analyses of illumina paired-end RNA-Sequencing data:
 
