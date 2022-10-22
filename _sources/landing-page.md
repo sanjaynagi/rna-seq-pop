@@ -2,7 +2,7 @@
 
 Welcome to the [RNA-Seq-Pop](https://github.com/sanjaynagi/rna-seq-pop/) documentation!
 
-RNA-Seq-Pop is a computational pipeline to analyse Illumina RNA-Sequencing data of any organism. As well as performing standard transcriptomic analyses, such as differential expression, RNA-Seq-Pop also calls and analyses genetic polymorphisms, extracting  population genomic signals. This jupyter-book will help you install and configure the workflow to apply it to your own data.
+RNA-Seq-Pop is a computational pipeline to analyse Illumina RNA-Sequencing data of any organism. As well as performing standard transcriptomic analyses, such as differential expression, RNA-Seq-Pop also calls and analyses genetic polymorphisms, extracting  population genomic signals. This Jupyter Book will help you install and configure the workflow to apply it to your own data.
 
 ---
 
