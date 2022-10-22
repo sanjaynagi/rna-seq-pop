@@ -485,8 +485,8 @@ title="Print to PDF"
 <p>Two gzipped fastq files for each sample are required, corresponding to the forward and reverse read. Reads can be already trimmed or RNA-Seq-Pop can trim them, using the cutadapt module.</p>
 <p>The read location may be specified in two ways:</p>
 <ol class="simple">
-<li><p>Reads can either be named as <code class="docutils literal notranslate"><span class="pre">{sampleID}_1.fastq.gz</span> <span class="pre">,</span> <span class="pre">{sampleID}_2.fastq.gz</span></code> and stored in <code class="docutils literal notranslate"><span class="pre">resources/reads/</span></code>.</p></li>
-<li><p>The user can add “fq1” and “fq2” columns to the <code class="docutils literal notranslate"><span class="pre">samples.tsv</span></code> metadata file, meaning the fastq files can be stored anywhere accessible and have arbitrary naming.</p></li>
+<li><p>Reads can be named as <code class="docutils literal notranslate"><span class="pre">{sampleID}_1.fastq.gz</span> <span class="pre">,</span> <span class="pre">{sampleID}_2.fastq.gz</span></code> and stored in <code class="docutils literal notranslate"><span class="pre">resources/reads/</span></code>. In the config.yaml, <code class="docutils literal notranslate"><span class="pre">fastq['auto']</span> <span class="pre">==</span> <span class="pre">True</span></code>.</p></li>
+<li><p>The user can add “fq1” and “fq2” columns to the <code class="docutils literal notranslate"><span class="pre">samples.tsv</span></code> metadata file, containing the path to each fastq file from the root rna-seq-pop directory. This means the fastq files can be stored anywhere accessible and have arbitrary naming. In the config.yaml, <code class="docutils literal notranslate"><span class="pre">fastq['auto']</span> <span class="pre">==</span> <span class="pre">False</span></code>.</p></li>
 </ol>
 <hr class="docutils" />
 <p><strong>Reference genome files</strong></p>
