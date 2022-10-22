@@ -463,56 +463,43 @@ title="Print to PDF"
                 
   <section id="configuring-the-workflow">
 <h1>Configuring the workflow<a class="headerlink" href="#configuring-the-workflow" title="Permalink to this heading">#</a></h1>
-<p>RNA-Seq-Pop, like all snakemake workflows, should be configured with a configuration file (config.yaml).</p>
+<p>RNA-Seq-Pop should be configured with a configuration file (config.yaml). In this document we describe the purpose of each config parameter.</p>
 <p>The configuration file looks like the following:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">metadata</span><span class="p">:</span> <span class="n">config</span><span class="o">/</span><span class="n">samples</span><span class="o">.</span><span class="n">tsv</span>                    <span class="c1"># samplesheet metadata file</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">metadata</span><span class="p">:</span> <span class="n">config</span><span class="o">/</span><span class="n">samples</span><span class="o">.</span><span class="n">tsv</span>                    
 
-<span class="n">dataset</span><span class="p">:</span> <span class="s1">&#39;Ag_Bouake&#39;</span>                            <span class="c1"># Dataset name: Can be anything, will be used to name some main output files</span>
+<span class="n">dataset</span><span class="p">:</span> <span class="s1">&#39;Ag_Bouake&#39;</span>                            
 
-<span class="c1">## Fastq filenames and locations can either be specified in the config/samples.tsv file in columns called</span>
-<span class="c1">## fq1 and fq2 (paired end reads) OR if auto: True -</span>
-<span class="c1">## gzipped fastq files should be stored in the resources/reads/ directory</span>
-<span class="c1">## If the sample name is Kisumu1 in the samples.tsv file, the paired-end reads </span>
-<span class="c1">## should be named Kisumu1_1.fastq.gz, and Kisumu1_2.fastq.gz. </span>
-<span class="c1">## Treatment names in samples.tsv should not contain underscores</span>
 <span class="n">fastq</span><span class="p">:</span>
-      <span class="n">auto</span><span class="p">:</span> <span class="kc">True</span>                                           <span class="c1"># set auto if your files follow the above rules</span>
+      <span class="n">auto</span><span class="p">:</span> <span class="kc">True</span>                                          
 
 </pre></div>
 </div>
 <p><strong>metadata</strong>: path to the sample metadata file<br />
 <strong>dataset</strong>: give this dataset a name<br />
 <strong>fastq</strong>:auto: If true, fastq files are in resources/reads/ and following <code class="docutils literal notranslate"><span class="pre">{sampleID_1.fastq.gz}</span></code> pattern. If False,             there are fq1 and fq2 columns pointing to the reads files for each sample.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Chromosome names for the appropriate species.</span>
-<span class="c1"># Currently, the variant calling and analysis part of workflow requires genes mapped to chromosomes and their physical location.</span>
-<span class="c1"># Please ensure that these correspond exactly to the reference fasta/gff files. Extra unwanted chromosomes (unplaced contigs) can be ignored. </span>
-<span class="c1"># if you need to remove a prefix (Such as &quot;AgamP4_&quot;or &quot;AaegL5_&quot;) from a file, use this sed command - i.e - &quot;sed s/AgamP4_// An.gambiae.fasta &gt; An.gambiae_clean.fasta&quot;</span>
-<span class="n">contigs</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;2L&#39;</span><span class="p">,</span> <span class="s1">&#39;2R&#39;</span><span class="p">,</span> <span class="s1">&#39;3L&#39;</span><span class="p">,</span> <span class="s1">&#39;3R&#39;</span><span class="p">,</span> <span class="s1">&#39;X&#39;</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">contigs</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;2L&#39;</span><span class="p">,</span> <span class="s1">&#39;2R&#39;</span><span class="p">,</span> <span class="s1">&#39;3L&#39;</span><span class="p">,</span> <span class="s1">&#39;3R&#39;</span><span class="p">,</span> <span class="s1">&#39;X&#39;</span><span class="p">]</span>
 
-<span class="c1"># Paths for reference files </span>
 <span class="n">reference</span><span class="p">:</span>
   <span class="n">genome</span><span class="p">:</span>
-        <span class="s2">&quot;resources/reference/Anopheles-gambiae-PEST_CHROMOSOMES_AgamP4.fa&quot;</span>        <span class="c1"># Path to genome reference FASTA file</span>
+        <span class="s2">&quot;resources/reference/Anopheles-gambiae-PEST_CHROMOSOMES_AgamP4.fa&quot;</span>       
   <span class="n">transcriptome</span><span class="p">:</span>
-        <span class="s2">&quot;resources/reference/Anopheles-gambiae-PEST_TRANSCRIPTS_AgamP4.12.fa&quot;</span>     <span class="c1"># Path to transcriptome reference FASTA file</span>
+        <span class="s2">&quot;resources/reference/Anopheles-gambiae-PEST_TRANSCRIPTS_AgamP4.12.fa&quot;</span>      
   <span class="n">gff</span><span class="p">:</span>
-        <span class="s2">&quot;resources/reference/Anopheles-gambiae-PEST_BASEFEATURES_AgamP4.12.gff3&quot;</span>  <span class="c1"># Path to GFF annotation file</span>
+        <span class="s2">&quot;resources/reference/Anopheles-gambiae-PEST_BASEFEATURES_AgamP4.12.gff3&quot;</span>  
   <span class="n">snpeffdb</span><span class="p">:</span>
-        <span class="s2">&quot;Anopheles_gambiae&quot;</span>                                                       <span class="c1"># SNPeff database name</span>
+        <span class="s2">&quot;Anopheles_gambiae&quot;</span>                                                       
   <span class="n">genes2transcripts</span><span class="p">:</span>                                                                
-        <span class="s2">&quot;resources/exampleGene2TranscriptMap.tsv&quot;</span>                                 <span class="c1"># gene names file with gene and transcript names</span>
+        <span class="s2">&quot;resources/exampleGene2TranscriptMap.tsv&quot;</span>                                 
 </pre></div>
 </div>
-<p><strong>contigs:</strong> a list of contigs you wish to analyse, must match reference files.</p>
-<p>reference files:<br />
-<strong>genome:</strong> path to the genome (.fa)<br />
-<strong>transcriptome:</strong> path to the transcriptome (.fa)<br />
-<strong>gff:</strong> path to the genome feature file (.gff3)<br />
-<strong>genes2transcripts:</strong> path to the gene to transcript map (.tsv)</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># List of contrasts to do Differential Expression and Fst analysis on. </span>
-<span class="c1"># Should correspond to the &#39;treatment&#39; columns of the samples.tsv file, and be separated by an underscore &quot;_&quot;. i.e &#39;control_case&#39;, or &#39;Kisumu_Tiassale&#39;.</span>
-<span class="c1"># The treatment names themselves must not contain underscores</span>
-<span class="n">contrasts</span><span class="p">:</span>
+<p><strong>contigs</strong><br />
+A list of contigs you wish to analyse, must match reference files.</p>
+<p><strong>Reference files</strong><br />
+<em>genome</em>: Path to the genome (.fa)<br />
+<em>transcriptome</em>: Path to the transcriptome (.fa)<br />
+<em>gff</em>: Path to the genome feature file (.gff3)<br />
+<em>genes2transcripts</em>: Path to the gene to transcript map (.tsv)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">contrasts</span><span class="p">:</span>
       <span class="o">-</span> <span class="s1">&#39;Kisumu_gambiaeCont&#39;</span>
       <span class="o">-</span> <span class="s1">&#39;gambiaeCont_gambiaePM&#39;</span>
 
@@ -520,29 +507,27 @@ title="Print to PDF"
       <span class="n">activate</span><span class="p">:</span> <span class="kc">False</span>
       <span class="n">adaptors</span><span class="p">:</span>
 
-<span class="n">QualityControl</span><span class="p">:</span>                               <span class="c1"># Activate Quality control analyses</span>
+<span class="n">QualityControl</span><span class="p">:</span>                               
       <span class="n">activate</span><span class="p">:</span> <span class="kc">True</span>
 </pre></div>
 </div>
-<p><strong>contrasts</strong>: a list of the pairwise contrasts you wish to run, from values in the treatment column of the sample metadata file. The format is <code class="docutils literal notranslate"><span class="pre">control_case</span></code>.<br />
-<strong>cutadapt</strong>:<br />
+<p><strong>contrasts</strong><br />
+A list of the pairwise contrasts you wish to run, from values in the treatment column of the sample metadata file. The format is <code class="docutils literal notranslate"><span class="pre">control_case</span></code>.</p>
+<p><strong>cutadapt</strong><br />
 <em>activate</em>: if True trim reads<br />
-<em>adaptors</em>: adaptors to be trimmed<br />
-<strong>QualityControl</strong>:<br />
+<em>adaptors</em>: adaptors to be trimmed</p>
+<p><strong>QualityControl</strong><br />
 <em>activate</em>: If True run quality control analyses</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DifferentialExpression</span><span class="p">:</span>
       <span class="n">activate</span><span class="p">:</span> <span class="kc">True</span>                          <span class="c1"># Activate differential expression analyses</span>
 
       <span class="n">venn</span><span class="p">:</span>
+            <span class="n">activate</span><span class="p">:</span> <span class="kc">True</span>
             <span class="n">padj_threshold</span><span class="p">:</span> <span class="mf">0.05</span>
             <span class="n">groups</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;gambiaeCont_gambiaePM&#39;</span><span class="p">,</span> <span class="s1">&#39;Kisumu_gambiaeCont&#39;</span><span class="p">]</span>
 
-      <span class="n">geneHeatmaps</span><span class="p">:</span>
-            <span class="n">activate</span><span class="p">:</span> <span class="kc">False</span>
-            <span class="n">gene_list_tsv</span><span class="p">:</span> <span class="s2">&quot;resources/example_heatmap_gene_list.tsv&quot;</span>
-
-      <span class="n">progressiveGenes</span><span class="p">:</span>                       <span class="c1"># Activate progressiveGenes analysis. Will find genes that are consistently up or downregulated across two comparisons. </span>
-            <span class="n">activate</span><span class="p">:</span> <span class="kc">True</span>                    <span class="c1"># For example - which genes upregulated in Kisumu v gambiaeCont, are also upregulated in gambiaeCont v gambiaePM</span>
+      <span class="n">progressiveGenes</span><span class="p">:</span>                       
+            <span class="n">activate</span><span class="p">:</span> <span class="kc">True</span>                    
             <span class="n">padj_threshold</span><span class="p">:</span> <span class="mf">0.05</span>
             <span class="n">fc_threshold</span><span class="p">:</span> <span class="mi">1</span>
             <span class="n">groups</span><span class="p">:</span> <span class="s2">&quot;Kisumu_gambiaeCont_gambiaePM&quot;</span>
@@ -554,10 +539,22 @@ title="Print to PDF"
             <span class="n">replaceString</span><span class="p">:</span> <span class="s2">&quot;AgaP_&quot;</span>          <span class="c1"># An.gambiae KEGG pathways have this string appended which needs removing</span>
 </pre></div>
 </div>
-<p><strong>Differential Expression</strong>: if true run differential expression analysis
-<strong>venn</strong>: if true make venn diagrams of de expressed genes
-<strong>progressiveGenes</strong>:
-<strong>gsea</strong>:</p>
+<p><strong>Differential Expression</strong><br />
+<em>activate</em>: If True run differential expression analysis</p>
+<p><strong>Venn</strong><br />
+<em>activate</em>: If True make venn diagrams of de expressed genes
+<em>padj_threshold</em>: threshold to call significance
+<em>groups</em>: string or list of strings to indicate the de comparisons we wish to make a venn for.</p>
+<p><strong>ProgressiveGenes</strong><br />
+<em>activate</em>: If True, run progressiveGenes analysis. Will find genes that are consistently up or downregulated across two comparisons.<br />
+<em>padj_threshold</em>: threshold to call significance<br />
+<em>fc_threshold</em>: threshold to call overexpression<br />
+<em>groups</em>: String or list of strings, which indicate the 3 populations and 2 DE comparisons to be compared. In this example - which genes upregulated in Kisumu v gambiaeCont, are also upregulated in gambiaeCont v gambiaePM.</p>
+<p><strong>gsea</strong>
+<em>activate</em>: run fgsea Gene set enrichment analysis.<br />
+<em>gaf</em>: gaf file with go annotations
+<em>KeggSpeciesID</em>: 3 letter KEGG species identifier. “aga” = Anopheles gambiae/coluzzii.<br />
+<em>replaceString</em>: An.gambiae KEGG pathways have a string appended which needs removing.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">VariantAnalysis</span><span class="p">:</span>
       <span class="n">activate</span><span class="p">:</span> <span class="kc">True</span>
       <span class="n">caller</span><span class="p">:</span> <span class="s1">&#39;freebayes&#39;</span>
@@ -584,8 +581,29 @@ title="Print to PDF"
                   <span class="n">windownames</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;small&#39;</span><span class="p">,</span> <span class="s1">&#39;large&#39;</span><span class="p">]</span>
                   <span class="n">windowsizes</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">5000</span><span class="p">]</span>
                   <span class="n">windowsteps</span><span class="p">:</span> <span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">1000</span><span class="p">]</span>
-
-    <span class="c1"># For An.gambiae s.l only - run Ancestry Informative Marker analysis. AIM datasets included in git repo.</span>
+</pre></div>
+</div>
+<p><strong>VariantAnalysis</strong><br />
+<em>activate</em> : If True, genome alignment and variant calling are performed.<br />
+<em>caller</em> : Currently only ‘freebayes’ is supported.<br />
+<em>ploidy</em> : the ploidy of our samples to call variants at. If you have pooled data, the ploidy should be n_samples per pool * organism ploidy.<br />
+<em>chunks</em> : The number of chunks to split each chromosome into to parallelise variant calling.</p>
+<p><strong>pca</strong><br />
+<em>activate</em>: If True, run PCA on the SNP data<br />
+<em>missingness</em>: a filter - the proportion of samples that have data at a given allele. 1 means a genomic position can have no missing calls across all samples.</p>
+<p><strong>summaryStatistics</strong><br />
+<em>activate</em>: If True, run genetic diversity analyses.<br />
+<em>missingness</em>: a filter - the proportion of samples that have data at a given allele. 1 means a genomic position can have no missing calls across all samples.</p>
+<p><strong>selection</strong><br />
+<em>activate</em>: If True, run Fst analysis<br />
+<em>missingness</em>: a filter - the proportion of samples that have data at a given allele. 1 means a genomic position can have no missing calls across all samples.</p>
+<p><strong>pbs</strong><br />
+<em>activate</em>: If True, run population branch statistic analysis. Requires 3 suitable treatment groups.<br />
+<em>contrasts</em>: List of the 3 groups as strings separated by an underscore.<br />
+<em>windownames</em>: selection analysis can be done with multiple window sizes, names<br />
+<em>windowsizes</em>: window sizes<br />
+<em>windowsteps</em>: window steps</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># For An.gambiae s.l only - run Ancestry Informative Marker analysis. AIM datasets included in git repo.</span>
       <span class="n">ancestry</span><span class="p">:</span>                                
             <span class="n">activate</span><span class="p">:</span> <span class="kc">True</span>
             <span class="n">missingness</span><span class="p">:</span> <span class="mf">0.5</span>                                <span class="c1"># proportion between 0 and 1 </span>
@@ -600,6 +618,14 @@ title="Print to PDF"
                   <span class="o">-</span> <span class="s2">&quot;2Rb&quot;</span>
 </pre></div>
 </div>
+<p><strong>ancestry</strong> (<em>An. gambiae</em> only)<br />
+<em>activate</em>: If True, run AIM analysis.<br />
+<em>missingness</em>: a filter - the proportion of samples that have data at a given allele. 1 means a genomic position can have no missing calls across all samples.<br />
+<em>gambcolu</em>: path to gamb_colu aims<br />
+<em>arab</em>: path to gambcolu_vs_arabiensis aims</p>
+<p><strong>karyotype</strong> (<em>An. gambiae</em> only)<br />
+<em>activate</em>: If True, run karyotyping module.<br />
+<em>inversions</em>: A list of inversions in compKaryo to analyse.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">miscellaneous</span><span class="p">:</span>
       <span class="c1"># Creates allele count .xlsx reports on specific mutations of choice</span>
       <span class="n">VariantsOfInterest</span><span class="p">:</span>             
@@ -619,6 +645,17 @@ title="Print to PDF"
             <span class="n">fc_threshold</span><span class="p">:</span> <span class="mf">1.5</span>
 </pre></div>
 </div>
+<p><strong>VariantsOfInterest</strong>
+<em>activate</em>: If True, run variants of interest analysis<br />
+<em>path</em>: Path to variants of interest data</p>
+<p><strong>GeneFamiliesHeatmap</strong><br />
+<em>activate</em>: If True, run heatmaps on gene families using go terms and pfam domains.<br />
+<em>eggnog</em>: path to eggnog file with go annotations for your organism (produced by eggnog-mapper).<br />
+<em>pfam</em>: path to pfam domains for your organism.</p>
+<p><strong>sweeps</strong> (<em>An. gambiae</em> only)<br />
+<em>activate</em>: If True, run analysis to determine if DE genes lie under known selective sweep loci.<br />
+<em>padj_threshold</em>: threshold to call significance<br />
+<em>fc_threshold</em>: threshold to call overexpression</p>
 </section>
 
     <script type="text/x-thebe-config">
