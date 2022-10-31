@@ -189,6 +189,8 @@ rule geneFamilies:
         pfam=config["miscellaneous"]["GeneFamiliesHeatmap"]["pfam"],
     output:
         heatmaps="results/genediff/GeneFamiliesHeatmap.pdf",
+    conda:
+        "../envs/pythonGenomics.yaml"
     log:
         "logs/geneFamilies.log",
     params:
