@@ -1,6 +1,6 @@
 name: rna-seq-pop
 
-on: pull_request
+on: [push, pull_request]
 
 jobs:
   run-workflow:
