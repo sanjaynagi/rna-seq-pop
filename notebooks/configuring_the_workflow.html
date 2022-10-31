@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
@@ -34,9 +34,7 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
@@ -91,7 +89,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="next" title="Running the workflow" href="running_the_workflow.html" />
     <link rel="prev" title="Input files" href="input_data.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en">
+    <meta name="docsearch:language" content="None">
     
 
     <!-- Google Analytics -->
@@ -462,7 +460,7 @@ title="Print to PDF"
               <div>
                 
   <section id="configuring-the-workflow">
-<h1>Configuring the workflow<a class="headerlink" href="#configuring-the-workflow" title="Permalink to this heading">#</a></h1>
+<h1>Configuring the workflow<a class="headerlink" href="#configuring-the-workflow" title="Permalink to this headline">#</a></h1>
 <p>RNA-Seq-Pop should be configured with a configuration file (config.yaml). In this document we describe the purpose of each config parameter.</p>
 <p>The configuration file looks like the following:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">metadata</span><span class="p">:</span> <span class="n">config</span><span class="o">/</span><span class="n">samples</span><span class="o">.</span><span class="n">tsv</span>                    
@@ -545,8 +543,8 @@ A list of the pairwise contrasts you wish to run, from values in the treatment c
 <p><strong>Differential Expression</strong><br />
 <em>activate</em>: If True run differential expression analysis</p>
 <p><strong>Venn</strong><br />
-<em>activate</em>: If True make venn diagrams of de expressed genes
-<em>padj_threshold</em>: threshold to call significance
+<em>activate</em>: If True make venn diagrams of de expressed genes<br />
+<em>padj_threshold</em>: threshold to call significance<br />
 <em>groups</em>: string or list of strings to indicate the de comparisons we wish to make a venn for.</p>
 <p><strong>ProgressiveGenes</strong><br />
 <em>activate</em>: If True, run progressiveGenes analysis. Will find genes that are consistently up or downregulated across two comparisons.<br />
@@ -555,7 +553,7 @@ A list of the pairwise contrasts you wish to run, from values in the treatment c
 <em>groups</em>: String or list of strings, which indicate the 3 populations and 2 DE comparisons to be compared. In this example - which genes upregulated in Kisumu v gambiaeCont, are also upregulated in gambiaeCont v gambiaePM.</p>
 <p><strong>gsea</strong>
 <em>activate</em>: run fgsea Gene set enrichment analysis.<br />
-<em>gaf</em>: gaf file with go annotations
+<em>gaf</em>: gaf file with go annotations.<br />
 <em>KeggSpeciesID</em>: 3 letter KEGG species identifier. “aga” = Anopheles gambiae/coluzzii.<br />
 <em>replaceString</em>: An.gambiae KEGG pathways have a string appended which needs removing.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">VariantAnalysis</span><span class="p">:</span>
@@ -648,7 +646,7 @@ A list of the pairwise contrasts you wish to run, from values in the treatment c
             <span class="n">fc_threshold</span><span class="p">:</span> <span class="mf">1.5</span>
 </pre></div>
 </div>
-<p><strong>VariantsOfInterest</strong>
+<p><strong>VariantsOfInterest</strong><br />
 <em>activate</em>: If True, run variants of interest analysis<br />
 <em>path</em>: Path to variants of interest data</p>
 <p><strong>GeneFamiliesHeatmap</strong><br />
