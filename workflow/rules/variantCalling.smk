@@ -66,6 +66,8 @@ rule octopus:
     log:
         "logs/octopus/{contig}.log",
     threads: 16
+    conda:
+        "../envs/pythonGenomics.yaml"
     shell:
         """
         octopus -R {input.reference} -I {input.bam} -T {wildcards.contig} --organism-ploidy {params.ploidy} --downsample-above {params.max_coverage} \

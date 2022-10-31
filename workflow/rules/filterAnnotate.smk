@@ -112,7 +112,9 @@ rule ExtractBedVCF:
             contig=config["contigs"],
         ),
     output:
-        bed=expand("resources/regions/missense.pos.{contig}.bed", contig=config["contigs"]),
+        bed=expand(
+            "resources/regions/missense.pos.{contig}.bed", contig=config["contigs"]
+        ),
     conda:
         "../envs/pythonGenomics.yaml"
     log:
