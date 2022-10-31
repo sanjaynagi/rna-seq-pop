@@ -13,10 +13,6 @@ dataset: 'Ag_Bouake'                            # Dataset name: Can be anything,
 fastq:
       auto: True                                                              # set auto if your files follow the above rules
 
-cutadapt:
-      activate: False
-      adaptors:
-
 # Chromosome names for the appropriate species.
 # Currently, the variant calling and analysis part of workflow requires genes mapped to chromosomes and their physical location.
 # Please ensure that these correspond exactly to the reference fasta/gff files. Extra unwanted chromosomes (unplaced contigs) can be ignored. 
@@ -37,7 +33,6 @@ ref:
         "resources/exampleGene2TranscriptMap.tsv"                                 # gene names file with gene and transcript names
 
 
-
 # List of contrasts to do Differential Expression and Fst analysis on. 
 # Should correspond to the 'treatment' columns of the samples.tsv file, and be separated by an underscore "_". i.e 'control_case', or 'Kisumu_Tiassale'.
 # The treatment names themselves must not contain underscores
@@ -45,6 +40,9 @@ contrasts:
       - 'Kisumu_gambiaeCont'
       - 'gambiaeCont_gambiaePM'
 
+cutadapt:
+      activate: False
+      adaptors:
 
 QualityControl:                               # Activate Quality control analyses
       activate: True
