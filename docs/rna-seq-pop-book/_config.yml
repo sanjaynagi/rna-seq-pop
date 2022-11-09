@@ -37,3 +37,6 @@ html:
       issue-term: "pathname"
       label: "comment"
       theme: "github-light" 
+
+launch_buttons:
+  binderhub_url: ""
