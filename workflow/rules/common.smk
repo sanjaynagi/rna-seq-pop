@@ -15,12 +15,12 @@ def getFASTQs(wildcards, rules=None):
     """
     metadata = pd.read_csv(config["metadata"], sep="\t")
     
-    if config['fastq']['paired'] == True:
+    if config['fastq']['paired'] is True:
         fastq_cols = ['fq1', 'fq2']
     else:
         fastq_cols = ['fq1']
 
-    if config["cutadapt"]["activate"] == True:
+    if config["cutadapt"]["activate"] is True:
         if rules in ["KallistoQuant", "HISAT2align", "HISAT2align_input"]:
             for i, col in enumerate(fastq_cols):
                 metadata = metadata.assign(**{col: f"resources/reads/trimmed/" + metadata["sampleID"] + f"_{i+1}.fastq.gz"})     
@@ -28,9 +28,9 @@ def getFASTQs(wildcards, rules=None):
             
             u = metadata.loc[wildcards.sample, fastq_cols].dropna()
             if rules == "HISAT2align":
-                return [f"-1 {u.fq1} -2 {u.fq2}"] if config['fastq']['paired'] == True else f"-U {u.fq1}"
+                return [f"-1 {u.fq1} -2 {u.fq2}"] if config['fastq']['paired'] is True else f"-U {u.fq1}"
             else:
-                return [u.fq1, u.fq2] if config['fastq']['paired'] == True else u.fq1
+                return [u.fq1, u.fq2] if config['fastq']['paired'] is True else u.fq1
 
     if config["fastq"]["auto"]:
         for i, col in enumerate(fastq_cols):
@@ -47,14 +47,14 @@ def getFASTQs(wildcards, rules=None):
             ), f"The fq2 column in the metadata does not seem to exist. Please create one, or use the 'auto' option and name the fastq files as specified in the config/README.md"
         
     if rules == 'fastqc':
-        u = metadata.loc[wildcards.sample, f"fq{wildcards.n}"] if config['fastq']['paired'] == True else metadata.loc[wildcards.sample, f"fq1"] 
+        u = metadata.loc[wildcards.sample, f"fq{wildcards.n}"] if config['fastq']['paired'] is True else metadata.loc[wildcards.sample, f"fq1"] 
         return u
     else:
         u = metadata.loc[wildcards.sample, fastq_cols].dropna()
         if rules == "HISAT2align":
-            return [f"-1 {u.fq1} -2 {u.fq2}"] if config['fastq']['paired'] == True else f"-U {u.fq1}"
+            return [f"-1 {u.fq1} -2 {u.fq2}"] if config['fastq']['paired'] is True else f"-U {u.fq1}"
         else:
-            return [u.fq1, u.fq2] if config['fastq']['paired'] == True else u.fq1
+            return [u.fq1, u.fq2] if config['fastq']['paired'] is True else u.fq1
 
 
 def getVCF(wildcards):
@@ -105,7 +105,7 @@ def GetDesiredOutputs(wildcards):
         )
 
     if config["QualityControl"]["activate"]:
-        if config['fastq']['paired'] == True:
+        if config['fastq']['paired'] is True:
             wanted_input.extend(
                 expand(
                     [
