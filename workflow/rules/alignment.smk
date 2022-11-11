@@ -30,7 +30,7 @@ rule KallistoQuant:
     log:
         "logs/kallisto/quant_{sample}.log",
     params:
-        extra="-b 100",
+        extra="-b 100" if config['fastq']['paired'] is True else "-b 100 --single",
     threads: 24
     wrapper:
         "v1.15.0/bio/kallisto/quant"
