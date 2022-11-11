@@ -90,11 +90,12 @@ rule HISAT2align:
         readflags=lambda wildcards: getFASTQs(wildcards=wildcards, rules="HISAT2align"),
         extra="--dta -q --rg-id {sample} --rg SM:{sample} --rg PL:ILLUMINA --new-summary",
         idx="resources/reference/ht2index/idx",
+        samblaster="" if config['fastq']['paired'] is True else "--ignoreUnmated"
     threads: 12
     shell:
         """
         hisat2 {params.extra} --threads {threads} -x {params.idx} {params.readflags} 2> {log.align} | 
-        samblaster 2> {log.sort} | samtools sort -@{threads} - -o {output} 2>> {log.sort}
+        samblaster {params.samblaster} 2> {log.sort} | samtools sort -@{threads} - -o {output} 2>> {log.sort}
         """
 
 
