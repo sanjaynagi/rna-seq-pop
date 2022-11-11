@@ -14,53 +14,48 @@ def getFASTQs(wildcards, rules=None):
     If the rule is HISAT2align, then return the fastqs with -1 and -2 flags
     """
     metadata = pd.read_csv(config["metadata"], sep="\t")
+    
+    if config['fastq']['paired'] == True:
+        print("testing for paired")
+        fastq_cols = ['fq1', 'fq2']
+    else:
+        fastq_cols = ['fq1']
 
     if config["cutadapt"]["activate"] == True:
         if rules in ["KallistoQuant", "HISAT2align", "HISAT2align_input"]:
-            metadata = (
-                metadata.assign(
-                    fq1=f"resources/reads/trimmed/"
-                    + metadata["sampleID"]
-                    + "_1.fastq.gz"
-                )
-                .assign(
-                    fq2=f"resources/reads/trimmed/"
-                    + metadata["sampleID"]
-                    + "_2.fastq.gz"
-                )
-                .set_index("sampleID")
-            )
-            u = metadata.loc[wildcards.sample, ["fq1", "fq2"]].dropna()
+            for i, col in enumerate(fastq_cols):
+                metadata = metadata.assign(**{col: f"resources/reads/trimmed/" + metadata["sampleID"] + f"_{i+1}.fastq.gz"})     
+            metadata = metadata.set_index("sampleID")
+            
+            u = metadata.loc[wildcards.sample, fastq_cols].dropna()
             if rules == "HISAT2align":
-                return [f"-1 {u.fq1} -2 {u.fq2}"]
+                return [f"-1 {u.fq1} -2 {u.fq2}"] if config['fastq']['paired'] == True else f"-U {u.fq1}"
             else:
-                return [f"{u.fq1}", f"{u.fq2}"]
+                return [u.fq1, u.fq2] if config['fastq']['paired'] == True else u.fq1
 
     if config["fastq"]["auto"]:
-        metadata = (
-            metadata.assign(
-                fq1=f"resources/reads/" + metadata["sampleID"] + "_1.fastq.gz"
-            )
-            .assign(fq2=f"resources/reads/" + metadata["sampleID"] + "_2.fastq.gz")
-            .set_index("sampleID")
-        )
+        for i, col in enumerate(fastq_cols):
+            metadata = metadata.assign(**{col: f"resources/reads/" + metadata["sampleID"] + f"_{i+1}.fastq.gz"})     
+
+        metadata = metadata.set_index("sampleID")
     else:
         assert (
             "fq1" in metadata.columns
         ), f"The fq1 column in the metadata does not seem to exist. Please create one, or use the 'auto' option and name the fastq files as specified in the config/README.md"
-        assert (
-            "fq2" in metadata.columns
-        ), f"The fq2 column in the metadata does not seem to exist. Please create one, or use the 'auto' option and name the fastq files as specified in the config/README.md"
-
-    if len(wildcards) > 1:
-        u = metadata.loc[wildcards.sample, f"fq{wildcards.n}"]
+        if config['fastq']['paired']:
+            assert (
+                "fq2" in metadata.columns
+            ), f"The fq2 column in the metadata does not seem to exist. Please create one, or use the 'auto' option and name the fastq files as specified in the config/README.md"
+        
+    if rules == 'fastqc':
+        u = metadata.loc[wildcards.sample, f"fq{wildcards.n}"] if config['fastq']['paired'] == True else metadata.loc[wildcards.sample, f"fq1"] 
         return u
     else:
-        u = metadata.loc[wildcards.sample, ["fq1", "fq2"]].dropna()
+        u = metadata.loc[wildcards.sample, fastq_cols].dropna()
         if rules == "HISAT2align":
-            return [f"-1 {u.fq1} -2 {u.fq2}"]
+            return [f"-1 {u.fq1} -2 {u.fq2}"] if config['fastq']['paired'] == True else f"-U {u.fq1}"
         else:
-            return [f"{u.fq1}", f"{u.fq2}"]
+            return [u.fq1, u.fq2] if config['fastq']['paired'] == True else u.fq1
 
 
 def getVCF(wildcards):
@@ -103,14 +98,36 @@ def GetDesiredOutputs(wildcards):
             expand(
                 [
                     "results/.input.check",
-                    "resources/reads/qc/{sample}_{n}_fastqc.html",
                     "results/alignments/{sample}_stats/genome_results.txt",
                     "results/multiQC.html",
                 ],
                 sample=samples,
-                n=[1, 2],
             )
         )
+
+    if config["QualityControl"]["activate"]:
+        if config['fastq']['paired'] == True:
+            wanted_input.extend(
+                expand(
+                    [
+                        "resources/reads/qc/{sample}_{n}_fastqc.html",
+                    ],
+                    sample=samples,
+                    n=[1, 2],
+                )
+            )
+        else:
+            wanted_input.extend(
+                expand(
+                    [
+                        "resources/reads/qc/{sample}_{n}_fastqc.html",
+                    ],
+                    sample=samples,
+                    n=1
+                )
+            )
+
+
         if config["VariantAnalysis"]["activate"]:
             wanted_input.extend(
                 expand(

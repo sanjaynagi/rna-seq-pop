@@ -17,9 +17,16 @@ jobs:
         with:
           submodules: recursive
       
-      - name: Test workflow 
+      - name: Test workflow paired-end
         uses: snakemake/snakemake-github-action@v1.23.0
         with:
           directory: '.test'
           snakefile: 'workflow/Snakefile'
           args: '--cores 4 --use-conda --conda-cleanup-pkgs cache'
+
+      - name: Test workflow single-end
+        uses: snakemake/snakemake-github-action@v1.23.0
+        with:
+          directory: '.test'
+          snakefile: 'workflow/Snakefile'
+          args: '--cores 4 --use-conda --config fastq="{paired: False}" fast--conda-cleanup-pkgs cache'
