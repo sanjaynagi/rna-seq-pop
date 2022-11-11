@@ -41,7 +41,7 @@ rule FastQC:
     params:
         outdir="--outdir resources/reads/qc",
     wrapper:
-        "0.74.0/bio/fastqc"
+        "v1.15.0/bio/fastqc"
 
 
 rule cutAdapt:
@@ -60,7 +60,7 @@ rule cutAdapt:
         "logs/cutadapt/{sample}.log",
     threads: 4  # set desired number of threads here
     wrapper:
-        "v0.86.0/bio/cutadapt/pe"
+        "v1.15.0/bio/cutadapt/pe"
 
 
 rule BamStats:
@@ -75,7 +75,7 @@ rule BamStats:
     log:
         "logs/BamStats/{sample}.log",
     wrapper:
-        "0.70.0/bio/samtools/flagstat"
+        "v1.15.0/bio/samtools/flagstat"
 
 
 rule Coverage:
