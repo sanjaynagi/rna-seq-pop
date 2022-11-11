@@ -191,16 +191,11 @@ def GetDesiredOutputs(wildcards):
                     "results/variantAnalysis/SNPstats/nSNPsPerGene.tsv",
                     "results/variantAnalysis/diversity/{dataset}_SNPdensity_{contig}.svg",
                     "results/variantAnalysis/diversity/SequenceDiversity.tsv",
-                    "results/variantAnalysis/selection/FstPerGene.tsv",
-                    "results/variantAnalysis/selection/TajimasDPerGene.tsv",
                     "results/variantAnalysis/diversity/SequenceDivPerGene.tsv",
                     "results/variantAnalysis/diversity/DxyPerGene.tsv",
-                    "results/variantAnalysis/selection/fst/Fst.{comp}.{wsize}.{contig}.svg",
                 ],
                 contig=config["contigs"],
                 dataset=config["dataset"],
-                comp=config["contrasts"],
-                wsize=config["VariantAnalysis"]["selection"]["pbs"]["windownames"],
             )
         )
 
