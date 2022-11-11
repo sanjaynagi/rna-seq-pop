@@ -32,7 +32,7 @@ rule FastQC:
     QC on fastq read data 
     """
     input:
-        getFASTQs,
+        lambda wildcards:getFASTQs(wildcards=wildcards, rules='fastqc'),
     output:
         html="resources/reads/qc/{sample}_{n}_fastqc.html",
         zip="resources/reads/qc/{sample}_{n}_fastqc.zip",
@@ -49,7 +49,7 @@ rule cutAdapt:
         getFASTQs,
     output:
         fastq1="resources/reads/trimmed/{sample}_1.fastq.gz",
-        fastq2="resources/reads/trimmed/{sample}_2.fastq.gz",
+        fastq2="resources/reads/trimmed/{sample}_2.fastq.gz" if config['fastq']['paired'] else [],
         qc="resources/trimmed/{sample}.qc.txt",
     params:
         # https://cutadapt.readthedocs.io/en/stable/guide.html#adapter-types
