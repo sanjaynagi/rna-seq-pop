@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
@@ -34,7 +34,9 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
@@ -89,7 +91,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="next" title="RNA-Seq-Pop modules" href="rna-seq-pop.html" />
     <link rel="prev" title="Configuring the workflow" href="configuring_the_workflow.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
+    <meta name="docsearch:language" content="en">
     
 
     <!-- Google Analytics -->
@@ -309,24 +311,6 @@ title="Toggle navigation"
   </button>
   <div class="menu-dropdown__content">
     <ul>
-      <li>
-        <a href="https://mybinder.org/v2/gh/sanjaynagi/rna-seq-pop/master?urlpath=tree/docs/rna-seq-pop-book/notebooks/running_the_workflow.ipynb"
-   class="headerbtn"
-   data-toggle="tooltip"
-data-placement="left"
-title="Launch on Binder"
->
-  
-
-<span class="headerbtn__icon-container">
-  
-    <img src="../_static/images/logo_binder.svg">
-  </span>
-<span class="headerbtn__text-container">Binder</span>
-</a>
-
-      </li>
-      
     </ul>
   </div>
 </div>
@@ -460,7 +444,7 @@ title="Print to PDF"
               <div>
                 
   <section class="tex2jax_ignore mathjax_ignore" id="running-the-workflow">
-<h1>Running the workflow<a class="headerlink" href="#running-the-workflow" title="Permalink to this headline">#</a></h1>
+<h1>Running the workflow<a class="headerlink" href="#running-the-workflow" title="Permalink to this heading">#</a></h1>
 <p>Once your data is set up, perform a dry run of snakemake to see which rules and modules the workflow is configured to run.</p>
 <p><code class="docutils literal notranslate"><span class="pre">-n</span></code> indicates a dry run.</p>
 <p><code class="docutils literal notranslate"><span class="pre">snakemake</span> <span class="pre">--cores</span> <span class="pre">4</span> <span class="pre">--use-conda</span> <span class="pre">-n</span> </code></p>
@@ -468,7 +452,7 @@ title="Print to PDF"
 <p><code class="docutils literal notranslate"><span class="pre">snakemake</span> <span class="pre">--cores</span> <span class="pre">4</span> <span class="pre">--use-conda</span></code></p>
 <p>If you wish to override using the standard <code class="docutils literal notranslate"><span class="pre">config/config.yaml</span></code> path, you can provide a config file at the command line as follows.</p>
 <p><code class="docutils literal notranslate"><span class="pre">snakemake</span> <span class="pre">--cores</span> <span class="pre">4</span> <span class="pre">--use-conda</span> <span class="pre">--configfile</span> <span class="pre">myconfig.yaml</span></code></p>
-<p>Running RNA-Seq-Pop on the test dataset.</p>
+<p>If you wish to check that RNA-Seq-Pop is configured correctly prior to running it on your dataset, you can run RNA-Seq-Pop on the test dataset. To do so, use the following command from the root directory:</p>
 <p><code class="docutils literal notranslate"><span class="pre">snakemake</span> <span class="pre">--cores</span> <span class="pre">4</span> <span class="pre">--directory</span> <span class="pre">.test/</span> <span class="pre">--use-conda</span> </code></p>
 </section>
 
