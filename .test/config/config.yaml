@@ -7,6 +7,7 @@ dataset: 'Test-GithubActionsCI'
 fastq: 
       table: config/fastq.tsv
       auto: True # set auto if your files follow 
+      paired: True
 
 
 cutadapt:
@@ -39,10 +40,10 @@ contrasts:
 
 
 QualityControl:                               # Activate Quality control analyses
-      activate: False
+      activate: True
 
 DifferentialExpression:                       # Activate differential expression analyses
-      activate: False   
+      activate: True   
 
       venn:
             activate: True
