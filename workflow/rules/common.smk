@@ -16,7 +16,6 @@ def getFASTQs(wildcards, rules=None):
     metadata = pd.read_csv(config["metadata"], sep="\t")
     
     if config['fastq']['paired'] == True:
-        print("testing for paired")
         fastq_cols = ['fq1', 'fq2']
     else:
         fastq_cols = ['fq1']
