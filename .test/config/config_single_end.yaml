@@ -83,7 +83,7 @@ VariantAnalysis:
             missingness: 0.5
             # Do we want to run pbs (Needs three conditions, two more closely related and a slight outgroup)
             pbs:
-                  activate: True
+                  activate: False
                   contrasts: 
                         - 'PiriTia_ContTia_Kisumu'
                   windownames: ['small']

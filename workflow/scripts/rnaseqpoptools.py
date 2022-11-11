@@ -406,7 +406,7 @@ def fig_pca(coords, model, title, path, samples, pop_colours,sample_population=N
         fig.suptitle(title, y=1.02)
         
         fig.savefig(f"{path}.svg", format='svg', bbox_inches='tight', dpi=300)
-        fig.savefig("{path}.pdf", format='pdf', bbox_inches='tight', dpi=300)
+        fig.savefig(f"{path}.pdf", format='pdf', bbox_inches='tight', dpi=300)
 
 
 def pca(geno, contig, ploidy, dataset, populations, samples, pop_colours, prune=True, scaler=None):
