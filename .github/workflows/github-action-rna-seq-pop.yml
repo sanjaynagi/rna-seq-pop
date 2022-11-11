@@ -29,4 +29,4 @@ jobs:
         with:
           directory: '.test'
           snakefile: 'workflow/Snakefile'
-          args: '--cores 4 --use-conda --config fastq="{paired: False}" --conda-cleanup-pkgs cache'
+          args: "--cores 4 --use-conda --config fastq='{paired:False}' --conda-cleanup-pkgs cache"
