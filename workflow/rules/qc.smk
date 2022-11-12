@@ -32,7 +32,7 @@ rule FastQC:
     QC on fastq read data 
     """
     input:
-        getFASTQs,
+        lambda wildcards:getFASTQs(wildcards=wildcards, rules='fastqc'),
     output:
         html="resources/reads/qc/{sample}_{n}_fastqc.html",
         zip="resources/reads/qc/{sample}_{n}_fastqc.zip",
@@ -41,7 +41,7 @@ rule FastQC:
     params:
         outdir="--outdir resources/reads/qc",
     wrapper:
-        "0.74.0/bio/fastqc"
+        "v1.15.0/bio/fastqc"
 
 
 rule cutAdapt:
@@ -49,7 +49,7 @@ rule cutAdapt:
         getFASTQs,
     output:
         fastq1="resources/reads/trimmed/{sample}_1.fastq.gz",
-        fastq2="resources/reads/trimmed/{sample}_2.fastq.gz",
+        fastq2="resources/reads/trimmed/{sample}_2.fastq.gz" if config['fastq']['paired'] else [],
         qc="resources/trimmed/{sample}.qc.txt",
     params:
         # https://cutadapt.readthedocs.io/en/stable/guide.html#adapter-types
@@ -60,7 +60,7 @@ rule cutAdapt:
         "logs/cutadapt/{sample}.log",
     threads: 4  # set desired number of threads here
     wrapper:
-        "v0.86.0/bio/cutadapt/pe"
+        "v1.15.0/bio/cutadapt/pe"
 
 
 rule BamStats:
@@ -75,7 +75,7 @@ rule BamStats:
     log:
         "logs/BamStats/{sample}.log",
     wrapper:
-        "0.70.0/bio/samtools/flagstat"
+        "v1.15.0/bio/samtools/flagstat"
 
 
 rule Coverage:
