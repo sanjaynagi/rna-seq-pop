@@ -1,6 +1,6 @@
 channels:
-  - r
   - conda-forge
+  - r
   - bioconda
 dependencies:
   - r-base=4.0.3
