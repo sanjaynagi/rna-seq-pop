@@ -17,9 +17,9 @@ voiPath = snakemake.input['VariantsOfInterest']
 muts = pd.read_csv(voiPath, sep="\t")
 
 ## separate contig and pos data and sort 
-muts['contig'] = muts['Location'].str.split(":").str.get(0)
+muts['chrom'] = muts['Location'].str.split(":").str.get(0)
 muts['pos'] = muts['Location'].str.split(":").str.get(1).str.split("-").str.get(0)
-muts = muts.sort_values(['contig', 'pos'])
+muts = muts.sort_values(['chrom', 'pos'])
 
 
 ## Run for all samples
