@@ -75,14 +75,14 @@ for (m in mutation_data$Name){
   # average across replicates
   if (!base2 %in% c("", NA)){
     mean_alleles = mean_alleles %>% 
-      group_by(contig, pos, ref, mutation, treatment, !!sym(propstring), lowerCI, upperCI, !!sym(propstring2), lowerCI_2, upperCI_2) %>% 
+      group_by(chrom, pos, ref, mutation, treatment, !!sym(propstring), lowerCI, upperCI, !!sym(propstring2), lowerCI_2, upperCI_2) %>% 
       summarise_at(.vars = c("cov","A","C","G","T"), .funs = c(mean="mean"), na.rm = TRUE) %>% 
-      select(contig, pos, ref, mutation, treatment, cov_mean, A_mean, C_mean, G_mean, T_mean, lowerCI, upperCI, !!propstring, !!propstring2, lowerCI_2, upperCI_2)
+      select(chrom, pos, ref, mutation, treatment, cov_mean, A_mean, C_mean, G_mean, T_mean, lowerCI, upperCI, !!propstring, !!propstring2, lowerCI_2, upperCI_2)
   } else {
     mean_alleles = mean_alleles %>% 
-      group_by(contig, pos, ref, mutation, treatment, !!sym(propstring), lowerCI, upperCI) %>% 
+      group_by(chrom, pos, ref, mutation, treatment, !!sym(propstring), lowerCI, upperCI) %>% 
       summarise_at(.vars = c("cov","A","C","G","T"), .funs = c(mean="mean"), na.rm = TRUE) %>% 
-      select(contig,pos, ref, mutation, treatment, cov_mean, A_mean, C_mean, G_mean, T_mean, lowerCI, upperCI, !!propstring)
+      select(chrom,pos, ref, mutation, treatment, cov_mean, A_mean, C_mean, G_mean, T_mean, lowerCI, upperCI, !!propstring)
   }
   
   #write to file, reorder mean_kdr_alleles
