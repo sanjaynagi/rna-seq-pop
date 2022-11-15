@@ -116,7 +116,7 @@ VariantAnalysis:
 miscellaneous:
 # If activate:True, creates allele balance .xlsx reports on IR mutations of choice
       VariantsOfInterest: 
-            activate: True
+            activate: False
             path: "resources/test-IRmutations.tsv"
             
       GeneFamiliesHeatmap:
