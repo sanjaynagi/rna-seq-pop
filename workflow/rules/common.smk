@@ -36,7 +36,6 @@ def getFASTQs(wildcards, rules=None):
     if config["fastq"]["auto"]:
         for i, col in enumerate(fastq_cols):
             metadata = metadata.assign(**{col: f"resources/reads/" + metadata["sampleID"] + f"_{i+1}.fastq.gz"})     
-
         metadata = metadata.set_index("sampleID")
     else:
         assert (
