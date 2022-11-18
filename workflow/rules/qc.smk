@@ -16,7 +16,6 @@ rule CheckInputs:
         gene_names=config["ref"]["genes2transcripts"],
         contrasts=config["contrasts"],
         fastq=config["fastq"]["auto"],
-        table=config["fastq"]["table"],
         sweeps=config["miscellaneous"]["sweeps"]["activate"],
     log:
         "logs/CheckInputs.log",
