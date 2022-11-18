@@ -45,10 +45,7 @@ assert (np.isin(comparisons, metadata['treatment']).all()), f"treatments specifi
 
 
 # Check that samples in fastq.tsv match those in metadata.tsv
-if autofastq is False:
-    fastq = pd.read_csv(snakemake.params['table'], sep="\t")
-    assert np.isin(fastq['sampleID'], metadata['sampleID']).all(), f"all samples specified in fastq table do not match those in samples.tsv, please check your fastq.tsv file"
-else:
+if autofastq == True:
     # Check to see if fastq files match the metadata
     for sample in metadata['sampleID']:
         for n in [1,2]:
