@@ -7,6 +7,7 @@ Construct heatmap of different gene families
 import sys
 sys.stderr = open(snakemake.log[0], "w")
 
+import rnaseqpoptools as rnaseqpop
 import pandas as pd
 import numpy as np
 import scipy
@@ -42,7 +43,6 @@ def plot_rotated_dendro(dendro, ax, linewidth=2):
     number_of_leaves = len(order)
     max_dependent_coord = max(map(max, dendro['dcoord']))
 
-
     ax.yaxis.set_ticks_position('right')
 
     # Constants 10 and 1.05 come from
@@ -58,7 +58,7 @@ def plot_rotated_dendro(dendro, ax, linewidth=2):
                    bottom=False,
                    left=False,
                    right=False,
-                labelleft=False,
+                   labelleft=False,
                    labelright=False,
                    labelbottom=False)
     return(ax)
@@ -183,11 +183,11 @@ with PdfPages("results/genediff/GeneFamiliesHeatmap.pdf") as pdf:
                         linewidths=4,
                         col_cluster=False,
                         linecolor="white",
-                        yticklabels=False, xticklabels=False,
+                        yticklabels=False, 
+                        xticklabels=False,
                         tree_kws=dict(linewidths=3, colors="lightgray"),
                         figsize=[1, 1])
         ax = g.ax_heatmap
-        ax.set_ylabel("")
         dendro = g.ax_row_dendrogram
         g.ax_cbar.set_visible(False)
         g.ax_row_dendrogram.set_visible(False) #suppress row dendrogram
@@ -208,12 +208,13 @@ with PdfPages("results/genediff/GeneFamiliesHeatmap.pdf") as pdf:
                                                         above_threshold_color='lightgray', 
                                                         color_threshold=0, 
                                                         no_labels=True)
-        ax[0] = plot_rotated_dendro(dendro, ax[0])
+        ax[0] = plot_rotated_dendro(dendro, ax[0])    
         sns.heatmap(ax=ax[1], data=diffexp_remap, cmap=pal, cbar=False, linewidths=4, linecolor='white')
         ax[1].set_xticklabels(comparisons['contrast'], fontsize=14, fontweight='bold')
+        ax[1].set_ylabel("")
 
         for idx, group in enumerate(metadata.treatment.unique()):
-            idx = idx+2
+            idx += 2
             df2 = df.query("treatment == @group").drop(columns=['treatment', 'sampleID'])
             df2 = df2.T.iloc[order, :]
 
@@ -236,4 +237,5 @@ with PdfPages("results/genediff/GeneFamiliesHeatmap.pdf") as pdf:
             axes.set_yticklabels([])
             axes.set_yticks([])
 
+        fig.savefig(f"results/genediff/{fam}_expression.tiff", dpi=200)
         pdf.savefig(bbox_inches = 'tight')
