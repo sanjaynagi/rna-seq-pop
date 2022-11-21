@@ -93,9 +93,9 @@ rule Coverage:
     params:
         prefix=lambda w, output: output[0].split(os.extsep)[0],
         windowsize=300,
-    threads: 4
+    threads: 8
     shell:
-        "mosdepth --threads {threads} --fast-mode --by {params.windowsize} --no-per-base {params.prefix} {input.bam}"
+        "mosdepth --threads {threads} --fast-mode {params.prefix} {input.bam}"
 
 
 rule vcfStats:
@@ -117,25 +117,6 @@ rule vcfStats:
         """
         bcftools stats {input} > {output} 2> {log}
         """
-
-
-rule Qualimap:
-    """
-    QC of bam files
-    """
-    input:
-        bam="results/alignments/{sample}.bam",
-        idx="results/alignments/{sample}.bam.bai",
-        gff=config["ref"]["gff"],
-    output:
-        "results/alignments/{sample}_stats/genome_results.txt",
-    log:
-        "logs/qualimap/{sample}.log",
-    conda:
-        "../envs/qc.yaml"
-    shell:
-        "qualimap bamqc -bam {input.bam} -c -gff {input.gff} -outfile {output} 2> {log}"
-
 
 rule multiQC:
     """
@@ -161,3 +142,4 @@ rule multiQC:
         "logs/multiQC.log",
     wrapper:
         "0.74.0/bio/multiqc"
+
