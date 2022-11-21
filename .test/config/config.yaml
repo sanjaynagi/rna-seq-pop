@@ -5,7 +5,6 @@ units: config/units.tsv
 dataset: 'Test-GithubActionsCI'
 
 fastq: 
-      table: config/fastq.tsv
       auto: True # set auto if your files follow 
       paired: True
 
