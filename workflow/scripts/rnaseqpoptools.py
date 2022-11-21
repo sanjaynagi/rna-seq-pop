@@ -62,7 +62,7 @@ def getAlleleFreqTable(muts, Path, var="sample", mean_=False, lowCov = 10):
         df = pd.read_csv(Path.format(mut=mut))
         if mean_:
             df['gene'] = muts[muts.Name == mut]['Gene'].iloc[0]
-        df['name'] = df['contig'].astype(str) + ":"+ df['pos'].astype(str) + "  " + df['gene'].astype(str) + " | " + df['mutation'].astype(str)
+        df['name'] = df['chrom'].astype(str) + ":"+ df['pos'].astype(str) + "  " + df['gene'].astype(str) + " | " + df['mutation'].astype(str)
         df['frequency'] = df.filter(like="proportion").sum(axis=1)
         freqDict[mut] = df[['name', var, 'frequency']]
         covDict[mut] = df[['name', var, cov_var]]
