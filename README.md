@@ -2,7 +2,7 @@
   RNA-Seq-Pop
 </h1>
 
-[<img src="https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True" width="200"/>](https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True)   
+[<img src="https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True" width="400"/>](https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True)   
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥5.11.0-brightgreen.svg)](https://snakemake.bitbucket.io)
 [![Execute notebook](https://github.com/sanjaynagi/rna-seq-pop/workflows/rna-seq-pop/badge.svg)](https://github.com/sanjaynagi/rna-seq-pop/actions?query=workflow:"rna-seq-pop")
