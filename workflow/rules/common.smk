@@ -93,20 +93,20 @@ def GetDesiredOutputs(wildcards):
 
     wanted_input = []
 
+    wanted_input.extend(["results/.input.check"])
+
     # QC & Coverage
-    if config["QualityControl"]["activate"]:
+    if config["QualityControl"]["multiqc"]['activate']:
         wanted_input.extend(
             expand(
                 [
-                    "results/.input.check",
-                    "results/alignments/{sample}_stats/genome_results.txt",
                     "results/multiQC.html",
                 ],
                 sample=samples,
             )
         )
 
-    if config["QualityControl"]["activate"]:
+    if config["QualityControl"]['fastqc']["activate"]:
         if config['fastq']['paired'] == True:
             wanted_input.extend(
                 expand(
@@ -129,16 +129,6 @@ def GetDesiredOutputs(wildcards):
             )
 
 
-        if config["VariantAnalysis"]["activate"]:
-            wanted_input.extend(
-                expand(
-                    [
-                        "results/alignments/coverage/{sample}.mosdepth.summary.txt",
-                        "results/alignments/bamStats/{sample}.flagstat",
-                    ],
-                    sample=samples,
-                )
-            )
 
     if config["DifferentialExpression"]["activate"]:
 
@@ -167,22 +157,6 @@ def GetDesiredOutputs(wildcards):
             )
         )
 
-    # if config["VariantAnalysis"]["activate"]:
-    #     if config['VariantAnalysis']['caller'] == 'octopus':
-    #         wanted_input.extend(
-    #             expand
-    #                 [
-    #                     "results/variantAnalysis/vcfs/octopus/variant.{contig}.vcf"
-    #                 ]
-    #                 contig=contigs,
-    #         )
-    #     elif config['VariantAnalyis']['caller'] == 'freebayes':
-    #         wanted_input.extend(
-    #                 [
-    #                     "results/variantAnalysis/vcfs/freebayes/variant.{contig}.vcf"
-    #                 ]
-    #         )
-
     if config["VariantAnalysis"]["activate"]:
         wanted_input.extend(
             expand(
@@ -193,11 +167,23 @@ def GetDesiredOutputs(wildcards):
                     "results/variantAnalysis/SNPstats/nSNPsPerGene.tsv",
                     "results/variantAnalysis/diversity/{dataset}_SNPdensity_{contig}.svg",
                     "results/variantAnalysis/diversity/SequenceDiversity.tsv",
+                    "results/alignments/bamStats/{sample}.flagstat",
                 ],
                 contig=config["contigs"],
                 dataset=config["dataset"],
+                sample=samples,
             )
         )
+
+        if config['QualityControl']['mosdepth']['activate']:
+            wanted_input.extend(
+                expand(
+                    [
+                        "results/alignments/coverage/{sample}.mosdepth.summary.txt",
+                    ],
+                sample=samples,
+                )
+            )
 
         if config["VariantAnalysis"]["selection"]["activate"]:
             wanted_input.extend(
