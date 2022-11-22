@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Running the workflow &#8212; RNA-Seq-Pop</title>
+    <title>Running the workflow</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -132,8 +132,6 @@ const thebe_selector_output = ".output, .cell_output"
       
       <img src="../_static/logo.png" class="logo" alt="logo">
       
-      
-      <h1 class="site-logo" id="site-title">RNA-Seq-Pop</h1>
       
     </a>
 </div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
@@ -445,7 +443,7 @@ title="Print to PDF"
                 
   <section class="tex2jax_ignore mathjax_ignore" id="running-the-workflow">
 <h1>Running the workflow<a class="headerlink" href="#running-the-workflow" title="Permalink to this heading">#</a></h1>
-<p>Once your data is set up, perform a dry run of snakemake to see which rules and modules the workflow is configured to run.</p>
+<p>Once your data is set up, perform a dry run of snakemake to see which rules and modules the workflow is configured to run. A dry-run does not actually run the workflow, but determines and prints to screen what will be run based on your configuration file and the current set of results.</p>
 <p><code class="docutils literal notranslate"><span class="pre">-n</span></code> indicates a dry run.</p>
 <p><code class="docutils literal notranslate"><span class="pre">snakemake</span> <span class="pre">--cores</span> <span class="pre">4</span> <span class="pre">--use-conda</span> <span class="pre">-n</span> </code></p>
 <p>To run the workflow on 4 cores. Conda will install all necessary packages.</p>
