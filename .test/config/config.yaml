@@ -120,8 +120,8 @@ miscellaneous:
             
       GeneFamiliesHeatmap:
             activate: False
-            eggnog: resources/Anogam_long.pep_eggnog_diamond.emapper.annotations.GO
-            pfam: resources/Anogam_long.pep_Pfamscan.seqs
+            eggnog: resources/Anogam_long.pep_eggnog_diamond.emapper.annotations.tsv.gz.GO
+            pfam: resources/Anogam_long.pep_Pfamscan.seqs.gz
 
       sweeps:
             activate: False
