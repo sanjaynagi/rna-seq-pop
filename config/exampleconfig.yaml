@@ -121,8 +121,8 @@ miscellaneous:
       
       GeneFamiliesHeatmap:
             activate: True
-            eggnog: resources/Anogam_long.pep_eggnog_diamond.emapper.annotations.GO
-            pfam: resources/Anogam_long.pep_Pfamscan.seqs
+            eggnog: resources/Anogam_long.pep_eggnog_diamond.emapper.annotations.tsv.gz.GO
+            pfam: resources/Anogam_long.pep_Pfamscan.seqs.gz
 
       # find DE genes that lie under Ag1000g selective sweeps 
       # Only applicable for Anopheles gambiae s.l
