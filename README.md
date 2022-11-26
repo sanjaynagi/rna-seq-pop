@@ -9,19 +9,17 @@
 [![GitHub release](https://img.shields.io/github/release/sanjaynagi/rna-seq-pop?include_prereleases=&sort=semver&color=blue)](https://github.com/sanjaynagi/rna-seq-pop/releases/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6078337.svg)](https://doi.org/10.5281/zenodo.6078337)
 
-   
-Sanjay C Nagi, Ambrose Oruni, David Weetman, Martin J Donnelly (2022). **RNA-Seq-Pop**: Exploiting the sequence in RNA-Seq - a Snakemake workflow reveals patterns of insecticide resistance in the malaria vector *Anopheles gambiae*. *bioRxiv* 2022.06.17.493894; doi: https://doi.org/10.1101/2022.06.17.493894 
+**Documentation**: https://sanjaynagi.github.io/rna-seq-pop/    
 
-* Documentation: https://sanjaynagi.github.io/rna-seq-pop/    
-
-This snakemake workflow can perform various analyses of illumina paired-end RNA-Sequencing data:
+RNA-Seq-Pop is a computational pipeline to analyse Illumina RNA-Sequencing data of any organism. As well as performing standard transcriptomic analyses, such as differential expression, RNA-Seq-Pop also calls and analyses genetic polymorphisms, extracting population genomic signals. The workflow can perform the following analyses of illumina paired-end RNA-Sequencing data:
 
 * Quality control of fastq reads with [fastqc](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/), QC metrics integrated into a final report with [multiQC](https://multiqc.info/)
 * Differential expression analysis with [Kallisto](https://pachterlab.github.io/kallisto/) at the gene level ([DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)) and transcript level ([Sleuth](https://github.com/pachterlab/sleuth)), and gene set enrichment analyses.
 
-* Variant calling with [freebayes](https://github.com/freebayes/freebayes), and an Fst and [Population branch statistic (PBS)](https://science.sciencemag.org/content/329/5987/75) analysis, both in windows and at the gene-level ([Scikit-allel](https://scikit-allel.readthedocs.io/en/stable/)).
-* Allele counts and frequencies at variants of interest (pre-specified loci of choice).
-* Calculation of various summary statistics (Wattersons Theta, Sequence Diversity, Dxy etc)    
+* Variant calling with [freebayes](https://github.com/freebayes/freebayes)
+* Fst and [Population branch statistic (PBS)](https://science.sciencemag.org/content/329/5987/75), both in windows across contigs and at the gene-level ([Scikit-allel](https://scikit-allel.readthedocs.io/en/stable/)).
+* Allele frequencies at variants of interest (pre-specified loci of choice).
+* Various summary statistics (Wattersons Theta, Sequence Diversity, Dxy etc)    
 * *Anopheles gambiae s.l* - Analysis of Ancestry Informative Markers (AIMs) to determine relative ancestry of *An.gambiae/coluzzii/arabiensis*. 
 * *Anopheles gambiae s.l* - Reports if DE genes are found underneath known selective sweep signals in the [Ag1000g](https://www.nature.com/articles/nature24995).
 * *Anopheles gambiae s.l* - Determines Karyotype of chromosomal inversions using [compkaryo](https://academic.oup.com/g3journal/article/9/10/3249/6026680) - [GH](https://github.com/sanjaynagi/compkaryo)
