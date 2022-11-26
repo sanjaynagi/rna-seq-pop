@@ -45,5 +45,6 @@ Please see the [documentation](https://sanjaynagi.github.io/rna-seq-pop/
 
 ## Release notes
 
+* 1.0.3 - support for single-end reads, venn and custom heatmaps added, updated results folder structure. fastqs can be specified in sample metadata.  
 * 1.0.2 - Changed Pi, theta calculations to be in windows across genome, and removed plotting from SummaryStats.py. Changed use of 'chrom' to 'contig'
 * 1.0.1 - New feature to plot a heatmap of various gene families 
