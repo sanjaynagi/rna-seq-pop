@@ -33,8 +33,8 @@ rule FastQC:
     input:
         lambda wildcards:getFASTQs(wildcards=wildcards, rules='fastqc'),
     output:
-        html="resources/reads/qc/{sample}_{n}_fastqc.html",
-        zip="resources/reads/qc/{sample}_{n}_fastqc.zip",
+        html="results/qc/{sample}_{n}_fastqc.html",
+        zip="results/qc/{sample}_{n}_fastqc.zip",
     log:
         "logs/FastQC/{sample}_{n}_QC.log",
     params:
@@ -49,7 +49,7 @@ rule cutAdapt:
     output:
         fastq1="resources/reads/trimmed/{sample}_1.fastq.gz",
         fastq2="resources/reads/trimmed/{sample}_2.fastq.gz" if config['fastq']['paired'] else [],
-        qc="resources/trimmed/{sample}.qc.txt",
+        qc="results/qc/cutadapt/{sample}.qc.txt",
     params:
         # https://cutadapt.readthedocs.io/en/stable/guide.html#adapter-types
         adapters=config["cutadapt"]["adaptors"],  #"-a AGAGCACACGTCTGAACTCCAGTCAC -g AGATCGGAAGAGCACACGT -A AGAGCACACGTCTGAACTCCAGTCAC -G AGATCGGAAGAGCACACGT",
@@ -70,7 +70,7 @@ rule BamStats:
         bam="results/alignments/{sample}.bam",
         idx="results/alignments/{sample}.bam.bai",
     output:
-        stats="results/alignments/bamStats/{sample}.flagstat",
+        stats="results/qc/alignments/{sample}.flagstat",
     log:
         "logs/BamStats/{sample}.log",
     wrapper:
@@ -85,7 +85,7 @@ rule Coverage:
         bam="results/alignments/{sample}.bam",
         idx="results/alignments/{sample}.bam.bai",
     output:
-        "results/alignments/coverage/{sample}.mosdepth.summary.txt",
+        "results/qc/coverage/{sample}.mosdepth.summary.txt",
     log:
         "logs/Coverage/{sample}.log",
     conda:
@@ -108,7 +108,7 @@ rule vcfStats:
             dataset=config["dataset"],
         ),
     output:
-        vcfStats="results/variantAnalysis/vcfs/stats/{contig}.txt",
+        vcfStats="results/qc/vcfs/{contig}.txt",
     conda:
         "../envs/variants.yaml"
     log:
@@ -142,19 +142,19 @@ rule multiQC:
     Integrate QC statistics from other tools into a final .html report
     """
     input:
-        expand("resources/reads/qc/{sample}_{n}_fastqc.zip", sample=samples, n=[1, 2]),
+        expand("results/qc/{sample}_{n}_fastqc.zip", sample=samples, n=[1, 2]),
         expand(
-            "results/variantAnalysis/vcfs/stats/{contig}.txt", contig=config["contigs"]
+            "results/qc/vcfs/{contig}.txt", contig=config["contigs"]
         )
         if config["VariantAnalysis"]["activate"]
         else [],
         expand(
-            "results/alignments/coverage/{sample}.mosdepth.summary.txt", sample=samples
+            "results/qc/coverage/{sample}.mosdepth.summary.txt", sample=samples
         ),
-        expand("results/alignments/bamStats/{sample}.flagstat", sample=samples),
+        expand("results/qc/alignments/{sample}.flagstat", sample=samples),
         expand("results/quant/{sample}", sample=samples),
     output:
-        "results/multiQC.html",
+        "results/qc/multiQC.html",
     params:
         "results/ resources/ logs/",  # Optional: extra parameters for multiqc.
     log:
