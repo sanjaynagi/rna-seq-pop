@@ -13,15 +13,15 @@ rule DifferentialGeneExpression:
     input:
         metadata=config["metadata"],
         genes2transcripts=config["ref"]["genes2transcripts"],
-        counts=expand("results/quant/{sample}", sample=samples),
+        counts=expand("results/counts/{sample}", sample=samples),
     output:
         csvs=expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
         xlsx=expand(
             "results/genediff/{dataset}_diffexp.xlsx", dataset=config["dataset"]
         ),
-        pca="results/quant/PCA.pdf",
-        countStats="results/quant/countStatistics.tsv",
-        normCounts="results/quant/normCounts.tsv",
+        pca="results/counts/PCA.pdf",
+        countStats="results/counts/countStatistics.tsv",
+        normCounts="results/counts/normCounts.tsv",
     group:
         "diffexp"
     priority: 20
@@ -43,7 +43,7 @@ rule DifferentialIsoformExpression:
     input:
         metadata=config["metadata"],
         genes2transcripts=config["ref"]["genes2transcripts"],
-        counts=expand("results/quant/{sample}", sample=samples),
+        counts=expand("results/counts/{sample}", sample=samples),
     output:
         csvs=expand("results/isoformdiff/{comp}.csv", comp=config["contrasts"]),
         xlsx=expand(
@@ -184,7 +184,7 @@ rule Ag1000gSweepsDE:
 rule geneFamilies:
     input:
         genediff=expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
-        normcounts="results/quant/normCounts.tsv",
+        normcounts="results/counts/normCounts.tsv",
         eggnog=config["miscellaneous"]["GeneFamiliesHeatmap"]["eggnog"],
         pfam=config["miscellaneous"]["GeneFamiliesHeatmap"]["pfam"],
     output:
