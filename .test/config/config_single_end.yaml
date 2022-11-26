@@ -39,8 +39,14 @@ contrasts:
       - 'ContTia_PiriTia'
 
 
-QualityControl:                               # Activate Quality control analyses
-      activate: True
+QualityControl:
+      fastqc:
+            activate: True
+      mosdepth:
+            activate: True
+      multiqc:
+            activate: True 
+            
 
 DifferentialExpression:                       # Activate differential expression analyses
       activate: True   
