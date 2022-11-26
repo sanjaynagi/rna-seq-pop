@@ -100,7 +100,7 @@ def GetDesiredOutputs(wildcards):
         wanted_input.extend(
             expand(
                 [
-                    "results/multiQC.html",
+                    "results/qc/multiQC.html",
                 ],
                 sample=samples,
             )
@@ -166,7 +166,7 @@ def GetDesiredOutputs(wildcards):
                     "results/variantAnalysis/SNPstats/nSNPsPerGene.tsv",
                     "results/variantAnalysis/diversity/{dataset}_SNPdensity_{contig}.svg",
                     "results/variantAnalysis/diversity/SequenceDiversity.tsv",
-                    "results/alignments/bamStats/{sample}.flagstat",
+                    "results/qc/alignments/{sample}.flagstat",
                 ],
                 contig=config["contigs"],
                 dataset=config["dataset"],
@@ -178,7 +178,7 @@ def GetDesiredOutputs(wildcards):
             wanted_input.extend(
                 expand(
                     [
-                        "results/alignments/coverage/{sample}.mosdepth.summary.txt",
+                        "results/qc/coverage/{sample}.mosdepth.summary.txt",
                     ],
                 sample=samples,
                 )
