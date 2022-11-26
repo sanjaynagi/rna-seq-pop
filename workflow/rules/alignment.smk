@@ -24,7 +24,7 @@ rule KallistoQuant:
         fastq=lambda wildcards: getFASTQs(wildcards=wildcards, rules="KallistoQuant"),
         index="resources/reference/kallisto.idx",
     output:
-        directory("results/quant/{sample}"),
+        directory("results/counts/{sample}"),
     group:
         "diffexp"
     log:
