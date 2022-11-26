@@ -152,7 +152,7 @@ rule multiQC:
             "results/qc/coverage/{sample}.mosdepth.summary.txt", sample=samples
         ),
         expand("results/qc/alignments/{sample}.flagstat", sample=samples),
-        expand("results/quant/{sample}", sample=samples),
+        expand("results/counts/{sample}", sample=samples),
     output:
         "results/qc/multiQC.html",
     params:
