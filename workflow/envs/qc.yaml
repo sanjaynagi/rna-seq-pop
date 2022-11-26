@@ -3,5 +3,3 @@ channels:
   - conda-forge
 dependencies:
   - fastqc=0.11.9
-  - rseqc=4.0.0
-  - qualimap
