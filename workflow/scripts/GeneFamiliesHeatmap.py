@@ -83,6 +83,7 @@ def gene_ids_from_domain(gene_annot_df, domain):
 gene_fams = {'COE': 'COesterase', 
              'OBP':'PBP_GOBP', 
              'OR':'7tm_6', 
+             'UGT':'UDPGT',
              'Io':['Lig_chan','7tm_1'],
              'Gr': '7tm_7',
              'P450':'p450', 
