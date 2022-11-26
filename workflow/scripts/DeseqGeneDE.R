@@ -58,7 +58,7 @@ vst_pca = function(counts, samples, colourvar, name="PCA", st="", comparison="")
   pc = data.frame(pca2$x) %>% rownames_to_column("sampleID")
   pc = left_join(pc, samples)
 
-  pdf(glue("results/quant/{name}{st}{comparison}.pdf"))  
+  pdf(glue("results/counts/{name}{st}{comparison}.pdf"))  
   print(ggplot(data=pc,aes(x=PC1, y=PC2, colour=treatment)) + 
     geom_point(size=6, alpha=0.8) + 
     geom_text_repel(aes(label=sampleID), colour="black") + 
@@ -114,7 +114,7 @@ cat("\n", "------------- Kallisto - DESeq2 - RNASeq Differential expression ----
 #### Read counts for each sample
 df = list()
 for (sample in metadata$sampleID){
-  df[[sample]]= fread(glue("results/quant/{sample}/abundance.tsv"), sep = "\t")
+  df[[sample]]= fread(glue("results/counts/{sample}/abundance.tsv"), sep = "\t")
 }
 
 counts = data.frame('TranscriptID' = df[[1]]$target_id)
@@ -141,10 +141,10 @@ count_stats$genes_zerocounts = apply(counts, 2, function(x){sum(x==0)}) # genes 
 count_stats$genes_lessthan10counts = apply(counts, 2, function(x){sum(x<10)}) # genes with less than 10 counts
 count_stats = count_stats %>% dplyr::mutate("proportion_zero" = genes_zerocounts/ngenes,
                                      "proportion_low" = genes_lessthan10counts/ngenes)
-count_stats %>% fwrite(., "results/quant/countStatistics.tsv",sep="\t")
+count_stats %>% fwrite(., "results/counts/countStatistics.tsv",sep="\t")
 
 print("Counting and plotting total reads per sample...")
-pdf("results/quant/total_reads_counted.pdf")
+pdf("results/counts/total_reads_counted.pdf")
 ggplot(count_stats, aes(x=Sample, y=total_counts, fill=metadata$treatment)) + 
   geom_bar(stat='identity') + 
   theme_light() +
@@ -166,17 +166,17 @@ normcounts = res[[3]]
 ### write out raw and normalised counts 
 counts %>% 
   rownames_to_column("GeneID") %>% 
-  fwrite(., "results/quant/rawcounts.tsv", sep="\t", row.names = FALSE)
+  fwrite(., "results/counts/rawcounts.tsv", sep="\t", row.names = FALSE)
 
 normcounts %>% 
   as.data.frame() %>% 
   rownames_to_column("GeneID") %>% 
   round_df(., 1) %>% 
-  fwrite(., "results/quant/normCounts.tsv", sep="\t", row.names = FALSE)
+  fwrite(., "results/counts/normCounts.tsv", sep="\t", row.names = FALSE)
 
 # calculate correlations between samples based on the count data, and plot heatmap
 correlations = cor(vstcounts)
-pdf("results/quant/heatmap_correlations.pdf")
+pdf("results/counts/heatmap_correlations.pdf")
 pheatmap(correlations)
 garbage = dev.off()
 
@@ -294,7 +294,7 @@ totalAligned = c()
 
 # open kallisto json info and store stats, save to file 
 for (sample in metadata$sampleID){
-  run = fromJSON(glue("results/quant/{sample}/run_info.json"), flatten=TRUE)
+  run = fromJSON(glue("results/counts/{sample}/run_info.json"), flatten=TRUE)
   
   totalReads = c(totalReads, run$n_processed)
   totalAligned = c(totalAligned, run$n_pseudoaligned)
@@ -305,7 +305,7 @@ df = data.frame("sample" = c(metadata$sampleID, "Total"),
                 "totalReads" = c(totalReads, sum(totalReads)),
                 "totalAligned" = c(totalAligned, sum(totalAligned))) %>% 
   mutate("percentage" = (totalAligned/totalReads)*100) %>% 
-  fwrite("results/quant/KallistoQuantSummary.tsv", sep="\t", col.names = TRUE)
+  fwrite("results/counts/KallistoQuantSummary.tsv", sep="\t", col.names = TRUE)
 
 
 sessionInfo()
