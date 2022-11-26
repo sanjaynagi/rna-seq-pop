@@ -58,7 +58,7 @@ vst_pca = function(counts, samples, colourvar, name="PCA", st="", comparison="")
   pc = data.frame(pca2$x) %>% rownames_to_column("sampleID")
   pc = left_join(pc, samples)
 
-  pdf(glue("results/plots/{name}{st}{comparison}.pdf"))  
+  pdf(glue("results/quant/{name}{st}{comparison}.pdf"))  
   print(ggplot(data=pc,aes(x=PC1, y=PC2, colour=treatment)) + 
     geom_point(size=6, alpha=0.8) + 
     geom_text_repel(aes(label=sampleID), colour="black") + 
@@ -176,7 +176,7 @@ normcounts %>%
 
 # calculate correlations between samples based on the count data, and plot heatmap
 correlations = cor(vstcounts)
-pdf("results/plots/heatmap_correlations.pdf")
+pdf("results/quant/heatmap_correlations.pdf")
 pheatmap(correlations)
 garbage = dev.off()
 

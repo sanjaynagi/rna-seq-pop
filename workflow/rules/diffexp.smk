@@ -19,7 +19,7 @@ rule DifferentialGeneExpression:
         xlsx=expand(
             "results/genediff/{dataset}_diffexp.xlsx", dataset=config["dataset"]
         ),
-        pca="results/plots/PCA.pdf",
+        pca="results/quant/PCA.pdf",
         countStats="results/quant/countStatistics.tsv",
         normCounts="results/quant/normCounts.tsv",
     group:

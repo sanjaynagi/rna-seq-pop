@@ -150,7 +150,7 @@ def GetDesiredOutputs(wildcards):
                     "results/genediff/{dataset}_diffexp.xlsx",
                     "results/isoformdiff/{comp}.csv",
                     "results/isoformdiff/{dataset}_isoformdiffexp.xlsx",
-                    "results/plots/PCA.pdf",
+                    "results/quant/PCA.pdf",
                     "results/quant/countStatistics.tsv",
                 ],
                 comp=config["contrasts"],
