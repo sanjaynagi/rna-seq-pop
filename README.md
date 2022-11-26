@@ -2,7 +2,7 @@
   RNA-Seq-Pop
 </h1>
 
-[<img src="https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True" width="200"/>](https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True)   
+[<img src="https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True" width="400"/>](https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True)   
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥5.11.0-brightgreen.svg)](https://snakemake.bitbucket.io)
 [![Execute notebook](https://github.com/sanjaynagi/rna-seq-pop/workflows/rna-seq-pop/badge.svg)](https://github.com/sanjaynagi/rna-seq-pop/actions?query=workflow:"rna-seq-pop")
@@ -16,7 +16,7 @@ Sanjay C Nagi, Ambrose Oruni, David Weetman, Martin J Donnelly (2022). **RNA-Seq
 
 This snakemake workflow can perform various analyses of illumina paired-end RNA-Sequencing data:
 
-* Quality control of fastq reads with [FASTQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/), QC metrics integrated into one final QC report with [multiQC](https://multiqc.info/)
+* Quality control of fastq reads with [fastqc](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/), QC metrics integrated into a final report with [multiQC](https://multiqc.info/)
 * Differential expression analysis with [Kallisto](https://pachterlab.github.io/kallisto/) at the gene level ([DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)) and transcript level ([Sleuth](https://github.com/pachterlab/sleuth)), and gene set enrichment analyses.
 
 * Variant calling with [freebayes](https://github.com/freebayes/freebayes), and an Fst and [Population branch statistic (PBS)](https://science.sciencemag.org/content/329/5987/75) analysis, both in windows and at the gene-level ([Scikit-allel](https://scikit-allel.readthedocs.io/en/stable/)).
@@ -26,7 +26,7 @@ This snakemake workflow can perform various analyses of illumina paired-end RNA-
 * *Anopheles gambiae s.l* - Reports if DE genes are found underneath known selective sweep signals in the [Ag1000g](https://www.nature.com/articles/nature24995).
 * *Anopheles gambiae s.l* - Determines Karyotype of chromosomal inversions using [compkaryo](https://academic.oup.com/g3journal/article/9/10/3249/6026680) - [GH](https://github.com/sanjaynagi/compkaryo)
 
-The workflow is generalised, and will function with any Illumina paired-end RNA-sequencing. However, certain modules, such as the ancestry and karyotyping, are only appropriate for *An. gambiae s.l*. These can be activated in the configuration file (config.yaml). The workflow works with pooled samples, diploid, or haploid individuals. 
+The workflow is generalised, and will function with any Illumina single or paired-end RNA-sequencing. However, certain modules, such as the ancestry and karyotyping, are only appropriate for *An. gambiae s.l*. These can be activated in the configuration file (config.yaml). The workflow works with pooled samples, diploid, or haploid individuals. 
 
 If you have any feedback on how the workflow may be improved, please do get in touch, or feel free to fork the github repo and create a pull request for any additional features you would like to implement. If you are using the workflow and would like to give feedback or troubleshoot, consider joining the discord server [here](https://discord.gg/RaXjP8APCq), otherwise email or log an issue on github. 
 
