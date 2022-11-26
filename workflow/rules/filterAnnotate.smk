@@ -26,7 +26,7 @@ rule RestrictToSNPs:
     Filter out indels
     """
     input:
-        getVCF,
+        "results/variantAnalysis/vcfs/freebayes/variants.{contig}.vcf",
     output:
         temp("results/variantAnalysis/vcfs/variants.{contig}.vcf"),
     log:

@@ -31,7 +31,7 @@ else:
 include: "rules/common.smk"
 
 
-welcome(version="v1.0.2")
+welcome(version="v1.0.3")
 
 
 include: "rules/qc.smk"
