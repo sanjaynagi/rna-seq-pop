@@ -100,7 +100,7 @@ def GetDesiredOutputs(wildcards):
                 [
                     "results/.input.check",
                     "results/alignments/{sample}_stats/genome_results.txt",
-                    "results/multiQC.html",
+                    "results/qc/multiQC.html",
                 ],
                 sample=samples,
             )
@@ -111,7 +111,7 @@ def GetDesiredOutputs(wildcards):
             wanted_input.extend(
                 expand(
                     [
-                        "resources/reads/qc/{sample}_{n}_fastqc.html",
+                        "results/qc/{sample}_{n}_fastqc.html",
                     ],
                     sample=samples,
                     n=[1, 2],
@@ -121,7 +121,7 @@ def GetDesiredOutputs(wildcards):
             wanted_input.extend(
                 expand(
                     [
-                        "resources/reads/qc/{sample}_{n}_fastqc.html",
+                        "results/qc/{sample}_{n}_fastqc.html",
                     ],
                     sample=samples,
                     n=1
@@ -133,8 +133,8 @@ def GetDesiredOutputs(wildcards):
             wanted_input.extend(
                 expand(
                     [
-                        "results/alignments/coverage/{sample}.mosdepth.summary.txt",
-                        "results/alignments/bamStats/{sample}.flagstat",
+                        "results/qc/coverage/{sample}.mosdepth.summary.txt",
+                        "results/qc/alignments/{sample}.flagstat",
                     ],
                     sample=samples,
                 )
@@ -187,7 +187,7 @@ def GetDesiredOutputs(wildcards):
         wanted_input.extend(
             expand(
                 [
-                    "results/variantAnalysis/vcfs/stats/{contig}.txt",
+                    "results/qc/vcfs/{contig}.txt",
                     "results/variantAnalysis/pca/PCA-{contig}-{dataset}.svg",
                     "results/variantAnalysis/SNPstats/snpsPerGenomicFeature.tsv",
                     "results/variantAnalysis/SNPstats/nSNPsPerGene.tsv",
