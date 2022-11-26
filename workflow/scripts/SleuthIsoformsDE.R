@@ -26,7 +26,7 @@ metadata = fread(snakemake@input[['metadata']], sep="\t") %>%
   dplyr::rename('sample' = "sampleID")
 
 #add path column for sleuth object
-metadata$path = paste0("results/quant/", metadata$sample)
+metadata$path = paste0("results/counts/", metadata$sample)
 
 #read metadata and get contrasts
 gene_names = fread(snakemake@input[['genes2transcripts']], sep="\t") %>% select(-GeneID)
