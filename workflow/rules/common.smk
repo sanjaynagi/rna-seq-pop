@@ -111,7 +111,7 @@ def GetDesiredOutputs(wildcards):
             wanted_input.extend(
                 expand(
                     [
-                        "resources/reads/qc/{sample}_{n}_fastqc.html",
+                        "results/qc/{sample}_{n}_fastqc.html",
                     ],
                     sample=samples,
                     n=[1, 2],
@@ -121,13 +121,12 @@ def GetDesiredOutputs(wildcards):
             wanted_input.extend(
                 expand(
                     [
-                        "resources/reads/qc/{sample}_{n}_fastqc.html",
+                        "results/qc/{sample}_{n}_fastqc.html",
                     ],
                     sample=samples,
                     n=1
                 )
             )
-
 
 
     if config["DifferentialExpression"]["activate"]:
@@ -140,8 +139,8 @@ def GetDesiredOutputs(wildcards):
                     "results/genediff/{dataset}_diffexp.xlsx",
                     "results/isoformdiff/{comp}.csv",
                     "results/isoformdiff/{dataset}_isoformdiffexp.xlsx",
-                    "results/plots/PCA.pdf",
-                    "results/quant/countStatistics.tsv",
+                    "results/counts/PCA.pdf",
+                    "results/counts/countStatistics.tsv",
                 ],
                 comp=config["contrasts"],
                 dataset=config["dataset"],
@@ -161,7 +160,7 @@ def GetDesiredOutputs(wildcards):
         wanted_input.extend(
             expand(
                 [
-                    "results/variantAnalysis/vcfs/stats/{contig}.txt",
+                    "results/qc/vcfs/{contig}.txt",
                     "results/variantAnalysis/pca/PCA-{contig}-{dataset}.svg",
                     "results/variantAnalysis/SNPstats/snpsPerGenomicFeature.tsv",
                     "results/variantAnalysis/SNPstats/nSNPsPerGene.tsv",
