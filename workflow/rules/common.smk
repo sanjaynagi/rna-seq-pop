@@ -58,19 +58,6 @@ def getFASTQs(wildcards, rules=None):
         else:
             return [u.fq1, u.fq2] if config['fastq']['paired'] == True else u.fq1
 
-
-def getVCF(wildcards):
-    if config["VariantAnalysis"]["caller"] == "octopus":
-        return "results/variantAnalysis/vcfs/octopus/variants.{contig}.vcf"
-    elif config["VariantAnalysis"]["caller"] == "freebayes":
-        return "results/variantAnalysis/vcfs/freebayes/variants.{contig}.vcf"
-    else:
-        assert config["VariantAnalysis"]["caller"] in [
-            "octopus",
-            "freebayes",
-        ], "please choose an appropriate variant caller ('octopus' or 'freebayes')"
-
-
 def get_venn_list():
     import itertools
 
