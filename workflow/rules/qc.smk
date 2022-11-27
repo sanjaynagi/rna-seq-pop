@@ -6,7 +6,7 @@ rule CheckInputs:
     Check to see that fastq files exist, and reference files are appropriate
     """
     input:
-        ref=config["ref"]["genome"],
+        ref=config["ref"]["genome"].rstrip(".gz"),
     output:
         touch("results/.input.check"),
     params:
