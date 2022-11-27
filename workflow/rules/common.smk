@@ -213,10 +213,9 @@ def GetDesiredOutputs(wildcards):
         wanted_input.extend(
             expand(
                 [
-                    "results/gsea/genediff/{comp}.DE.{pathway}.tsv",
+                    "results/gsea/genediff/{comp}.de.tsv",
                 ],
                 comp=config["contrasts"],
-                pathway=["kegg", "GO"],
             )
         )
 
@@ -226,9 +225,8 @@ def GetDesiredOutputs(wildcards):
     ):
         wanted_input.extend(
             expand(
-                ["results/gsea/fst/{comp}.FST.{pathway}.tsv"],
+                ["results/gsea/fst/{comp}.fst.tsv"],
                 comp=config["contrasts"],
-                pathway=["kegg", "GO"],
             )
         )
 
