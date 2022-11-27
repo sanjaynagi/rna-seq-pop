@@ -232,16 +232,6 @@ def GetDesiredOutputs(wildcards):
             )
         )
 
-    if config["miscellaneous"]["diffsnps"]["activate"]:
-        wanted_input.extend(
-            expand(
-                [
-                    "results/variantAnalysis/diffsnps/{comp}.sig.kissDE.tsv",
-                ],
-                comp=config["contrasts"],
-            )
-        )
-
     if config["DifferentialExpression"]["venn"]["activate"]:
         comp_list = get_venn_list()
 

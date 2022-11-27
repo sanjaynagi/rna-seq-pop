@@ -130,7 +130,3 @@ miscellaneous:
             activate: True
             padj_threshold: 0.05
             fc_threshold: 1.5
-      #### The following modules may not be functional #### 
-      # Activate differential SNPs analysis with kissde
-      diffsnps:
-            activate: False
