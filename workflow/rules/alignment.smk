@@ -43,7 +43,6 @@ rule GenomeUnzip:
         config["ref"]["genome"],
     output:
         config["ref"]["genome"].rstrip(".gz"),
-        touch("resources/reference/.genome_unzipped"),
     log:
         "logs/GenomeUnzip.log",
     shell:
