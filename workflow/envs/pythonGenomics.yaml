@@ -11,3 +11,4 @@ dependencies:
   - xlrd=1.2.0
   - bcftools=1.11
   - adjusttext
+  - tqdm
