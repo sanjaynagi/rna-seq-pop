@@ -3,8 +3,8 @@ chunks = np.arange(1, config["VariantAnalysis"]["chunks"])
 
 rule GenerateFreebayesParams:
     input:
-        ref_idx=config["ref"]["genome"],
-        index=config["ref"]["genome"] + ".fai",
+        ref_idx=config["ref"]["genome"].rstrip(".gz"),
+        index=config["ref"]["genome"].rstrip(".gz") + ".fai",
         bams=expand("results/alignments/{sample}.bam", sample=samples),
     output:
         bamlist="results/alignments/bam.list",
@@ -33,7 +33,7 @@ rule VariantCallingFreebayes:
     input:
         bams=expand("results/alignments/{sample}.bam", sample=samples),
         index=expand("results/alignments/{sample}.bam.bai", sample=samples),
-        ref=config["ref"]["genome"],
+        ref=config["ref"]["genome"].rstrip(".gz"),
         samples=ancient("results/alignments/bam.list"),
         pops=ancient("results/alignments/populations.tsv"),
         regions=ancient("resources/regions/genome.{contig}.region.{i}.bed"),

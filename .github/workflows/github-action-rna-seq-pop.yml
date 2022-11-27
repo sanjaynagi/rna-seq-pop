@@ -26,7 +26,7 @@ jobs:
         with:
           directory: '.test'
           snakefile: 'workflow/Snakefile'
-          args: '--cores 4 --use-conda --conda-cleanup-pkgs cache'
+          args: '--cores 4 --use-conda --configfile .test/config/config_paired_end.yaml --conda-cleanup-pkgs cache'
 
       - name: Test workflow single-end
         uses: snakemake/snakemake-github-action@v1.23.0

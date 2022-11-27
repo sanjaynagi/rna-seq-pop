@@ -1,0 +1,133 @@
+metadata: config/samples.tsv
+units: config/units.tsv
+
+# Dataset name
+dataset: 'Test-GithubActionsCI'
+
+fastq: 
+      auto: True # set auto if your files follow 
+      paired: True
+
+
+cutadapt:
+      activate: False
+      adaptors:
+
+# Paths for reference files 
+ref:
+  genome:
+        "resources/reference/Anopheles-gambiae-PEST_CHROMOSOMES_AgamP4-X.fa.gz"
+  transcriptome:
+        "resources/reference/Anopheles-gambiae-PEST_TRANSCRIPTS_AgamP4.12-X.fa.gz"
+  gtf: 
+        "resources/reference/Anopheles-gambiae-PEST_BASEFEATURES_AgamP4.12-X.gtf"
+  gff:
+        "resources/reference/Anopheles-gambiae-PEST_BASEFEATURES_AgamP4.12-X.gff3"
+  snpeffdb:
+        "Anopheles_gambiae"
+  genes2transcripts:
+        "resources/Gene2TranscriptMap.tsv"
+
+# Chromosome names for the appropriate species. Should correspond to the reference fasta/gff files. 
+contigs: ['X']
+
+# List of contrasts to do DE and Fst analysis on. Should correspond to the 'treatment' columns of the samples.tsv file, and be separated by an underscore "_". i.e ['control_case'], or ['Kisumu_Tiassale'].
+# The treatment names themselves must not contain underscores
+contrasts:
+      - 'Kisumu_ContTia'
+      - 'ContTia_PiriTia'
+
+QualityControl:
+      fastqc:
+            activate: True
+      mosdepth:
+            activate: True
+      multiqc:
+            activate: True 
+
+DifferentialExpression:                       # Activate differential expression analyses
+      activate: True   
+
+      venn:
+            activate: True
+            padj_threshold: 0.05
+            groups: ['Kisumu_ContTia', 'ContTia_PiriTia']
+
+      progressiveGenes:
+            activate: True
+            padj_threshold: 0.05
+            fc_threshold: 1.5
+            groups: "Kisumu_ContTia_PiriTia"
+
+      GSEA:
+            activate: True
+            gaf: "resources/reference/X-test-PEST_GO.gaf"
+            KeggSpeciesID: "aga" # 3 letter KEGG species identifier
+            replaceString: "AgaP_"
+
+
+VariantAnalysis:
+      activate: True
+      caller: 'freebayes' # or 'freebayes'
+      ploidy: 10
+      chunks: 9 # Number of chunks to split the genome into when parallelising freebayes
+# Number of chunks to split the genome into when parallelising freebayes
+      missingness: 0.3
+      pca:
+            activate: True
+            missingness: 0.4
+
+      summaryStatistics:
+            activate: True
+            missingness: 0.4
+
+      selection:
+            activate: True
+            missingness: 0.5
+            # Do we want to run pbs (Needs three conditions, two more closely related and a slight outgroup)
+            pbs:
+                  activate: True
+                  contrasts: 
+                        - 'PiriTia_ContTia_Kisumu'
+                  windownames: ['small']
+                  windowsizes: [1000]
+                  windowsteps: [500]
+
+      # For Anopheles gambiae s.l only - run Ancestry Informative Marker analysis.
+      ancestry:
+            activate: True
+            missingness: 0.5                                # proportion between 0 and 1 
+            gambcolu: "resources/gamb_vs_colu.zarr"         # path to gambcolu AIMs
+            arab: "resources/gambcolu_vs_arab.zarr"         # path to arab AIMs
+
+      # Run analysis with compkaryo to determine proportion % karyotype
+      # Only 2la and 2Rb reliable for now. 
+      karyotype:
+            activate: False
+            inversions:
+                  - "2La"
+                  - "2Rj"
+                  - "2Rb"
+                  - "2Rc_col"
+                  - "2Rc_gam"
+                  - "2Rd"
+                  - "2Ru"
+
+
+
+
+miscellaneous:
+# If activate:True, creates allele balance .xlsx reports on IR mutations of choice
+      VariantsOfInterest: 
+            activate: False
+            path: "resources/test-IRmutations.tsv"
+            
+      GeneFamiliesHeatmap:
+            activate: False
+            eggnog: resources/Anogam_long.pep_eggnog_diamond.emapper.annotations.tsv.gz.GO
+            pfam: resources/Anogam_long.pep_Pfamscan.seqs.gz
+
+      sweeps:
+            activate: False
+            padj_threshold: 0.05
+            fc_threshold: 1.5

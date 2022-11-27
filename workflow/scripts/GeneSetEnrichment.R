@@ -45,9 +45,6 @@ metadata = fread(snakemake@input[['metadata']]) %>% as.data.frame()
 comparisons = data.frame("contrast" = snakemake@params[['DEcontrasts']])
 gaffile = snakemake@input[['gaf']]
 variantCalling = snakemake@params[['VariantCalling']]
-pbs = snakemake@params[['pbs']]
-diffsnps = snakemake@params[['diffsnps']]
-pbscomps = snakemake@params[['pbscomps']]
 replaceString = snakemake@params[['replaceStringKegg']]
 speciesID = snakemake@params[['KeggSpeciesID']]
 
@@ -102,36 +99,5 @@ if (variantCalling == TRUE){
 }
 
 
-
-### PBS ####
-if (pbs == TRUE){
-  for (comp in pbscomps){
-  print(glue("Running KEGG and GO enrichment analyses for PBS {comp}"))
-  # make ranked list using DE results, rank based on log2foldchange
-  rank = fread("results/variantAnalysis/selection/PbsPerGene.tsv") %>% 
-    distinct() %>% 
-    drop_na() %>% 
-    dplyr::select(GeneID, glue("{comp}PBS")) %>% 
-    deframe()
-  
-  rank = rank %>% abs() %>% sort(decreasing = TRUE)
-  
-  runEnrich(rankedList = rank, GeneSetList = GeneSetList, outName = glue("/pbs/{comp}.PBS"))
-  }
-}
-
-
-#### diff SNPs ####
-if (diffsnps == TRUE){
-  for (comp in comparisons$contrast){
-  print(glue("Running KEGG and GO enrichment analyses for diffSNPs {comp}"))
-  # make ranked list using DE results, rank based on log2foldchange
-  rank = fread(glue("results/variantAnalysis/diffsnps/{comp}.kissDE.tsv"), sep="\t") %>% 
-    arrange("Deltaf/DeltaPSI") %>% 
-    dplyr::select(c('GeneID', all_of("Deltaf/DeltaPSI"))) %>% 
-    deframe()
-  runEnrich(rankedList = rank, GeneSetList = GeneSetList, outName = glue("/diffsnps/{comp}.diffsnps"))
-  }
-}
 
 sessionInfo()
