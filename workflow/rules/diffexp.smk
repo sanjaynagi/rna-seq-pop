@@ -105,18 +105,7 @@ rule GeneSetEnrichment:
         metadata=config["metadata"],
         gaf=config["DifferentialExpression"]["GSEA"]["gaf"],
         DEresults=expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
-        diffsnps=(
-            expand(
-                "results/variantAnalysis/diffsnps/{comp}.kissDE.tsv",
-                comp=config["contrasts"],
-            )
-            if config["miscellaneous"]["diffsnps"]["activate"]
-            else []
-        ),
         Fst="results/variantAnalysis/selection/FstPerGene.tsv",
-        PBS="results/variantAnalysis/selection/PbsPerGene.tsv"
-        if config["VariantAnalysis"]["selection"]["pbs"]["activate"]
-        else [],
     output:
         expand(
             "results/gsea/genediff/{comp}.DE.{pathway}.tsv",
@@ -128,26 +117,9 @@ rule GeneSetEnrichment:
             comp=config["contrasts"],
             pathway=["kegg", "GO"],
         ),
-        expand(
-            "results/gsea/diffsnps/{comp}.diffsnps.{pathway}.tsv",
-            comp=config["contrasts"],
-            pathway=["kegg", "GO"],
-        )
-        if config["miscellaneous"]["diffsnps"]["activate"]
-        else [],
-        expand(
-            "results/gsea/pbs/{pbscomp}.PBS.{pathway}.tsv",
-            pbscomp=config["VariantAnalysis"]["selection"]["pbs"]["contrasts"],
-            pathway=["kegg", "GO"],
-        )
-        if config["VariantAnalysis"]["selection"]["pbs"]["activate"]
-        else [],
     params:
         DEcontrasts=config["contrasts"],
         VariantCalling=config["VariantAnalysis"]["activate"],
-        pbs=config["VariantAnalysis"]["selection"]["pbs"]["activate"],
-        pbscomps=config["VariantAnalysis"]["selection"]["pbs"]["contrasts"],
-        diffsnps=config["miscellaneous"]["diffsnps"]["activate"],
         replaceStringKegg=config["DifferentialExpression"]["GSEA"]["replaceString"],
         KeggSpeciesID=config["DifferentialExpression"]["GSEA"]["KeggSpeciesID"],
     conda:
