@@ -99,35 +99,31 @@ rule progressiveGenesDE:
 
 rule GeneSetEnrichment:
     """
-    Perform Gene Set Enrichment analysis with fgsea, on GO terms and KEGG pathways
+    Perform hypergeometric test GO terms from a gaf file 
     """
     input:
         metadata=config["metadata"],
         gaf=config["DifferentialExpression"]["GSEA"]["gaf"],
         DEresults=expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
-        Fst="results/variantAnalysis/selection/FstPerGene.tsv",
+        Fst="results/variantAnalysis/selection/FstPerGene.tsv" if config["VariantAnalysis"]['selection']["activate"] else [],
     output:
         expand(
-            "results/gsea/genediff/{comp}.DE.{pathway}.tsv",
+            "results/gsea/genediff/{comp}.de.tsv",
             comp=config["contrasts"],
-            pathway=["kegg", "GO"],
         ),
         expand(
-            "results/gsea/fst/{comp}.FST.{pathway}.tsv",
+            "results/gsea/fst/{comp}.fst.tsv",
             comp=config["contrasts"],
-            pathway=["kegg", "GO"],
-        ),
+        ) if config["VariantAnalysis"]['selection']["activate"] else [],
     params:
         DEcontrasts=config["contrasts"],
-        VariantCalling=config["VariantAnalysis"]["activate"],
-        replaceStringKegg=config["DifferentialExpression"]["GSEA"]["replaceString"],
-        KeggSpeciesID=config["DifferentialExpression"]["GSEA"]["KeggSpeciesID"],
+        selection=config["VariantAnalysis"]['selection']["activate"]
     conda:
-        "../envs/gsea.yaml"
+        "../envs/pythonGenomics.yaml"
     log:
         "logs/GeneSetEnrichment.log",
     script:
-        "../scripts/GeneSetEnrichment.R"
+        "../scripts/GeneSetEnrichment.py"
 
 
 rule Ag1000gSweepsDE:
