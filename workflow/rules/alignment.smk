@@ -35,15 +35,28 @@ rule KallistoQuant:
     wrapper:
         "v1.15.0/bio/kallisto/quant"
 
-
-rule GenomeIndex:
+rule GenomeUnzip:
     """
     Index the reference genome with samtools
     """
     input:
         config["ref"]["genome"],
     output:
-        config["ref"]["genome"] + ".fai",
+        config["ref"]["genome"].rstrip(".gz"),
+        touch("resources/reference/.genome_unzipped"),
+    log:
+        "logs/GenomeUnzip.log",
+    shell:
+        "gzip -d -c {input} > {output} 2> {log}"
+
+rule GenomeIndex:
+    """
+    Index the reference genome with samtools
+    """
+    input:
+        config["ref"]["genome"].rstrip(".gz"),
+    output:
+        config["ref"]["genome"].rstrip(".gz") + ".fai",
     log:
         "logs/GenomeIndex.log",
     wrapper:
@@ -55,7 +68,7 @@ rule HISAT2index:
     Make a HISAT2 index of the reference genome
     """
     input:
-        fasta=config["ref"]["genome"],
+        fasta=config["ref"]["genome"].rstrip(".gz"),
     output:
         "resources/reference/ht2index/idx.1.ht2",
         touch("resources/reference/ht2index/.complete"),
