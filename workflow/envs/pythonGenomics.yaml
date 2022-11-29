@@ -12,3 +12,4 @@ dependencies:
   - bcftools=1.11
   - adjusttext
   - tqdm
+  - statsmodels

@@ -11,12 +11,7 @@ import numpy as np
 
 ###### configuration - metadata and parameters ######
 selection = snakemake.params['selection']
-
 comparisons = pd.DataFrame(snakemake.params['DEcontrasts'], columns=['contrast'])
-# comparisons = comparisons.contrast.str.split("_", expand=True)
-# comparisons.columns = ['sus', 'res']
-# comparisons = [list(row) for i,row in comparisons.iterrows()]
-
 
 def load_go_descriptions():
     import urllib.request
@@ -50,6 +45,7 @@ def go_hypergeometric(target_gene_list, gaf_df):
 
 def _hypergeometric(annotation_df, column_name, target_gene_list, N, k):
     from scipy.stats import hypergeom
+    from statsmodels.stats.multitest import fdrcorrection
     from tqdm import tqdm
 
     sig_list = []
@@ -68,14 +64,16 @@ def _hypergeometric(annotation_df, column_name, target_gene_list, N, k):
         res_list.append(res)    
 
     hyper_geo = pd.DataFrame({'annotation': sig_list, 'pval':res_list})
-    hyper_geo.loc[:, 'padj'] = [np.min([padj, 1]) for padj in hyper_geo.loc[:, 'pval']*len(unique_annots)]
-    
-    return(hyper_geo.sort_values(by='pval'))
+    hypo, hyper_geo.loc[:, 'padj'] =  fdrcorrection(hyper_geo['pval'])    
+    return(hyper_geo.sort_values(by='padj'))
     
 
 # load gene annotation files and descriptions
 gaffile = snakemake.input['gaf']
-gaf_df = pd.read_csv(gaffile, sep="\t").iloc[:, [1,4]]
+gaf_df = pd.read_csv(gaffile, sep="\t")
+if len(gaf_df.columns) < 3:
+    gaf_df = gaf_df.reset_index()
+gaf_df = gaf_df.iloc[:, [1,4]]
 gaf_df.columns = ['GeneID', 'go_term']
 
 go_desc_df = load_go_descriptions()
