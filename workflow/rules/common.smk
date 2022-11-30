@@ -1,5 +1,3 @@
-################################          Common           ##################################
-
 if config["VariantAnalysis"]["selection"]["pbs"]["activate"]:
     windowedStats = ["Fst", "Pbs"]
 else:

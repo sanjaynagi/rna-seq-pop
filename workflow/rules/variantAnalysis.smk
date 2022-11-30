@@ -1,7 +1,6 @@
 ################ Variant Analysis ##################
 # scikit-allel (Miles, Harding) 10.5281/zenodo.3935797
 
-
 rule SNPstatistics:
     """
     Calculate statistics such as no. of SNPs called in exons/introns/genes

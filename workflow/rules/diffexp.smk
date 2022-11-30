@@ -1,10 +1,3 @@
-################################	Differential Gene expression 	################################
-# Kallisto (Bray et al., 2016)                                						               #
-# DESeq2 (Love et al., 2014)
-# Sleuth (Pimentel et al., 2017)                       	 						               #
-####################################################################################################
-
-
 rule DifferentialGeneExpression:
     """
     Perform differential expression analysis at the gene-level with DESeq2

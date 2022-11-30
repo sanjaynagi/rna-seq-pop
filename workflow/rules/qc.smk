@@ -1,6 +1,3 @@
-################################          QC           ##################################
-
-
 rule CheckInputs:
     """
     Check to see that fastq files exist, and reference files are appropriate

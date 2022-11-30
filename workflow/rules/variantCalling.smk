@@ -1,6 +1,5 @@
 chunks = np.arange(1, config["VariantAnalysis"]["chunks"])
 
-
 rule GenerateFreebayesParams:
     input:
         ref_idx=config["reference"]["genome"].rstrip(".gz"),
