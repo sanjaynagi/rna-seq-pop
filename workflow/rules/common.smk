@@ -177,7 +177,7 @@ def GetDesiredOutputs(wildcards):
                         "results/variantAnalysis/diversity/SequenceDivPerGene.tsv",
                         "results/variantAnalysis/diversity/DxyPerGene.tsv",
                         "results/variantAnalysis/selection/TajimasDPerGene.tsv",
-                        "results/variantAnalysis/selection/fst/Fst.{comp}.{wsize}.{contig}.svg",
+                        "results/variantAnalysis/selection/fst/{wsize}/Fst.{comp}.{contig}.svg",
                     ],
                     contig=config["contigs"],
                     comp=config["contrasts"],
