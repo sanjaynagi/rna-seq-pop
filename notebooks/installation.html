@@ -165,7 +165,7 @@ const thebe_selector_output = ".output, .cell_output"
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="configuring_the_workflow.html">
-   Configuring the workflow
+   Configuring RNA-Seq-Pop
   </a>
  </li>
  <li class="toctree-l1">
@@ -515,15 +515,16 @@ title="Print to PDF"
 <p><strong>Snakemake</strong></p>
 <p>Snakemake is a workflow management system to create reproducible and scalable computational analyses. RNA-Seq-Pop is written in snakemake, which itself is python-based. The Snakemake authors encourage installation through conda.</p>
 <p><a class="reference external" href="https://snakemake.readthedocs.io/en/stable/getting_started/installation.html">https://snakemake.readthedocs.io/en/stable/getting_started/installation.html</a></p>
+<p>You may also need <a class="reference external" href="https://pandas.pydata.org/">pandas</a>, which you can install with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pandas</span></code>.</p>
 <hr class="docutils" />
 <section id="rna-seq-pop">
 <h2><em>RNA-Seq-Pop</em><a class="headerlink" href="#rna-seq-pop" title="Permalink to this heading">#</a></h2>
-<p>The next step is to clone the RNA-Seq-Pop github repository to your system.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">sanjaynagi</span><span class="o">/</span><span class="n">rna</span><span class="o">-</span><span class="n">seq</span><span class="o">-</span><span class="n">pop</span><span class="o">.</span><span class="n">git</span>
+<p>The next step is to clone the RNA-Seq-Pop github repository to your system. You may use the below command, replacing <code class="docutils literal notranslate"><span class="pre">my_repo_name</span></code> with something of your choice. This may be useful in case you ever use RNA-Seq-Pop on multiple datasets.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="o">--</span><span class="n">recursive</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">sanjaynagi</span><span class="o">/</span><span class="n">rna</span><span class="o">-</span><span class="n">seq</span><span class="o">-</span><span class="n">pop</span><span class="o">.</span><span class="n">git</span> <span class="n">my_repo_name</span>
 </pre></div>
 </div>
 <p>Alternatively, if you think you may want to contribute to RNA-Seq-Pop, you may wish to fork the repository to your github account prior to cloning. For more information, please the <a class="reference external" href="https://sanjaynagi.github.io/rna-seq-pop/notebooks/contributing.html">docs on contributing</a>.</p>
-<p>As the workflow contains submodules (compkaryo &amp; mpileup2readcounts), we should use <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">--recursive</span></code> to clone the repository.</p>
+<p>As the workflow contains a submodule (compkaryo), we should use <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">--recursive</span></code> to clone the repository.</p>
 <section id="installing-dependencies">
 <h3>Installing dependencies<a class="headerlink" href="#installing-dependencies" title="Permalink to this heading">#</a></h3>
 <p>When we run RNA-Seq-Pop, it is important to use the <code class="docutils literal notranslate"><span class="pre">--use-conda</span></code> directive - this will automatically install all necessary packages into isolated software environments, so we do not have to install any other dependencies.</p>

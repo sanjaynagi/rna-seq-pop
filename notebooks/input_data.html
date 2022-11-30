@@ -88,7 +88,7 @@ const thebe_selector_output = ".output, .cell_output"
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Configuring the workflow" href="configuring_the_workflow.html" />
+    <link rel="next" title="Configuring RNA-Seq-Pop" href="configuring_the_workflow.html" />
     <link rel="prev" title="Installation" href="installation.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
@@ -165,7 +165,7 @@ const thebe_selector_output = ".output, .cell_output"
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="configuring_the_workflow.html">
-   Configuring the workflow
+   Configuring RNA-Seq-Pop
   </a>
  </li>
  <li class="toctree-l1">
@@ -443,6 +443,12 @@ title="Print to PDF"
                 
   <section class="tex2jax_ignore mathjax_ignore" id="input-files">
 <h1>Input files<a class="headerlink" href="#input-files" title="Permalink to this heading">#</a></h1>
+<p>RNA-Seq-Pop requires only:</p>
+<ul class="simple">
+<li><p>Sample metadata file <code class="docutils literal notranslate"><span class="pre">.tsv</span></code></p></li>
+<li><p>Single-end or Paired-end RNA-Seq data - <code class="docutils literal notranslate"><span class="pre">.fastq.gz</span></code></p></li>
+<li><p>Reference genome files</p></li>
+</ul>
 <p><strong>Sample metadata file</strong></p>
 <p>The user must provide a tab-separated sample metadata file, which should be placed in the config/ folder and pointed to in the users <code class="docutils literal notranslate"><span class="pre">config.yaml</span></code>. The default name is <code class="docutils literal notranslate"><span class="pre">samples.tsv</span></code>. An example metadata file is provided in at <code class="docutils literal notranslate"><span class="pre">config/examplesamples.tsv</span></code>, and shown below:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">samples</span><span class="o">.</span><span class="n">tsv</span><span class="p">:</span>
@@ -466,14 +472,15 @@ title="Print to PDF"
 <p>The read location may be specified in two ways:</p>
 <ol class="simple">
 <li><p>Reads can be named as <code class="docutils literal notranslate"><span class="pre">{sampleID}_1.fastq.gz</span> <span class="pre">,</span> <span class="pre">{sampleID}_2.fastq.gz</span></code> and stored in <code class="docutils literal notranslate"><span class="pre">resources/reads/</span></code>. In the config.yaml, <code class="docutils literal notranslate"><span class="pre">fastq['auto']</span> <span class="pre">==</span> <span class="pre">True</span></code>.</p></li>
-<li><p>The user can add “fq1” and “fq2” columns to the <code class="docutils literal notranslate"><span class="pre">samples.tsv</span></code> metadata file, containing the path to each fastq file from the root rna-seq-pop directory. This means the fastq files can be stored anywhere accessible and have arbitrary naming. In the config.yaml, <code class="docutils literal notranslate"><span class="pre">fastq['auto']</span> <span class="pre">==</span> <span class="pre">False</span></code>.</p></li>
+<li><p>The user can add “fq1” and “fq2” columns to the <code class="docutils literal notranslate"><span class="pre">samples.tsv</span></code> metadata file, containing the path to each fastq file from the root rna-seq-pop directory. This means the fastq files can be stored anywhere accessible and have arbitrary naming. In the config.yaml, this option is  <code class="docutils literal notranslate"><span class="pre">fastq['auto']</span> <span class="pre">==</span> <span class="pre">False</span></code>.</p></li>
 </ol>
 <hr class="docutils" />
 <p><strong>Reference genome files</strong></p>
+<p>RNA-Seq-Pop uses kallisto to perform differential expression analysis, which takes as input a reference transcriptome. The user must provide a fasta file containing the transcriptome sequence in fasta format. For variant calling, genome alignment is performed with hisat2, which requires a fasta file containing the genome sequence. All input <code class="docutils literal notranslate"><span class="pre">.fa</span></code> files can be gzipped <code class="docutils literal notranslate"><span class="pre">.fa.gz</span></code>.</p>
 <p>The user provides the path to the reference files in the configuration file (<code class="docutils literal notranslate"><span class="pre">config.yaml</span></code>).</p>
 <ol class="simple">
-<li><p><strong>Genome chromosomes reference file (.fa)</strong>. Contains the DNA sequence for the genome.</p></li>
-<li><p><strong>Transcriptome reference file (.fa)</strong>. Contains the DNA sequence for each transcript.</p></li>
+<li><p><strong>Genome chromosomes reference file (.fa/.fa.gz)</strong>. Contains the DNA sequence for the genome.</p></li>
+<li><p><strong>Transcriptome reference file (.fa/fa.gz)</strong>. Contains the DNA sequence for each transcript.</p></li>
 <li><p><strong>Genome feature file (.gff3 format)</strong>.</p></li>
 <li><p><strong>Genes to Transcript mapping file (.tsv)</strong>. An example is provided in the github repo (<code class="docutils literal notranslate"><span class="pre">resources/exampleGene2TranscriptMap.tsv</span></code>). This should contain four columns, GeneID, TranscriptID, GeneName, and GeneDescription, and is necessary for connecting transcripts to their parent genes, as well as adding gene annotations to results.</p></li>
 <li><p><strong>SnpEff database name</strong> (if performing variant calling).</p></li>
@@ -482,7 +489,7 @@ title="Print to PDF"
 <p><strong>Contigs</strong></p>
 <p>The user must provide a list of contigs that they wish to analyse in the configuration file (<code class="docutils literal notranslate"><span class="pre">config.yaml</span></code>). These must match entries in the reference files (.fa, gff3).</p>
 <p>For example, in <em>An. gambiae</em>, we refer to the chromosomes as [“2L”, “2R”, “3L”, “3R”, “X”], though in Aedes aegypti, its simply [“1”, “2”, “3”].</p>
-<p>We specify contigs explicitly because in some organisms we have a few large chromosomes and then hundreds of small contigs, which we do not necessarily want to analyse.</p>
+<p>We specify contigs explicitly because in some reference assemblies we have a few large full chromosomes, plus hundreds of small contigs, which we may not necessarily wish to analyse.</p>
 </section>
 
     <script type="text/x-thebe-config">
@@ -522,7 +529,7 @@ title="Print to PDF"
     <a class='right-next' id="next-link" href="configuring_the_workflow.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Configuring the workflow</p>
+        <p class="prev-next-title">Configuring RNA-Seq-Pop</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
