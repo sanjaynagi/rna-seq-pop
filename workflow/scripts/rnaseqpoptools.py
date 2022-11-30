@@ -31,8 +31,8 @@ def plotWindowed(statName, cohortText, cohortNoSpaceText, values, midpoints, pre
     plt.xticks(xtick, rotation=45, ha='right', fontsize=14)
     plt.ticklabel_format(style='plain', axis='x')
     plt.title(f"{statName} | {cohortText} | Chromosome {contig}", fontdict={'fontsize':20})
-    if save: plt.savefig(f"{prefix}/{statName}.{cohortNoSpaceText}.{contig}.svg",format="svg", dpi=300)
-    if save: plt.savefig(f"{prefix}/{statName}.{cohortNoSpaceText}.{contig}.pdf",format="pdf", dpi=300)
+    if save: plt.savefig(f"{prefix}/{cohortNoSpaceText}.{statName}.{contig}.svg",format="svg", dpi=300)
+    if save: plt.savefig(f"{prefix}/{cohortNoSpaceText}.{statName}.{contig}.pdf",format="pdf", dpi=300)
 
     
 

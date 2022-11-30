@@ -111,14 +111,14 @@ rule WindowedFstPBS:
         ),
     output:
         Fst=expand(
-            "results/variantAnalysis/selection/fst/{wsize}/Fst.{comp}.{contig}.svg",
+            "results/variantAnalysis/selection/fst/{wsize}/{comp}.Fst.{contig}.svg",
             comp=config["contrasts"],
             contig=config["contigs"],
             wsize=['1000snp_window', '2000snp_window' '5000snp_window'],
         ),
         PBS=(
             expand(
-                "results/variantAnalysis/selection/pbs/{wsize}/PBS.{pbscomp}.{contig}.svg",
+                "results/variantAnalysis/selection/pbs/{wsize}/{pbscomp}.PBS.{contig}.svg",
                 pbscomp=config["VariantAnalysis"]["selection"]["pbs"]["contrasts"],
                 contig=config["contigs"],
                 wsize=['1000snp_window', '2000snp_window' '5000snp_window'],
