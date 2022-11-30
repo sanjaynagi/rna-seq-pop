@@ -14,7 +14,7 @@ rule SNPstatistics:
             dataset=config["dataset"],
         ),
         metadata=config["metadata"],
-        gff=config["ref"]["gff"],
+        gff=config["reference"]["gff"],
     output:
         snpsPerGenomicFeature="results/variantAnalysis/SNPstats/snpsPerGenomicFeature.tsv",
         snpsPerGene="results/variantAnalysis/SNPstats/nSNPsPerGene.tsv",
@@ -112,17 +112,17 @@ rule WindowedFstPBS:
         ),
     output:
         Fst=expand(
-            "results/variantAnalysis/selection/fst/Fst.{comp}.{wsize}.{contig}.svg",
+            "results/variantAnalysis/selection/fst/{wsize}/Fst.{comp}.{contig}.svg",
             comp=config["contrasts"],
             contig=config["contigs"],
-            wsize=config["VariantAnalysis"]["selection"]["pbs"]["windownames"],
+            wsize=['1000snp_window', '2000snp_window' '5000snp_window'],
         ),
         PBS=(
             expand(
-                "results/variantAnalysis/selection/pbs/PBS.{pbscomp}.{wsize}.{contig}.svg",
+                "results/variantAnalysis/selection/pbs/{wsize}/PBS.{pbscomp}.{contig}.svg",
                 pbscomp=config["VariantAnalysis"]["selection"]["pbs"]["contrasts"],
                 contig=config["contigs"],
-                wsize=config["VariantAnalysis"]["selection"]["pbs"]["windownames"],
+                wsize=['1000snp_window', '2000snp_window' '5000snp_window'],
             )
             if config["VariantAnalysis"]["selection"]["pbs"]["activate"]
             else []
@@ -140,9 +140,6 @@ rule WindowedFstPBS:
         ploidy=config["VariantAnalysis"]["ploidy"],
         missingprop=config["VariantAnalysis"]["selection"]["missingness"],
         qualflt=30,
-        windowsizes=config["VariantAnalysis"]["selection"]["pbs"]["windowsizes"],
-        windowsteps=config["VariantAnalysis"]["selection"]["pbs"]["windowsteps"],
-        windownames=config["VariantAnalysis"]["selection"]["pbs"]["windownames"],
     script:
         "../scripts/WindowedFstPBS.py"
 
@@ -153,8 +150,8 @@ rule PerGeneFstPBSDxyPi:
     """
     input:
         metadata=config["metadata"],
-        gff=config["ref"]["gff"],
-        geneNames=config["ref"]["genes2transcripts"],
+        gff=config["reference"]["gff"],
+        geneNames=config["reference"]["genes2transcripts"],
         vcf=expand(
             "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
             contig=config["contigs"],

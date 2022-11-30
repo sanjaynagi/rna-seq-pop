@@ -12,7 +12,7 @@ rule DifferentialGeneExpression:
     """
     input:
         metadata=config["metadata"],
-        genes2transcripts=config["ref"]["genes2transcripts"],
+        genes2transcripts=config["reference"]["genes2transcripts"],
         counts=expand("results/counts/{sample}", sample=samples),
     output:
         csvs=expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
@@ -42,7 +42,7 @@ rule DifferentialIsoformExpression:
     """
     input:
         metadata=config["metadata"],
-        genes2transcripts=config["ref"]["genes2transcripts"],
+        genes2transcripts=config["reference"]["genes2transcripts"],
         counts=expand("results/counts/{sample}", sample=samples),
     output:
         csvs=expand("results/isoformdiff/{comp}.csv", comp=config["contrasts"]),

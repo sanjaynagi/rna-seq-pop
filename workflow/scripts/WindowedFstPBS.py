@@ -23,9 +23,9 @@ qualflt = snakemake.params['qualflt']
 missingprop = snakemake.params['missingprop']
 
 #Fst/PBS window size
-windowsizes = snakemake.params['windowsizes']
-windowsteps = snakemake.params['windowsteps']
-windownames = snakemake.params['windownames']
+windownames =  ['1000snp_window', '2000snp_window' '5000snp_window']
+windowsizes =  [1000, 2000, 5000]
+windowsteps = [500, 1000, 1000]
 
 # Read in list of contrasts
 comparisons = pd.DataFrame(snakemake.params['DEcontrasts'], columns=['contrast'])
@@ -56,7 +56,7 @@ for i, contig in enumerate(contigs):
                             size=size, step=step)
             midpoint = allel.moving_statistic(pos, np.median, size=size, step=step)
             
-            cohortNoSpaceText = name + "." + wname
+            cohortNoSpaceText = wname + "/" + name 
             rnaseqpop.plotWindowed(statName="Fst",
                         cohortText=cohortText,
                         cohortNoSpaceText=cohortNoSpaceText,
@@ -83,7 +83,7 @@ for i, contig in enumerate(contigs):
                                 window_size=size, window_step=step, normed=True)
                 midpoint = allel.moving_statistic(pos, np.median, size=size, step=step)
 
-                cohortNoSpaceText = pbscomp + "." + wname
+                cohortNoSpaceText =  wname + "/" + pbscomp
                 rnaseqpop.plotWindowed(statName="PBS", 
                             cohortText=cohortText,
                             cohortNoSpaceText=cohortNoSpaceText,

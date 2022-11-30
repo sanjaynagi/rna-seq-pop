@@ -4,7 +4,7 @@ rule KallistoIndex:
     Create a kallisto index of the reference transcriptome
     """
     input:
-        fasta=config["ref"]["transcriptome"],
+        fasta=config["reference"]["transcriptome"],
     output:
         index="resources/reference/kallisto.idx",
     group:
@@ -40,9 +40,9 @@ rule GenomeUnzip:
     Index the reference genome with samtools
     """
     input:
-        config["ref"]["genome"],
+        config["reference"]["genome"],
     output:
-        config["ref"]["genome"].rstrip(".gz"),
+        config["reference"]["genome"].rstrip(".gz"),
     log:
         "logs/GenomeUnzip.log",
     shell:
@@ -53,9 +53,9 @@ rule GenomeIndex:
     Index the reference genome with samtools
     """
     input:
-        config["ref"]["genome"].rstrip(".gz"),
+        config["reference"]["genome"].rstrip(".gz"),
     output:
-        config["ref"]["genome"].rstrip(".gz") + ".fai",
+        config["reference"]["genome"].rstrip(".gz") + ".fai",
     log:
         "logs/GenomeIndex.log",
     wrapper:
@@ -67,7 +67,7 @@ rule HISAT2index:
     Make a HISAT2 index of the reference genome
     """
     input:
-        fasta=config["ref"]["genome"].rstrip(".gz"),
+        fasta=config["reference"]["genome"].rstrip(".gz"),
     output:
         "resources/reference/ht2index/idx.1.ht2",
         touch("resources/reference/ht2index/.complete"),

@@ -1,5 +1,4 @@
 metadata: config/samples.tsv
-units: config/units.tsv
 
 # Dataset name
 dataset: 'Test-GithubActionsCI'
@@ -10,12 +9,8 @@ fastq:
       paired: False
 
 
-cutadapt:
-      activate: False
-      adaptors:
-
 # Paths for reference files 
-ref:
+reference:
   genome:
         "resources/reference/Anopheles-gambiae-PEST_CHROMOSOMES_AgamP4-X.fa.gz"
   transcriptome:
@@ -40,6 +35,9 @@ contrasts:
 
 
 QualityControl:
+      cutadapt:
+            activate: False
+            adaptors:
       fastqc:
             activate: True
       mosdepth:
@@ -71,7 +69,6 @@ DifferentialExpression:                       # Activate differential expression
 
 VariantAnalysis:
       activate: True
-      caller: 'freebayes' # or 'freebayes'
       ploidy: 10
       chunks: 9 # Number of chunks to split the genome into when parallelising freebayes
 # Number of chunks to split the genome into when parallelising freebayes
@@ -92,9 +89,6 @@ VariantAnalysis:
                   activate: False
                   contrasts: 
                         - 'PiriTia_ContTia_Kisumu'
-                  windownames: ['small']
-                  windowsizes: [1000]
-                  windowsteps: [500]
 
       # For Anopheles gambiae s.l only - run Ancestry Informative Marker analysis.
       ancestry:

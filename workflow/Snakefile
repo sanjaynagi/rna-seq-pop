@@ -9,9 +9,7 @@ import numpy as np
 import os
 import datetime
 
-
 configfile: "config/config.yaml"
-
 
 metadata = pd.read_csv(config["metadata"], sep="\t")
 validate(metadata, schema="schemas/samples.schema.yaml")
@@ -30,9 +28,7 @@ else:
 
 include: "rules/common.smk"
 
-
-welcome(version="v1.0.3")
-
+welcome(version="v1.0.4")
 
 include: "rules/qc.smk"
 include: "rules/diffexp.smk"

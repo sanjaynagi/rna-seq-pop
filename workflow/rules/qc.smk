@@ -6,14 +6,14 @@ rule CheckInputs:
     Check to see that fastq files exist, and reference files are appropriate
     """
     input:
-        ref=config["ref"]["genome"].rstrip(".gz"),
+        ref=config["reference"]["genome"].rstrip(".gz"),
     output:
         touch("results/.input.check"),
     params:
         metadata=config["metadata"],
         contigs=config["contigs"],
-        gffpath=config["ref"]["gff"],
-        gene_names=config["ref"]["genes2transcripts"],
+        gffpath=config["reference"]["gff"],
+        gene_names=config["reference"]["genes2transcripts"],
         contrasts=config["contrasts"],
         fastq=config["fastq"]["auto"],
         sweeps=config["miscellaneous"]["sweeps"]["activate"],
@@ -44,6 +44,9 @@ rule FastQC:
 
 
 rule cutAdapt:
+    """
+    Trim adapters from reads with cutadapt
+    """
     input:
         getFASTQs,
     output:
@@ -52,7 +55,7 @@ rule cutAdapt:
         qc="results/qc/cutadapt/{sample}.qc.txt",
     params:
         # https://cutadapt.readthedocs.io/en/stable/guide.html#adapter-types
-        adapters=config["cutadapt"]["adaptors"],  #"-a AGAGCACACGTCTGAACTCCAGTCAC -g AGATCGGAAGAGCACACGT -A AGAGCACACGTCTGAACTCCAGTCAC -G AGATCGGAAGAGCACACGT",
+        adapters=config["QualityControl"]["cutadapt"]["adaptors"],  #"-a AGAGCACACGTCTGAACTCCAGTCAC -g AGATCGGAAGAGCACACGT -A AGAGCACACGTCTGAACTCCAGTCAC -G AGATCGGAAGAGCACACGT",
         # https://cutadapt.readthedocs.io/en/stable/guide.html#
         extra="--minimum-length 1 -q 20",
     log:
@@ -92,7 +95,6 @@ rule Coverage:
         "../envs/depth.yaml"
     params:
         prefix=lambda w, output: output[0].split(os.extsep)[0],
-        windowsize=300,
     threads: 8
     shell:
         "mosdepth --threads {threads} --fast-mode {params.prefix} {input.bam}"

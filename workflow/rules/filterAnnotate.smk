@@ -48,7 +48,7 @@ rule snpEffDbDownload:
     conda:
         "../envs/snpeff.yaml"
     params:
-        ref=config["ref"]["snpeffdb"],
+        ref=config["reference"]["snpeffdb"],
         dir="resources/snpEffdb",
     shell:
         "snpEff download {params.ref} -dataDir {params.dir} 2> {log}"
@@ -72,7 +72,7 @@ rule snpEff:
     conda:
         "../envs/snpeff.yaml"
     params:
-        db=config["ref"]["snpeffdb"],
+        db=config["reference"]["snpeffdb"],
         prefix=lambda w, output: os.path.splitext(output[0])[0],
         dir="resources/snpEffdb",
     shell:

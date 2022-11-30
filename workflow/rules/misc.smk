@@ -5,7 +5,7 @@
 #     input:
 #         bam="results/alignments/{sample}.bam",
 #         bed="resources/regions/missense.pos.{contig}.bed",
-#         ref=config["ref"]["genome"],
+#         ref=config["reference"]["genome"],
 #     output:
 #         "results/variantAnalysis/alleleTables/{sample}.chr{contig}.allele.table",
 #     conda:
@@ -31,8 +31,8 @@
 #     """
 #     input:
 #         metadata=config["metadata"],
-#         gff=config["ref"]["gff"],
-#         geneNames=config["ref"]["genes2transcripts"],
+#         gff=config["reference"]["gff"],
+#         geneNames=config["reference"]["genes2transcripts"],
 #         tables=expand(
 #             "results/variantAnalysis/alleleTables/{sample}.chr{contig}.allele.table",
 #             sample=samples,
