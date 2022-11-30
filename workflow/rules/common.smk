@@ -179,7 +179,7 @@ def GetDesiredOutputs(wildcards):
                     ],
                     contig=config["contigs"],
                     comp=config["contrasts"],
-                    wsize=['1000snp_window', '2000snp_window' '5000snp_window'],
+                    wsize=['1000snp_window', '2000snp_window', '5000snp_window'],
                 )
             )
 

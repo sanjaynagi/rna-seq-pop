@@ -23,7 +23,7 @@ qualflt = snakemake.params['qualflt']
 missingprop = snakemake.params['missingprop']
 
 #Fst/PBS window size
-windownames =  ['1000snp_window', '2000snp_window' '5000snp_window']
+windownames =  ['1000snp_window', '2000snp_window', '5000snp_window']
 windowsizes =  [1000, 2000, 5000]
 windowsteps = [500, 1000, 1000]
 

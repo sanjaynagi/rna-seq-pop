@@ -114,14 +114,14 @@ rule WindowedFstPBS:
             "results/variantAnalysis/selection/fst/{wsize}/{comp}.Fst.{contig}.svg",
             comp=config["contrasts"],
             contig=config["contigs"],
-            wsize=['1000snp_window', '2000snp_window' '5000snp_window'],
+            wsize=['1000snp_window', '2000snp_window', '5000snp_window'],
         ),
         PBS=(
             expand(
                 "results/variantAnalysis/selection/pbs/{wsize}/{pbscomp}.PBS.{contig}.svg",
                 pbscomp=config["VariantAnalysis"]["selection"]["pbs"]["contrasts"],
                 contig=config["contigs"],
-                wsize=['1000snp_window', '2000snp_window' '5000snp_window'],
+                wsize=['1000snp_window', '2000snp_window', '5000snp_window'],
             )
             if config["VariantAnalysis"]["selection"]["pbs"]["activate"]
             else []
