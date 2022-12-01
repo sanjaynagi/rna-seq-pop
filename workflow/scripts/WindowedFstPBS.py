@@ -56,7 +56,7 @@ for i, contig in enumerate(contigs):
             if geno.shape[0] < size:
                 print(f"Skipping {wname} for {name} because there are not enough SNPs in {contig}.")
                 print("Touching file to prevent snakemake from erroring out.")
-                Path(f"results/variantAnalysis/selection/fst/{wname}/{name}.fst.{contig}.svg").touch()
+                Path(f"results/variantAnalysis/selection/fst/{wname}/{name}.Fst.{contig}.svg").touch()
             else:
                 FstArray = allel.moving_hudson_fst(acsubpops[sus], 
                                 acsubpops[res], 
