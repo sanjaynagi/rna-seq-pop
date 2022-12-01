@@ -88,7 +88,7 @@ for i, contig in enumerate(contigs):
                 if geno.shape[0] < size:
                     print(f"Skipping {wname} for {pbscomp} because there are not enough SNPs in {contig}.")
                     print("Touching file to prevent snakemake from erroring out.")
-                    Path("results/variantAnalysis/selection/pbs/{wname}/{pbscomp}.PBS.{contig}.svg").touch()
+                    Path(f"results/variantAnalysis/selection/pbs/{wname}/{pbscomp}.PBS.{contig}.svg").touch()
                 else:
                     pbsArray = allel.pbs(acsubpops[pop1], 
                                     acsubpops[pop2], 
