@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 import allel
 import rnaseqpoptools as rnaseqpop
+from pathlib import Path
 
 dataset = snakemake.params['dataset']
 metadata = pd.read_csv(snakemake.input['metadata'], sep="\t")
@@ -51,22 +52,28 @@ for i, contig in enumerate(contigs):
         print(f"Calculating Fst values in sliding windows for {name}\n")
 
         for wname, size, step in zip(windownames, windowsizes, windowsteps):
-            FstArray = allel.moving_hudson_fst(acsubpops[sus], 
-                            acsubpops[res], 
-                            size=size, step=step)
-            midpoint = allel.moving_statistic(pos, np.median, size=size, step=step)
             
-            cohortNoSpaceText = wname + "/" + name 
-            rnaseqpop.plotWindowed(statName="Fst",
-                        cohortText=cohortText,
-                        cohortNoSpaceText=cohortNoSpaceText,
-                        values=FstArray, 
-                        midpoints=midpoint,
-                        colour='dodgerblue',
-                        prefix="results/variantAnalysis/selection/fst", 
-                        contig=contig, 
-                        ylim=1, 
-                        save=True)
+            if geno.shape[0] < size:
+                print(f"Skipping {wname} for {name} because there are not enough SNPs in {contig}.")
+                print("Touching file to prevent snakemake from erroring out.")
+                Path("results/variantAnalysis/selection/fst/{wname}/{name}.fst.{contig}.svg").touch()
+            else:
+                FstArray = allel.moving_hudson_fst(acsubpops[sus], 
+                                acsubpops[res], 
+                                size=size, step=step)
+                midpoint = allel.moving_statistic(pos, np.median, size=size, step=step)
+                
+                cohortNoSpaceText = wname + "/" + name 
+                rnaseqpop.plotWindowed(statName="Fst",
+                            cohortText=cohortText,
+                            cohortNoSpaceText=cohortNoSpaceText,
+                            values=FstArray, 
+                            midpoints=midpoint,
+                            colour='dodgerblue',
+                            prefix="results/variantAnalysis/selection/fst", 
+                            contig=contig, 
+                            ylim=1, 
+                            save=True)
 
         
     #### Population Branch Statistic (PBS) in windows ####
@@ -77,20 +84,26 @@ for i, contig in enumerate(contigs):
             print(f"Calculating PBS values in sliding window for {pbscomp}\n")
         
             for wname, size, step in zip(windownames, windowsizes, windowsteps):
-                pbsArray = allel.pbs(acsubpops[pop1], 
-                                acsubpops[pop2], 
-                                acsubpops[outpop], 
-                                window_size=size, window_step=step, normed=True)
-                midpoint = allel.moving_statistic(pos, np.median, size=size, step=step)
 
-                cohortNoSpaceText =  wname + "/" + pbscomp
-                rnaseqpop.plotWindowed(statName="PBS", 
-                            cohortText=cohortText,
-                            cohortNoSpaceText=cohortNoSpaceText,
-                            values=pbsArray, 
-                            midpoints=midpoint, 
-                            colour='dodgerblue',
-                            prefix="results/variantAnalysis/selection/pbs",
-                            contig=contig, 
-                            ylim=0.5, 
-                            save=True)
+                if geno.shape[0] < size:
+                    print(f"Skipping {wname} for {pbscomp} because there are not enough SNPs in {contig}.")
+                    print("Touching file to prevent snakemake from erroring out.")
+                    Path("results/variantAnalysis/selection/pbs/{wname}/{pbscomp}.PBS.{contig}.svg").touch()
+                else:
+                    pbsArray = allel.pbs(acsubpops[pop1], 
+                                    acsubpops[pop2], 
+                                    acsubpops[outpop], 
+                                    window_size=size, window_step=step, normed=True)
+                    midpoint = allel.moving_statistic(pos, np.median, size=size, step=step)
+
+                    cohortNoSpaceText =  wname + "/" + pbscomp
+                    rnaseqpop.plotWindowed(statName="PBS", 
+                                cohortText=cohortText,
+                                cohortNoSpaceText=cohortNoSpaceText,
+                                values=pbsArray, 
+                                midpoints=midpoint, 
+                                colour='dodgerblue',
+                                prefix="results/variantAnalysis/selection/pbs",
+                                contig=contig, 
+                                ylim=0.5, 
+                                save=True)
