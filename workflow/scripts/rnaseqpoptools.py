@@ -19,7 +19,7 @@ def plotWindowed(statName, cohortText, cohortNoSpaceText, values, midpoints, pre
     if save:
         # store windowed statistics as .tsv 
         df = pd.DataFrame({'midpoint':midpoints, statName:values})
-        df.to_csv(f"{prefix}/{statName}_{cohortNoSpaceText}.{contig}.tsv", sep="\t", index=False)
+        df.to_csv(f"{prefix}/{cohortNoSpaceText}.{statName}.{contig}.tsv", sep="\t", index=False)
 
     xtick = np.arange(0, midpoints.max(), 2000000)
     ylim = np.max([ylim, values.max()])
