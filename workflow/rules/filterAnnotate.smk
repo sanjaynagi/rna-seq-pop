@@ -1,6 +1,5 @@
 chunks = np.arange(1, config["VariantAnalysis"]["chunks"])
 
-
 rule ConcatVCFs:
     """
     Concatenate VCFs together
@@ -48,7 +47,7 @@ rule snpEffDbDownload:
     conda:
         "../envs/snpeff.yaml"
     params:
-        ref=config["ref"]["snpeffdb"],
+        ref=config["reference"]["snpeffdb"],
         dir="resources/snpEffdb",
     shell:
         "snpEff download {params.ref} -dataDir {params.dir} 2> {log}"
@@ -72,7 +71,7 @@ rule snpEff:
     conda:
         "../envs/snpeff.yaml"
     params:
-        db=config["ref"]["snpeffdb"],
+        db=config["reference"]["snpeffdb"],
         prefix=lambda w, output: os.path.splitext(output[0])[0],
         dir="resources/snpEffdb",
     shell:
@@ -82,44 +81,45 @@ rule snpEff:
         """
 
 
-rule MissenseAndQualFilter:
-    """
-    Filter VCFs for missense variants and quality (used later for diffsnps analysis)
-    """
-    input:
-        vcf="results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
-    output:
-        "results/variantAnalysis/vcfs/annot.missense.{contig}.vcf",
-    log:
-        "logs/snpSift/missense_vcf_{contig}.log",
-    conda:
-        "../envs/snpeff.yaml"
-    params:
-        expression="(ANN[*].EFFECT has 'missense_variant') & (QUAL >= 30)",
-    shell:
-        """
-        SnpSift filter "{params.expression}" {input.vcf} > {output} 2> {log}
-        """
 
 
-rule ExtractBedVCF:
-    """
-    Extract SNP positions from the filtered VCFs (used later for diffsnps analysis)
-    """
-    input:
-        vcf=expand(
-            "results/variantAnalysis/vcfs/annot.missense.{contig}.vcf",
-            contig=config["contigs"],
-        ),
-    output:
-        bed=expand(
-            "resources/regions/missense.pos.{contig}.bed", contig=config["contigs"]
-        ),
-    conda:
-        "../envs/pythonGenomics.yaml"
-    log:
-        "logs/ExtractBedVCF.log",
-    params:
-        contigs=config["contigs"],
-    script:
-        "../scripts/ExtractBedVCF.py"
+
+# rule MissenseAndQualFilter:
+#     """
+#     Filter VCFs for missense variants and quality (used later for diffsnps analysis)
+#     """
+#     input:
+#         vcf="results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
+#     output:
+#         "results/variantAnalysis/vcfs/annot.missense.{contig}.vcf",
+#     log:
+#         "logs/snpSift/missense_vcf_{contig}.log",
+#     conda:
+#         "../envs/snpeff.yaml"
+#     params:
+#         expression="(ANN[*].EFFECT has 'missense_variant') & (QUAL >= 30)",
+#     shell:
+#         """
+#         SnpSift filter "{params.expression}" {input.vcf} > {output} 2> {log}
+#         """
+# rule ExtractBedVCF:
+#     """
+#     Extract SNP positions from the filtered VCFs (used later for diffsnps analysis)
+#     """
+#     input:
+#         vcf=expand(
+#             "results/variantAnalysis/vcfs/annot.missense.{contig}.vcf",
+#             contig=config["contigs"],
+#         ),
+#     output:
+#         bed=expand(
+#             "resources/regions/missense.pos.{contig}.bed", contig=config["contigs"]
+#         ),
+#     conda:
+#         "../envs/pythonGenomics.yaml"
+#     log:
+#         "logs/ExtractBedVCF.log",
+#     params:
+#         contigs=config["contigs"],
+#     script:
+#         "../scripts/ExtractBedVCF.py"

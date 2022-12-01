@@ -11,16 +11,11 @@ dataset: 'Ag_Bouake'                            # Dataset name: Can be anything,
 ## should be named Kisumu1_1.fastq.gz, and Kisumu1_2.fastq.gz. 
 ## Treatment names in samples.tsv should not contain underscores
 fastq:
-      auto: True                                                              # set auto if your files follow the above rules
-
-# Chromosome names for the appropriate species.
-# Currently, the variant calling and analysis part of workflow requires genes mapped to chromosomes and their physical location.
-# Please ensure that these correspond exactly to the reference fasta/gff files. Extra unwanted chromosomes (unplaced contigs) can be ignored. 
-# if you need to remove a prefix (Such as "AgamP4_"or "AaegL5_") from a file, use this sed command - i.e - "sed s/AgamP4_// An.gambiae.fasta > An.gambiae_clean.fasta"
-contigs: ['2L', '2R', '3L', '3R', 'X']
+      auto: True 
+      paired: True                                                              
 
 # Paths for reference files 
-ref:
+reference:
   genome:
         "resources/reference/Anopheles-gambiae-PEST_CHROMOSOMES_AgamP4.fa"        # Path to genome reference FASTA file
   transcriptome:
@@ -32,26 +27,37 @@ ref:
   genes2transcripts:                                                                
         "resources/exampleGene2TranscriptMap.tsv"                                 # gene names file with gene and transcript names
 
+# Chromosome names for the appropriate species.
+# Please ensure that these correspond exactly to the reference fasta/gff files. Extra unwanted chromosomes (unplaced contigs) can be ignored. 
+contigs: ['2L', '2R', '3L', '3R', 'X']
 
 # List of contrasts to do Differential Expression and Fst analysis on. 
-# Should correspond to the 'treatment' columns of the samples.tsv file, and be separated by an underscore "_". i.e 'control_case', or 'Kisumu_Tiassale'.
+# Should correspond to the 'treatment' columns of the samples.tsv file, 
+# and be separated by an underscore "_". i.e 'control_case', or 'Kisumu_Tiassale'.
 # The treatment names themselves must not contain underscores
 contrasts:
       - 'Kisumu_gambiaeCont'
       - 'gambiaeCont_gambiaePM'
 
-cutadapt:
-      activate: False
-      adaptors:
 
-QualityControl:                               # Activate Quality control analyses
-      activate: True
+QualityControl:
+      cutadapt:
+            activate: False
+            adaptors:
+      fastqc:
+            activate: True
+      mosdepth:
+            activate: True
+      multiqc:
+            activate: True 
+
 
 
 DifferentialExpression:
       activate: True                          # Activate differential expression analyses
 
       venn:
+            activate: True
             padj_threshold: 0.05
             groups: ['gambiaeCont_gambiaePM', 'Kisumu_gambiaeCont']
 
@@ -65,45 +71,41 @@ DifferentialExpression:
             fc_threshold: 1
             groups: "Kisumu_gambiaeCont_gambiaePM"
 
-      GSEA:                                 # Activate fgsea Gene set enrichment analysis 
+      GSEA:                                 # Activate Gene set enrichment analysis 
             activate: True
             gaf: "resources/reference/VectorBase-50_AgambiaePEST_GO.gaf"
-            KeggSpeciesID: "aga"            # 3 letter KEGG species identifier. "aga" = Anopheles gambiae/coluzzii. 
-            replaceString: "AgaP_"          # An.gambiae KEGG pathways have this string appended which needs removing
+
+
 
 VariantAnalysis:
       activate: True
-      caller: 'freebayes'
       ploidy: 10                          # Ploidy level for freebayes to call at (Generally we are using pooled samples).For diploid organisms, this should be 2 * number of individuals in each pool
       chunks: 9                           # Number of chunks to split each chromosome into when parallelising freebayes. 9 or less is recommended. 
 
-      pca:                                # Run PCA on the genotype data?
+      pca:                                # Run PCA on the genotype data
             activate: True
             missingness: 1 
       
       summaryStatistics:                  # Estimate Population Genetic Summary Statistics such as Dxy, Pi
             activate: True
             missingness: 1
-      
+
       selection:                          # Calculate Fst and PBS per gene and in windows
             activate: True
             missingness: 1
 
             pbs:
-                  activate: True          # Activate Population Branch Statistic analysis (Needs three conditions, two closely related and an outgroup)
+                  activate: True          # Activate Population Branch Statistic analysis (Needs three conditions, two closely related and an outgroup) for resistance, do survivors_unexposed_susceptible
                   contrasts: 
                         - 'gambiaePM_gambiaeCont_Kisumu'
-                  windownames: ['small', 'large']
-                  windowsizes: [1000, 5000]
-                  windowsteps: [500, 1000]
 
-      ancestry:                                # For Anopheles gambiae s.l only - run Ancestry Informative Marker analysis. AIM datasets included in git repo.
+      ancestry:                                # For Anopheles gambiae s.l only
             activate: True
             missingness: 0.5                                # proportion between 0 and 1 
             gambcolu: "resources/gamb_vs_colu.zarr"         # path to gambcolu AIMs
             arab: "resources/gambcolu_vs_arab.zarr"         # path to arab AIMs
 
-      karyotype:                            # For Anopheles gambiae s.l only - Run analysis with compkaryo to determine proportion % karyotype
+      karyotype:                            # For Anopheles gambiae s.l only
             activate: True
             inversions:
                   - "2La"
@@ -114,10 +116,12 @@ VariantAnalysis:
            #       - "2Rd"
             #      - "2Ru"
 
+
+
 miscellaneous:
-      VariantsOfInterest:                                # Creates allele count .xlsx reports on specific mutations of choice
+      VariantsOfInterest:                                
             activate: True                             
-            path: "resources/exampleMutations.tsv"          # Requires appropriate mutations.tsv file
+            path: "resources/exampleMutations.tsv"          
       
       GeneFamiliesHeatmap:
             activate: True

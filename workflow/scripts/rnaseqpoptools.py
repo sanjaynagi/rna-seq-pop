@@ -19,7 +19,7 @@ def plotWindowed(statName, cohortText, cohortNoSpaceText, values, midpoints, pre
     if save:
         # store windowed statistics as .tsv 
         df = pd.DataFrame({'midpoint':midpoints, statName:values})
-        df.to_csv(f"{prefix}/{statName}_{cohortNoSpaceText}.{contig}.tsv", sep="\t", index=False)
+        df.to_csv(f"{prefix}/{cohortNoSpaceText}.{statName}.{contig}.tsv", sep="\t", index=False)
 
     xtick = np.arange(0, midpoints.max(), 2000000)
     ylim = np.max([ylim, values.max()])
@@ -31,8 +31,8 @@ def plotWindowed(statName, cohortText, cohortNoSpaceText, values, midpoints, pre
     plt.xticks(xtick, rotation=45, ha='right', fontsize=14)
     plt.ticklabel_format(style='plain', axis='x')
     plt.title(f"{statName} | {cohortText} | Chromosome {contig}", fontdict={'fontsize':20})
-    if save: plt.savefig(f"{prefix}/{statName}.{cohortNoSpaceText}.{contig}.svg",format="svg", dpi=300)
-    if save: plt.savefig(f"{prefix}/{statName}.{cohortNoSpaceText}.{contig}.pdf",format="pdf", dpi=300)
+    if save: plt.savefig(f"{prefix}/{cohortNoSpaceText}.{statName}.{contig}.svg",format="svg", dpi=300)
+    if save: plt.savefig(f"{prefix}/{cohortNoSpaceText}.{statName}.{contig}.pdf",format="pdf", dpi=300)
 
     
 

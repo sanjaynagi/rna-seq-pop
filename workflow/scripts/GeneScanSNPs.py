@@ -44,7 +44,7 @@ for pop,ac in ac_subpops.items():
     gene_acs = ac.compress(gene_bool, axis=0).compress(missense_mask, axis=0)
     gene_freqs = gene_acs.to_frequencies()
 
-    gene_freqs = pd.DataFrame(gene_freqs).rename(columns={1:f'{pop}_2', 2:f'{pop}_3', 3:f'{pop}_4'}).drop(columns=[0,4,5])
+    gene_freqs = pd.DataFrame(gene_freqs).rename(columns={1:f'{pop}_allele_2', 2:f'{pop}_allele_3', 3:f'{pop}_allele_4'}).drop(columns=[0,4,5])
     gene_df = pd.concat([gene_df, gene_freqs] , axis=1)
     
 gene_df['max_af'] = gene_df.iloc[:,7:].max(axis=1)

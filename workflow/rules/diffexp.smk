@@ -1,10 +1,3 @@
-################################	Differential Gene expression 	################################
-# Kallisto (Bray et al., 2016)                                						               #
-# DESeq2 (Love et al., 2014)
-# Sleuth (Pimentel et al., 2017)                       	 						               #
-####################################################################################################
-
-
 rule DifferentialGeneExpression:
     """
     Perform differential expression analysis at the gene-level with DESeq2
@@ -12,7 +5,7 @@ rule DifferentialGeneExpression:
     """
     input:
         metadata=config["metadata"],
-        genes2transcripts=config["ref"]["genes2transcripts"],
+        genes2transcripts=config["reference"]["genes2transcripts"],
         counts=expand("results/counts/{sample}", sample=samples),
     output:
         csvs=expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
@@ -42,7 +35,7 @@ rule DifferentialIsoformExpression:
     """
     input:
         metadata=config["metadata"],
-        genes2transcripts=config["ref"]["genes2transcripts"],
+        genes2transcripts=config["reference"]["genes2transcripts"],
         counts=expand("results/counts/{sample}", sample=samples),
     output:
         csvs=expand("results/isoformdiff/{comp}.csv", comp=config["contrasts"]),

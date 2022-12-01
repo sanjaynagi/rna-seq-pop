@@ -16,7 +16,7 @@ rule mpileupVariantsOfInterest:
         region=lambda wildcards: mutationData[
             mutationData.Name == wildcards.mut
         ].Location.tolist(),
-        ref=config["ref"]["genome"].rstrip(".gz"),
+        ref=config["reference"]["genome"].rstrip(".gz"),
         basedir=workflow.basedir,
     shell:
         """

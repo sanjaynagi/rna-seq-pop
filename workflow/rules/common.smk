@@ -1,6 +1,3 @@
-################################          Common functions           ##################################
-
-## If PBS is activated
 if config["VariantAnalysis"]["selection"]["pbs"]["activate"]:
     windowedStats = ["Fst", "Pbs"]
 else:
@@ -20,8 +17,7 @@ def getFASTQs(wildcards, rules=None):
     else:
         fastq_cols = ['fq1']
 
-    if config["cutadapt"]["activate"] == True:
-        #print("shouldnt print")
+    if config["QualityControl"]["cutadapt"]["activate"] == True:
         if rules in ["KallistoQuant", "HISAT2align", "HISAT2align_input"]:
             for i, col in enumerate(fastq_cols):
                 metadata = metadata.assign(**{col: f"resources/reads/trimmed/" + metadata["sampleID"] + f"_{i+1}.fastq.gz"})     
@@ -179,11 +175,11 @@ def GetDesiredOutputs(wildcards):
                         "results/variantAnalysis/diversity/SequenceDivPerGene.tsv",
                         "results/variantAnalysis/diversity/DxyPerGene.tsv",
                         "results/variantAnalysis/selection/TajimasDPerGene.tsv",
-                        "results/variantAnalysis/selection/fst/Fst.{comp}.{wsize}.{contig}.svg",
+                        "results/variantAnalysis/selection/fst/{wsize}/{comp}.Fst.{contig}.svg",
                     ],
                     contig=config["contigs"],
                     comp=config["contrasts"],
-                    wsize=config["VariantAnalysis"]["selection"]["pbs"]["windownames"],
+                    wsize=['1000snp_window', '2000snp_window', '5000snp_window'],
                 )
             )
 
