@@ -11,6 +11,8 @@
 
 **Documentation**: https://sanjaynagi.github.io/rna-seq-pop/    
 
+**Walkthrough**: https://www.youtube.com/watch?v=5QQe7DLHO4M      
+
 RNA-Seq-Pop is a computational pipeline to analyse Illumina RNA-Sequencing data of any organism. As well as performing standard transcriptomic analyses, such as differential expression, RNA-Seq-Pop also calls and analyses genetic polymorphisms, extracting population genomic signals. The workflow can perform the following analyses of illumina paired-end RNA-Sequencing data:
 
 * Quality control of fastq reads with [fastqc](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/), QC metrics integrated into a final report with [multiQC](https://multiqc.info/)
