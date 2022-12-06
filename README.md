@@ -22,9 +22,8 @@ RNA-Seq-Pop is a computational pipeline to analyse Illumina RNA-Sequencing data 
 * Fst and [Population branch statistic (PBS)](https://science.sciencemag.org/content/329/5987/75), both in windows across contigs and at the gene-level ([Scikit-allel](https://scikit-allel.readthedocs.io/en/stable/)).
 * Allele frequencies at variants of interest (pre-specified loci of choice).
 * Various summary statistics (Wattersons Theta, Sequence Diversity, Dxy etc)    
-* *Anopheles gambiae s.l* - Analysis of Ancestry Informative Markers (AIMs) to determine relative ancestry of *An.gambiae/coluzzii/arabiensis*. 
-* *Anopheles gambiae s.l* - Reports if DE genes are found underneath known selective sweep signals in the [Ag1000g](https://www.nature.com/articles/nature24995).
-* *Anopheles gambiae s.l* - Determines Karyotype of chromosomal inversions using [compkaryo](https://academic.oup.com/g3journal/article/9/10/3249/6026680) - [GH](https://github.com/sanjaynagi/compkaryo)
+* Analysis of Ancestry Informative Markers (AIMs) to determine relative ancestry of *An.gambiae/coluzzii/arabiensis* (*Anopheles gambiae s.l*)
+* Determines Karyotype of chromosomal inversions using [compkaryo](https://academic.oup.com/g3journal/article/9/10/3249/6026680) (*Anopheles gambiae s.l*)
 
 The workflow is generalised, and will function with any Illumina single or paired-end RNA-sequencing. However, certain modules, such as the ancestry and karyotyping, are only appropriate for *An. gambiae s.l*. These can be activated in the configuration file (config.yaml). The workflow works with pooled samples, diploid, or haploid individuals. 
 
