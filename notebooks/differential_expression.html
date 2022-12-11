@@ -89,7 +89,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Gene family heatmaps" href="gene_families.html" />
-    <link rel="prev" title="Quality control" href="quality_control.html" />
+    <link rel="prev" title="Read counts" href="read_counts.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
     
@@ -183,7 +183,7 @@ const thebe_selector_output = ".output, .cell_output"
  <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="rna-seq-pop.html">
    <strong>
-    RNA-Seq-Pop modules
+    RNA-Seq-Pop tutorial
    </strong>
   </a>
   <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
@@ -193,8 +193,18 @@ const thebe_selector_output = ".output, .cell_output"
   </label>
   <ul class="current">
    <li class="toctree-l2">
+    <a class="reference internal" href="snakemake.html">
+     Snakemake
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="quality_control.html">
      Quality control
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="read_counts.html">
+     Read counts
     </a>
    </li>
    <li class="toctree-l2 current active">
@@ -208,6 +218,11 @@ const thebe_selector_output = ".output, .cell_output"
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="gsea.html">
+     Gene set enrichment analysis
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="variant_calling.html">
      Variant calling
     </a>
@@ -215,6 +230,11 @@ const thebe_selector_output = ".output, .cell_output"
    <li class="toctree-l2">
     <a class="reference internal" href="genetic_diversity.html">
      Genetic diversity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="variants_of_interest.html">
+     Variants of Interest
     </a>
    </li>
    <li class="toctree-l2">
@@ -417,36 +437,12 @@ title="Print to PDF"
     </ul>
   </div>
 </div>
-<label for="__page-toc"
-  class="headerbtn headerbtn-page-toc"
-  
->
-  
-
-<span class="headerbtn__icon-container">
-  <i class="fas fa-list"></i>
-  </span>
-
-</label>
 
     </div>
 </div>
 
 <!-- Table of contents -->
 <div class="col-md-3 bd-toc show noprint">
-    <div class="tocsection onthispage pt-5 pb-3">
-        <i class="fas fa-list"></i> Contents
-    </div>
-    <nav id="bd-toc-nav" aria-label="Page">
-        <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#isoform-level-differential-expression">
-   Isoform-level differential expression
-  </a>
- </li>
-</ul>
-
-    </nav>
 </div>
     </div>
     <div class="article row">
@@ -458,19 +454,6 @@ title="Print to PDF"
                 <div id="print-main-content">
                     <div id="jb-print-toc">
                         
-                        <div>
-                            <h2> Contents </h2>
-                        </div>
-                        <nav aria-label="Page">
-                            <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#isoform-level-differential-expression">
-   Isoform-level differential expression
-  </a>
- </li>
-</ul>
-
-                        </nav>
                     </div>
                 </div>
             </div>
@@ -478,11 +461,24 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="differential-expression">
+  <section id="differential-expression">
 <h1>Differential expression<a class="headerlink" href="#differential-expression" title="Permalink to this heading">#</a></h1>
-<section id="isoform-level-differential-expression">
-<h2>Isoform-level differential expression<a class="headerlink" href="#isoform-level-differential-expression" title="Permalink to this heading">#</a></h2>
-</section>
+<p><strong>Output Directories:</strong> <em>rna-seq-pop/results/genediff/</em>, <em>rna-seq-pop/results/isoformdiff/</em></p>
+<p><strong>Rules</strong></p>
+<ul class="simple">
+<li><p><em>workflow/rules/diffexp.smk</em></p>
+<ul>
+<li><p>DifferentialGeneExpression</p></li>
+<li><p>DifferentialIsoformExpression</p></li>
+<li><p>ProgressiveGenes</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Introduction</strong></p>
+<p>Differential expression analysis for RNA-sequencing is a statistical method used to identify genes or transcripts that show significantly different levels of expression between two or more biological conditions. This can provide insight into the underlying biological mechanisms that drive a particular phenotype and can be used to identify potential causative genes and diagnostic targets.</p>
+<p>One important aspect of differential expression analysis for RNA-sequencing data is the choice of level at which to perform the analysis. Differential expression can be performed at the gene level, in which case the expression levels of entire genes are compared between the different conditions, or at the isoform level, in which case the expression levels of individual transcript isoforms are compared.</p>
+<p><em>RNA-Seq-Pop</em> will perform differential expression at the gene-level with <a class="reference external" href="https://bioconductor.org/packages/DESeq2/">DESeq2</a> and at the isoform level with <a class="reference external" href="https://pachterlab.github.io/sleuth/about">sleuth</a>.</p>
+<p><strong>Results</strong></p>
 </section>
 
     <script type="text/x-thebe-config">
@@ -512,11 +508,11 @@ title="Print to PDF"
                 
     <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="quality_control.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="read_counts.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Quality control</p>
+            <p class="prev-next-title">Read counts</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="gene_families.html" title="next page">

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Karyotyping</title>
+    <title>Gene set enrichment analysis</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -88,8 +88,8 @@ const thebe_selector_output = ".output, .cell_output"
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Troubleshooting" href="troubleshooting.html" />
-    <link rel="prev" title="Ancestry" href="ancestry_informative_markers.html" />
+    <link rel="next" title="Variant calling" href="variant_calling.html" />
+    <link rel="prev" title="Gene family heatmaps" href="gene_families.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
     
@@ -217,8 +217,8 @@ const thebe_selector_output = ".output, .cell_output"
      Gene family heatmaps
     </a>
    </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="gsea.html">
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
      Gene set enrichment analysis
     </a>
    </li>
@@ -247,8 +247,8 @@ const thebe_selector_output = ".output, .cell_output"
      Ancestry
     </a>
    </li>
-   <li class="toctree-l2 current active">
-    <a class="current reference internal" href="#">
+   <li class="toctree-l2">
+    <a class="reference internal" href="karyotyping.html">
      Karyotyping
     </a>
    </li>
@@ -372,7 +372,7 @@ title="Source repository"
       </li>
       
       <li>
-        <a href="https://github.com/sanjaynagi/rna-seq-pop/issues/new?title=Issue%20on%20page%20%2Fnotebooks/karyotyping.html&body=Your%20issue%20content%20here."
+        <a href="https://github.com/sanjaynagi/rna-seq-pop/issues/new?title=Issue%20on%20page%20%2Fnotebooks/gsea.html&body=Your%20issue%20content%20here."
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -400,7 +400,7 @@ title="Open an issue"
   <div class="menu-dropdown__content">
     <ul>
       <li>
-        <a href="../_sources/notebooks/karyotyping.ipynb"
+        <a href="../_sources/notebooks/gsea.ipynb"
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -449,7 +449,7 @@ title="Print to PDF"
         <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Karyotyping</h1>
+                <h1>Gene set enrichment analysis</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
@@ -461,20 +461,20 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="karyotyping">
-<h1>Karyotyping<a class="headerlink" href="#karyotyping" title="Permalink to this heading">#</a></h1>
-<p><strong>Output Directory:</strong> <em>rna-seq-pop/results/karyotype/</em></p>
+  <section id="gene-set-enrichment-analysis">
+<h1>Gene set enrichment analysis<a class="headerlink" href="#gene-set-enrichment-analysis" title="Permalink to this heading">#</a></h1>
+<p><strong>Output Directory:</strong>  <em>rna-seq-pop/results/gsea/</em></p>
 <p><strong>Rules</strong></p>
 <ul class="simple">
-<li><p><em>workflow/rules/variantAnalysis.smk</em></p>
+<li><p><em>workflow/rules/diffexp.smk</em></p>
 <ul>
-<li><p>Karyotype</p></li>
+<li><p>GeneSetEnrichment</p></li>
 </ul>
 </li>
 </ul>
 <p><strong>Introduction</strong></p>
-<p>Chromosomal inversions are a type of structural variation in which a segment of a chromosome is inverted relative to the normal ancestral arrangement. In <em>Anopheles gambiae</em>, chromosomal inversions have been extensively studied due to their role in the evolution and adaptation of the species. These inversions can affect gene expression and other cellular processes, and they can also act as barriers to gene flow between different populations. The 2La inversion, which is XXX (&#64;&#64; ref) long, has been associated with aridity tolerance, <em>Plasmodium</em> infection and insecticide resistance (&#64;&#64; ref). Because the 2La inversion predates the speciation of the gambiae complex, it is the biggest driver in population structure within its breakpoints.</p>
-<p>The study of chromosomal inversions in Anopheles gambiae has provided important insights into the evolution and biology of this species. In RNA-Seq-Pop, we can estimate the frequency of chromosomal inversions in our samples, using compKaryo and karyotype-tagging SNPs. These are SNPs which reside within the inversion breakpoints, and show fixed differences between karypotypes.</p>
+<p>Gene set enrichment analysis (GSEA) is a computational method used to identify and interpret patterns of gene expression in high-throughput data. It is often used to determine whether a particular group of genes is enriched for genes that are differentially expressed in a particular phenotype, such as insecticide resistance. GSEA helps researchers to identify pathways or biological processes that are associated with a particular condition, and can provide insight into the underlying mechanisms that drive the condition. GSEA is a powerful tool for uncovering new biological insights and can be used to guide further experimental research.</p>
+<p>In <em>RNA-Seq-Pop</em>, we can use GSEA to test whether specific gene ontology (GO) terms are enriched in our differential expression and Fst data. This requires a GO annotation file (.gaf) for your study organism, for vectors these can be located at Vectorbase.</p>
 <p><strong>Results</strong></p>
 </section>
 
@@ -505,17 +505,17 @@ title="Print to PDF"
                 
     <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="ancestry_informative_markers.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="gene_families.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Ancestry</p>
+            <p class="prev-next-title">Gene family heatmaps</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="troubleshooting.html" title="next page">
+    <a class='right-next' id="next-link" href="variant_calling.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Troubleshooting</p>
+        <p class="prev-next-title">Variant calling</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>

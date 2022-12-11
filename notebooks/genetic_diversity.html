@@ -88,7 +88,7 @@ const thebe_selector_output = ".output, .cell_output"
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Selection" href="selection.html" />
+    <link rel="next" title="Variants of Interest" href="variants_of_interest.html" />
     <link rel="prev" title="Variant calling" href="variant_calling.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
@@ -183,7 +183,7 @@ const thebe_selector_output = ".output, .cell_output"
  <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="rna-seq-pop.html">
    <strong>
-    RNA-Seq-Pop modules
+    RNA-Seq-Pop tutorial
    </strong>
   </a>
   <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
@@ -193,8 +193,18 @@ const thebe_selector_output = ".output, .cell_output"
   </label>
   <ul class="current">
    <li class="toctree-l2">
+    <a class="reference internal" href="snakemake.html">
+     Snakemake
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="quality_control.html">
      Quality control
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="read_counts.html">
+     Read counts
     </a>
    </li>
    <li class="toctree-l2">
@@ -208,6 +218,11 @@ const thebe_selector_output = ".output, .cell_output"
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="gsea.html">
+     Gene set enrichment analysis
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="variant_calling.html">
      Variant calling
     </a>
@@ -215,6 +230,11 @@ const thebe_selector_output = ".output, .cell_output"
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
      Genetic diversity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="variants_of_interest.html">
+     Variants of Interest
     </a>
    </li>
    <li class="toctree-l2">
@@ -441,8 +461,22 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="genetic-diversity">
+  <section id="genetic-diversity">
 <h1>Genetic diversity<a class="headerlink" href="#genetic-diversity" title="Permalink to this heading">#</a></h1>
+<p><strong>Output Directory:</strong> <em>rna-seq-pop/results/variantAnalysis/diversity/</em></p>
+<p><strong>Rules</strong></p>
+<ul class="simple">
+<li><p><em>workflow/rules/variantAnalysis.smk</em></p>
+<ul>
+<li><p>SummaryStatistics</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Introduction</strong></p>
+<p>Genetic diversity is an important concept in population genetics, and it refers to the amount of variation in the genetics of a population. This variation can take many forms, including single nucleotide polymorphisms (SNPs), small insertions or deletions (INDELs), and larger structural changes and rearrangememts.</p>
+<p>One measure of genetic diversity is nucleotide diversity (aka pi), which is a measure of the average number of nucleotide differences per site between two randomly chosen genomes within a population. Another measure is Watterson’s theta, which is a measure of the average number of segregating sites within a population. These measures can provide valuable insights into the evolutionary history of a population.</p>
+<p>In RNA-Seq-Pop, we calculate genetic diversity from the called SNPs using <a class="reference external" href="https://scikit-allel.readthedocs.io/en/stable/">scikit-allel</a>. As indel calling is unreliable from RNA-Seq data, we filter out any indel calls prior to variant analysis.</p>
+<p><strong>Results</strong></p>
 </section>
 
     <script type="text/x-thebe-config">
@@ -479,10 +513,10 @@ title="Print to PDF"
             <p class="prev-next-title">Variant calling</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="selection.html" title="next page">
+    <a class='right-next' id="next-link" href="variants_of_interest.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Selection</p>
+        <p class="prev-next-title">Variants of Interest</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>

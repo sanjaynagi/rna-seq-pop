@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Karyotyping</title>
+    <title>Snakemake</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -88,8 +88,8 @@ const thebe_selector_output = ".output, .cell_output"
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Troubleshooting" href="troubleshooting.html" />
-    <link rel="prev" title="Ancestry" href="ancestry_informative_markers.html" />
+    <link rel="next" title="Quality control" href="quality_control.html" />
+    <link rel="prev" title="RNA-Seq-Pop tutorial" href="rna-seq-pop.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
     
@@ -192,8 +192,8 @@ const thebe_selector_output = ".output, .cell_output"
    </i>
   </label>
   <ul class="current">
-   <li class="toctree-l2">
-    <a class="reference internal" href="snakemake.html">
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
      Snakemake
     </a>
    </li>
@@ -247,8 +247,8 @@ const thebe_selector_output = ".output, .cell_output"
      Ancestry
     </a>
    </li>
-   <li class="toctree-l2 current active">
-    <a class="current reference internal" href="#">
+   <li class="toctree-l2">
+    <a class="reference internal" href="karyotyping.html">
      Karyotyping
     </a>
    </li>
@@ -372,7 +372,7 @@ title="Source repository"
       </li>
       
       <li>
-        <a href="https://github.com/sanjaynagi/rna-seq-pop/issues/new?title=Issue%20on%20page%20%2Fnotebooks/karyotyping.html&body=Your%20issue%20content%20here."
+        <a href="https://github.com/sanjaynagi/rna-seq-pop/issues/new?title=Issue%20on%20page%20%2Fnotebooks/snakemake.html&body=Your%20issue%20content%20here."
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -400,7 +400,7 @@ title="Open an issue"
   <div class="menu-dropdown__content">
     <ul>
       <li>
-        <a href="../_sources/notebooks/karyotyping.ipynb"
+        <a href="../_sources/notebooks/snakemake.ipynb"
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -449,7 +449,7 @@ title="Print to PDF"
         <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Karyotyping</h1>
+                <h1>Snakemake</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
@@ -461,21 +461,15 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="karyotyping">
-<h1>Karyotyping<a class="headerlink" href="#karyotyping" title="Permalink to this heading">#</a></h1>
-<p><strong>Output Directory:</strong> <em>rna-seq-pop/results/karyotype/</em></p>
-<p><strong>Rules</strong></p>
-<ul class="simple">
-<li><p><em>workflow/rules/variantAnalysis.smk</em></p>
-<ul>
-<li><p>Karyotype</p></li>
-</ul>
-</li>
-</ul>
-<p><strong>Introduction</strong></p>
-<p>Chromosomal inversions are a type of structural variation in which a segment of a chromosome is inverted relative to the normal ancestral arrangement. In <em>Anopheles gambiae</em>, chromosomal inversions have been extensively studied due to their role in the evolution and adaptation of the species. These inversions can affect gene expression and other cellular processes, and they can also act as barriers to gene flow between different populations. The 2La inversion, which is XXX (&#64;&#64; ref) long, has been associated with aridity tolerance, <em>Plasmodium</em> infection and insecticide resistance (&#64;&#64; ref). Because the 2La inversion predates the speciation of the gambiae complex, it is the biggest driver in population structure within its breakpoints.</p>
-<p>The study of chromosomal inversions in Anopheles gambiae has provided important insights into the evolution and biology of this species. In RNA-Seq-Pop, we can estimate the frequency of chromosomal inversions in our samples, using compKaryo and karyotype-tagging SNPs. These are SNPs which reside within the inversion breakpoints, and show fixed differences between karypotypes.</p>
-<p><strong>Results</strong></p>
+  <section id="snakemake">
+<h1>Snakemake<a class="headerlink" href="#snakemake" title="Permalink to this heading">#</a></h1>
+<p><a class="reference external" href="https://snakemake.github.io/">Snakemake</a> is a popular workflow management system for the design of computational pipelines. Snakemake workflows typically involve multiple steps, with snakemake allowing users to easily specify the input, output, and dependencies for each step in the pipeline. This makes it easier to manage and execute large and complex analyses, and can help ensure that the pipeline is executed in a reproducible and consistent manner. Additionally, Snakemake allows users to easily scale their pipelines to run on multiple cores or even distributed across a cluster, making it well-suited for high-performance computing environments.</p>
+<p>Documentation: <a class="reference external" href="https://snakemake.readthedocs.io/en/stable/">https://snakemake.readthedocs.io/en/stable/</a></p>
+<div class="cell tag_remove-input docutils container">
+<div class="cell_output docutils container">
+<div class="output text_html"><iframe width="560" height="315" src="https://www.youtube.com/embed/UOKxta3061g" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div></div>
+</div>
 </section>
 
     <script type="text/x-thebe-config">
@@ -505,17 +499,17 @@ title="Print to PDF"
                 
     <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="ancestry_informative_markers.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="rna-seq-pop.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Ancestry</p>
+            <p class="prev-next-title"><strong>RNA-Seq-Pop tutorial</strong></p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="troubleshooting.html" title="next page">
+    <a class='right-next' id="next-link" href="quality_control.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Troubleshooting</p>
+        <p class="prev-next-title">Quality control</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>

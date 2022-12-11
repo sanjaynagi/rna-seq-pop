@@ -89,7 +89,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Genetic diversity" href="genetic_diversity.html" />
-    <link rel="prev" title="Gene family heatmaps" href="gene_families.html" />
+    <link rel="prev" title="Gene set enrichment analysis" href="gsea.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
     
@@ -183,7 +183,7 @@ const thebe_selector_output = ".output, .cell_output"
  <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="rna-seq-pop.html">
    <strong>
-    RNA-Seq-Pop modules
+    RNA-Seq-Pop tutorial
    </strong>
   </a>
   <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
@@ -193,8 +193,18 @@ const thebe_selector_output = ".output, .cell_output"
   </label>
   <ul class="current">
    <li class="toctree-l2">
+    <a class="reference internal" href="snakemake.html">
+     Snakemake
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="quality_control.html">
      Quality control
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="read_counts.html">
+     Read counts
     </a>
    </li>
    <li class="toctree-l2">
@@ -207,6 +217,11 @@ const thebe_selector_output = ".output, .cell_output"
      Gene family heatmaps
     </a>
    </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="gsea.html">
+     Gene set enrichment analysis
+    </a>
+   </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
      Variant calling
@@ -215,6 +230,11 @@ const thebe_selector_output = ".output, .cell_output"
    <li class="toctree-l2">
     <a class="reference internal" href="genetic_diversity.html">
      Genetic diversity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="variants_of_interest.html">
+     Variants of Interest
     </a>
    </li>
    <li class="toctree-l2">
@@ -441,8 +461,28 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="variant-calling">
+  <section id="variant-calling">
 <h1>Variant calling<a class="headerlink" href="#variant-calling" title="Permalink to this heading">#</a></h1>
+<p><strong>Output Directory:</strong>  <em>rna-seq-pop/results/variantAnalysis/vcfs/</em></p>
+<p><strong>Rules</strong></p>
+<ul class="simple">
+<li><p><em>workflow/rules/variantCalling.smk</em></p>
+<ul>
+<li><p>GenerateFreebayesParams</p></li>
+<li><p>VariantCallingFreebayes</p></li>
+</ul>
+</li>
+<li><p><em>workflow/rules/alignment.smk</em></p>
+<ul>
+<li><p>HISAT2Align</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Introduction</strong></p>
+<p>An advantage of <em>RNA-Seq-Pop</em> is that it allows us to call genomic variants from RNA-Sequencing data. We use the variant caller freebayes.</p>
+<p>freebayes is a widely-used tool for calling genomic variants from next-generation sequencing data. It is a probabilistic variant caller, which means that it uses statistical models to estimate the likelihood that a given sequence represents a true variant, rather than a sequencing error or other type of noise. Although freebayes can be used to call both single nucleotide polymorphisms (SNPs) and insertions and deletions (indels), we filter out indel calls as they likely to be highly unreliable from RNA-Sequencing data.</p>
+<p>Given that we are calling SNPs from RNA-Sequencing data, we should not expect the called SNPs to be as accurate as those called from deeply sequenced whole-genome sequencing studies.</p>
+<p><strong>Results</strong></p>
 </section>
 
     <script type="text/x-thebe-config">
@@ -472,11 +512,11 @@ title="Print to PDF"
                 
     <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="gene_families.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="gsea.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Gene family heatmaps</p>
+            <p class="prev-next-title">Gene set enrichment analysis</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="genetic_diversity.html" title="next page">

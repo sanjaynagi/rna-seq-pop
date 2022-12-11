@@ -89,7 +89,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Ancestry" href="ancestry_informative_markers.html" />
-    <link rel="prev" title="Genetic diversity" href="genetic_diversity.html" />
+    <link rel="prev" title="Variants of Interest" href="variants_of_interest.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
     
@@ -183,7 +183,7 @@ const thebe_selector_output = ".output, .cell_output"
  <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="rna-seq-pop.html">
    <strong>
-    RNA-Seq-Pop modules
+    RNA-Seq-Pop tutorial
    </strong>
   </a>
   <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
@@ -193,8 +193,18 @@ const thebe_selector_output = ".output, .cell_output"
   </label>
   <ul class="current">
    <li class="toctree-l2">
+    <a class="reference internal" href="snakemake.html">
+     Snakemake
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="quality_control.html">
      Quality control
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="read_counts.html">
+     Read counts
     </a>
    </li>
    <li class="toctree-l2">
@@ -208,6 +218,11 @@ const thebe_selector_output = ".output, .cell_output"
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="gsea.html">
+     Gene set enrichment analysis
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="variant_calling.html">
      Variant calling
     </a>
@@ -215,6 +230,11 @@ const thebe_selector_output = ".output, .cell_output"
    <li class="toctree-l2">
     <a class="reference internal" href="genetic_diversity.html">
      Genetic diversity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="variants_of_interest.html">
+     Variants of Interest
     </a>
    </li>
    <li class="toctree-l2 current active">
@@ -441,8 +461,22 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="selection">
+  <section id="selection">
 <h1>Selection<a class="headerlink" href="#selection" title="Permalink to this heading">#</a></h1>
+<p><strong>Output Directory:</strong>  <em>rna-seq-pop/results/variantAnalysis/selection/</em></p>
+<p><strong>Rules</strong></p>
+<ul class="simple">
+<li><p><em>workflow/rules/variantAnalysis.smk</em></p>
+<ul>
+<li><p>PerGeneFstPBSDxyPi</p></li>
+<li><p>WindowedFstPBS</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Introduction</strong></p>
+<p>Selection is a process that occurs in natural populations, in which certain genetic variants are more likely to be passed on to the next generation than others due to the fact that they provide a fitness advantage.</p>
+<p>One method of identifying selection is to calculate Fst between two populations. Fst is a measure of genetic differentiation. It is calculated as the ratio of the genetic variance between populations to the total genetic variance within and between populations. By calculating Fst, we can identify genes or regions of the genome showing high differentiation, which may indicate selection acting upon the locus.</p>
+<p>In <em>RNA-Seq-Pop</em>, we call</p>
 </section>
 
     <script type="text/x-thebe-config">
@@ -472,11 +506,11 @@ title="Print to PDF"
                 
     <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="genetic_diversity.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="variants_of_interest.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Genetic diversity</p>
+            <p class="prev-next-title">Variants of Interest</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="ancestry_informative_markers.html" title="next page">
