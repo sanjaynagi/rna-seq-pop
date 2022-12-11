@@ -11,11 +11,15 @@ parts:
   chapters:
       - file: notebooks/rna-seq-pop
         sections:
+        - file: notebooks/snakemake
         - file: notebooks/quality_control
+        - file: notebooks/read_counts
         - file: notebooks/differential_expression
         - file: notebooks/gene_families
+        - file: notebooks/gsea
         - file: notebooks/variant_calling
         - file: notebooks/genetic_diversity
+        - file: notebooks/variants_of_interest
         - file: notebooks/selection
         - file: notebooks/ancestry_informative_markers
         - file: notebooks/karyotyping
