@@ -204,7 +204,7 @@ const thebe_selector_output = ".output, .cell_output"
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="read_counts.html">
-     Read counts
+     Counts
     </a>
    </li>
    <li class="toctree-l2">
@@ -463,19 +463,21 @@ title="Print to PDF"
                 
   <section id="ancestry">
 <h1>Ancestry<a class="headerlink" href="#ancestry" title="Permalink to this heading">#</a></h1>
-<p><strong>Output Directory:</strong>  <em>rna-seq-pop/results/variantAnalysis/ancestry/</em></p>
+<p><strong>Output Directory:</strong>  <span style="color:gray;font-weight:bold"> <em>results/variantAnalysis/ancestry/</em> </span></p>
 <p><strong>Rules</strong></p>
+<span style="color:gray;font-weight:bold">
 <ul class="simple">
-<li><p><em>workflow/rules/variantAnalysis.smk</em></p>
+<li><p><em>variantAnalysis.smk</em></p>
 <ul>
 <li><p>AncestryInformativeMarkers</p></li>
 </ul>
 </li>
 </ul>
+</span>    
 <p><strong>Introduction</strong></p>
 <p>The <em>Anopheles gambiae</em> species complex is a group of closely related sibling species. These species diverged relatively recently, and so they are still capable of hybridising and producing viable offspring. This process is highly relevant from a vector control perspective, as they allow beneficial alleles, such as those under selection due to insecticide resistance, to pass between species. For example, both the L995F <em>kdr</em> mutation and the G280S <em>ace-1</em> mutation have passed between <em>An. gambiae</em> and <em>An. coluzzii</em>.</p>
 <p>One approach to studying ancestry of individuals in the Anopheles gambiae complex is to use ancestry informative markers (AIMs). AIMs are SNPs which show fixed differences (or almost fixed) between species, and thus can be used as diagnostic markers to determine an individuals ancestry. By genotyping AIMs across the genome, we can identify regions of the genome that have introgressed from another species, or identify contamination events that have occured in the insectaries or during sample and library preparation.</p>
-<p>RNA-Seq-Pop can use two sets of AIMs, <em>gambiae vs coluzzii</em>, or <em>An. gambiae/coluzzii</em> vs <em>arabiensis</em>.</p>
+<p><em>RNA-Seq-Pop</em> can use two sets of AIMs, <em>gambiae vs coluzzii</em>, or <em>An. gambiae/coluzzii</em> vs <em>arabiensis</em>.</p>
 <p><strong>Results</strong></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

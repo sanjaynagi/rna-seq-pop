@@ -204,7 +204,7 @@ const thebe_selector_output = ".output, .cell_output"
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="read_counts.html">
-     Read counts
+     Counts
     </a>
    </li>
    <li class="toctree-l2">
@@ -463,18 +463,20 @@ title="Print to PDF"
                 
   <section id="variant-calling">
 <h1>Variant calling<a class="headerlink" href="#variant-calling" title="Permalink to this heading">#</a></h1>
-<p><strong>Output Directory:</strong>  <em>rna-seq-pop/results/variantAnalysis/vcfs/</em></p>
+<p><strong>Output Directory:</strong>  <span style="color:gray;font-weight:bold"><em>results/variantAnalysis/vcfs/</em></span></p>
 <p><strong>Rules</strong></p>
+<span style="color:gray;font-weight:bold">
 <ul class="simple">
-<li><p><em>workflow/rules/variantCalling.smk</em></p>
+<li><p><em>variantCalling.smk</em></p>
 <ul>
 <li><p>GenerateFreebayesParams</p></li>
 <li><p>VariantCallingFreebayes</p></li>
 </ul>
 </li>
-<li><p><em>workflow/rules/alignment.smk</em></p>
+<li><p><em>alignment.smk</em></p>
 <ul>
-<li><p>HISAT2Align</p></li>
+<li><p>HISAT2Align
+</span></p></li>
 </ul>
 </li>
 </ul>

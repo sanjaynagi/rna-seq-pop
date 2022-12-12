@@ -88,7 +88,7 @@ const thebe_selector_output = ".output, .cell_output"
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Read counts" href="read_counts.html" />
+    <link rel="next" title="Counts" href="read_counts.html" />
     <link rel="prev" title="Snakemake" href="snakemake.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
@@ -204,7 +204,7 @@ const thebe_selector_output = ".output, .cell_output"
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="read_counts.html">
-     Read counts
+     Counts
     </a>
    </li>
    <li class="toctree-l2">
@@ -463,10 +463,11 @@ title="Print to PDF"
                 
   <section id="quality-control">
 <h1>Quality control<a class="headerlink" href="#quality-control" title="Permalink to this heading">#</a></h1>
-<p><strong>Output Directory:</strong>   <em>rna-seq-pop/results/qc/</em></p>
+<p><strong>Output Directory:</strong>  <span style="color:gray;font-weight:bold"><em>results/qc/</em></span></p>
 <p><strong>Rules</strong></p>
+<span style="color:gray;font-weight:bold">
 <ul class="simple">
-<li><p><em>workflow/rules/qc.smk</em></p>
+<li><p><em>qc.smk</em></p>
 <ul>
 <li><p>CheckInputs</p></li>
 <li><p>cutAdapt</p></li>
@@ -478,6 +479,7 @@ title="Print to PDF"
 </ul>
 </li>
 </ul>
+</span>
 <p><strong>Introduction</strong></p>
 <p>Quality control (QC) is an important step in the analysis of RNA-seq data. RNA-seq is a powerful transcriptomic method, but the data generated can be noisy and subject to various sources of error. As a result, it is essential to perform QC on the raw data in order to identify and correct any problems that may affect downstream analysis. This typically involves calculating quality metrics to assess the quality of the reads and identify any potential issues in read mapping or variant calling.</p>
 <p>In <em>RNA-Seq-Pop</em>, we apply various tools to assess quality control metrics of the data.</p>
@@ -522,7 +524,7 @@ title="Print to PDF"
     <a class='right-next' id="next-link" href="read_counts.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Read counts</p>
+        <p class="prev-next-title">Counts</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>

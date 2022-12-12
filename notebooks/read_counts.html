@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Read counts</title>
+    <title>Counts</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -204,7 +204,7 @@ const thebe_selector_output = ".output, .cell_output"
    </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
-     Read counts
+     Counts
     </a>
    </li>
    <li class="toctree-l2">
@@ -449,7 +449,7 @@ title="Print to PDF"
         <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Read counts</h1>
+                <h1>Counts</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
@@ -461,28 +461,71 @@ title="Print to PDF"
                 
               <div>
                 
-  <section id="read-counts">
-<h1>Read counts<a class="headerlink" href="#read-counts" title="Permalink to this heading">#</a></h1>
-<p><strong>Output Directory</strong></p>
-<p><em>rna-seq-pop/results/counts/</em></p>
+  <section id="counts">
+<h1>Counts<a class="headerlink" href="#counts" title="Permalink to this heading">#</a></h1>
+<p><strong>Output Directory:</strong>  <span style="color:gray;font-weight:bold"><em>results/counts/</em></span></p>
 <p><strong>Rules</strong></p>
+<span style="color:gray;font-weight:bold">
 <ul class="simple">
-<li><p><em>workflow/rules/alignment.smk</em></p>
+<li><p><em>alignment.smk</em></p>
 <ul>
 <li><p>KallistoQuant</p></li>
 </ul>
 </li>
-<li><p><em>workflow/rules/diffexp.smk</em></p>
+<li><p><em>diffexp.smk</em></p>
 <ul>
 <li><p>DifferentialGeneExpression</p></li>
 <li><p>DifferentialIsoformExpression</p></li>
 </ul>
 </li>
 </ul>
+</span>
 <p><strong>Introduction</strong></p>
 <p>Counting reads to genes is an important step in the analysis of RNA-seq data. The raw data from an RNA-seq experiment consists of millions of reads that are derived from the RNA molecules in the sample. In order to quantify gene expression, these reads must be mapped to the transcript from which they were derived, and the number of reads mapped to each transcript must be counted. This process, known as read counting, provides a measure of the abundance of each gene in each sample and can be used to identify differentially expressed genes and other interesting features of the data.</p>
-<p>In RNA-Seq-Pop we map reads directly to the transcriptome with <a class="reference external" href="https://pachterlab.github.io/kallisto/about">kallisto</a>, a process termed ‘pseudoalignment’.</p>
+<p>In <em>RNA-Seq-Pop</em> we map reads directly to the transcriptome with <a class="reference external" href="https://pachterlab.github.io/kallisto/about">kallisto</a>, a process termed ‘pseudoalignment’. This has the benefit of being substantially faster than genome alignment, without a loss in accuracy.</p>
 <p><strong>Results</strong></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">wand.image</span> <span class="kn">import</span> <span class="n">Image</span> <span class="k">as</span> <span class="n">WImage</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">WImage</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;../../../results/counts/total_reads_counted.pdf&#39;</span><span class="p">)</span>
+<span class="n">img</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">PolicyError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
+<span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">ipykernel_7623</span><span class="o">/</span><span class="mf">345816063.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">wand.image</span> <span class="kn">import</span> <span class="n">Image</span> <span class="k">as</span> <span class="n">WImage</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">img</span> <span class="o">=</span> <span class="n">WImage</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;../../../results/counts/total_reads_counted.pdf&#39;</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">img</span>
+
+<span class="nn">~/miniconda3/lib/python3.7/site-packages/wand/image.py</span> in <span class="ni">__init__</span><span class="nt">(self, image, blob, file, filename, pseudo, background, colorspace, depth, extract, format, height, interlace, resolution, sampling_factors, units, width)</span>
+<span class="g g-Whitespace">   </span><span class="mi">9324</span>                     <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">blob</span><span class="o">=</span><span class="n">blob</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">9325</span>                 <span class="k">elif</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">9326</span>                     <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">9327</span>                 <span class="c1"># clear the wand format, otherwise any subsequent call to</span>
+<span class="g g-Whitespace">   </span><span class="mi">9328</span>                 <span class="c1"># MagickGetImageBlob will silently change the image to this</span>
+
+<span class="nn">~/miniconda3/lib/python3.7/site-packages/wand/image.py</span> in <span class="ni">read</span><span class="nt">(self, file, filename, blob, background, colorspace, depth, extract, format, height, interlace, resolution, sampling_factors, units, width)</span>
+<span class="g g-Whitespace">  </span><span class="mi">10073</span>             <span class="n">r</span> <span class="o">=</span> <span class="n">library</span><span class="o">.</span><span class="n">MagickReadImage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wand</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+<span class="g g-Whitespace">  </span><span class="mi">10074</span>         <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="p">:</span>
+<span class="ne">&gt; </span><span class="mi">10075</span>             <span class="bp">self</span><span class="o">.</span><span class="n">raise_exception</span><span class="p">()</span>
+<span class="g g-Whitespace">  </span><span class="mi">10076</span>             <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;MagickReadImage returns false, but did not raise &#39;</span>
+<span class="g g-Whitespace">  </span><span class="mi">10077</span>                    <span class="s1">&#39;ImageMagick  exception. This can occur when a delegate &#39;</span>
+
+<span class="nn">~/miniconda3/lib/python3.7/site-packages/wand/resource.py</span> in <span class="ni">raise_exception</span><span class="nt">(self, stacklevel)</span>
+<span class="g g-Whitespace">    </span><span class="mi">223</span>             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="n">stacklevel</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">224</span>         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">225</span>             <span class="k">raise</span> <span class="n">e</span>
+<span class="g g-Whitespace">    </span><span class="mi">226</span> 
+<span class="g g-Whitespace">    </span><span class="mi">227</span>     <span class="k">def</span> <span class="nf">make_blob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<span class="ne">PolicyError</span>: not authorized `../../../results/counts/total_reads_counted.pdf&#39; @ error/constitute.c/ReadImage/412
+</pre></div>
+</div>
+</div>
+</div>
 <div class="cell tag_remove-input docutils container">
 <div class="cell_output docutils container">
 <div class="output text_html">

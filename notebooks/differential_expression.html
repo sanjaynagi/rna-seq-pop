@@ -89,7 +89,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Gene family heatmaps" href="gene_families.html" />
-    <link rel="prev" title="Read counts" href="read_counts.html" />
+    <link rel="prev" title="Counts" href="read_counts.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en">
     
@@ -204,7 +204,7 @@ const thebe_selector_output = ".output, .cell_output"
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="read_counts.html">
-     Read counts
+     Counts
     </a>
    </li>
    <li class="toctree-l2 current active">
@@ -463,10 +463,11 @@ title="Print to PDF"
                 
   <section id="differential-expression">
 <h1>Differential expression<a class="headerlink" href="#differential-expression" title="Permalink to this heading">#</a></h1>
-<p><strong>Output Directories:</strong> <em>rna-seq-pop/results/genediff/</em>, <em>rna-seq-pop/results/isoformdiff/</em></p>
+<p><strong>Output Directories:</strong> <span style="color:gray;font-weight:bold"><em>results/genediff/</em>,    <em>results/isoformdiff/</em></span></p>
 <p><strong>Rules</strong></p>
+<span style="color:gray;font-weight:bold">
 <ul class="simple">
-<li><p><em>workflow/rules/diffexp.smk</em></p>
+<li><p><em>diffexp.smk</em></p>
 <ul>
 <li><p>DifferentialGeneExpression</p></li>
 <li><p>DifferentialIsoformExpression</p></li>
@@ -474,6 +475,7 @@ title="Print to PDF"
 </ul>
 </li>
 </ul>
+</span>    
 <p><strong>Introduction</strong></p>
 <p>Differential expression analysis for RNA-sequencing is a statistical method used to identify genes or transcripts that show significantly different levels of expression between two or more biological conditions. This can provide insight into the underlying biological mechanisms that drive a particular phenotype and can be used to identify potential causative genes and diagnostic targets.</p>
 <p>One important aspect of differential expression analysis for RNA-sequencing data is the choice of level at which to perform the analysis. Differential expression can be performed at the gene level, in which case the expression levels of entire genes are compared between the different conditions, or at the isoform level, in which case the expression levels of individual transcript isoforms are compared.</p>
@@ -512,7 +514,7 @@ title="Print to PDF"
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Read counts</p>
+            <p class="prev-next-title">Counts</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="gene_families.html" title="next page">

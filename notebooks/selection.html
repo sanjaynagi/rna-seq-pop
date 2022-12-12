@@ -204,7 +204,7 @@ const thebe_selector_output = ".output, .cell_output"
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="read_counts.html">
-     Read counts
+     Counts
     </a>
    </li>
    <li class="toctree-l2">
@@ -463,20 +463,21 @@ title="Print to PDF"
                 
   <section id="selection">
 <h1>Selection<a class="headerlink" href="#selection" title="Permalink to this heading">#</a></h1>
-<p><strong>Output Directory:</strong>  <em>rna-seq-pop/results/variantAnalysis/selection/</em></p>
+<p><strong>Output Directory:</strong>  <span style="color:gray;font-weight:bold"><em>results/variantAnalysis/selection/</em></span></p>
 <p><strong>Rules</strong></p>
+<span style="color:gray;font-weight:bold">
 <ul class="simple">
-<li><p><em>workflow/rules/variantAnalysis.smk</em></p>
+<li><p><em>variantAnalysis.smk</em></p>
 <ul>
 <li><p>PerGeneFstPBSDxyPi</p></li>
 <li><p>WindowedFstPBS</p></li>
 </ul>
 </li>
 </ul>
+</span>
 <p><strong>Introduction</strong></p>
 <p>Selection is a process that occurs in natural populations, in which certain genetic variants are more likely to be passed on to the next generation than others due to the fact that they provide a fitness advantage.</p>
 <p>One method of identifying selection is to calculate Fst between two populations. Fst is a measure of genetic differentiation. It is calculated as the ratio of the genetic variance between populations to the total genetic variance within and between populations. By calculating Fst, we can identify genes or regions of the genome showing high differentiation, which may indicate selection acting upon the locus.</p>
-<p>In <em>RNA-Seq-Pop</em>, we call</p>
 </section>
 
     <script type="text/x-thebe-config">

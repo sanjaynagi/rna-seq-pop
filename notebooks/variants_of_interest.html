@@ -204,7 +204,7 @@ const thebe_selector_output = ".output, .cell_output"
    </li>
    <li class="toctree-l2">
     <a class="reference internal" href="read_counts.html">
-     Read counts
+     Counts
     </a>
    </li>
    <li class="toctree-l2">
@@ -463,16 +463,18 @@ title="Print to PDF"
                 
   <section id="variants-of-interest">
 <h1>Variants of Interest<a class="headerlink" href="#variants-of-interest" title="Permalink to this heading">#</a></h1>
-<p><strong>Output Directory:</strong> <em>rna-seq-pop/results/variant/</em></p>
+<p><strong>Output Directory:</strong> <span style="color:gray;font-weight:bold"><em>results/variantsOfInterest/</em></span></p>
 <p><strong>Rules</strong></p>
+<span style="color:gray;font-weight:bold">
 <ul class="simple">
-<li><p><em>workflow/rules/VariantsOfInterest.smk</em></p>
+<li><p><em>VariantsOfInterest.smk</em></p>
 <ul>
 <li><p>mpileupVariantsOfInterest</p></li>
 <li><p>AlleleBalanceVariantsOfInterest</p></li>
 </ul>
 </li>
 </ul>
+</span>
 <p><strong>Introduction</strong></p>
 <p>In some biological systems, it may be useful to perform surveillance on mutations which we are interested in. For example, this could be to detect drug-resistance markers in <em>Plasmodium</em> parasites, or insecticide-resistance mutations in the malaria mosquito.</p>
 <p>If provided with a table of user-defined variants of interest, <em>RNA-Seq-Pop</em> can calculate allele frequencies at these sites from the aligned read data, and plot the results.</p>
