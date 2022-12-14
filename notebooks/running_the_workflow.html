@@ -472,6 +472,9 @@ title="Print to PDF"
 <p><code class="docutils literal notranslate"><span class="pre">snakemake</span> <span class="pre">--cores</span> <span class="pre">4</span> <span class="pre">--use-conda</span> <span class="pre">--configfile</span> <span class="pre">myconfig.yaml</span></code></p>
 <p>If you wish to check that RNA-Seq-Pop is configured correctly prior to running it on your dataset, you can run RNA-Seq-Pop on the test dataset. To do so, use the following command from the root directory:</p>
 <p><code class="docutils literal notranslate"><span class="pre">snakemake</span> <span class="pre">--cores</span> <span class="pre">4</span> <span class="pre">--directory</span> <span class="pre">.test/</span> <span class="pre">--use-conda</span> </code></p>
+<p><strong>Running snakemake on a cluster</strong></p>
+<p>If you are running snakemake on a cluster which uses queuing systems, you may need to provide some extra parameters at the command line. See the <a class="reference external" href="https://snakemake.readthedocs.io/en/stable/executable.html#cluster-execution">snakemake documentation</a> for more information.</p>
+<p>For running the workflow with SLURM, please see the documentation <a class="reference external" href="https://snakemake.readthedocs.io/en/stable/executing/cluster.html">here</a>. Note that native SLURM support requires snakemake version 7.19 or higher.</p>
 </section>
 
     <script type="text/x-thebe-config">
