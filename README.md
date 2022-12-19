@@ -1,3 +1,5 @@
+<div align="center">
+
 <h1 align="center">
   RNA-Seq-Pop
 </h1>
@@ -8,6 +10,8 @@
 [![Execute notebook](https://github.com/sanjaynagi/rna-seq-pop/workflows/rna-seq-pop/badge.svg)](https://github.com/sanjaynagi/rna-seq-pop/actions?query=workflow:"rna-seq-pop")
 [![GitHub release](https://img.shields.io/github/release/sanjaynagi/rna-seq-pop?include_prereleases=&sort=semver&color=blue)](https://github.com/sanjaynagi/rna-seq-pop/releases/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6078337.svg)](https://doi.org/10.5281/zenodo.6078337)
+
+</div>
 
 **Documentation**: https://sanjaynagi.github.io/rna-seq-pop/    
 
