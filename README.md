@@ -40,9 +40,9 @@ If you have any feedback on how the workflow may be improved, please do get in t
 
 ## Citation
 
-Sanjay C Nagi, Ambrose Oruni, David Weetman, Martin J Donnelly (2022). **RNA-Seq-Pop**: Exploiting the sequence in RNA-Seq - a Snakemake workflow reveals patterns of insecticide resistance in the malaria vector *Anopheles gambiae*. *bioRxiv* 2022.06.17.493894; doi: https://doi.org/10.1101/2022.06.17.493894 
+Sanjay C Nagi, Ambrose Oruni, David Weetman, Martin J Donnelly (2022). **RNA-Seq-Pop**: Exploiting the sequence in RNA-Seq - a Snakemake workflow reveals patterns of insecticide resistance in the malaria vector *Anopheles gambiae*. *Molecular Ecology Resources*; doi: https://onlinelibrary.wiley.com/doi/10.1111/1755-0998.13759
 
-If you use this workflow in a paper, please give credits to the author by citing the preprint on bioRxiv and its DOI - https://doi.org/10.1101/2022.06.17.493894 
+If you use this workflow in a paper, please give credits to the author by citing the manuscript and its DOI - https://onlinelibrary.wiley.com/doi/10.1111/1755-0998.13759 
 
 ## Usage 
 
