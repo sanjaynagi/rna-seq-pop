@@ -24,7 +24,7 @@ def plotWindowed(statName, cohortText, cohortNoSpaceText, values, midpoints, pre
     xtick = np.arange(0, midpoints.max(), 2000000)
     ylim = np.max([ylim, values.max()])
     plt.figure(figsize=[16,8])
-    sns.lineplot(midpoints, values, color=colour, linewidth=3)
+    sns.lineplot(x=midpoints, y=values, color=colour, linewidth=3)
     plt.xlim(0, midpoints.max()+1000)
     plt.ylim(0, ylim)
     plt.yticks(fontsize=14)
@@ -36,7 +36,7 @@ def plotWindowed(statName, cohortText, cohortNoSpaceText, values, midpoints, pre
 
     
 
-def plotRectangular(voiFreqTable, path, annot=True, xlab="Sample", ylab="Variant Of Interest", title=None, figsize=[10,10], cbar=True, vmax=None, rotate=True, cmap=sns.cubehelix_palette(start=.5, rot=-.75, as_cmap=True), dpi=100):
+def plotRectangular(voiFreqTable, path, annot=True, xlab="Sample", ylab="Variant Of Interest", title=None, figsize=[10,10], cbar=True, vmax=None, rotate=True, cmap=sns.cubehelix_palette(start=.5, rot=-.75, as_cmap=True), dpi=300):
     plt.figure(figsize=figsize)
     #voiFreqTable = (voiFreqTable*100).astype(int)
     sns.heatmap(voiFreqTable, cmap=cmap, vmax=vmax, cbar=cbar,
