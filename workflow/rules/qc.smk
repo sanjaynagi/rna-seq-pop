@@ -118,5 +118,5 @@ rule multiQC:
     log:
         "logs/multiQC.log",
     wrapper:
-        "2.2.1/bio/multiqc"
+        "v2.2.1/bio/multiqc"
 
