@@ -17,7 +17,7 @@ def getFASTQs(wildcards, rules=None):
     else:
         fastq_cols = ['fq1']
 
-    if config["QualityControl"]["trim-reads"]["activate"] == True:
+    if config["QualityControl"]["fastp-trim"]["activate"] == True:
         if rules in ["KallistoQuant", "HISAT2align", "HISAT2align_input"]:
             for i, col in enumerate(fastq_cols):
                 metadata = metadata.assign(**{col: f"resources/reads/trimmed/" + metadata["sampleID"] + f"_{i+1}.fastq.gz"})     
@@ -27,7 +27,7 @@ def getFASTQs(wildcards, rules=None):
             if rules == "HISAT2align":
                 return [f"-1 {u.fq1} -2 {u.fq2}"] if config['fastq']['paired'] == True else f"-U {u.fq1}"
             else:
-                return [u.fq1, u.fq2] if config['fastq']['paired'] == True else u.fq1
+                return [u.fq1, u.fq2] if config['fastq']['paired'] == True else [u.fq1]
 
     if config["fastq"]["auto"]:
         for i, col in enumerate(fastq_cols):
@@ -44,15 +44,11 @@ def getFASTQs(wildcards, rules=None):
     
         metadata = metadata.set_index("sampleID")
 
-    if rules == 'fastqc':
-        u = metadata.loc[wildcards.sample, f"fq{wildcards.n}"] if config['fastq']['paired'] == True else metadata.loc[wildcards.sample, f"fq1"] 
-        return u
+    u = metadata.loc[wildcards.sample, fastq_cols].dropna()
+    if rules == "HISAT2align":
+        return [f"-1 {u.fq1} -2 {u.fq2}"] if config['fastq']['paired'] == True else f"-U {u.fq1}"
     else:
-        u = metadata.loc[wildcards.sample, fastq_cols].dropna()
-        if rules == "HISAT2align":
-            return [f"-1 {u.fq1} -2 {u.fq2}"] if config['fastq']['paired'] == True else f"-U {u.fq1}"
-        else:
-            return [u.fq1, u.fq2] if config['fastq']['paired'] == True else u.fq1
+        return [u.fq1, u.fq2] if config['fastq']['paired'] == True else [u.fq1]
 
 def get_venn_list():
     import itertools
@@ -89,25 +85,15 @@ def GetDesiredOutputs(wildcards):
             )
         )
 
-    if config["QualityControl"]['fastqc']["activate"]:
+    if config["QualityControl"]['fastp-trim']["activate"]:
         if config['fastq']['paired'] == True:
             wanted_input.extend(
                 expand(
                     [
-                        "results/qc/{sample}_{n}_fastqc.html",
+                        "results/qc/{sample}.html",
+                        "results/qc/{sample}.json"
                     ],
                     sample=samples,
-                    n=[1, 2],
-                )
-            )
-        else:
-            wanted_input.extend(
-                expand(
-                    [
-                        "results/qc/{sample}_{n}_fastqc.html",
-                    ],
-                    sample=samples,
-                    n=1
                 )
             )
 

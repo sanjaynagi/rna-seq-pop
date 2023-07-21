@@ -23,28 +23,12 @@ rule CheckInputs:
         "../scripts/checkInputs.py"
 
 
-rule FastQC:
-    """
-    QC on fastq read data 
-    """
-    input:
-        lambda wildcards:getFASTQs(wildcards=wildcards, rules='fastqc'),
-    output:
-        html="results/qc/{sample}_{n}_fastqc.html",
-        zip="results/qc/{sample}_{n}_fastqc.zip",
-    log:
-        "logs/FastQC/{sample}_{n}_QC.log",
-    params:
-        outdir="--outdir resources/reads/qc",
-    wrapper:
-        "v1.15.0/bio/fastqc"
-
 
 rule fastp:
     input:
         sample = getFASTQs,
     output:
-        trimmed=["resources/reads/trimmed/{sample}_1.fastq.gz", "resources/reads/trimmed/{sample}_2.fastq.gz"],
+        trimmed=["resources/reads/trimmed/{sample}_1.fastq.gz", "resources/reads/trimmed/{sample}_2.fastq.gz"] if config['fastq']['paired'] else ["resources/reads/trimmed/{sample}_1.fastq.gz"],
         html="results/qc/{sample}.html",
         json="results/qc/{sample}.json",
         logs="logs/fastp/{sample}.log"
@@ -116,7 +100,7 @@ rule multiQC:
     Integrate QC statistics from other tools into a final .html report
     """
     input:
-        expand("results/qc/{sample}_{n}_fastqc.zip", sample=samples, n=[1, 2]),
+        expand("results/qc/{sample}.html", sample=samples, n=[1, 2]),
         expand(
             "results/qc/vcfs/{contig}.txt", contig=config["contigs"]
         )
