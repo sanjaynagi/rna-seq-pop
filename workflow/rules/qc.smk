@@ -42,7 +42,7 @@ rule FastQC:
 
 rule fastp:
     input:
-        getFASTQs,
+        sample = getFASTQs,
     output:
         trimmed=["resources/reads/trimmed/{sample}_1.fastq.gz", "resources/reads/trimmed/{sample}_2.fastq.gz"],
         html="results/fastp_reports/{sample}.html",
@@ -52,7 +52,7 @@ rule fastp:
         "logs/fastp/{sample}.log"
     threads: 4
     wrapper:
-        "v1.25.0/bio/fastp"
+        "v2.2.1/bio/fastp"
 
 
 
