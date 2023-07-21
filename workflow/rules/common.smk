@@ -216,7 +216,7 @@ def GetDesiredOutputs(wildcards):
         )
 
     if (
-        config["VariantAnalysis"]["activate"]
+        config["VariantAnalysis"]['selection']["activate"]
         and config["DifferentialExpression"]["GSEA"]["activate"]
     ):
         wanted_input.extend(
