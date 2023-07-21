@@ -36,7 +36,7 @@ contrasts:
 
 QualityControl:
       trim-reads:
-            activate: False
+            activate: True
       fastqc:
             activate: True
       mosdepth:
