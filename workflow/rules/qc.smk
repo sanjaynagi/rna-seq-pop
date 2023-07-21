@@ -45,8 +45,8 @@ rule fastp:
         sample = getFASTQs,
     output:
         trimmed=["resources/reads/trimmed/{sample}_1.fastq.gz", "resources/reads/trimmed/{sample}_2.fastq.gz"],
-        html="results/fastp_reports/{sample}.html",
-        json="results/fastp_reports/{sample}.json",
+        html="results/qc/{sample}.html",
+        json="results/qc/{sample}.json",
         logs="logs/fastp/{sample}.log"
     log:
         "logs/fastp/{sample}.log"
