@@ -1,6 +1,6 @@
 name: rna-seq-pop-paired-end
 
-on: [push, pull_request]
+on: pull_request
 
 jobs:
   run-workflow:
