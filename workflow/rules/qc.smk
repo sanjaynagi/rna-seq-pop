@@ -23,43 +23,21 @@ rule CheckInputs:
         "../scripts/checkInputs.py"
 
 
-rule FastQC:
-    """
-    QC on fastq read data 
-    """
-    input:
-        lambda wildcards:getFASTQs(wildcards=wildcards, rules='fastqc'),
-    output:
-        html="results/qc/{sample}_{n}_fastqc.html",
-        zip="results/qc/{sample}_{n}_fastqc.zip",
-    log:
-        "logs/FastQC/{sample}_{n}_QC.log",
-    params:
-        outdir="--outdir resources/reads/qc",
-    wrapper:
-        "v1.15.0/bio/fastqc"
 
-
-rule cutAdapt:
-    """
-    Trim adapters from reads with cutadapt
-    """
+rule fastp:
     input:
-        getFASTQs,
+        sample = getFASTQs,
     output:
-        fastq1="resources/reads/trimmed/{sample}_1.fastq.gz",
-        fastq2="resources/reads/trimmed/{sample}_2.fastq.gz" if config['fastq']['paired'] else [],
-        qc="results/qc/cutadapt/{sample}.qc.txt",
-    params:
-        # https://cutadapt.readthedocs.io/en/stable/guide.html#adapter-types
-        adapters=config["QualityControl"]["cutadapt"]["adaptors"],  #"-a AGAGCACACGTCTGAACTCCAGTCAC -g AGATCGGAAGAGCACACGT -A AGAGCACACGTCTGAACTCCAGTCAC -G AGATCGGAAGAGCACACGT",
-        # https://cutadapt.readthedocs.io/en/stable/guide.html#
-        extra="--minimum-length 1 -q 20",
+        trimmed=["resources/reads/trimmed/{sample}_1.fastq.gz", "resources/reads/trimmed/{sample}_2.fastq.gz"] if config['fastq']['paired'] else ["resources/reads/trimmed/{sample}_1.fastq.gz"],
+        html="results/qc/{sample}.html",
+        json="results/qc/{sample}.json",
+        logs="logs/fastp/{sample}.log"
     log:
-        "logs/cutadapt/{sample}.log",
-    threads: 4  # set desired number of threads here
+        "logs/fastp/{sample}.log"
+    threads: 4
     wrapper:
-        "v1.15.0/bio/cutadapt/pe"
+        "v2.2.1/bio/fastp"
+
 
 
 rule BamStats:
@@ -122,7 +100,7 @@ rule multiQC:
     Integrate QC statistics from other tools into a final .html report
     """
     input:
-        expand("results/qc/{sample}_{n}_fastqc.zip", sample=samples, n=[1, 2]),
+        expand("results/qc/{sample}.html", sample=samples, n=[1, 2]),
         expand(
             "results/qc/vcfs/{contig}.txt", contig=config["contigs"]
         )
@@ -140,5 +118,5 @@ rule multiQC:
     log:
         "logs/multiQC.log",
     wrapper:
-        "0.74.0/bio/multiqc"
+        "v2.2.1/bio/multiqc"
 

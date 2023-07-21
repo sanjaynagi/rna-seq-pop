@@ -32,10 +32,7 @@ contrasts:
       - 'ContTia_PiriTia'
 
 QualityControl:
-      cutadapt:
-            activate: False
-            adaptors:
-      fastqc:
+      fastp-trim:
             activate: True
       mosdepth:
             activate: True

@@ -35,10 +35,7 @@ contrasts:
 
 
 QualityControl:
-      cutadapt:
-            activate: False
-            adaptors:
-      fastqc:
+      fastp-trim:
             activate: True
       mosdepth:
             activate: True
@@ -82,7 +79,7 @@ VariantAnalysis:
             missingness: 0.4
 
       selection:
-            activate: False
+            activate: True
             missingness: 0.5
             # Do we want to run pbs (Needs three conditions, two more closely related and a slight outgroup)
             pbs:
