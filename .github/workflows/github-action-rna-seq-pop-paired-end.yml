@@ -1,4 +1,4 @@
-name: rna-seq-pop
+name: rna-seq-pop-paired-end
 
 on: [push, pull_request]
 
