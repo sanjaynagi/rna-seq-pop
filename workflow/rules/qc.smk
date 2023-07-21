@@ -40,26 +40,20 @@ rule FastQC:
         "v1.15.0/bio/fastqc"
 
 
-rule cutAdapt:
-    """
-    Trim adapters from reads with cutadapt
-    """
+rule fastp:
     input:
         getFASTQs,
     output:
-        fastq1="resources/reads/trimmed/{sample}_1.fastq.gz",
-        fastq2="resources/reads/trimmed/{sample}_2.fastq.gz" if config['fastq']['paired'] else [],
-        qc="results/qc/cutadapt/{sample}.qc.txt",
-    params:
-        # https://cutadapt.readthedocs.io/en/stable/guide.html#adapter-types
-        adapters=config["QualityControl"]["cutadapt"]["adaptors"],  #"-a AGAGCACACGTCTGAACTCCAGTCAC -g AGATCGGAAGAGCACACGT -A AGAGCACACGTCTGAACTCCAGTCAC -G AGATCGGAAGAGCACACGT",
-        # https://cutadapt.readthedocs.io/en/stable/guide.html#
-        extra="--minimum-length 1 -q 20",
+        trimmed=["resources/reads/trimmed/{sample}_1.fastq.gz", "resources/reads/trimmed/{sample}_2.fastq.gz"],
+        html="results/fastp_reports/{sample}.html",
+        json="results/fastp_reports/{sample}.json",
+        logs="logs/fastp/{sample}.log"
     log:
-        "logs/cutadapt/{sample}.log",
-    threads: 4  # set desired number of threads here
+        "logs/fastp/{sample}.log"
+    threads: 4
     wrapper:
-        "v1.15.0/bio/cutadapt/pe"
+        "v1.25.0/bio/fastp"
+
 
 
 rule BamStats:

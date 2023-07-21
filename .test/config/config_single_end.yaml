@@ -35,9 +35,8 @@ contrasts:
 
 
 QualityControl:
-      cutadapt:
+      trim-reads:
             activate: False
-            adaptors:
       fastqc:
             activate: True
       mosdepth:
