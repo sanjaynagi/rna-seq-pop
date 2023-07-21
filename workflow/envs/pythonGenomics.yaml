@@ -3,11 +3,11 @@ channels:
   - bioconda
 dependencies:
   - python=3.9
-  - scikit-allel=1.2.1
-  - matplotlib=2.2.5
-  - pandas=1.2.1
-  - seaborn=0.11.1
-  - xlsxwriter=1.1.5
+  - scikit-allel>=1.2.1
+  - matplotlib
+  - pandas>=1.2.1
+  - seaborn>=0.11.1
+  - xlsxwriter>=1.1.5
   - xlrd=1.2.0
   - bcftools=1.11
   - adjusttext
