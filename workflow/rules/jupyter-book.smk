@@ -1,6 +1,5 @@
 rule jupyterbook:
     input:
-        pages = "docs/rna-seq-pop-results/",
         gsea = "docs/rna-seq-pop-results/notebooks/gene-set-enrichment-analysis.ipynb" if config['DifferentialExpression']['GSEA']['activate'] else [],
         gene_families = "docs/rna-seq-pop-results/notebooks/gene-families-heatmap.ipynb" if config['miscellaneous']['GeneFamiliesHeatmap']['activate'] else [],
         pca = "docs/rna-seq-pop-results/notebooks/principal-components-analysis.ipynb" if config['VariantAnalysis']['pca']['activate'] else [],
@@ -19,6 +18,6 @@ rule jupyterbook:
         dataset = config['dataset']
     shell:
         """
-        jupyter-book build --all {input.pages} --path-output results/rna-seq-pop-results &&
+        jupyter-book build --all docs/rna-seq-pop-results --path-output results/rna-seq-pop-results &&
         ln -sf docs/rna-seq-pop-results/_build/html/index.html {params.dataset}-results.html
         """
