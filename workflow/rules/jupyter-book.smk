@@ -12,7 +12,7 @@ rule jupyterbook:
         directory("results/rna-seq-pop-results/_build/html/"),
         index = "results/rna-seq-pop-results/_build/html/index.html"
     log:
-        "logs/jupyterbook/jupyterbook.log"
+        "logs/jupyterbook.log"
     conda:
         "../envs/jupyterbook.yaml"
     params: 

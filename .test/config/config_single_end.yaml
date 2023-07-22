@@ -3,6 +3,9 @@ metadata: config/samples.tsv
 # Dataset name
 dataset: 'Test-GithubActionsCI'
 
+jupyter-book:
+      activate: True
+      
 fastq: 
       table: config/fastq.tsv
       auto: True # set auto if your files follow 
