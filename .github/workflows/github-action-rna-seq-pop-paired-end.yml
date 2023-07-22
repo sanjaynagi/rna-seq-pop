@@ -15,6 +15,10 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: recursive
+        
+      - name: set path for rna-seq-pop-tools
+        run: echo /github/workspace/workflow/scripts/ >> $GITHUB_PATH
+
       
       - name: Test workflow paired-end
         uses: snakemake/snakemake-github-action@v1.23.0
