@@ -99,6 +99,6 @@ rule VariantsOfInterest_notebook:
     priority: 10
     shell:
         """
-        papermill {input.nb} {output.nb} -k pythonGenomics 2> {log}
+        papermill {input.nb} {output.nb} -k pythonGenomics -p voi_path {input.VariantsOfInterest} 2> {log}
         cp {output.nb} {output.docs_nb} 2>> {log}
         """

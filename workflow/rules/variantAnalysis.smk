@@ -419,6 +419,6 @@ rule KaryotypePlots_notebook:
         dataset=config["dataset"],
     shell:
         """
-        papermill {input.nb} {output.nb} -k pythonGenomics -p inversions {params.inversions} -p metadata_path {input.metadata} -p dataset {params.dataset} -p ploidy {params.ploidy} 2> {log}
+        papermill {input.nb} {output.nb} -k pythonGenomics -p inversions {params.inversions} -p metadata_path {params.metadata} -p dataset {params.dataset} -p ploidy {params.ploidy} 2> {log}
         cp {output.nb} {output.docs_nb} 2>> {log}
         """

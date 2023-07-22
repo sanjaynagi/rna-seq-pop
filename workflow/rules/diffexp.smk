@@ -215,14 +215,7 @@ rule geneFamilies_notebook:
     output:
         nb = "results/notebooks/gene-families-heatmap.ipynb",
         docs_nb = "docs/rna-seq-pop-results/notebooks/gene-families-heatmap.ipynb",
-        gsea_de = expand(
-            "results/gsea/genediff/{comp}.de.tsv",
-            comp=config["contrasts"],
-        ),
-        gsea_fst = expand(
-            "results/gsea/fst/{comp}.fst.tsv",
-            comp=config["contrasts"],
-        ) if config["VariantAnalysis"]['selection']["activate"] else [],
+        heatmaps="results/genediff/GeneFamiliesHeatmap.pdf",
     log:
         "logs/notebooks/gene-families-heatmap.log",
     conda:
@@ -231,6 +224,6 @@ rule geneFamilies_notebook:
         DEcontrasts=config["contrasts"],
     shell:
         """
-        papermill {input.nb} {output.nb} -k pythonGenomics -p go_path {input.eggnog} -p normcounts_path {input.normcounts} -p pfam_path {input.pfam} -p metadata_path {input.metadata} -p comparisons {params.DEcontrasts} 2> {log}
+        papermill {input.nb} {output.nb} -k pythonGenomics -p go_path {input.eggnog} -p normcounts_path {input.normcounts} -p pfam_path {input.pfam} -p comparisons {params.DEcontrasts} 2> {log}
         cp {output.nb} {output.docs_nb} 2>> {log}
         """

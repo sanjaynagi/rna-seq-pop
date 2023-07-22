@@ -257,4 +257,5 @@ dependencies:
   - zipp=3.16.2=pyhd8ed1ab_0
   - zlib=1.2.13=hd590300_5
   - zstd=1.5.2=hfc55251_7
-prefix: /home/sanj/projects/IR/rna-seq-busia/.test/.snakemake/conda/05a9e65ff79282deacacf9adbc9a0eb2_
+  - papermill
+  - ipykernel
