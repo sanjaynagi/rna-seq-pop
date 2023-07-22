@@ -1,6 +1,6 @@
 # RNA-Seq-Pop
 
-Welcome to your [RNA-Seq-Pop](https://github.com/sanjaynagi/rna-seq-pop/) results book. Links to rna-seq-pop modules are on the left side-bar.
+Welcome to your [RNA-Seq-Pop](https://github.com/sanjaynagi/rna-seq-pop/) results book. Not all analyses have been ported to this book yet, other results can be found in the `results/` directory.
 
 ---
 

@@ -112,7 +112,7 @@ rule multiQC:
         expand("results/qc/alignments/{sample}.flagstat", sample=samples),
         expand("results/counts/{sample}", sample=samples),
     output:
-        "results/qc/multiQC.html",
+        html = "results/qc/multiQC.html",
     params:
         "results/ resources/ logs/",  # Optional: extra parameters for multiqc.
     log:
@@ -120,3 +120,23 @@ rule multiQC:
     wrapper:
         "v2.2.1/bio/multiqc"
 
+
+rule qc_notebook:
+    input:
+        nb = f"{workflow.basedir}/notebooks/quality-control.ipynb",
+        kernel = "results/.kernel.set",
+        multiqc = "results/qc/multiQC.html"
+    output:
+        nb = "results/notebooks/quality-control.ipynb",
+        docs_nb = "docs/rna-seq-pop-results/notebooks/quality-control.ipynb"
+    conda:
+        "../envs/pythonGenomics.yaml"
+    log:
+        "logs/notebooks/quality-control.log"
+    params:
+        wd = wkdir
+    shell:
+        """
+        papermill {input.nb} {output.nb} -k pythonGenomics -p wkdir {params.wd} 2> {log}
+        cp {output.nb} {output.docs_nb} 2>> {log}
+        """

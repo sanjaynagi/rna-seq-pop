@@ -11,6 +11,7 @@ import datetime
 
 configfile: "config/config.yaml"
 
+wkdir = os.getcwd()
 metadata = pd.read_csv(config["metadata"], sep="\t")
 validate(metadata, schema="schemas/samples.schema.yaml")
 samples = metadata["sampleID"]

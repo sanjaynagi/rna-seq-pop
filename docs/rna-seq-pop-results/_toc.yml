@@ -1,21 +1,20 @@
+
 format: jb-book
 root: landing-page
 parts:
-- caption: RNA-Seq-Pop Results
+- caption: Quality Control
   chapters:
-      - file: notebooks/rna-seq-pop
-        sections:
-        - file: notebooks/snakemake
         - file: notebooks/quality_control
-        - file: notebooks/read_counts
-        - file: notebooks/differential_expression
-        - file: notebooks/gene_families
-        - file: notebooks/gsea
-        - file: notebooks/variant_calling
-        - file: notebooks/genetic_diversity
-        - file: notebooks/variants_of_interest
-        - file: notebooks/selection
-        - file: notebooks/ancestry_informative_markers
+- caption: Differential expression
+  chapters:
+        - file: notebooks/gene-families-heatmap
+        - file: notebooks/gene-set-enrichment-analysis
+- caption: Variant analysis
+  chapters:
+        - file: notebooks/principal-component-analysis
+        - file: notebooks/genetic-diversity
+        - file: notebooks/variants-of-interest
+        - file: notebooks/windowed-selection
         - file: notebooks/karyotyping
 - caption: Troubleshooting and contributing
   chapters:
