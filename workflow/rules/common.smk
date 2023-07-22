@@ -270,7 +270,7 @@ def GetDesiredOutputs(wildcards):
     if config['jupyter-book']['activate']:
         wanted_input.extend(
             [
-                "docs/rna-seq-pop-results/_build/html/index.html"
+                "results/rna-seq-pop-results/_build/html/index.html"
             ]
         )
 
