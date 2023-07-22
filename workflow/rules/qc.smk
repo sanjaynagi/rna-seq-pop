@@ -100,7 +100,7 @@ rule multiQC:
     Integrate QC statistics from other tools into a final .html report
     """
     input:
-        expand("results/qc/{sample}.html", sample=samples, n=[1, 2]),
+        expand("results/qc/{sample}.json", sample=samples),
         expand(
             "results/qc/vcfs/{contig}.txt", contig=config["contigs"]
         )

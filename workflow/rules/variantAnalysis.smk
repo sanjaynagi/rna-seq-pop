@@ -35,12 +35,44 @@ rule SNPstatistics:
     script:
         "../scripts/SNPstatistics.py"
 
+# rule PCA:
+#     """
+#     Perform pca on genotype data and plot 
+#     """
+#     input:
+#         vcf=expand(
+#             "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
+#             contig=config["contigs"],
+#             dataset=config["dataset"],
+#         ),
+#         metadata=config["metadata"],
+#     output:
+#         PCAfig=expand(
+#             "results/variantAnalysis/pca/PCA-{contig}-{dataset}.svg",
+#             contig=config["contigs"],
+#             dataset=config["dataset"],
+#         ),
+#     log:
+#         "logs/pca.log",
+#     conda:
+#         "../envs/pythonGenomics.yaml"
+#     params:
+#         dataset=config["dataset"],
+#         contigs=config["contigs"],
+#         ploidy=config["VariantAnalysis"]["ploidy"],
+#         missingprop=config["VariantAnalysis"]["pca"]["missingness"],
+#         qualflt=30,
+#     script:
+#         "../scripts/pca.py"
 
-rule PCA:
+
+rule pca_notebook:
     """
     Perform pca on genotype data and plot 
     """
     input:
+        nb = f"{workflow.basedir}/notebooks/principal-components-analysis.ipynb",
+        kernel = "results/.kernel.set",
         vcf=expand(
             "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
             contig=config["contigs"],
@@ -48,6 +80,8 @@ rule PCA:
         ),
         metadata=config["metadata"],
     output:
+        nb = "results/notebooks/principal-components-analysis.ipynb",
+        docs_nb = "docs/rna-seq-pop-results/notebooks/principal-components-analysis.ipynb",
         PCAfig=expand(
             "results/variantAnalysis/pca/PCA-{contig}-{dataset}.svg",
             contig=config["contigs"],
@@ -63,15 +97,50 @@ rule PCA:
         ploidy=config["VariantAnalysis"]["ploidy"],
         missingprop=config["VariantAnalysis"]["pca"]["missingness"],
         qualflt=30,
-    script:
-        "../scripts/pca.py"
+    shell:
+        """
+        papermill {input.nb} {output.nb} -k pythonGenomics -p metadata_path {input.metadata} -p dataset {params.dataset} -p contigs {params.contigs} -p ploidy {params.ploidy} -p missingprop {params.missingprop} -p qualflt {params.qualflt} 2> {log}
+        cp {output.nb} {output.docs_nb} 2>> {log}
+        """
 
 
-rule SummaryStatistics:
+# rule SummaryStatistics:
+#     """
+#     Calculate population genetic summary statistics on genotype data 
+#     """
+#     input:
+#         vcf=expand(
+#             "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
+#             contig=config["contigs"],
+#             dataset=config["dataset"],
+#         ),
+#         metadata=config["metadata"],
+#     output:
+#         inbreedingCoef="results/variantAnalysis/diversity/inbreedingCoef.tsv"
+#         if config["VariantAnalysis"]["ploidy"] > 1
+#         else [],
+#         pi="results/variantAnalysis/diversity/SequenceDiversity.tsv",
+#         theta="results/variantAnalysis/diversity/WattersonsTheta.tsv",
+#     log:
+#         "logs/SummaryStatistics.log",
+#     conda:
+#         "../envs/pythonGenomics.yaml"
+#     params:
+#         dataset=config["dataset"],
+#         contigs=config["contigs"],
+#         ploidy=config["VariantAnalysis"]["ploidy"],
+#         missingprop=config["VariantAnalysis"]["summaryStatistics"]["missingness"],
+#         qualflt=30,
+#     script:
+#         "../scripts/SummaryStats.py"
+
+rule SummaryStatistics_notebook:
     """
-    Calculate population genetic summary statistics and PCA on genotype data 
+    Calculate population genetic summary statistics on genotype data 
     """
     input:
+        nb = f"{workflow.basedir}/notebooks/genetic-diversity.ipynb",
+        kernel = "results/.kernel.set",
         vcf=expand(
             "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
             contig=config["contigs"],
@@ -79,13 +148,15 @@ rule SummaryStatistics:
         ),
         metadata=config["metadata"],
     output:
+        nb = "results/notebooks/genetic-diversity.ipynb",
+        docs_nb = "docs/rna-seq-pop-results/notebooks/genetic-diversity.ipynb",
         inbreedingCoef="results/variantAnalysis/diversity/inbreedingCoef.tsv"
         if config["VariantAnalysis"]["ploidy"] > 1
         else [],
         pi="results/variantAnalysis/diversity/SequenceDiversity.tsv",
         theta="results/variantAnalysis/diversity/WattersonsTheta.tsv",
     log:
-        "logs/SummaryStatistics.log",
+        "logs/notebooks/genetic-diversity.log",
     conda:
         "../envs/pythonGenomics.yaml"
     params:
@@ -94,22 +165,74 @@ rule SummaryStatistics:
         ploidy=config["VariantAnalysis"]["ploidy"],
         missingprop=config["VariantAnalysis"]["summaryStatistics"]["missingness"],
         qualflt=30,
-    script:
-        "../scripts/SummaryStats.py"
+    shell:
+        """
+        papermill {input.nb} {output.nb} -k pythonGenomics -p metadata_path {input.metadata} -p dataset {params.dataset} -p contigs {params.contigs} -p ploidy {params.ploidy} -p missingprop {params.missingprop} -p qualflt {params.qualflt} 2> {log}
+        cp {output.nb} {output.docs_nb} 2>> {log}
+        """
 
 
-rule WindowedFstPBS:
+# rule WindowedFstPBS:
+#     """
+#     Calculate Fst and PBS in windows
+#     """
+#     input:
+#         metadata=config["metadata"],
+#         vcf=expand(
+#             "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
+#             contig=config["contigs"],
+#             dataset=config["dataset"],
+#         ),
+#     output:
+#         Fst=expand(
+#             "results/variantAnalysis/selection/fst/{wsize}/{comp}.Fst.{contig}.svg",
+#             comp=config["contrasts"],
+#             contig=config["contigs"],
+#             wsize=['1000snp_window', '2000snp_window', '5000snp_window'],
+#         ),
+#         PBS=(
+#             expand(
+#                 "results/variantAnalysis/selection/pbs/{wsize}/{pbscomp}.PBS.{contig}.svg",
+#                 pbscomp=config["VariantAnalysis"]["selection"]["pbs"]["contrasts"],
+#                 contig=config["contigs"],
+#                 wsize=['1000snp_window', '2000snp_window', '5000snp_window'],
+#             )
+#             if config["VariantAnalysis"]["selection"]["pbs"]["activate"]
+#             else []
+#         ),
+#     conda:
+#         "../envs/pythonGenomics.yaml"
+#     log:
+#         "logs/WindowedFstPBS.log",
+#     params:
+#         dataset=config["dataset"],
+#         DEcontrasts=config["contrasts"],
+#         pbs=config["VariantAnalysis"]["selection"]["pbs"]["activate"],
+#         pbscomps=config["VariantAnalysis"]["selection"]["pbs"]["contrasts"],
+#         contigs=config["contigs"],
+#         ploidy=config["VariantAnalysis"]["ploidy"],
+#         missingprop=config["VariantAnalysis"]["selection"]["missingness"],
+#         qualflt=30,
+#     script:
+#         "../scripts/WindowedFstPBS.py"
+
+
+rule WindowedFstPBS_notebook:
     """
-    Calculate Fst and PBS in windows
+    Calculate population genetic summary statistics on genotype data 
     """
     input:
-        metadata=config["metadata"],
+        nb = f"{workflow.basedir}/notebooks/windowed-selection.ipynb",
+        kernel = "results/.kernel.set",
         vcf=expand(
             "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
             contig=config["contigs"],
             dataset=config["dataset"],
         ),
+        metadata=config["metadata"],
     output:
+        nb = "results/notebooks/windowed-selection.ipynb",
+        docs_nb = "docs/rna-seq-pop-results/notebooks/windowed-selection.ipynb",
         Fst=expand(
             "results/variantAnalysis/selection/fst/{wsize}/{comp}.Fst.{contig}.svg",
             comp=config["contrasts"],
@@ -126,10 +249,10 @@ rule WindowedFstPBS:
             if config["VariantAnalysis"]["selection"]["pbs"]["activate"]
             else []
         ),
+    log:
+        "logs/notebooks/windowed-selection.log",
     conda:
         "../envs/pythonGenomics.yaml"
-    log:
-        "logs/WindowedFstPBS.log",
     params:
         dataset=config["dataset"],
         DEcontrasts=config["contrasts"],
@@ -139,8 +262,12 @@ rule WindowedFstPBS:
         ploidy=config["VariantAnalysis"]["ploidy"],
         missingprop=config["VariantAnalysis"]["selection"]["missingness"],
         qualflt=30,
-    script:
-        "../scripts/WindowedFstPBS.py"
+    shell:
+        """
+        papermill {input.nb} {output.nb} -k pythonGenomics -p comparisons {params.DEcontrasts} -p pbs {params.pbs} -p pbscomps {params.pbscomps} -p metadata_path {input.metadata} -p dataset {params.dataset} -p contigs {params.contigs} -p ploidy {params.ploidy} -p missingprop {params.missingprop} -p qualflt {params.qualflt} 2> {log}
+        cp {output.nb} {output.docs_nb} 2>> {log}
+        """
+
 
 
 rule PerGeneFstPBSDxyPi:
@@ -241,20 +368,48 @@ rule Karyotype:
         """
 
 
-rule KaryotypePlots:
+# rule KaryotypePlots:
+#     """
+#     Plot karyotype results
+#     """
+#     input:
+#         expand(
+#             "results/karyotype/{karyo}.{dataset}.karyo.txt",
+#             karyo=config["VariantAnalysis"]["karyotype"]["inversions"],
+#             dataset=config["dataset"],
+#         ),
+#     output:
+#         "results/karyotype/karyoFreqs.svg",
+#     log:
+#         "logs/compKaryo/KaryotypePlots.log",
+#     conda:
+#         "../envs/pythonGenomics.yaml"
+#     params:
+#         metadata=config["metadata"],
+#         ploidy=config["VariantAnalysis"]["ploidy"],
+#         inversions=config["VariantAnalysis"]["karyotype"]["inversions"],
+#         dataset=config["dataset"],
+#     script:
+#         "../scripts/KaryoPlots.py"
+
+rule KaryotypePlots_notebook:
     """
     Plot karyotype results
     """
     input:
-        expand(
+        nb = f"{workflow.basedir}/notebooks/windowed-selection.ipynb",
+        kernel = "results/.kernel.set",
+        karyo = expand(
             "results/karyotype/{karyo}.{dataset}.karyo.txt",
             karyo=config["VariantAnalysis"]["karyotype"]["inversions"],
             dataset=config["dataset"],
         ),
     output:
-        "results/karyotype/karyoFreqs.svg",
+        nb = "results/notebooks/karyotype.ipynb",
+        docs_nb = "docs/rna-seq-pop-results/notebooks/karyotype.ipynb",
+        svg = "results/karyotype/karyoFreqs.svg",
     log:
-        "logs/compKaryo/KaryotypePlots.log",
+        "logs/notebooks/karyotype-plot.log",
     conda:
         "../envs/pythonGenomics.yaml"
     params:
@@ -262,5 +417,8 @@ rule KaryotypePlots:
         ploidy=config["VariantAnalysis"]["ploidy"],
         inversions=config["VariantAnalysis"]["karyotype"]["inversions"],
         dataset=config["dataset"],
-    script:
-        "../scripts/KaryoPlots.py"
+    shell:
+        """
+        papermill {input.nb} {output.nb} -k pythonGenomics -p inversions {params.inversions} -p metadata_path {input.metadata} -p dataset {params.dataset} -p ploidy {params.ploidy} 2> {log}
+        cp {output.nb} {output.docs_nb} 2>> {log}
+        """

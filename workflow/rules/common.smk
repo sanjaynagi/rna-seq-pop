@@ -3,6 +3,18 @@ if config["VariantAnalysis"]["selection"]["pbs"]["activate"]:
 else:
     windowedStats = ["Fst"]
 
+rule set_kernel:
+    input:
+        f'{workflow.basedir}/envs/pythonGenomics.yaml'
+    output:
+        touch("results/.kernel.set")
+    conda: f'{workflow.basedir}/envs/pythonGenomics.yaml'
+    log:
+        "logs/notebooks/set_kernel.log"
+    shell: 
+        """
+        python -m ipykernel install --user --name=pythonGenomics 2> {log}
+        """
 
 def getFASTQs(wildcards, rules=None):
     """
@@ -254,6 +266,14 @@ def GetDesiredOutputs(wildcards):
                 ],
             )
         )
+
+    if config['jupyter-book']['activate']:
+        wanted_input.extend(
+            [
+                "docs/rna-seq-pop-results/_build/html/index.html"
+            ]
+        )
+
     return wanted_input
 
 

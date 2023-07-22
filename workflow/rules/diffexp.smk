@@ -90,33 +90,74 @@ rule progressiveGenesDE:
         "../scripts/ProgressiveDE.R"
 
 
-rule GeneSetEnrichment:
+# rule GeneSetEnrichment:
+#     """
+#     Perform hypergeometric test GO terms from a gaf file 
+#     """
+#     input:
+#         metadata=config["metadata"],
+#         gaf=config["DifferentialExpression"]["GSEA"]["gaf"],
+#         DEresults=expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
+#         Fst="results/variantAnalysis/selection/FstPerGene.tsv" if config["VariantAnalysis"]['selection']["activate"] else [],
+#     output:
+#         expand(
+#             "results/gsea/genediff/{comp}.de.tsv",
+#             comp=config["contrasts"],
+#         ),
+#         expand(
+#             "results/gsea/fst/{comp}.fst.tsv",
+#             comp=config["contrasts"],
+#         ) if config["VariantAnalysis"]['selection']["activate"] else [],
+#     params:
+#         DEcontrasts=config["contrasts"],
+#         selection=config["VariantAnalysis"]['selection']["activate"]
+#     conda:
+#         "../envs/pythonGenomics.yaml"
+#     log:
+#         "logs/GeneSetEnrichment.log",
+#     script:
+#         "../scripts/GeneSetEnrichment.py"
+
+
+rule GeneSetEnrichment_notebook:
     """
     Perform hypergeometric test GO terms from a gaf file 
     """
     input:
+        nb = f"{workflow.basedir}/notebooks/gene-set-enrichment-analysis.ipynb",
+        kernel = "results/.kernel.set",
+        vcf=expand(
+            "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
+            contig=config["contigs"],
+            dataset=config["dataset"],
+        ),
         metadata=config["metadata"],
         gaf=config["DifferentialExpression"]["GSEA"]["gaf"],
         DEresults=expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
-        Fst="results/variantAnalysis/selection/FstPerGene.tsv" if config["VariantAnalysis"]['selection']["activate"] else [],
+        Fst="results/variantAnalysis/selection/FstPerGene.tsv" if config["VariantAnalysis"]['selection']["activate"] else [],        
     output:
-        expand(
+        nb = "results/notebooks/gene-set-enrichment-analysis.ipynb",
+        docs_nb = "docs/rna-seq-pop-results/notebooks/gene-set-enrichment-analysis.ipynb",
+        gsea_de = expand(
             "results/gsea/genediff/{comp}.de.tsv",
             comp=config["contrasts"],
         ),
-        expand(
+        gsea_fst = expand(
             "results/gsea/fst/{comp}.fst.tsv",
             comp=config["contrasts"],
         ) if config["VariantAnalysis"]['selection']["activate"] else [],
+    log:
+        "logs/notebooks/gene-set-enrichment-analysis.log",
+    conda:
+        "../envs/pythonGenomics.yaml"
     params:
         DEcontrasts=config["contrasts"],
         selection=config["VariantAnalysis"]['selection']["activate"]
-    conda:
-        "../envs/pythonGenomics.yaml"
-    log:
-        "logs/GeneSetEnrichment.log",
-    script:
-        "../scripts/GeneSetEnrichment.py"
+    shell:
+        """
+        papermill {input.nb} {output.nb} -k pythonGenomics -p metadata_path {input.metadata}  -p comparisons {params.DEcontrasts} -p selection {params.selection} 2> {log}
+        cp {output.nb} {output.docs_nb} 2>> {log}
+        """
 
 
 rule Ag1000gSweepsDE:
@@ -142,19 +183,54 @@ rule Ag1000gSweepsDE:
         "../scripts/Ag1000gSweepsDE.py"
 
 
-rule geneFamilies:
+# rule geneFamilies:
+#     input:
+#         genediff=expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
+#         normcounts="results/counts/normCounts.tsv",
+#         eggnog=config["miscellaneous"]["GeneFamiliesHeatmap"]["eggnog"],
+#         pfam=config["miscellaneous"]["GeneFamiliesHeatmap"]["pfam"],
+#     output:
+#         heatmaps="results/genediff/GeneFamiliesHeatmap.pdf",
+#     conda:
+#         "../envs/pythonGenomics.yaml"
+#     log:
+#         "logs/geneFamilies.log",
+#     params:
+#         DEcontrasts=config["contrasts"],
+#     script:
+#         "../scripts/GeneFamiliesHeatmap.py"
+
+
+rule geneFamilies_notebook:
+    """
+    Summarise gene expression for gene families
+    """
     input:
+        nb = f"{workflow.basedir}/notebooks/gene-families-heatmap.ipynb",
+        kernel = "results/.kernel.set",
         genediff=expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
         normcounts="results/counts/normCounts.tsv",
         eggnog=config["miscellaneous"]["GeneFamiliesHeatmap"]["eggnog"],
         pfam=config["miscellaneous"]["GeneFamiliesHeatmap"]["pfam"],
     output:
-        heatmaps="results/genediff/GeneFamiliesHeatmap.pdf",
+        nb = "results/notebooks/gene-families-heatmap.ipynb",
+        docs_nb = "docs/rna-seq-pop-results/notebooks/gene-families-heatmap.ipynb",
+        gsea_de = expand(
+            "results/gsea/genediff/{comp}.de.tsv",
+            comp=config["contrasts"],
+        ),
+        gsea_fst = expand(
+            "results/gsea/fst/{comp}.fst.tsv",
+            comp=config["contrasts"],
+        ) if config["VariantAnalysis"]['selection']["activate"] else [],
+    log:
+        "logs/notebooks/gene-families-heatmap.log",
     conda:
         "../envs/pythonGenomics.yaml"
-    log:
-        "logs/geneFamilies.log",
     params:
         DEcontrasts=config["contrasts"],
-    script:
-        "../scripts/GeneFamiliesHeatmap.py"
+    shell:
+        """
+        papermill {input.nb} {output.nb} -k pythonGenomics -p go_path {input.eggnog} -p normcounts_path {input.normcounts} -p pfam_path {input.pfam} -p metadata_path {input.metadata} -p comparisons {params.DEcontrasts} 2> {log}
+        cp {output.nb} {output.docs_nb} 2>> {log}
+        """

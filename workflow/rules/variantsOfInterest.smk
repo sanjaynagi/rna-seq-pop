@@ -53,23 +53,52 @@ rule AlleleBalanceVariantsOfInterest:
         "../scripts/VariantsOfInterestAlleleBalance.R"
 
 
-rule PlotVariantsOfInterest:
+# rule PlotVariantsOfInterest:
+#     """
+#     Python script to plot frequencies of Variants of interest
+#     """
+#     input:
+#         expand(
+#             "results/variantAnalysis/variantsOfInterest/csvs/{mut}_alleleBalance.csv",
+#             mut=mutationData.Name,
+#         ),
+#         VariantsOfInterest=config["miscellaneous"]["VariantsOfInterest"]["path"],
+#     output:
+#         perSampleHeatmap="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerSample.svg",
+#         perTreatmentHeatmap="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerTreatment.svg",
+#     conda:
+#         "../envs/pythonGenomics.yaml"
+#     priority: 10
+#     log:
+#         "logs/variantsOfInterestPlot.log",
+#     script:
+#         "../scripts/VariantsOfInterestPlot.py"
+
+
+rule VariantsOfInterest_notebook:
     """
-    Python script to plot frequencies of Variants of interest
+    Notebook to plot frequencies of Variants of interest
     """
     input:
-        expand(
+        nb = f"{workflow.basedir}/notebooks/variants-of-interest.ipynb",
+        kernel = "results/.kernel.set",
+        muts = expand(
             "results/variantAnalysis/variantsOfInterest/csvs/{mut}_alleleBalance.csv",
             mut=mutationData.Name,
         ),
         VariantsOfInterest=config["miscellaneous"]["VariantsOfInterest"]["path"],
     output:
+        nb = "results/notebooks/variants-of-interest.ipynb",
+        docs_nb = "docs/rna-seq-pop-results/notebooks/variants-of-interest.ipynb",
         perSampleHeatmap="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerSample.svg",
         perTreatmentHeatmap="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerTreatment.svg",
+    log:
+        "logs/notebooks/variants-of-interest.log",
     conda:
         "../envs/pythonGenomics.yaml"
     priority: 10
-    log:
-        "logs/variantsOfInterestPlot.log",
-    script:
-        "../scripts/VariantsOfInterestPlot.py"
+    shell:
+        """
+        papermill {input.nb} {output.nb} -k pythonGenomics 2> {log}
+        cp {output.nb} {output.docs_nb} 2>> {log}
+        """
