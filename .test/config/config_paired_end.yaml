@@ -81,9 +81,8 @@ VariantAnalysis:
             missingness: 0.5
             # Do we want to run pbs (Needs three conditions, two more closely related and a slight outgroup)
             pbs:
-                  activate: True
-                  contrasts: 
-                        - 'PiriTia_ContTia_Kisumu'
+                  activate: False
+                  contrasts: ['PiriTia_ContTia_Kisumu']
 
       # For Anopheles gambiae s.l only - run Ancestry Informative Marker analysis.
       ancestry:
@@ -111,7 +110,7 @@ VariantAnalysis:
 miscellaneous:
 # If activate:True, creates allele balance .xlsx reports on IR mutations of choice
       VariantsOfInterest: 
-            activate: False
+            activate: True
             path: "resources/test-IRmutations.tsv"
             
       GeneFamiliesHeatmap:

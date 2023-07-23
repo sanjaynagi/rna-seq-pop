@@ -10,6 +10,7 @@ import os
 import datetime
 
 configfile: "config/config.yaml"
+configpath = workflow.configfiles[0]
 
 wkdir = os.getcwd()
 metadata = pd.read_csv(config["metadata"], sep="\t")

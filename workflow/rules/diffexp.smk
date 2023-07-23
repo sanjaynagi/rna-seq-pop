@@ -151,11 +151,11 @@ rule GeneSetEnrichment_notebook:
     conda:
         "../envs/pythonGenomics.yaml"
     params:
-        DEcontrasts=config["contrasts"],
+        config = configpath,
         selection=config["VariantAnalysis"]['selection']["activate"]
     shell:
         """
-        papermill {input.nb} {output.nb} -k pythonGenomics -p metadata_path {input.metadata}  -p comparisons {params.DEcontrasts} -p selection {params.selection} 2> {log}
+        papermill {input.nb} {output.nb} -k pythonGenomics -p go_path {input.gaf} -p metadata_path {input.metadata} -p config_path {params.config} -p selection {params.selection} 2> {log}
         cp {output.nb} {output.docs_nb} 2>> {log}
         """
 

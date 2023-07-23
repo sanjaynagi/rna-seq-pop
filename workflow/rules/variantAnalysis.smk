@@ -88,7 +88,7 @@ rule pca_notebook:
             dataset=config["dataset"],
         ),
     log:
-        "logs/pca.log",
+        "logs/notebooks/pca.log",
     conda:
         "../envs/pythonGenomics.yaml"
     params:
@@ -255,7 +255,7 @@ rule WindowedFstPBS_notebook:
         "../envs/pythonGenomics.yaml"
     params:
         dataset=config["dataset"],
-        DEcontrasts=config["contrasts"],
+        config = configpath,
         pbs=config["VariantAnalysis"]["selection"]["pbs"]["activate"],
         pbscomps=config["VariantAnalysis"]["selection"]["pbs"]["contrasts"],
         contigs=config["contigs"],
@@ -264,10 +264,9 @@ rule WindowedFstPBS_notebook:
         qualflt=30,
     shell:
         """
-        papermill {input.nb} {output.nb} -k pythonGenomics -p comparisons {params.DEcontrasts} -p pbs {params.pbs} -p pbscomps {params.pbscomps} -p metadata_path {input.metadata} -p dataset {params.dataset} -p contigs {params.contigs} -p ploidy {params.ploidy} -p missingprop {params.missingprop} -p qualflt {params.qualflt} 2> {log}
+        papermill {input.nb} {output.nb} -k pythonGenomics -p config_path {params.config} -p pbs {params.pbs} -p pbscomps {params.pbscomps} -p metadata_path {input.metadata} -p dataset {params.dataset} -p contigs {params.contigs} -p ploidy {params.ploidy} -p missingprop {params.missingprop} -p qualflt {params.qualflt} 2> {log}
         cp {output.nb} {output.docs_nb} 2>> {log}
         """
-
 
 
 rule PerGeneFstPBSDxyPi:

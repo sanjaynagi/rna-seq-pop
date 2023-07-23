@@ -114,7 +114,7 @@ rule multiQC:
     output:
         html = "results/qc/multiQC.html",
     params:
-        "results/ resources/ logs/",  # Optional: extra parameters for multiqc.
+        extra="results/ resources/ logs/ --config resources/multiqc.yaml",  # Optional: extra parameters for multiqc.
     log:
         "logs/multiQC.log",
     wrapper:

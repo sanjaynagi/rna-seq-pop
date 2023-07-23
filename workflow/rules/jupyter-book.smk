@@ -19,6 +19,6 @@ rule jupyterbook:
         dataset = config['dataset']
     shell:
         """
-        jupyter-book build --all docs/rna-seq-pop-results --path-output results/rna-seq-pop-results &&
-        ln -sf docs/rna-seq-pop-results/_build/html/index.html {params.dataset}-results.html
+        jupyter-book build --all docs/rna-seq-pop-results --path-output results/rna-seq-pop-results 2> {log}
+        ln -sf docs/rna-seq-pop-results/_build/html/index.html {params.dataset}-results.html 2>> {log}
         """

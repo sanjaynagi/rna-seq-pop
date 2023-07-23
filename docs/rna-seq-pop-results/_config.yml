@@ -11,15 +11,6 @@ logo: logo.png
 execute:
   execute_notebooks: "off"
 
-# Define the name of the latex output file for PDF builds
-latex:
-  latex_documents:
-    targetname: rna-seq-pop-results.tex
-
-# Add a bibtex file so that we can create citations
-bibtex_bibfiles:
-  - references.bib
-
 # Information about where the book exists on the web
 repository:
   url: https://github.com/sanjaynagi/rna-seq-pop  # Online location of your book
@@ -37,6 +28,3 @@ html:
       issue-term: "pathname"
       label: "comment"
       theme: "github-light" 
-
-launch_buttons:
-  binderhub_url: ""
