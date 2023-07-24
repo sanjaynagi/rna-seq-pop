@@ -15,6 +15,9 @@ rule DifferentialGeneExpression:
         pca="results/counts/PCA.pdf",
         countStats="results/counts/countStatistics.tsv",
         normCounts="results/counts/normCounts.tsv",
+        kallistoSummary = "results/quant/KallistoQuantSummary.tsv",
+        corr_heatmap = "results/plots/heatmap_correlations.pdf"
+        pca = "results/plots/PCA.pdf",
     group:
         "diffexp"
     priority: 20
@@ -227,3 +230,30 @@ rule geneFamilies_notebook:
         papermill {input.nb} {output.nb} -k pythonGenomics -p go_path {input.eggnog} -p normcounts_path {input.normcounts} -p pfam_path {input.pfam} -p comparisons {params.DEcontrasts} 2> {log}
         cp {output.nb} {output.docs_nb} 2>> {log}
         """
+
+
+
+rule counts_qc_notebook:
+    input:
+        nb = f"{workflow.basedir}/notebooks/counts-qc.ipynb",
+        kernel = "results/.kernel.set",
+        countStats = "results/counts/countStatistics.tsv",
+        kallistoSummary = "results/quant/KallistoQuantSummary.tsv",
+        corr_heatmap = "results/plots/heatmap_correlations.pdf",
+        pca = "results/plots/PCA.pdf",
+    output:
+        nb = "results/notebooks/counts-qc.ipynb",
+        docs_nb = "docs/rna-seq-pop-results/notebooks/counts-qc.ipynb"
+    conda:
+        "../envs/pythonGenomics.yaml"
+    log:
+        "logs/notebooks/counts-qc.log"
+    params:
+        wd = wkdir
+    shell:
+        """
+        papermill {input.nb} {output.nb} -k pythonGenomics -p wkdir {params.wd} 2> {log}
+        cp {output.nb} {output.docs_nb} 2>> {log}
+        """
+
+

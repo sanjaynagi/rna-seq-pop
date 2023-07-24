@@ -1,0 +1,18 @@
+table_columns_visible:
+  QualiMap:
+    general_error_rate: True
+    median_insert_size: False
+sp:
+  fastp:
+    fn: "*.json"
+  qualimap/bamqc/genome_results:
+    fn: genome_results.txt
+  qualimap/bamqc/raw_data_qualimapReport:
+    fn: coverage_histogram.txt
+  qualimap/bamqc/raw_data_qualimapReport:
+    fn: insert_size_histogram.txt
+  qualimap/bamqc/raw_data_qualimapReport:
+    fn: genome_fraction_coverage.txt
+  qualimap/bamqc/raw_data_qualimapReport:
+    fn: mapped_reads_gc-content_distribution.txt
+
