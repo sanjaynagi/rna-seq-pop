@@ -260,5 +260,6 @@ dependencies:
   - papermill
   - ipykernel
   - plotly
+  - imagemagick
   - pip:
     - wand
