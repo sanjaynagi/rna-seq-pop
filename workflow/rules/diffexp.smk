@@ -256,3 +256,26 @@ rule counts_qc_notebook:
         """
 
 
+rule diffexp_notebook:
+    input:
+        nb = f"{workflow.basedir}/notebooks/differential-expression.ipynb",
+        kernel = "results/.kernel.set",
+        xlsx=expand(
+            "results/genediff/{dataset}_diffexp.xlsx", dataset=config["dataset"]
+        ),
+    output:
+        nb = "results/notebooks/differential-expression.ipynb",
+        docs_nb = "docs/rna-seq-pop-results/notebooks/differential-expression.ipynb"
+    conda:
+        "../envs/pythonGenomics.yaml"
+    log:
+        "logs/notebooks/differential-expression.log"
+    params:
+        wd = wkdir
+    shell:
+        """
+        papermill {input.nb} {output.nb} -k pythonGenomics -p wkdir {params.wd} 2> {log}
+        cp {output.nb} {output.docs_nb} 2>> {log}
+        """
+
+

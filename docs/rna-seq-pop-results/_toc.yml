@@ -3,14 +3,15 @@ root: landing-page
 parts:
 - caption: Quality Control
   chapters:
-        - file: notebooks/quality_control
+        - file: notebooks/quality-control
+        - file: notebooks/counts-qc
 - caption: Differential expression
   chapters:
         - file: notebooks/gene-families-heatmap
         - file: notebooks/gene-set-enrichment-analysis
 - caption: Variant analysis
   chapters:
-        - file: notebooks/principal-component-analysis
+        - file: notebooks/principal-components-analysis
         - file: notebooks/genetic-diversity
         - file: notebooks/variants-of-interest
         - file: notebooks/windowed-selection
