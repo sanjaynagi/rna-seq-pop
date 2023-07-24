@@ -259,5 +259,6 @@ dependencies:
   - zstd=1.5.2=hfc55251_7
   - papermill
   - ipykernel
+  - plotly
   - pip:
     - wand
