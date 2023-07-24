@@ -239,7 +239,6 @@ rule counts_qc_notebook:
         countStats = "results/counts/countStatistics.tsv",
         kallistoSummary = "results/counts/KallistoQuantSummary.tsv",
         corr_heatmap = "results/counts/heatmap_correlations.png",
-        pca = "results/counts/PCA.png",
     output:
         nb = "results/notebooks/counts-qc.ipynb",
         docs_nb = "docs/rna-seq-pop-results/notebooks/counts-qc.ipynb"
@@ -262,6 +261,10 @@ rule diffexp_notebook:
         kernel = "results/.kernel.set",
         xlsx=expand(
             "results/genediff/{dataset}_diffexp.xlsx", dataset=config["dataset"]
+        ),
+        isoform_xlsx=expand(
+            "results/isoformdiff/{dataset}_isoformdiffexp.xlsx",
+            dataset=config["dataset"],
         ),
     output:
         nb = "results/notebooks/differential-expression.ipynb",
