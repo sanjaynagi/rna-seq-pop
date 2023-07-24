@@ -7,6 +7,7 @@ parts:
         - file: notebooks/counts-qc
 - caption: Differential expression
   chapters:
+        - file: notebooks/differential-expression
         - file: notebooks/gene-families-heatmap
         - file: notebooks/gene-set-enrichment-analysis
 - caption: Variant analysis

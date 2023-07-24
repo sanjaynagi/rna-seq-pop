@@ -1,6 +1,7 @@
 rule jupyterbook:
     input:
         counts_qc = "docs/rna-seq-pop-results/notebooks/counts-qc.ipynb",
+        diffexp = "docs/rna-seq-pop-results/notebooks/differential-expression.ipynb",
         qc = "docs/rna-seq-pop-results/notebooks/quality-control.ipynb" if config['QualityControl']['multiqc']['activate'] else [],
         gsea = "docs/rna-seq-pop-results/notebooks/gene-set-enrichment-analysis.ipynb" if config['DifferentialExpression']['GSEA']['activate'] else [],
         gene_families = "docs/rna-seq-pop-results/notebooks/gene-families-heatmap.ipynb" if config['miscellaneous']['GeneFamiliesHeatmap']['activate'] else [],

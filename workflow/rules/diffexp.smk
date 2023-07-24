@@ -271,10 +271,11 @@ rule diffexp_notebook:
     log:
         "logs/notebooks/differential-expression.log"
     params:
-        wd = wkdir
+        wd = wkdir,
+        dataset = config["dataset"]
     shell:
         """
-        papermill {input.nb} {output.nb} -k pythonGenomics -p wkdir {params.wd} 2> {log}
+        papermill {input.nb} {output.nb} -k pythonGenomics -p wkdir {params.wd} -p dataset {params.dataset} 2> {log}
         cp {output.nb} {output.docs_nb} 2>> {log}
         """
 
