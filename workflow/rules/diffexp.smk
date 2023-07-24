@@ -15,7 +15,7 @@ rule DifferentialGeneExpression:
         countStats="results/counts/countStatistics.tsv",
         normCounts="results/counts/normCounts.tsv",
         kallistoSummary = "results/counts/KallistoQuantSummary.tsv",
-        corr_heatmap = "results/counts/heatmap_correlations.pdf",
+        corr_heatmap = "results/counts/heatmap_correlations.png",
         pca="results/counts/PCA.pdf",
     group:
         "diffexp"
@@ -238,8 +238,8 @@ rule counts_qc_notebook:
         kernel = "results/.kernel.set",
         countStats = "results/counts/countStatistics.tsv",
         kallistoSummary = "results/counts/KallistoQuantSummary.tsv",
-        corr_heatmap = "results/counts/heatmap_correlations.pdf",
-        pca = "results/counts/PCA.pdf",
+        corr_heatmap = "results/counts/heatmap_correlations.png",
+        pca = "results/counts/PCA.png",
     output:
         nb = "results/notebooks/counts-qc.ipynb",
         docs_nb = "docs/rna-seq-pop-results/notebooks/counts-qc.ipynb"
