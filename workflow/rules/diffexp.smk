@@ -12,12 +12,11 @@ rule DifferentialGeneExpression:
         xlsx=expand(
             "results/genediff/{dataset}_diffexp.xlsx", dataset=config["dataset"]
         ),
-        pca="results/counts/PCA.pdf",
         countStats="results/counts/countStatistics.tsv",
         normCounts="results/counts/normCounts.tsv",
-        kallistoSummary = "results/quant/KallistoQuantSummary.tsv",
-        corr_heatmap = "results/plots/heatmap_correlations.pdf"
-        pca = "results/plots/PCA.pdf",
+        kallistoSummary = "results/counts/KallistoQuantSummary.tsv",
+        corr_heatmap = "results/counts/heatmap_correlations.pdf",
+        pca="results/counts/PCA.pdf",
     group:
         "diffexp"
     priority: 20
@@ -238,9 +237,9 @@ rule counts_qc_notebook:
         nb = f"{workflow.basedir}/notebooks/counts-qc.ipynb",
         kernel = "results/.kernel.set",
         countStats = "results/counts/countStatistics.tsv",
-        kallistoSummary = "results/quant/KallistoQuantSummary.tsv",
-        corr_heatmap = "results/plots/heatmap_correlations.pdf",
-        pca = "results/plots/PCA.pdf",
+        kallistoSummary = "results/counts/KallistoQuantSummary.tsv",
+        corr_heatmap = "results/counts/heatmap_correlations.pdf",
+        pca = "results/counts/PCA.pdf",
     output:
         nb = "results/notebooks/counts-qc.ipynb",
         docs_nb = "docs/rna-seq-pop-results/notebooks/counts-qc.ipynb"
