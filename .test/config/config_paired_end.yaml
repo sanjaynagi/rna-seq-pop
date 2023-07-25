@@ -3,6 +3,9 @@ metadata: config/samples.tsv
 # Dataset name
 dataset: 'Test-GithubActionsCI'
 
+jupyter-book:
+      activate: True
+
 fastq: 
       auto: True # set auto if your files follow 
       paired: True
@@ -78,9 +81,8 @@ VariantAnalysis:
             missingness: 0.5
             # Do we want to run pbs (Needs three conditions, two more closely related and a slight outgroup)
             pbs:
-                  activate: True
-                  contrasts: 
-                        - 'PiriTia_ContTia_Kisumu'
+                  activate: False
+                  contrasts: ['PiriTia_ContTia_Kisumu']
 
       # For Anopheles gambiae s.l only - run Ancestry Informative Marker analysis.
       ancestry:
@@ -108,12 +110,12 @@ VariantAnalysis:
 miscellaneous:
 # If activate:True, creates allele balance .xlsx reports on IR mutations of choice
       VariantsOfInterest: 
-            activate: False
+            activate: True
             path: "resources/test-IRmutations.tsv"
             
       GeneFamiliesHeatmap:
             activate: False
-            eggnog: resources/Anogam_long.pep_eggnog_diamond.emapper.annotations.tsv.gz.GO
+            eggnog: resources/Anogam_long.pep_eggnog_diamond.emapper.annotations.tsv.gz
             pfam: resources/Anogam_long.pep_Pfamscan.seqs.gz
 
       sweeps:

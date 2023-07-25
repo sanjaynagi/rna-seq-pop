@@ -10,7 +10,9 @@ import os
 import datetime
 
 configfile: "config/config.yaml"
+configpath = workflow.configfiles[0]
 
+wkdir = os.getcwd()
 metadata = pd.read_csv(config["metadata"], sep="\t")
 validate(metadata, schema="schemas/samples.schema.yaml")
 samples = metadata["sampleID"]
@@ -37,6 +39,7 @@ include: "rules/alignment.smk"
 include: "rules/variantCalling.smk"
 include: "rules/filterAnnotate.smk"
 include: "rules/variantAnalysis.smk"
+include: "rules/jupyter-book.smk"
 include: "rules/misc.smk"
 
 

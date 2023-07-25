@@ -3,6 +3,46 @@ if config["VariantAnalysis"]["selection"]["pbs"]["activate"]:
 else:
     windowedStats = ["Fst"]
 
+rule set_kernel:
+    input:
+        f'{workflow.basedir}/envs/pythonGenomics.yaml'
+    output:
+        touch("results/.kernel.set")
+    conda: f'{workflow.basedir}/envs/pythonGenomics.yaml'
+    log:
+        "logs/notebooks/set_kernel.log"
+    shell: 
+        """
+        python -m ipykernel install --user --name=pythonGenomics 2> {log}
+        """
+
+rule remove_input_param_cell_nbs:
+    input:
+        input_nb = f"{workflow.basedir}/notebooks/process-notebooks.ipynb",
+        counts_qc = "docs/rna-seq-pop-results/notebooks/counts-qc.ipynb",
+        diffexp = "docs/rna-seq-pop-results/notebooks/differential-expression.ipynb",
+        qc = "docs/rna-seq-pop-results/notebooks/quality-control.ipynb" if config['QualityControl']['multiqc']['activate'] else [],
+        gsea = "docs/rna-seq-pop-results/notebooks/gene-set-enrichment-analysis.ipynb" if config['DifferentialExpression']['GSEA']['activate'] else [],
+        gene_families = "docs/rna-seq-pop-results/notebooks/gene-families-heatmap.ipynb" if config['miscellaneous']['GeneFamiliesHeatmap']['activate'] else [],
+        pca = "docs/rna-seq-pop-results/notebooks/principal-components-analysis.ipynb" if config['VariantAnalysis']['pca']['activate'] else [],
+        genetic_diversity = "docs/rna-seq-pop-results/notebooks/genetic-diversity.ipynb" if config['VariantAnalysis']['summaryStatistics']['activate'] else [],
+        selection = "docs/rna-seq-pop-results/notebooks/windowed-selection.ipynb" if config['VariantAnalysis']['selection']['activate'] else [],
+        voi = "docs/rna-seq-pop-results/notebooks/variants-of-interest.ipynb" if config['miscellaneous']['VariantsOfInterest']['activate'] else [],
+        karyo = "docs/rna-seq-pop-results/notebooks/karyotype.ipynb" if config['VariantAnalysis']['karyotype']['activate'] else [],
+    output:
+        out_nb = "results/notebooks/process-notebooks.ipynb",
+        process = touch("results/rna-seq-pop-results/.processed_nbs")
+    conda:
+        f'{workflow.basedir}/envs/pythonGenomics.yaml'
+    log:
+        "logs/notebooks/remove_input_param_cell_nbs.log"
+    params:
+        wkdir = wkdir
+    shell:
+        """
+        papermill -k pythonGenomics {input.input_nb} {output.out_nb} -p wkdir {params.wkdir} 2> {log}
+        """
+
 
 def getFASTQs(wildcards, rules=None):
     """
@@ -254,6 +294,14 @@ def GetDesiredOutputs(wildcards):
                 ],
             )
         )
+
+    if config['jupyter-book']['activate']:
+        wanted_input.extend(
+            [
+                "results/rna-seq-pop-results/_build/html/index.html"
+            ]
+        )
+
     return wanted_input
 
 

@@ -59,7 +59,7 @@ vst_pca = function(counts, samples, colourvar, name="PCA", st="", comparison="")
   pc = left_join(pc, samples)
 
   pdf(glue("results/counts/{name}{st}{comparison}.pdf"))  
-  print(ggplot(data=pc,aes(x=PC1, y=PC2, colour=treatment)) + 
+  plt = ggplot(data=pc,aes(x=PC1, y=PC2, colour=treatment)) + 
     geom_point(size=6, alpha=0.8) + 
     geom_text_repel(aes(label=sampleID), colour="black") + 
     theme_light() + 
@@ -74,9 +74,10 @@ vst_pca = function(counts, samples, colourvar, name="PCA", st="", comparison="")
           panel.background = element_blank(),
           plot.title = element_text(hjust = 0.5),
           axis.text.x = element_text(colour="black", size=18),
-          axis.text.y = element_text(colour="black", size=18)))
+          axis.text.y = element_text(colour="black", size=18))
+  print(plt)
   null = dev.off()
-  
+  ggsave(glue("results/counts/{name}{st}{comparison}.png"), plot=plt)
   return(list(vstcounts, dds, normcounts))
 }
 
@@ -177,6 +178,10 @@ normcounts %>%
 # calculate correlations between samples based on the count data, and plot heatmap
 correlations = cor(vstcounts)
 pdf("results/counts/heatmap_correlations.pdf")
+pheatmap(correlations)
+garbage = dev.off()
+
+png("results/counts/heatmap_correlations.png")
 pheatmap(correlations)
 garbage = dev.off()
 

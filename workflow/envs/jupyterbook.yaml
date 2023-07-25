@@ -1,0 +1,8 @@
+name: rnaseqpop-jupyterbook
+channels:
+    - conda-forge
+    - bioconda
+dependencies:
+    - python=3.10
+    - jupyterlab
+    - jupyter-book==0.15.1

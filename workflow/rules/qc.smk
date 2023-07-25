@@ -100,7 +100,7 @@ rule multiQC:
     Integrate QC statistics from other tools into a final .html report
     """
     input:
-        expand("results/qc/{sample}.html", sample=samples, n=[1, 2]),
+        expand("results/qc/{sample}.json", sample=samples),
         expand(
             "results/qc/vcfs/{contig}.txt", contig=config["contigs"]
         )
@@ -112,11 +112,31 @@ rule multiQC:
         expand("results/qc/alignments/{sample}.flagstat", sample=samples),
         expand("results/counts/{sample}", sample=samples),
     output:
-        "results/qc/multiQC.html",
+        html = "results/qc/multiQC.html",
     params:
-        "results/ resources/ logs/",  # Optional: extra parameters for multiqc.
+        extra="results/ resources/ logs/ --config resources/multiqc.yaml",  # Optional: extra parameters for multiqc.
     log:
         "logs/multiQC.log",
     wrapper:
         "v2.2.1/bio/multiqc"
 
+
+rule qc_notebook:
+    input:
+        nb = f"{workflow.basedir}/notebooks/quality-control.ipynb",
+        kernel = "results/.kernel.set",
+        multiqc = "results/qc/multiQC.html"
+    output:
+        nb = "results/notebooks/quality-control.ipynb",
+        docs_nb = "docs/rna-seq-pop-results/notebooks/quality-control.ipynb"
+    conda:
+        "../envs/pythonGenomics.yaml"
+    log:
+        "logs/notebooks/quality-control.log"
+    params:
+        wd = wkdir
+    shell:
+        """
+        papermill {input.nb} {output.nb} -k pythonGenomics -p wkdir {params.wd} 2> {log}
+        cp {output.nb} {output.docs_nb} 2>> {log}
+        """
