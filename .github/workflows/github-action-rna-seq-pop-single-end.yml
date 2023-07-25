@@ -19,6 +19,9 @@ jobs:
       - name: cp results book yamls 
         run: cp docs/rna-seq-pop-results/_toc.yml docs/rna-seq-pop-results/_config.yml .test/docs/rna-seq-pop-results
 
+      - name: cp landing page
+        run: cp docs/rna-seq-pop-results/landing-page.md .test/docs/rna-seq-pop-results
+
       - name: Test workflow single-end
         uses: snakemake/snakemake-github-action@v1.23.0
         with:
