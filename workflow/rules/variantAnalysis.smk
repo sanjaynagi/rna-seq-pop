@@ -93,46 +93,15 @@ rule pca_notebook:
         "../envs/pythonGenomics.yaml"
     params:
         dataset=config["dataset"],
-        contigs=config["contigs"],
+        config_path = configpath,
         ploidy=config["VariantAnalysis"]["ploidy"],
         missingprop=config["VariantAnalysis"]["pca"]["missingness"],
         qualflt=30,
     shell:
         """
-        papermill {input.nb} {output.nb} -k pythonGenomics -p metadata_path {input.metadata} -p dataset {params.dataset} -p contigs {params.contigs} -p ploidy {params.ploidy} -p missingprop {params.missingprop} -p qualflt {params.qualflt} 2> {log}
+        papermill {input.nb} {output.nb} -k pythonGenomics -p metadata_path {input.metadata} -p dataset {params.dataset} -p config_path {params.config_path} -p ploidy {params.ploidy} -p missingprop {params.missingprop} -p qualflt {params.qualflt} 2> {log}
         cp {output.nb} {output.docs_nb} 2>> {log}
         """
-
-
-# rule SummaryStatistics:
-#     """
-#     Calculate population genetic summary statistics on genotype data 
-#     """
-#     input:
-#         vcf=expand(
-#             "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
-#             contig=config["contigs"],
-#             dataset=config["dataset"],
-#         ),
-#         metadata=config["metadata"],
-#     output:
-#         inbreedingCoef="results/variantAnalysis/diversity/inbreedingCoef.tsv"
-#         if config["VariantAnalysis"]["ploidy"] > 1
-#         else [],
-#         pi="results/variantAnalysis/diversity/SequenceDiversity.tsv",
-#         theta="results/variantAnalysis/diversity/WattersonsTheta.tsv",
-#     log:
-#         "logs/SummaryStatistics.log",
-#     conda:
-#         "../envs/pythonGenomics.yaml"
-#     params:
-#         dataset=config["dataset"],
-#         contigs=config["contigs"],
-#         ploidy=config["VariantAnalysis"]["ploidy"],
-#         missingprop=config["VariantAnalysis"]["summaryStatistics"]["missingness"],
-#         qualflt=30,
-#     script:
-#         "../scripts/SummaryStats.py"
 
 rule SummaryStatistics_notebook:
     """
@@ -161,60 +130,15 @@ rule SummaryStatistics_notebook:
         "../envs/pythonGenomics.yaml"
     params:
         dataset=config["dataset"],
-        contigs=config["contigs"],
+        config_path = configpath,
         ploidy=config["VariantAnalysis"]["ploidy"],
         missingprop=config["VariantAnalysis"]["summaryStatistics"]["missingness"],
         qualflt=30,
     shell:
         """
-        papermill {input.nb} {output.nb} -k pythonGenomics -p metadata_path {input.metadata} -p dataset {params.dataset} -p contigs {params.contigs} -p ploidy {params.ploidy} -p missingprop {params.missingprop} -p qualflt {params.qualflt} 2> {log}
+        papermill {input.nb} {output.nb} -k pythonGenomics -p metadata_path {input.metadata} -p dataset {params.dataset} -p config_path {params.config_path} -p ploidy {params.ploidy} -p missingprop {params.missingprop} -p qualflt {params.qualflt} 2> {log}
         cp {output.nb} {output.docs_nb} 2>> {log}
         """
-
-
-# rule WindowedFstPBS:
-#     """
-#     Calculate Fst and PBS in windows
-#     """
-#     input:
-#         metadata=config["metadata"],
-#         vcf=expand(
-#             "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
-#             contig=config["contigs"],
-#             dataset=config["dataset"],
-#         ),
-#     output:
-#         Fst=expand(
-#             "results/variantAnalysis/selection/fst/{wsize}/{comp}.Fst.{contig}.svg",
-#             comp=config["contrasts"],
-#             contig=config["contigs"],
-#             wsize=['1000snp_window', '2000snp_window', '5000snp_window'],
-#         ),
-#         PBS=(
-#             expand(
-#                 "results/variantAnalysis/selection/pbs/{wsize}/{pbscomp}.PBS.{contig}.svg",
-#                 pbscomp=config["VariantAnalysis"]["selection"]["pbs"]["contrasts"],
-#                 contig=config["contigs"],
-#                 wsize=['1000snp_window', '2000snp_window', '5000snp_window'],
-#             )
-#             if config["VariantAnalysis"]["selection"]["pbs"]["activate"]
-#             else []
-#         ),
-#     conda:
-#         "../envs/pythonGenomics.yaml"
-#     log:
-#         "logs/WindowedFstPBS.log",
-#     params:
-#         dataset=config["dataset"],
-#         DEcontrasts=config["contrasts"],
-#         pbs=config["VariantAnalysis"]["selection"]["pbs"]["activate"],
-#         pbscomps=config["VariantAnalysis"]["selection"]["pbs"]["contrasts"],
-#         contigs=config["contigs"],
-#         ploidy=config["VariantAnalysis"]["ploidy"],
-#         missingprop=config["VariantAnalysis"]["selection"]["missingness"],
-#         qualflt=30,
-#     script:
-#         "../scripts/WindowedFstPBS.py"
 
 
 rule WindowedFstPBS_notebook:
@@ -258,13 +182,12 @@ rule WindowedFstPBS_notebook:
         config = configpath,
         pbs=config["VariantAnalysis"]["selection"]["pbs"]["activate"],
         pbscomps=config["VariantAnalysis"]["selection"]["pbs"]["contrasts"],
-        contigs=config["contigs"],
         ploidy=config["VariantAnalysis"]["ploidy"],
         missingprop=config["VariantAnalysis"]["selection"]["missingness"],
         qualflt=30,
     shell:
         """
-        papermill {input.nb} {output.nb} -k pythonGenomics -p config_path {params.config} -p pbs {params.pbs} -p pbscomps {params.pbscomps} -p metadata_path {input.metadata} -p dataset {params.dataset} -p contigs {params.contigs} -p ploidy {params.ploidy} -p missingprop {params.missingprop} -p qualflt {params.qualflt} 2> {log}
+        papermill {input.nb} {output.nb} -k pythonGenomics -p config_path {params.config} -p pbs {params.pbs} -p pbscomps {params.pbscomps} -p metadata_path {input.metadata} -p dataset {params.dataset} -p ploidy {params.ploidy} -p missingprop {params.missingprop} -p qualflt {params.qualflt} 2> {log}
         cp {output.nb} {output.docs_nb} 2>> {log}
         """
 
