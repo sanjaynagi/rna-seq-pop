@@ -114,7 +114,7 @@ miscellaneous:
             path: "resources/test-IRmutations.tsv"
             
       GeneFamiliesHeatmap:
-            activate: True
+            activate: False
             eggnog: resources/Anogam_long.pep_eggnog_diamond.emapper.annotations.tsv.gz
             pfam: resources/Anogam_long.pep_Pfamscan.seqs.gz
 

@@ -214,6 +214,7 @@ rule geneFamilies_notebook:
         normcounts="results/counts/normCounts.tsv",
         eggnog=config["miscellaneous"]["GeneFamiliesHeatmap"]["eggnog"],
         pfam=config["miscellaneous"]["GeneFamiliesHeatmap"]["pfam"],
+        metadata=config["metadata"],
     output:
         nb = "results/notebooks/gene-families-heatmap.ipynb",
         docs_nb = "docs/rna-seq-pop-results/notebooks/gene-families-heatmap.ipynb",
@@ -223,10 +224,10 @@ rule geneFamilies_notebook:
     conda:
         "../envs/pythonGenomics.yaml"
     params:
-        DEcontrasts=config["contrasts"],
+        config_path = configpath
     shell:
         """
-        papermill {input.nb} {output.nb} -k pythonGenomics -p go_path {input.eggnog} -p normcounts_path {input.normcounts} -p pfam_path {input.pfam} -p comparisons {params.DEcontrasts} 2> {log}
+        papermill {input.nb} {output.nb} -k pythonGenomics -p metadata_path {input.metadata} -p config_path {params.config_path} -p go_path {input.eggnog} -p normcounts_path {input.normcounts} -p pfam_path {input.pfam} 2> {log}
         cp {output.nb} {output.docs_nb} 2>> {log}
         """
 
@@ -275,7 +276,7 @@ rule diffexp_notebook:
         "logs/notebooks/differential-expression.log"
     params:
         wd = wkdir,
-        dataset = config["dataset"]
+        dataset = config["dataset"],
     shell:
         """
         papermill {input.nb} {output.nb} -k pythonGenomics -p wkdir {params.wd} -p dataset {params.dataset} 2> {log}
