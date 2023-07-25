@@ -1,6 +1,3 @@
-################ Variant Analysis ##################
-# scikit-allel (Miles, Harding) 10.5281/zenodo.3935797
-
 rule SNPstatistics:
     """
     Calculate statistics such as no. of SNPs called in exons/introns/genes
@@ -34,36 +31,6 @@ rule SNPstatistics:
         qualflt=30,
     script:
         "../scripts/SNPstatistics.py"
-
-# rule PCA:
-#     """
-#     Perform pca on genotype data and plot 
-#     """
-#     input:
-#         vcf=expand(
-#             "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
-#             contig=config["contigs"],
-#             dataset=config["dataset"],
-#         ),
-#         metadata=config["metadata"],
-#     output:
-#         PCAfig=expand(
-#             "results/variantAnalysis/pca/PCA-{contig}-{dataset}.svg",
-#             contig=config["contigs"],
-#             dataset=config["dataset"],
-#         ),
-#     log:
-#         "logs/pca.log",
-#     conda:
-#         "../envs/pythonGenomics.yaml"
-#     params:
-#         dataset=config["dataset"],
-#         contigs=config["contigs"],
-#         ploidy=config["VariantAnalysis"]["ploidy"],
-#         missingprop=config["VariantAnalysis"]["pca"]["missingness"],
-#         qualflt=30,
-#     script:
-#         "../scripts/pca.py"
 
 
 rule pca_notebook:
@@ -288,31 +255,6 @@ rule Karyotype:
         <(python {params.basedir}/scripts/compkaryo/compkaryo/compkaryo.py {input.vcf} {wildcards.karyo} -p {params.ploidy}) | 
         column -s $'\\t' -t | sort -k 1 > {output}
         """
-
-
-# rule KaryotypePlots:
-#     """
-#     Plot karyotype results
-#     """
-#     input:
-#         expand(
-#             "results/karyotype/{karyo}.{dataset}.karyo.txt",
-#             karyo=config["VariantAnalysis"]["karyotype"]["inversions"],
-#             dataset=config["dataset"],
-#         ),
-#     output:
-#         "results/karyotype/karyoFreqs.svg",
-#     log:
-#         "logs/compKaryo/KaryotypePlots.log",
-#     conda:
-#         "../envs/pythonGenomics.yaml"
-#     params:
-#         metadata=config["metadata"],
-#         ploidy=config["VariantAnalysis"]["ploidy"],
-#         inversions=config["VariantAnalysis"]["karyotype"]["inversions"],
-#         dataset=config["dataset"],
-#     script:
-#         "../scripts/KaryoPlots.py"
 
 rule KaryotypePlots_notebook:
     """
