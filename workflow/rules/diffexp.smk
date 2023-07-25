@@ -237,6 +237,7 @@ rule counts_qc_notebook:
     input:
         nb = f"{workflow.basedir}/notebooks/counts-qc.ipynb",
         kernel = "results/.kernel.set",
+        metadata = config["metadata"],
         countStats = "results/counts/countStatistics.tsv",
         kallistoSummary = "results/counts/KallistoQuantSummary.tsv",
         corr_heatmap = "results/counts/heatmap_correlations.png",
@@ -251,7 +252,7 @@ rule counts_qc_notebook:
         wd = wkdir
     shell:
         """
-        papermill {input.nb} {output.nb} -k pythonGenomics -p wkdir {params.wd} 2> {log}
+        papermill {input.nb} {output.nb} -k pythonGenomics -p wkdir {params.wd} -p metadata_path {input.metadata} 2> {log}
         cp {output.nb} {output.docs_nb} 2>> {log}
         """
 

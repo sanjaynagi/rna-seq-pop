@@ -1,5 +1,6 @@
 rule jupyterbook:
     input:
+        process_nbs = "results/rna-seq-pop-results/.processed_nbs",
         counts_qc = "docs/rna-seq-pop-results/notebooks/counts-qc.ipynb",
         diffexp = "docs/rna-seq-pop-results/notebooks/differential-expression.ipynb",
         qc = "docs/rna-seq-pop-results/notebooks/quality-control.ipynb" if config['QualityControl']['multiqc']['activate'] else [],
