@@ -16,6 +16,12 @@ jobs:
         with:
           submodules: recursive
 
+      - name: cp pfam/go files
+        run: cp resources/Anogam_long.pep_eggnog_diamond.emapper.annotations.tsv.gz resources/Anogam_long.pep_Pfamscan.seqs.gz .test/resources
+
+      - name: cp results book yamls 
+        run: cp docs/rna-seq-pop-results/_toc.yml docs/rna-seq-pop-results/_config.yml .test/docs/rna-seq-pop-results
+
       - name: Test workflow single-end
         uses: snakemake/snakemake-github-action@v1.23.0
         with:
