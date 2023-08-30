@@ -28,3 +28,7 @@ jobs:
           directory: '.test'
           snakefile: 'workflow/Snakefile'
           args: "--cores 4 --use-conda --configfile .test/config/config_single_end.yaml --conda-cleanup-pkgs cache"
+          stagein: 
+            "
+            conda config --set channel_priority flexible
+            "
