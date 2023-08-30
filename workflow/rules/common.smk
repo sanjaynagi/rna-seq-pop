@@ -3,6 +3,20 @@ if config["VariantAnalysis"]["selection"]["pbs"]["activate"]:
 else:
     windowedStats = ["Fst"]
 
+
+def load_metadata(metadata_path):
+    # load panel metadata
+    if metadata_path.endswith('.xlsx'):
+        metadata = pd.read_excel(metadata_path, engine='openpyxl')
+    elif metadata_path.endswith('.tsv'):
+        metadata = pd.read_csv(metadata_path, sep="\t")
+    elif metadata_path.endswith('.csv'):
+        metadata = pd.read_csv(metadata_path, sep=",")
+    else:
+        raise ValueError("Metadata file must be .xlsx or .csv")
+    return metadata
+
+    
 rule set_kernel:
     input:
         f'{workflow.basedir}/envs/pythonGenomics.yaml'

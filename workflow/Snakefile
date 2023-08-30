@@ -4,15 +4,12 @@ import numpy as np
 import os
 import datetime
 
-sys.path.insert(1, 'scripts/')
-sys.path.insert(2, '../workflow/scripts/')
-import rnaseqpoptools as rnaseqpop
-
 configfile: "config/config.yaml"
 configpath = workflow.configfiles[0]
+include: "rules/common.smk"
 
 wkdir = os.getcwd()
-metadata = rnaseqpop.load_metadata(config['metadata'])
+metadata = load_metadata(config['metadata'])
 validate(metadata, schema="schemas/samples.schema.yaml")
 samples = metadata["sampleID"]
 
@@ -27,7 +24,6 @@ else:
     )  # ignore this, just an dummy df for snakemake
 
 
-include: "rules/common.smk"
 
 welcome(version="v1.0.5")
 
