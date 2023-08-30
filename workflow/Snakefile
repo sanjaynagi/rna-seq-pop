@@ -4,8 +4,8 @@ import numpy as np
 import os
 import datetime
 
-sys.path.insert(1, 'workflow/scripts/')
-sys.path.insert(2, '../../workflow/scripts/')
+sys.path.insert(1, 'scripts/')
+sys.path.insert(2, '../workflow/scripts/')
 import rnaseqpoptools as rnaseqpop
 
 configfile: "config/config.yaml"
