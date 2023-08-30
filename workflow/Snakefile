@@ -1,14 +1,14 @@
 from snakemake.utils import validate
+import datetime
 import pandas as pd
 import numpy as np
 import os
-import datetime
+wkdir = os.getcwd()
 
 configfile: "config/config.yaml"
 configpath = workflow.configfiles[0]
-include: "rules/common.smk"
 
-wkdir = os.getcwd()
+include: "rules/common.smk"
 metadata = load_metadata(config['metadata'])
 validate(metadata, schema="schemas/samples.schema.yaml")
 samples = metadata["sampleID"]
