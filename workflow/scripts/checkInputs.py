@@ -19,7 +19,7 @@ import re
 import allel
 
 # Read in parameters 
-metadata = pd.read_csv(snakemake.params['metadata'], sep="\t")
+metadata = rnaseqpop.load_metadata(snakemake.input['metadata'])
 ref = snakemake.input['ref']
 gffpath = snakemake.params['gffpath']
 contigs = snakemake.params['contigs']

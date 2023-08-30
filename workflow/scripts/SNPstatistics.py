@@ -15,7 +15,7 @@ import rnaseqpoptools as rnaseqpop
 
 # Read in parameters from snakemake
 dataset = snakemake.params['dataset']
-metadata = pd.read_csv(snakemake.input['metadata'], sep="\t")
+metadata = rnaseqpop.load_metadata(snakemake.input['metadata'])
 metadata = metadata.sort_values(by='species')
 contigs = snakemake.params['contigs']
 ploidy = snakemake.params['ploidy']

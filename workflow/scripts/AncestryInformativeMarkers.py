@@ -15,7 +15,7 @@ from collections import defaultdict
 
 ### AIMS ###
 dataset = snakemake.params['dataset']
-metadata = pd.read_csv(snakemake.input['metadata'], sep="\t")
+metadata = rnaseqpop.load_metadata(snakemake.input['metadata'])
 metadata = metadata.sort_values(by='species').reset_index(drop=True)
 contigs = snakemake.params['contigs']
 ploidy = snakemake.params['ploidy']
