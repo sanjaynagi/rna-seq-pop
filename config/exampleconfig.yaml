@@ -4,10 +4,15 @@ metadata: config/samples.tsv                    # samplesheet metadata file
 
 dataset: 'Ag_Bouake'                            # Dataset name: Can be anything, will be used to name some main output files
 
+# if True, this builds a local webpage including some the analyses 
+# of rna-seq-pop
+jupyter-book:
+   activate: True
+
 ## Fastq filenames and locations can either be specified in the config/samples.tsv file in columns called
 ## fq1 and fq2 (paired end reads) OR if auto: True -
 ## gzipped fastq files should be stored in the resources/reads/ directory
-## If the sample name is Kisumu1 in the samples.tsv file, the paired-end reads 
+## If the sampleID is Kisumu1 in the samples.tsv file, the paired-end reads 
 ## should be named Kisumu1_1.fastq.gz, and Kisumu1_2.fastq.gz. 
 ## Treatment names in samples.tsv should not contain underscores
 fastq:
