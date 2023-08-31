@@ -3,7 +3,6 @@ log <- file(snakemake@log[[1]], open="wt")
 sink(log)
 sink(log, type="message")
 
-
 #' This script uses the sleuth R package to perform differential isoform analysis
 #' This will be performed for each 
 #' Sleuth uses the bootstraps of kallisto to estimate uncertainty 
@@ -21,10 +20,21 @@ library(EnhancedVolcano)
 print("------------- Kallisto - Sleuth - RNASeq isoform Differential expression ---------")
 #### read data ####
 
-metadata = fread(snakemake@input[['metadata']], sep="\t") %>% 
-  as.data.frame() %>% 
-  dplyr::rename('sample' = "sampleID")
+load_metadata <- function(metadata_path) {
+  # Check the file extension and load metadata accordingly
+  if (tools::file_ext(metadata_path) == "xlsx") {
+    metadata <- readxl::read_excel(metadata_path)
+  } else if (tools::file_ext(metadata_path) == "tsv") {
+    metadata <- data.table::fread(metadata_path, sep = "\t")
+  } else if (tools::file_ext(metadata_path) == "csv") {
+    metadata <- data.table::fread(metadata_path, sep = ",")
+  } else {
+    stop("Metadata file must be .xlsx, .tsv, or .csv")
+  }
+  return(metadata)
+}
 
+metadata = load_metadata(snakemake@input[['metadata']]) %>% as.data.frame() %>% dplyr::rename('sample' = "sampleID")
 #add path column for sleuth object
 metadata$path = paste0("results/counts/", metadata$sample)
 

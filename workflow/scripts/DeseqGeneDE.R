@@ -19,8 +19,22 @@ library(RColorBrewer)
 library(tidyverse)
 library(jsonlite)
 
+load_metadata <- function(metadata_path) {
+  # Check the file extension and load metadata accordingly
+  if (tools::file_ext(metadata_path) == "xlsx") {
+    metadata <- readxl::read_excel(metadata_path)
+  } else if (tools::file_ext(metadata_path) == "tsv") {
+    metadata <- data.table::fread(metadata_path, sep = "\t")
+  } else if (tools::file_ext(metadata_path) == "csv") {
+    metadata <- data.table::fread(metadata_path, sep = ",")
+  } else {
+    stop("Metadata file must be .xlsx, .tsv, or .csv")
+  }
+  return(metadata)
+}
+
 #read metadata and get contrasts
-metadata = fread(snakemake@input[['metadata']], sep="\t") %>% as.data.frame()
+metadata = load_metadata(snakemake@input[['metadata']]) %>% as.data.frame()
 gene_names = fread(snakemake@input[['genes2transcripts']], sep="\t") %>% distinct()
 
 contrastsdf = data.frame("contrast" = snakemake@params[['DEcontrasts']])

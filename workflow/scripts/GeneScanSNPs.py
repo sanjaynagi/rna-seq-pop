@@ -12,7 +12,7 @@ vcfpath=sys.argv[3]
 metadatapath=sys.argv[4]
 ploidy=int(sys.argv[5])
 
-metadata = pd.read_csv(metadatapath, sep="\t")
+metadata = rnaseqpop.load_metadata(metadatapath)
 gff = allel.gff3_to_dataframe(gffpath, attributes=['Parent', 'ID'])
 contig, start, end = gff.query("ID == @geneID")[['seqid', 'start', 'end']].values[0]
 

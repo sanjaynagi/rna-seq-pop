@@ -18,7 +18,7 @@ warnings.filterwarnings('ignore') # suppress numpy runtime warnings, this is a b
 # snakemake inputs and params
 dataset = snakemake.params['dataset']
 metadata_path = snakemake.input['metadata']
-metadata = pd.read_csv(metadata_path, sep="\s+")
+metadata = rnaseqpop.load_metadata(metadata_path)
 gffpath = snakemake.input['gff']
 pbs = snakemake.params['pbs']
 pbscomps = snakemake.params['pbscomps']

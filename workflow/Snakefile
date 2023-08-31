@@ -1,19 +1,15 @@
-# The main entry point of your workflow.
-# After configuring, running snakemake -n in a clone of this repository should successfully execute a dry-run of the workflow.
-# report: "report/workflow.rst"
-
-# Allow users to fix the underlying OS via singularity.
 from snakemake.utils import validate
+import datetime
 import pandas as pd
 import numpy as np
 import os
-import datetime
+wkdir = os.getcwd()
 
 configfile: "config/config.yaml"
 configpath = workflow.configfiles[0]
 
-wkdir = os.getcwd()
-metadata = pd.read_csv(config["metadata"], sep="\t")
+include: "rules/common.smk"
+metadata = load_metadata(config['metadata'])
 validate(metadata, schema="schemas/samples.schema.yaml")
 samples = metadata["sampleID"]
 
@@ -28,7 +24,6 @@ else:
     )  # ignore this, just an dummy df for snakemake
 
 
-include: "rules/common.smk"
 
 welcome(version="v1.0.5")
 

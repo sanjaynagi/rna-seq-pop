@@ -15,11 +15,12 @@ sys.stderr = open(snakemake.log[0], "w")
 import os
 import pandas as pd
 import numpy as np
+import rnaseqpoptools as rnaseqpop
 import re
 import allel
 
 # Read in parameters 
-metadata = pd.read_csv(snakemake.params['metadata'], sep="\t")
+metadata = rnaseqpop.load_metadata(snakemake.params['metadata'])
 ref = snakemake.input['ref']
 gffpath = snakemake.params['gffpath']
 contigs = snakemake.params['contigs']
