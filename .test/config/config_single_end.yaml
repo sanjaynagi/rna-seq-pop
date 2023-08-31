@@ -18,8 +18,6 @@ reference:
         "resources/reference/Anopheles-gambiae-PEST_CHROMOSOMES_AgamP4-X.fa.gz"
   transcriptome:
         "resources/reference/Anopheles-gambiae-PEST_TRANSCRIPTS_AgamP4.12-X.fa.gz"
-  gtf: 
-        "resources/reference/Anopheles-gambiae-PEST_BASEFEATURES_AgamP4.12-X.gtf"
   gff:
         "resources/reference/Anopheles-gambiae-PEST_BASEFEATURES_AgamP4.12-X.gff3"
   snpeffdb:
