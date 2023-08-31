@@ -15,6 +15,7 @@ sys.stderr = open(snakemake.log[0], "w")
 import os
 import pandas as pd
 import numpy as np
+import rnaseqpoptools as rnaseqpop
 import re
 import allel
 
