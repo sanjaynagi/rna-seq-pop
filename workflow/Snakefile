@@ -25,7 +25,7 @@ else:
 
 
 
-welcome(version="v1.0.5")
+welcome(version="v2.0.1")
 
 include: "rules/qc.smk"
 include: "rules/diffexp.smk"
