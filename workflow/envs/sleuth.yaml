@@ -11,4 +11,3 @@ dependencies:
   - "r-openxlsx=4.2.3"
   - "r-glue=1.4.2"
   - "r-rcolorbrewer=1.1_2"
-  - "bioconductor-enhancedvolcano=1.8.0"
