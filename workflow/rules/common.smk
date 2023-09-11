@@ -64,7 +64,7 @@ def getFASTQs(wildcards, rules=None):
     If there are more than one wildcard (aka, sample), only return one fastq file
     If the rule is HISAT2align, then return the fastqs with -1 and -2 flags
     """
-    metadata = pd.read_csv(config["metadata"], sep="\t")
+    metadata = load_metadata(config["metadata"])
     
     if config['fastq']['paired'] == True:
         fastq_cols = ['fq1', 'fq2']
@@ -152,18 +152,26 @@ def GetDesiredOutputs(wildcards):
             )
 
 
-    if config["DifferentialExpression"]["activate"]:
-
-        # Differential Expression outputs
+    if config["DifferentialExpression"]['gene-level']["activate"]:
         wanted_input.extend(
             expand(
                 [
                     "results/genediff/{comp}.csv",
                     "results/genediff/{dataset}_diffexp.xlsx",
-                    "results/isoformdiff/{comp}.csv",
-                    "results/isoformdiff/{dataset}_isoformdiffexp.xlsx",
                     "results/counts/PCA.pdf",
                     "results/counts/countStatistics.tsv",
+                ],
+                comp=config["contrasts"],
+                dataset=config["dataset"],
+            )
+        )
+
+    if config["DifferentialExpression"]['isoform-level']["activate"]:
+        wanted_input.extend(
+            expand(
+                [
+                    "results/isoformdiff/{comp}.csv",
+                    "results/isoformdiff/{dataset}_isoformdiffexp.xlsx",
                 ],
                 comp=config["contrasts"],
                 dataset=config["dataset"],
@@ -290,7 +298,7 @@ def GetDesiredOutputs(wildcards):
         )
 
     if config["miscellaneous"]["sweeps"]["activate"]:
-        if config["DifferentialExpression"]["activate"]:
+        if config["DifferentialExpression"]['gene-level']["activate"]:
             wanted_input.extend(
                 expand(
                     [

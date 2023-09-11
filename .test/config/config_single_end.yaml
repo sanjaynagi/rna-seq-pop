@@ -45,8 +45,10 @@ QualityControl:
             
 
 DifferentialExpression:                       # Activate differential expression analyses
-      activate: True   
-
+      gene-level:
+            activate: True
+      isoform-level:
+            activate: True 
       venn:
             activate: True
             padj_threshold: 0.05

@@ -9,6 +9,21 @@ library(dplyr)
 library(data.table)
 library(glue)
 
+
+load_metadata <- function(metadata_path) {
+  # Check the file extension and load metadata accordingly
+  if (tools::file_ext(metadata_path) == "xlsx") {
+    metadata <- readxl::read_excel(metadata_path)
+  } else if (tools::file_ext(metadata_path) == "tsv") {
+    metadata <- data.table::fread(metadata_path, sep = "\t")
+  } else if (tools::file_ext(metadata_path) == "csv") {
+    metadata <- data.table::fread(metadata_path, sep = ",")
+  } else {
+    stop("Metadata file must be .xlsx, .tsv, or .csv")
+  }
+  return(metadata)
+}
+
 # read inputs
 contigs = snakemake@params[['contigs']]
 chunks = snakemake@params[['chunks']]
@@ -36,8 +51,7 @@ for (contig in contigs){
 
 # 2) Make bamlist and populations.tsv file
 
-metadata = fread(snakemake@params[['metadata']], sep="\t")
-
+metadata = load_metadata(snakemake@params[['metadata']])
 metadata$bams = paste0("results/alignments/", metadata$sampleID,".bam")
 
 metadata %>% 

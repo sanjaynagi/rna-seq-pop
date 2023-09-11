@@ -63,62 +63,32 @@ rule progressiveGenesDE:
     Determine if any genes are up/down regulated in same direction in multiple comparisons
     """
     input:
-        expand("results/genediff/{dataset}_diffexp.xlsx", dataset=config["dataset"]),
-        expand(
-            "results/isoformdiff/{dataset}_isoformdiffexp.xlsx",
-            dataset=config["dataset"],
-        ),
+        expand("results/genediff/{dataset}_diffexp.xlsx", dataset=config["dataset"]) if config["DifferentialExpression"]['gene-level']['activate'] else [],
+        expand("results/isoformdiff/{dataset}_isoformdiffexp.xlsx", dataset=config["dataset"])if config["DifferentialExpression"]['isoform-level']['activate'] else [],
     output:
         expand(
             "results/genediff/{name}.{direction}.progressive.tsv",
             name=config["DifferentialExpression"]["progressiveGenes"]["groups"],
             direction=["up", "down"],
-        ),
+        ) if config["DifferentialExpression"]['gene-level']['activate'] else [],
         expand(
             "results/isoformdiff/{name}.{direction}.progressive.tsv",
             name=config["DifferentialExpression"]["progressiveGenes"]["groups"],
             direction=["up", "down"],
-        ),
+        ) if config["DifferentialExpression"]['isoform-level']['activate'] else [],
     params:
         metadata=config["metadata"],
         comps=config["DifferentialExpression"]["progressiveGenes"]["groups"],
         pval=config["DifferentialExpression"]["progressiveGenes"]["padj_threshold"],
         fc=config["DifferentialExpression"]["progressiveGenes"]["fc_threshold"],
+        gene_level = config["DifferentialExpression"]['gene-level']['activate'],
+        isoform_level = config["DifferentialExpression"]['isoform-level']['activate']
     conda:
         "../envs/sleuth.yaml"
     log:
         "logs/progressiveGenesDE.log",
     script:
-        "../scripts/ProgressiveDE.R"
-
-
-# rule GeneSetEnrichment:
-#     """
-#     Perform hypergeometric test GO terms from a gaf file 
-#     """
-#     input:
-#         metadata=config["metadata"],
-#         gaf=config["DifferentialExpression"]["GSEA"]["gaf"],
-#         DEresults=expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
-#         Fst="results/variantAnalysis/selection/FstPerGene.tsv" if config["VariantAnalysis"]['selection']["activate"] else [],
-#     output:
-#         expand(
-#             "results/gsea/genediff/{comp}.de.tsv",
-#             comp=config["contrasts"],
-#         ),
-#         expand(
-#             "results/gsea/fst/{comp}.fst.tsv",
-#             comp=config["contrasts"],
-#         ) if config["VariantAnalysis"]['selection']["activate"] else [],
-#     params:
-#         DEcontrasts=config["contrasts"],
-#         selection=config["VariantAnalysis"]['selection']["activate"]
-#     conda:
-#         "../envs/pythonGenomics.yaml"
-#     log:
-#         "logs/GeneSetEnrichment.log",
-#     script:
-#         "../scripts/GeneSetEnrichment.py"
+        "../scripts/ProgressiveGenes.R"
 
 
 rule GeneSetEnrichment_notebook:
@@ -263,11 +233,11 @@ rule diffexp_notebook:
         kernel = "results/.kernel.set",
         xlsx=expand(
             "results/genediff/{dataset}_diffexp.xlsx", dataset=config["dataset"]
-        ),
+        ) if config["DifferentialExpression"]['gene-level']['activate'] else [],
         isoform_xlsx=expand(
             "results/isoformdiff/{dataset}_isoformdiffexp.xlsx",
             dataset=config["dataset"],
-        ),
+        ) if config["DifferentialExpression"]['isoform-level']['activate'] else [],
     output:
         nb = "results/notebooks/differential-expression.ipynb",
         docs_nb = "docs/rna-seq-pop-results/notebooks/differential-expression.ipynb"

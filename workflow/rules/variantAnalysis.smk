@@ -290,29 +290,6 @@ rule Karyotype:
         """
 
 
-# rule KaryotypePlots:
-#     """
-#     Plot karyotype results
-#     """
-#     input:
-#         expand(
-#             "results/karyotype/{karyo}.{dataset}.karyo.txt",
-#             karyo=config["VariantAnalysis"]["karyotype"]["inversions"],
-#             dataset=config["dataset"],
-#         ),
-#     output:
-#         "results/karyotype/karyoFreqs.svg",
-#     log:
-#         "logs/compKaryo/KaryotypePlots.log",
-#     conda:
-#         "../envs/pythonGenomics.yaml"
-#     params:
-#         metadata=config["metadata"],
-#         ploidy=config["VariantAnalysis"]["ploidy"],
-#         inversions=config["VariantAnalysis"]["karyotype"]["inversions"],
-#         dataset=config["dataset"],
-#     script:
-#         "../scripts/KaryoPlots.py"
 
 rule KaryotypePlots_notebook:
     """
@@ -336,11 +313,12 @@ rule KaryotypePlots_notebook:
         "../envs/pythonGenomics.yaml"
     params:
         metadata=config["metadata"],
+        configpath=configpath,
         ploidy=config["VariantAnalysis"]["ploidy"],
         inversions=config["VariantAnalysis"]["karyotype"]["inversions"],
         dataset=config["dataset"],
     shell:
         """
-        papermill {input.nb} {output.nb} -k pythonGenomics -p inversions {params.inversions} -p metadata_path {params.metadata} -p dataset {params.dataset} -p ploidy {params.ploidy} 2> {log}
+        papermill {input.nb} {output.nb} -k pythonGenomics -p config_path {params.config_path} -p metadata_path {params.metadata} -p dataset {params.dataset} -p ploidy {params.ploidy} 2> {log}
         cp {output.nb} {output.docs_nb} 2>> {log}
         """

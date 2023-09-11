@@ -56,7 +56,10 @@ QualityControl:
 
 
 DifferentialExpression:
-      activate: True                          # Activate differential expression analyses
+      gene-level:                # required for many other analyses (recommend True)
+            activate: True
+      isoform-level:
+            activate: True 
 
       venn:
             activate: True
