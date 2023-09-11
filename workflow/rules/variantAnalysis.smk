@@ -313,7 +313,7 @@ rule KaryotypePlots_notebook:
         "../envs/pythonGenomics.yaml"
     params:
         metadata=config["metadata"],
-        configpath=config_path,
+        configpath=configpath,
         ploidy=config["VariantAnalysis"]["ploidy"],
         inversions=config["VariantAnalysis"]["karyotype"]["inversions"],
         dataset=config["dataset"],
