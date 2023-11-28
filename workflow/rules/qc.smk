@@ -118,7 +118,7 @@ rule multiQC:
     log:
         "logs/multiQC.log",
     wrapper:
-        "v2.2.1/bio/multiqc"
+        "v3.0.0/bio/multiqc"
 
 
 rule qc_notebook:
