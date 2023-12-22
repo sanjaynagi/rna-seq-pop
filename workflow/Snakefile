@@ -37,8 +37,6 @@ include: "rules/variantCalling.smk"
 include: "rules/filterAnnotate.smk"
 include: "rules/variantAnalysis.smk"
 include: "rules/jupyter-book.smk"
-include: "rules/misc.smk"
-
 
 rule all:
     input:

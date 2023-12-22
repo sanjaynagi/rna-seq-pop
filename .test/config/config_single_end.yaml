@@ -49,10 +49,6 @@ DifferentialExpression:                       # Activate differential expression
             activate: True
       isoform-level:
             activate: True 
-      venn:
-            activate: True
-            padj_threshold: 0.05
-            groups: ['Kisumu_ContTia', 'ContTia_PiriTia']
 
       progressiveGenes:
             activate: True
