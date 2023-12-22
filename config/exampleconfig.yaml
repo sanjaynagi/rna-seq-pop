@@ -61,11 +61,6 @@ DifferentialExpression:
       isoform-level:
             activate: True 
 
-      venn:
-            activate: True
-            padj_threshold: 0.05
-            groups: ['gambiaeCont_gambiaePM', 'Kisumu_gambiaeCont']
-
       geneHeatmaps:
             activate: False
             gene_list_tsv: "resources/example_heatmap_gene_list.tsv"

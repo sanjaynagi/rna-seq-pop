@@ -102,7 +102,7 @@ rule GeneSetEnrichment_notebook:
             "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
             contig=config["contigs"],
             dataset=config["dataset"],
-        ),
+        ) if config["VariantAnalysis"]["activate"] else [],
         metadata=config["metadata"],
         gaf=config["DifferentialExpression"]["GSEA"]["gaf"],
         DEresults=expand("results/genediff/{comp}.csv", comp=config["contrasts"]),

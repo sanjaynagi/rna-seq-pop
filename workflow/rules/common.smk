@@ -104,19 +104,6 @@ def getFASTQs(wildcards, rules=None):
     else:
         return [u.fq1, u.fq2] if config['fastq']['paired'] == True else [u.fq1]
 
-def get_venn_list():
-    import itertools
-
-    comp_list = list()
-    for all_de_comps in itertools.combinations(config["contrasts"], 2):
-        all_de_comps_string = ".".join(all_de_comps)
-        comp_list.append(all_de_comps_string)
-    for all_de_comps in itertools.combinations(config["contrasts"], 3):
-        all_de_comps_string = ".".join(all_de_comps)
-        comp_list.append(all_de_comps_string)
-    return comp_list
-
-
 def GetDesiredOutputs(wildcards):
 
     """
@@ -271,17 +258,6 @@ def GetDesiredOutputs(wildcards):
             expand(
                 ["results/gsea/fst/{comp}.fst.tsv"],
                 comp=config["contrasts"],
-            )
-        )
-
-    if config["DifferentialExpression"]["venn"]["activate"]:
-        comp_list = get_venn_list()
-
-        wanted_input.extend(
-            expand(
-                "results/genediff/venn/{comp_string}-{dir_}-Venn.png",
-                comp_string=comp_list,
-                dir_=["up", "down"],
             )
         )
 

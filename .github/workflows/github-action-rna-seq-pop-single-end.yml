@@ -23,7 +23,7 @@ jobs:
         run: cp docs/rna-seq-pop-results/landing-page.md .test/docs/rna-seq-pop-results
 
       - name: Test workflow single-end
-        uses: snakemake/snakemake-github-action@v1.23.0
+        uses: ezherman/snakemake-github-action@5027c0e706ada924ab91e0501bd92185fc98de3c
         with:
           directory: '.test'
           snakefile: 'workflow/Snakefile'
