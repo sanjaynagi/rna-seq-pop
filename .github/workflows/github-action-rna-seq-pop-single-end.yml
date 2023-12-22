@@ -11,6 +11,9 @@ jobs:
         with:
           python-version: '3.9' # Version range or exact version of a Python version to use, using SemVer's version range syntax
 
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v3.0.1
+
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
