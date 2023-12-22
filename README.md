@@ -3,7 +3,7 @@
 [<img src="https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True" width="400"/>](https://github.com/sanjaynagi/rna-seq-pop/blob/master/RNA-Seq-Pop-Logo.png?raw=True)   
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥5.11.0-brightgreen.svg)](https://snakemake.bitbucket.io)
-[![C.I.](https://github.com/sanjaynagi/rna-seq-pop/workflows/rna-seq-pop/badge.svg)](https://github.com/sanjaynagi/rna-seq-pop/actions?query=workflow:"rna-seq-pop-paired-end")
+[![C.I.](https://github.com/sanjaynagi/rna-seq-pop/workflows/rna-seq-pop/badge.svg)](https://github.com/sanjaynagi/rna-seq-pop/actions?query=workflow:"rna-seq-pop-paired-end"?event=pull_request)
 [![GitHub release](https://img.shields.io/github/release/sanjaynagi/rna-seq-pop?include_prereleases=&sort=semver&color=blue)](https://github.com/sanjaynagi/rna-seq-pop/releases/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6078337.svg)](https://doi.org/10.5281/zenodo.6078337)
 [![Twitter Follow](https://img.shields.io/twitter/follow/sanjay_c_nagi.svg?style=social)](https://twitter.com/sanjay_c_nagi)
