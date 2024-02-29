@@ -31,7 +31,6 @@ rule fastp:
         trimmed=["resources/reads/trimmed/{sample}_1.fastq.gz", "resources/reads/trimmed/{sample}_2.fastq.gz"] if config['fastq']['paired'] else ["resources/reads/trimmed/{sample}_1.fastq.gz"],
         html="results/qc/{sample}.html",
         json="results/qc/{sample}.json",
-        logs="logs/fastp/{sample}.log"
     log:
         "logs/fastp/{sample}.log"
     threads: 4

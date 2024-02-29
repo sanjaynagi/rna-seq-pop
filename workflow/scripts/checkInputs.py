@@ -51,7 +51,9 @@ if autofastq == True:
     for sample in metadata['sampleID']:
         for n in [1,2]:
             fqpath = f"resources/reads/{sample}_{n}.fastq.gz"
-            assert os.path.isfile(fqpath), f"all sample names in 'samples.tsv' do not match a .fastq.gz file in the {snakemake.workflow.basedir}/resources/reads/ directory, please rename or consider using the fastq table option"
+            
+            if os.path.exists(f"resources/alignments/{sample}.bam"):
+                assert os.path.exists(fqpath), f"{sample} in 'samples.tsv' do not match a .fastq.gz file in the resources/reads/ directory, please rename or consider using the fastq table option"
 
 
 # Check column names of gene_names.tsv
