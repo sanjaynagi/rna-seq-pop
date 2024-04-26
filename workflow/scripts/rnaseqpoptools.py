@@ -430,9 +430,9 @@ def pca(geno, contig, ploidy, dataset, populations, samples, pop_colours, prune=
         if ploidy > 1:
             geno = geno.to_n_alt()
         
-    n_components = 10
+    n_components = 6
     coords1, model1 = allel.pca(geno, n_components=n_components, scaler=scaler)
-    coords = pd.DataFrame(coords1, columns=[f"PC{i}" for i in range(1, n_components)])
+    coords = pd.DataFrame(coords1, columns=[f"PC{i}" for i in range(1, n_components+1)])
 
     fig_pca(coords1, model1, f"PCA {contig} {dataset}", f"results/variantAnalysis/pca/PCA-{contig}-{dataset}", samples, pop_colours, sample_population=populations)
     return coords, model1
