@@ -125,7 +125,7 @@ miscellaneous:
       
       GeneFamiliesHeatmap:
             activate: True
-            eggnog: resources/Anogam_long.pep_eggnog_diamond.emapper.annotations.tsv.gz.GO
+            eggnog: resources/Anogam_long.pep_eggnog_diamond.emapper.annotations.tsv.gz
             pfam: resources/Anogam_long.pep_Pfamscan.seqs.gz
 
       # find DE genes that lie under Ag1000g selective sweeps 
