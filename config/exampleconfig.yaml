@@ -61,10 +61,6 @@ DifferentialExpression:
       isoform-level:
             activate: True 
 
-      geneHeatmaps:
-            activate: False
-            gene_list_tsv: "resources/example_heatmap_gene_list.tsv"
-
       progressiveGenes:                       # Activate progressiveGenes analysis. Will find genes that are consistently up or downregulated across two comparisons. 
             activate: True                    # For example - which genes upregulated in Kisumu v gambiaeCont, are also upregulated in gambiaeCont v gambiaePM
             padj_threshold: 0.05
