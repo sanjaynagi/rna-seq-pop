@@ -3,7 +3,7 @@ metadata: config/samples.tsv
 # Dataset name
 dataset: 'Test-GithubActionsCI'
 
-jupyter-book:
+results-jupyterbook:
       activate: True
       
 fastq: 
@@ -39,7 +39,7 @@ contrasts:
 QualityControl:
       fastp-trim:
             activate: True
-      mosdepth:
+      coverage:
             activate: True
       multiqc:
             activate: True 
@@ -74,7 +74,7 @@ VariantAnalysis:
             activate: True
             missingness: 0.4
 
-      summaryStatistics:
+      geneticDiversity:
             activate: True
             missingness: 0.4
 
@@ -82,7 +82,7 @@ VariantAnalysis:
             activate: True
             missingness: 0.5
             # Do we want to run pbs (Needs three conditions, two more closely related and a slight outgroup)
-            pbs:
+            population-branch-statistic:
                   activate: False
                   contrasts: 
                         - 'PiriTia_ContTia_Kisumu'

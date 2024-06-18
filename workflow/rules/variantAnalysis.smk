@@ -103,7 +103,7 @@ rule pca_notebook:
         cp {output.nb} {output.docs_nb} 2>> {log}
         """
 
-rule SummaryStatistics_notebook:
+rule geneticDiversity_notebook:
     """
     Calculate population genetic summary statistics on genotype data 
     """
@@ -132,7 +132,7 @@ rule SummaryStatistics_notebook:
         dataset=config["dataset"],
         config_path = configpath,
         ploidy=config["VariantAnalysis"]["ploidy"],
-        missingprop=config["VariantAnalysis"]["summaryStatistics"]["missingness"],
+        missingprop=config["VariantAnalysis"]["geneticDiversity"]["missingness"],
         qualflt=30,
     shell:
         """
@@ -166,11 +166,11 @@ rule WindowedFstPBS_notebook:
         PBS=(
             expand(
                 "results/variantAnalysis/selection/pbs/{wsize}/{pbscomp}.PBS.{contig}.svg",
-                pbscomp=config["VariantAnalysis"]["selection"]["pbs"]["contrasts"],
+                pbscomp=config["VariantAnalysis"]["selection"]["population-branch-statistic"]["contrasts"],
                 contig=config["contigs"],
                 wsize=['1000snp_window', '2000snp_window', '5000snp_window'],
             )
-            if config["VariantAnalysis"]["selection"]["pbs"]["activate"]
+            if config["VariantAnalysis"]["selection"]["population-branch-statistic"]["activate"]
             else []
         ),
     log:
@@ -180,8 +180,8 @@ rule WindowedFstPBS_notebook:
     params:
         dataset=config["dataset"],
         config = configpath,
-        pbs=config["VariantAnalysis"]["selection"]["pbs"]["activate"],
-        pbscomps=config["VariantAnalysis"]["selection"]["pbs"]["contrasts"],
+        pbs=config["VariantAnalysis"]["selection"]["population-branch-statistic"]["activate"],
+        pbscomps=config["VariantAnalysis"]["selection"]["population-branch-statistic"]["contrasts"],
         ploidy=config["VariantAnalysis"]["ploidy"],
         missingprop=config["VariantAnalysis"]["selection"]["missingness"],
         qualflt=30,
@@ -219,8 +219,8 @@ rule PerGeneFstPBSDxyPi:
     params:
         dataset=config["dataset"],
         DEcontrasts=config["contrasts"],
-        pbs=config["VariantAnalysis"]["selection"]["pbs"]["activate"],
-        pbscomps=config["VariantAnalysis"]["selection"]["pbs"]["contrasts"],
+        pbs=config["VariantAnalysis"]["selection"]["population-branch-statistic"]["activate"],
+        pbscomps=config["VariantAnalysis"]["selection"]["population-branch-statistic"]["contrasts"],
         contigs=config["contigs"],
         ploidy=config["VariantAnalysis"]["ploidy"],
         missingprop=config["VariantAnalysis"]["selection"]["missingness"],
