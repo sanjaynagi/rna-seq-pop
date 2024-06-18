@@ -59,7 +59,7 @@ rule snpEff:
     """
     input:
         calls="results/variantAnalysis/vcfs/variants.{contig}.vcf",
-        db=config['reference']['snpeff']['dbpath'] if config['snpeff']['local'] else "workflow/scripts/snpEff/db.dl",
+        db=config['reference']['snpeff']['dbpath'] if config['reference']['snpeff']['local'] else "workflow/scripts/snpEff/db.dl",
     output:
         calls=expand(
             "results/variantAnalysis/vcfs/{dataset}.{{contig}}.vcf.gz",
