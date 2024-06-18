@@ -35,6 +35,7 @@ rule KallistoQuant:
     wrapper:
         "v1.15.0/bio/kallisto/quant"
 
+
 rule GenomeUnzip:
     """
     Index the reference genome with samtools
@@ -47,6 +48,7 @@ rule GenomeUnzip:
         "logs/GenomeUnzip.log",
     shell:
         "gzip -d -c {input} > {output} 2> {log}"
+
 
 rule GenomeIndex:
     """
