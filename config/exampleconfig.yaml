@@ -27,10 +27,11 @@ reference:
         "resources/reference/Anopheles-gambiae-PEST_TRANSCRIPTS_AgamP4.12.fa"     # Path to transcriptome reference FASTA file
   gff:
         "resources/reference/Anopheles-gambiae-PEST_BASEFEATURES_AgamP4.12.gff3"  # Path to GFF annotation file
-  snpeffdb:
-        "Anopheles_gambiae"                                                       # SNPeff database name
+  snpeff:
+      local: False
+      dbpath: Anopheles_gambiae                                                        # SNPeff database name
   genes2transcripts:                                                                
-        "resources/exampleGene2TranscriptMap.tsv"                                 # gene names file with gene and transcript names
+        resources/exampleGene2TranscriptMap.tsv                                 # gene names file with gene and transcript names
 
 # Chromosome names for the appropriate species.
 # Please ensure that these correspond exactly to the reference fasta/gff files. Extra unwanted chromosomes (unplaced contigs) can be ignored. 

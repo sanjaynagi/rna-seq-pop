@@ -47,7 +47,7 @@ rule snpEffDbDownload:
     conda:
         "../envs/snpeff.yaml"
     params:
-        ref=config["reference"]["snpeffdb"],
+        ref=config["reference"]["snpeff"]['dbpath'],
         dir="resources/snpEffdb",
     shell:
         "snpEff download {params.ref} -dataDir {params.dir} 2> {log}"
@@ -59,7 +59,7 @@ rule snpEff:
     """
     input:
         calls="results/variantAnalysis/vcfs/variants.{contig}.vcf",
-        dl="workflow/scripts/snpEff/db.dl",
+        db=config['reference']['snpeff']['dbpath'] if config['snpeff']['local'] else "workflow/scripts/snpEff/db.dl",
     output:
         calls=expand(
             "results/variantAnalysis/vcfs/{dataset}.{{contig}}.vcf.gz",
@@ -71,7 +71,7 @@ rule snpEff:
     conda:
         "../envs/snpeff.yaml"
     params:
-        db=config["reference"]["snpeffdb"],
+        db=config["reference"]["snpeff"]['dbpath'],
         prefix=lambda w, output: os.path.splitext(output[0])[0],
         dir="resources/snpEffdb",
     shell:
