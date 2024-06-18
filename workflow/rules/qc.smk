@@ -51,7 +51,7 @@ rule BamStats:
     log:
         "logs/BamStats/{sample}.log",
     wrapper:
-        "v1.15.0/bio/samtools/flagstat"
+        "v3.12.1/bio/samtools/flagstat"
 
 
 rule Coverage:
@@ -71,7 +71,7 @@ rule Coverage:
         prefix=lambda w, output: output[0].split(os.extsep)[0],
     threads: 8
     shell:
-        "mosdepth --threads {threads} --fast-mode {params.prefix} {input.bam}"
+        "mosdepth --threads {threads} --fast-mode {params.prefix} {input.bam} 2> {log}"
 
 
 rule vcfStats:
