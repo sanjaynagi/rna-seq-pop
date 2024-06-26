@@ -24,8 +24,8 @@ rule RestrictToSNPs:
     """"
     Filter out indels
     """
-    input:
-        "results/variantAnalysis/vcfs/freebayes/variants.{contig}.vcf",
+    input:   
+        "results/variantAnalysis/vcfs/freebayes/variants.{contig}.vcf" if config['VariantAnalysis']['caller'] == 'freebayes' else "results/variantAnalysis/vcfs/haplotypecaller/variants.{contig}.vcf",
     output:
         temp("results/variantAnalysis/vcfs/variants.{contig}.vcf"),
     log:
