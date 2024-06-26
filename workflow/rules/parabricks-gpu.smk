@@ -77,7 +77,7 @@ rule haplotype_caller:
             --in-bam {input.bam} \
             --in-recal-file {input.recal} \
             --out-variants {output.vcf} \
-            --ploidy {ploidy}
+            --ploidy {params.ploidy}
         """
 
 
