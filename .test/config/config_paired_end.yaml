@@ -60,6 +60,7 @@ DifferentialExpression:                       # Activate differential expression
 
 VariantAnalysis:
       activate: True
+      caller: freebayes #haplotypecaller # Options: haplotypecaller, freebayes
       ploidy: 10
       chunks: 9 # Number of chunks to split the genome into when parallelising freebayes
 # Number of chunks to split the genome into when parallelising freebayes
@@ -106,7 +107,7 @@ VariantAnalysis:
 miscellaneous:
 # If activate:True, creates allele balance .xlsx reports on IR mutations of choice
       VariantsOfInterest: 
-            activate: True
+            activate: False
             path: "resources/test-IRmutations.tsv"
             
       GeneFamiliesHeatmap:

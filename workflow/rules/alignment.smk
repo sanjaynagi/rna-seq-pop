@@ -94,7 +94,7 @@ rule HISAT2align:
         ),
         idx="resources/reference/ht2index/.complete",
     output:
-        "results/alignments/{sample}.bam",
+        "results/alignments/{sample}.hisat2.bam",
     log:
         align="logs/HISAT2/{sample}_align.log",
         sort="logs/samtoolsSort/{sample}.log",
@@ -118,9 +118,9 @@ rule IndexBams:
     Index bams with samtools
     """
     input:
-        "results/alignments/{sample}.bam",
+        "results/alignments/{sample}.hisat2.bam" if config['VariantAnalysis']['caller'] == 'freebayes' else "results/alignments/{sample}.star.bam"
     output:
-        "results/alignments/{sample}.bam.bai",
+        "results/alignments/{sample}.hisat2.bam.bai" if config['VariantAnalysis']['caller'] == 'freebayes' else "results/alignments/{sample}.star.bam.bai"
     log:
         "logs/IndexBams/{sample}.log",
     wrapper:

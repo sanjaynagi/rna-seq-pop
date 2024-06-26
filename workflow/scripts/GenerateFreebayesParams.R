@@ -52,7 +52,7 @@ for (contig in contigs){
 # 2) Make bamlist and populations.tsv file
 
 metadata = load_metadata(snakemake@params[['metadata']])
-metadata$bams = paste0("results/alignments/", metadata$sampleID,".bam")
+metadata$bams = paste0("results/alignments/", metadata$sampleID,".hisat2.bam")
 
 metadata %>% 
    select(bams, strain) %>% 

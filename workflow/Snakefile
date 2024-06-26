@@ -29,6 +29,9 @@ include: "rules/filterAnnotate.smk"
 include: "rules/variantAnalysis.smk"
 include: "rules/jupyter-book.smk"
 
+if config['VariantAnalysis']['caller'] == 'haplotypecaller':
+    include: "rules/parabricks-gpu.smk"
+
 rule all:
     input:
         # The below function (defined in rules/common.smk) will read the config file and determine desired output files
