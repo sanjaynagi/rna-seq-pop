@@ -155,24 +155,6 @@ rule Ag1000gSweepsDE:
         "../scripts/Ag1000gSweepsDE.py"
 
 
-# rule geneFamilies:
-#     input:
-#         genediff=expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
-#         normcounts="results/counts/normCounts.tsv",
-#         eggnog=config["miscellaneous"]["GeneFamiliesHeatmap"]["eggnog"],
-#         pfam=config["miscellaneous"]["GeneFamiliesHeatmap"]["pfam"],
-#     output:
-#         heatmaps="results/genediff/GeneFamiliesHeatmap.pdf",
-#     conda:
-#         "../envs/pythonGenomics.yaml"
-#     log:
-#         "logs/geneFamilies.log",
-#     params:
-#         DEcontrasts=config["contrasts"],
-#     script:
-#         "../scripts/GeneFamiliesHeatmap.py"
-
-
 rule geneFamilies_notebook:
     """
     Summarise gene expression for gene families
