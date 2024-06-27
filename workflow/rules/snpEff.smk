@@ -59,7 +59,7 @@ rule snpEff:
     conda:
         "../envs/snpeff.yaml"
     params:
-        db=config["reference"]["snpeff"]['dbname'] if config['reference']['snpeff']['customdb'] else "mysnpeffdb",
+        db=config["reference"]["snpeff"]['dbname'] if not config['reference']['snpeff']['customdb'] else "mysnpeffdb",
         prefix=lambda w, output: os.path.splitext(output[0])[0],
         dataDir=lambda x: wkdir + "resources/reference/",
     shell:
