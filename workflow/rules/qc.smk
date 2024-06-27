@@ -44,8 +44,8 @@ rule BamStats:
     QC alignment statistics
     """
     input:
-        bam="results/alignments/{sample}.hisat2.bam" if config['VariantAnalysis']['caller'] == 'freebayes' else "results/alignments/{sample}.star.bam",
-        idx="results/alignments/{sample}.hisat2.bam.bai" if config['VariantAnalysis']['caller'] == 'freebayes' else "results/alignments/{sample}.star.bam.bai",
+        bam="results/alignments/{sample}.star.bam" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam",
+        idx="results/alignments/{sample}.star.bam.bai" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam.bai",
     output:
         stats="results/qc/alignments/{sample}.flagstat",
     log:
@@ -59,8 +59,8 @@ rule Coverage:
     Calculate coverage with mosdepth
     """
     input:
-        bam="results/alignments/{sample}.hisat2.bam" if config['VariantAnalysis']['caller'] == 'freebayes' else "results/alignments/{sample}.star.bam",
-        idx="results/alignments/{sample}.hisat2.bam.bai" if config['VariantAnalysis']['caller'] == 'freebayes' else "results/alignments/{sample}.star.bam.bai",
+        bam="results/alignments/{sample}.star.bam" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam",
+        idx="results/alignments/{sample}.star.bam.bai" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam.bai",
     output:
         "results/qc/coverage/{sample}.mosdepth.summary.txt",
     log:
