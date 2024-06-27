@@ -4,7 +4,7 @@ rule GenerateFreebayesParams:
     input:
         ref_idx=config["reference"]["genome"].rstrip(".gz"),
         index=config["reference"]["genome"].rstrip(".gz") + ".fai",
-        bams=expand("results/alignments/{sample}.bam", sample=samples),
+        bams=expand("results/alignments/{sample}.hisat2.bam", sample=samples),
     output:
         bamlist="results/alignments/bam.list",
         pops="results/alignments/populations.tsv",
@@ -30,8 +30,8 @@ rule VariantCallingFreebayes:
     Run freebayes on chunks of the genome, splitting the samples by population (strain)
     """
     input:
-        bams=expand("results/alignments/{sample}.bam", sample=samples),
-        index=expand("results/alignments/{sample}.bam.bai", sample=samples),
+        bams=expand("results/alignments/{sample}.hisat2.bam", sample=samples),
+        index=expand("results/alignments/{sample}.hisat2.bam.bai", sample=samples),
         ref=config["reference"]["genome"].rstrip(".gz"),
         samples=ancient("results/alignments/bam.list"),
         pops=ancient("results/alignments/populations.tsv"),

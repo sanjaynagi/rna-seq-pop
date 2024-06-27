@@ -76,6 +76,7 @@ DifferentialExpression:
 
 VariantAnalysis:
       activate: True
+      caller: freebayes
       ploidy: 10                          # Ploidy level for freebayes to call at (Generally we are using pooled samples).For diploid organisms, this should be 2 * number of individuals in each pool
       chunks: 9                           # Number of chunks to split each chromosome into when parallelising freebayes. 9 or less is recommended. 
 

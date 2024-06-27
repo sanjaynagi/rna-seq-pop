@@ -3,8 +3,8 @@ rule mpileupVariantsOfInterest:
     Get allele count tables of variants of choice (specified in config file ("IRmutations.tsv"))
     """
     input:
-        bam="results/alignments/{sample}.bam",
-        index="results/alignments/{sample}.bam.bai",
+        bam="results/alignments/{sample}.hisat2.bam" if config['VariantAnalysis']['caller'] == 'freebayes' else "results/alignments/{sample}.star.bam",
+        idx="results/alignments/{sample}.hisat2.bam.bai" if config['VariantAnalysis']['caller'] == 'freebayes' else "results/alignments/{sample}.star.bam.bai",
     output:
         "results/variantAnalysis/variantsOfInterest/counts/{sample}_{mut}_allele_counts.tsv",
     conda:
@@ -52,27 +52,6 @@ rule AlleleBalanceVariantsOfInterest:
     script:
         "../scripts/VariantsOfInterestAlleleBalance.R"
 
-
-# rule PlotVariantsOfInterest:
-#     """
-#     Python script to plot frequencies of Variants of interest
-#     """
-#     input:
-#         expand(
-#             "results/variantAnalysis/variantsOfInterest/csvs/{mut}_alleleBalance.csv",
-#             mut=mutationData.Name,
-#         ),
-#         VariantsOfInterest=config["miscellaneous"]["VariantsOfInterest"]["path"],
-#     output:
-#         perSampleHeatmap="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerSample.svg",
-#         perTreatmentHeatmap="results/variantAnalysis/variantsOfInterest/VOI.heatmapPerTreatment.svg",
-#     conda:
-#         "../envs/pythonGenomics.yaml"
-#     priority: 10
-#     log:
-#         "logs/variantsOfInterestPlot.log",
-#     script:
-#         "../scripts/VariantsOfInterestPlot.py"
 
 
 rule VariantsOfInterest_notebook:

@@ -66,6 +66,7 @@ DifferentialExpression:                       # Activate differential expression
 
 VariantAnalysis:
       activate: True
+      caller: freebayes
       ploidy: 10
       chunks: 9 # Number of chunks to split the genome into when parallelising freebayes
 # Number of chunks to split the genome into when parallelising freebayes

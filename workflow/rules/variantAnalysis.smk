@@ -35,37 +35,6 @@ rule SNPstatistics:
     script:
         "../scripts/SNPstatistics.py"
 
-# rule PCA:
-#     """
-#     Perform pca on genotype data and plot 
-#     """
-#     input:
-#         vcf=expand(
-#             "results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
-#             contig=config["contigs"],
-#             dataset=config["dataset"],
-#         ),
-#         metadata=config["metadata"],
-#     output:
-#         PCAfig=expand(
-#             "results/variantAnalysis/pca/PCA-{contig}-{dataset}.svg",
-#             contig=config["contigs"],
-#             dataset=config["dataset"],
-#         ),
-#     log:
-#         "logs/pca.log",
-#     conda:
-#         "../envs/pythonGenomics.yaml"
-#     params:
-#         dataset=config["dataset"],
-#         contigs=config["contigs"],
-#         ploidy=config["VariantAnalysis"]["ploidy"],
-#         missingprop=config["VariantAnalysis"]["pca"]["missingness"],
-#         qualflt=30,
-#     script:
-#         "../scripts/pca.py"
-
-
 rule pca_notebook:
     """
     Perform pca on genotype data and plot 

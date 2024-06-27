@@ -24,8 +24,8 @@ rule RestrictToSNPs:
     """"
     Filter out indels
     """
-    input:
-        "results/variantAnalysis/vcfs/freebayes/variants.{contig}.vcf",
+    input:   
+        "results/variantAnalysis/vcfs/freebayes/variants.{contig}.vcf" if config['VariantAnalysis']['caller'] == 'freebayes' else "results/variantAnalysis/vcfs/haplotypecaller/variants.{contig}.vcf",
     output:
         temp("results/variantAnalysis/vcfs/variants.{contig}.vcf"),
     log:
@@ -51,6 +51,32 @@ rule snpEffDbDownload:
         dir="resources/reference/mysnpeffdb",
     shell:
         "snpEff download {params.ref} -dataDir {params.dir} 2> {log}"
+
+rule createCustomSnpEffDb:
+    """
+    Create a custom SnpEff database from a reference genome and GFF file
+    """
+    input:
+        fa="path/to/your_organism.fa",
+        gff="path/to/your_organism.gff",
+    output:
+        touch("workflow/scripts/snpEff/custom_db.built"),
+    log:
+        "logs/snpEff/createCustomSnpEffDb.log",
+    conda:
+        "../envs/snpeff.yaml"
+    params:
+        db_name="my_organism",
+        data_dir="resources/snpEffdb/my_organism",
+    shell:
+        """
+        mkdir -p {params.data_dir}
+        cp {input.fa} {params.data_dir}/sequences.fa
+        cp {input.gff} {params.data_dir}/genes.gff
+        echo "{params.db_name}.genome : My Organism" >> snpEff.config
+        snpEff build -gff3 -v {params.db_name} 2> {log}
+        touch {output}
+        """
 
 
 rule createCustomSnpEffDb:

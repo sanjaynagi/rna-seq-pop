@@ -104,6 +104,17 @@ def getFASTQs(wildcards, rules=None):
     else:
         return [u.fq1, u.fq2] if config['fastq']['paired'] == True else [u.fq1]
 
+
+def getBAM(wildcards):
+    """
+    Get BAM files depending on aligner
+    """
+    if config['variantAnalysis']['caller'] == 'freebayes':
+        bam = "results/alignments/{sample}.hisat2.bam"
+    else:
+        bam = "results/alignments/{sample}.star.bam"
+    return bam
+
 def GetDesiredOutputs(wildcards):
 
     """
