@@ -64,7 +64,7 @@ rule snpEff:
         dataDir=lambda x: wkdir + "/resources/reference/",
     shell:
         """
-        snpEff eff {params.db} -dataDir {params.dataDir} -csvStats {output.csvStats} {input.calls} > {params.prefix} 2> {log}
+        snpEff eff {params.db} -dataDir {params.dataDir} -configOption mysnpeffdb.genome=mysnpeffdb -csvStats {output.csvStats} {input.calls} > {params.prefix} 2> {log}
         bgzip {params.prefix}
         """
 
