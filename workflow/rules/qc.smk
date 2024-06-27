@@ -99,7 +99,9 @@ rule multiQC:
     Integrate QC statistics from other tools into a final .html report
     """
     input:
-        expand("results/qc/{sample}.json", sample=samples),
+        expand("results/qc/{sample}.json", sample=samples)
+        if config['QualityControl']['fastp-trim']['activate']
+        else [],
         expand(
             "results/qc/vcfs/{contig}.txt", contig=config["contigs"]
         )
