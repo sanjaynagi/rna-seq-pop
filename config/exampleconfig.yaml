@@ -28,8 +28,8 @@ reference:
   gff:
         "resources/reference/Anopheles-gambiae-PEST_BASEFEATURES_AgamP4.12.gff3"  # Path to GFF annotation file
   snpeff:
-      local: False
-      dbpath: Anopheles_gambiae                                                        # SNPeff database name
+      customdb: False
+      dbname: Anopheles_gambiae                                                        # SNPeff database name
   genes2transcripts:                                                                
         resources/exampleGene2TranscriptMap.tsv                                 # gene names file with gene and transcript names
 
@@ -49,7 +49,7 @@ contrasts:
 QualityControl:
       fastp-trim:
             activate: False
-      mosdepth:
+      coverage:
             activate: True
       multiqc:
             activate: True 
@@ -83,7 +83,7 @@ VariantAnalysis:
             activate: True
             missingness: 1 
       
-      summaryStatistics:                  # Estimate Population Genetic Summary Statistics such as Dxy, Pi
+      geneticDiversity:                  # Estimate Population Genetic Summary Statistics such as Dxy, Pi
             activate: True
             missingness: 1
 
@@ -91,7 +91,7 @@ VariantAnalysis:
             activate: True
             missingness: 1
 
-            pbs:
+            population-branch-statistic:
                   activate: True          # Activate Population Branch Statistic analysis (Needs three conditions, two closely related and an outgroup) for resistance, do survivors_unexposed_susceptible
                   contrasts: 
                         - 'gambiaePM_gambiaeCont_Kisumu'

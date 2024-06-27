@@ -21,8 +21,8 @@ reference:
   gff:
         "resources/reference/Anopheles-gambiae-PEST_BASEFEATURES_AgamP4.12-X.gff3"
   snpeff:
-      local: False
-      dbpath: Anopheles_gambiae 
+      customdb: False
+      dbname: Anopheles_gambiae 
   genes2transcripts:
         "resources/Gene2TranscriptMap.tsv"
 

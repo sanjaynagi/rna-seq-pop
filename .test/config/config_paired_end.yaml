@@ -19,8 +19,8 @@ reference:
   gff:
         "resources/reference/Anopheles-gambiae-PEST_BASEFEATURES_AgamP4.12-X.gff3"
   snpeff:
-      local: False
-      dbpath: Anopheles_gambiae 
+      customdb: True
+      dbname: Anopheles_gambiae 
   genes2transcripts:
         "resources/Gene2TranscriptMap.tsv"
 
@@ -46,7 +46,7 @@ DifferentialExpression:                       # Activate differential expression
       gene-level:
             activate: True
       isoform-level:
-            activate: True 
+            activate: False 
 
       progressiveGenes:
             activate: True
