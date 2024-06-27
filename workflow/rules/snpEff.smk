@@ -61,7 +61,7 @@ rule snpEff:
     params:
         db=config["reference"]["snpeff"]['dbname'] if not config['reference']['snpeff']['customdb'] else "mysnpeffdb",
         prefix=lambda w, output: os.path.splitext(output[0])[0],
-        dataDir=lambda x: wkdir + "resources/reference/",
+        dataDir=lambda x: wkdir + "/resources/reference/",
     shell:
         """
         snpEff eff {params.db} -dataDir {params.dataDir} -csvStats {output.csvStats} {input.calls} > {params.prefix} 2> {log}
