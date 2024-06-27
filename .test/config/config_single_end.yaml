@@ -1,9 +1,10 @@
 metadata: config/samples.tsv
+pipeline: cpu
 
 # Dataset name
 dataset: 'Test-GithubActionsCI'
 
-jupyter-book:
+results-jupyterbook:
       activate: True
       
 fastq: 
@@ -20,8 +21,9 @@ reference:
         "resources/reference/Anopheles-gambiae-PEST_TRANSCRIPTS_AgamP4.12-X.fa.gz"
   gff:
         "resources/reference/Anopheles-gambiae-PEST_BASEFEATURES_AgamP4.12-X.gff3"
-  snpeffdb:
-        "Anopheles_gambiae"
+  snpeff:
+      customdb: False
+      dbname: Anopheles_gambiae 
   genes2transcripts:
         "resources/Gene2TranscriptMap.tsv"
 
@@ -38,7 +40,7 @@ contrasts:
 QualityControl:
       fastp-trim:
             activate: True
-      mosdepth:
+      coverage:
             activate: True
       multiqc:
             activate: True 
@@ -65,7 +67,6 @@ DifferentialExpression:                       # Activate differential expression
 
 VariantAnalysis:
       activate: True
-      caller: freebayes
       ploidy: 10
       chunks: 9 # Number of chunks to split the genome into when parallelising freebayes
 # Number of chunks to split the genome into when parallelising freebayes
@@ -74,7 +75,7 @@ VariantAnalysis:
             activate: True
             missingness: 0.4
 
-      summaryStatistics:
+      geneticDiversity:
             activate: True
             missingness: 0.4
 
@@ -82,7 +83,7 @@ VariantAnalysis:
             activate: True
             missingness: 0.5
             # Do we want to run pbs (Needs three conditions, two more closely related and a slight outgroup)
-            pbs:
+            population-branch-statistic:
                   activate: False
                   contrasts: 
                         - 'PiriTia_ContTia_Kisumu'

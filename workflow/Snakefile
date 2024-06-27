@@ -23,14 +23,14 @@ welcome(version="v2.0.2")
 
 include: "rules/qc.smk"
 include: "rules/diffexp.smk"
-include: "rules/alignment.smk"
-include: "rules/variantCalling.smk"
-include: "rules/filterAnnotate.smk"
+include: "rules/utilities.smk"
+include: "rules/hisat2-freebayes.smk"
+include: "rules/snpEff.smk"
 include: "rules/variantAnalysis.smk"
 include: "rules/jupyter-book.smk"
 
-if config['VariantAnalysis']['caller'] == 'haplotypecaller':
-    include: "rules/parabricks-gpu.smk"
+if config['pipeline'] == 'parabricks':
+    include: "rules/star-haplotypecaller.smk"
 
 rule all:
     input:

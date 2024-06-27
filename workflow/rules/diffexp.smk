@@ -1,3 +1,42 @@
+
+rule KallistoIndex:
+    """
+    Create a kallisto index of the reference transcriptome
+    """
+    input:
+        fasta=config["reference"]["transcriptome"],
+    output:
+        index="resources/reference/kallisto.idx",
+    group:
+        "diffexp"
+    log:
+        "logs/kallisto/index.log",
+    wrapper:
+        "v1.15.0/bio/kallisto/index"
+
+
+rule KallistoQuant:
+    """
+    Pseudo-align reads for each sample to the reference transcriptome.
+    Bootstrap to allow for isoform differential expression.
+    """
+    input:
+        fastq=lambda wildcards: getFASTQs(wildcards=wildcards, rules="KallistoQuant"),
+        index="resources/reference/kallisto.idx",
+    output:
+        directory("results/counts/{sample}"),
+    group:
+        "diffexp"
+    log:
+        "logs/kallisto/quant_{sample}.log",
+    params:
+        extra="-b 100" if config['fastq']['paired'] is True else "-b 100 --single -l 75 -s 5",
+    threads: 24
+    wrapper:
+        "v1.15.0/bio/kallisto/quant"
+
+
+
 rule DifferentialGeneExpression:
     """
     Perform differential expression analysis at the gene-level with DESeq2

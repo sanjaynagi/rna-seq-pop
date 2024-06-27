@@ -44,8 +44,8 @@ rule BamStats:
     QC alignment statistics
     """
     input:
-        bam="results/alignments/{sample}.hisat2.bam" if config['VariantAnalysis']['caller'] == 'freebayes' else "results/alignments/{sample}.star.bam",
-        idx="results/alignments/{sample}.hisat2.bam.bai" if config['VariantAnalysis']['caller'] == 'freebayes' else "results/alignments/{sample}.star.bam.bai",
+        bam="results/alignments/{sample}.star.bam" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam",
+        idx="results/alignments/{sample}.star.bam.bai" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam.bai",
     output:
         stats="results/qc/alignments/{sample}.flagstat",
     log:
@@ -59,8 +59,8 @@ rule Coverage:
     Calculate coverage with mosdepth
     """
     input:
-        bam="results/alignments/{sample}.hisat2.bam" if config['VariantAnalysis']['caller'] == 'freebayes' else "results/alignments/{sample}.star.bam",
-        idx="results/alignments/{sample}.hisat2.bam.bai" if config['VariantAnalysis']['caller'] == 'freebayes' else "results/alignments/{sample}.star.bam.bai",
+        bam="results/alignments/{sample}.star.bam" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam",
+        idx="results/alignments/{sample}.star.bam.bai" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam.bai",
     output:
         "results/qc/coverage/{sample}.mosdepth.summary.txt",
     log:
@@ -99,7 +99,9 @@ rule multiQC:
     Integrate QC statistics from other tools into a final .html report
     """
     input:
-        expand("results/qc/{sample}.json", sample=samples),
+        expand("results/qc/{sample}.json", sample=samples)
+        if config['QualityControl']['fastp-trim']['activate']
+        else [],
         expand(
             "results/qc/vcfs/{contig}.txt", contig=config["contigs"]
         )
@@ -107,7 +109,8 @@ rule multiQC:
         else [],
         expand(
             "results/qc/coverage/{sample}.mosdepth.summary.txt", sample=samples
-        ),
+        ) if config['QualityControl']['coverage']
+        else [],
         expand("results/qc/alignments/{sample}.flagstat", sample=samples),
         expand("results/counts/{sample}", sample=samples),
     output:
