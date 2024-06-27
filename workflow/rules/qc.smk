@@ -109,7 +109,8 @@ rule multiQC:
         else [],
         expand(
             "results/qc/coverage/{sample}.mosdepth.summary.txt", sample=samples
-        ),
+        ) if config['QualityControl']['coverage']
+        else [],
         expand("results/qc/alignments/{sample}.flagstat", sample=samples),
         expand("results/counts/{sample}", sample=samples),
     output:
