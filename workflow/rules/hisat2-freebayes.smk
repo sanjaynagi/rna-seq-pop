@@ -96,7 +96,7 @@ rule VariantCallingFreebayes:
         "../envs/variants.yaml"
     threads: 1
     shell:
-        "freebayes -f {input.ref} -t {input.regions} --ploidy {params.ploidy} --populations {input.pops} --pooled-discrete --use-best-n-alleles 5 -L {input.samples} > {output} 2> {log}"
+        "freebayes -f {input.ref} -t {input.regions} --ploidy {params.ploidy} --populations {input.pops} --pooled-discrete --use-best-n-alleles 5 --min-alternate-fraction 0.05 -L {input.samples} > {output} 2> {log}"
 
 chunks = np.arange(1, config["VariantAnalysis"]["chunks"])
 
