@@ -44,9 +44,9 @@ rule IndexBams:
     Index bams with samtools
     """
     input:
-        bam="results/alignments/{sample}.star.bam" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam",
+        bam="results/alignments/{sample}.hisat2.bam",
     output:
-        idx="results/alignments/{sample}.star.bam.bai" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam.bai",
+        idx="results/alignments/{sample}.hisat2.bam.bai",
     log:
         "logs/IndexBams/{sample}.log",
     wrapper:
