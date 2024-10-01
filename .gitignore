@@ -23,4 +23,6 @@ config/samples.tsv
 workflow/scripts/misc
 .test/workflow/scripts/
 .ipynb_checkpoints
-workflow/scripts/snpEff
+workflow/scripts/snpEff# pixi environments
+.pixi
+
