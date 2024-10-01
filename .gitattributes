@@ -1,2 +1,5 @@
 *.smk linguist-language=Python
 Snakefile linguist-language=Python
+# GitHub syntax highlighting
+pixi.lock linguist-language=YAML
+

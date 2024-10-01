@@ -15,7 +15,6 @@ library(ggrepel)
 library(openxlsx)
 library(glue)
 library(RColorBrewer)
-library(EnhancedVolcano)
 
 print("------------- Kallisto - Sleuth - RNASeq isoform Differential expression ---------")
 #### read data ####
@@ -87,13 +86,6 @@ for (cont in contrasts){
   labels = results %>% dplyr::mutate("Gene_name" = case_when(GeneName == "" ~ TranscriptID,
                                      is.na(GeneName) ~ TranscriptID,
                                      TRUE ~ GeneName)) %>% select(Gene_name) %>% deframe()
-  pdf(glue("results/isoformdiff/Volcano_plot_{cont}.pdf"))
-  print(EnhancedVolcano(results_list[[cont]],
-                  lab=labels,
-                  x='b',
-                  y='pval',
-                  title = cont))
-  garbage = dev.off()
   print(glue("{cont} complete!"))
 }
 

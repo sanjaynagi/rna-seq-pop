@@ -1,6 +1,7 @@
 # RNA-Seq-Pop
-pipeline: parabricks  #parabricks or cpu
 metadata: config/samples.tsv                    # samplesheet metadata file
+pipeline: cpu  # parabricks or cpu
+parabricks-docker-user: 1006:1006 # only if using parabricks pipeline at LSTM, otherwise ignore
 
 dataset: 'Ag_Bouake'                            # Dataset name: Can be anything, will be used to name some main output files
 

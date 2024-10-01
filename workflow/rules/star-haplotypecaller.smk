@@ -44,10 +44,11 @@ rule fq2bam:
     resources:
         all_gpus = 1
     params:
-        wkdir=wkdir
+        wkdir=wkdir,
+        docker_user = config['parabricks-docker-user']
     shell:
         """
-        docker run --user 1006:1006 --rm --gpus all --volume {wkdir}:/workdir --workdir /workdir nvcr.io/nvidia/clara/clara-parabricks:4.3.0-1 \
+        docker run --user {params.docker_user} --rm --gpus all --volume {wkdir}:/workdir --workdir /workdir nvcr.io/nvidia/clara/clara-parabricks:4.3.0-1 \
             pbrun rna_fq2bam \
             --in-fq /workdir/{input.reads[0]} /workdir/{input.reads[1]} \
             --genome-lib-dir /workdir/resources/reference/star_index\
@@ -75,10 +76,11 @@ rule haplotype_caller:
         all_gpus = 1
     params:
         wkdir=wkdir,
+        docker_user = config['parabricks-docker-user'],
         ploidy=config['VariantAnalysis']['ploidy']
     shell:
         """
-        docker run --user 1006:1006 --rm --gpus all --volume {wkdir}:/workdir -w /workdir nvcr.io/nvidia/clara/clara-parabricks:4.3.0-1 \
+        docker run --user {params.docker_user} --rm --gpus all --volume {wkdir}:/workdir -w /workdir nvcr.io/nvidia/clara/clara-parabricks:4.3.0-1 \
             pbrun haplotypecaller \
             --rna \
             --ref /workdir/{input.ref_fasta} \

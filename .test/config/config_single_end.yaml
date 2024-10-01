@@ -1,5 +1,6 @@
 metadata: config/samples.tsv
 pipeline: cpu
+parabricks-docker-user: 1006:1006 # only if using parabricks pipeline at LSTM, otherwise ignore
 
 # Dataset name
 dataset: 'Test-GithubActionsCI'
