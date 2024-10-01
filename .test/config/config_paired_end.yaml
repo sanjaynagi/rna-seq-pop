@@ -48,7 +48,7 @@ DifferentialExpression:                       # Activate differential expression
       gene-level:
             activate: True
       isoform-level:
-            activate: False 
+            activate: True 
 
       progressiveGenes:
             activate: True
