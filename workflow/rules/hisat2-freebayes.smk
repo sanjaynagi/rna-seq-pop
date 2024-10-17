@@ -59,7 +59,7 @@ rule GenerateFreebayesParams:
         bamlist="results/alignments/bam.list",
         pops="results/alignments/populations.tsv",
         regions=expand(
-            "resources/regions/genome.{contig}.region.{i}.bed",
+            "results/variantAnalysis/regions/genome.{contig}.region.{i}.bed",
             contig=config["contigs"],
             i=chunks,
         ),
@@ -83,9 +83,9 @@ rule VariantCallingFreebayes:
         bams=expand("results/alignments/{sample}.hisat2.bam", sample=samples),
         index=expand("results/alignments/{sample}.hisat2.bam.bai", sample=samples),
         ref=config["reference"]["genome"].rstrip(".gz"),
-        samples=ancient("results/alignments/bam.list"),
-        pops=ancient("results/alignments/populations.tsv"),
-        regions=ancient("resources/regions/genome.{contig}.region.{i}.bed"),
+        samples="results/alignments/bam.list",
+        pops="results/alignments/populations.tsv",
+        regions="results/variantAnalysis/regions/genome.{contig}.region.{i}.bed",
     output:
         temp("results/variantAnalysis/vcfs/freebayes/{contig}/variants.{i}.vcf"),
     log:

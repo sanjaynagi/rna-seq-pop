@@ -43,7 +43,7 @@ for (contig in contigs){
    for (i in 1:(chunks-1)){
       #write bed file, one for each chunk/interval, which will be passed as input to freebayes
       row = c(contig, bedseq[i], bedseq[i+1])
-      data.frame(row) %>% t() %>% fwrite(., glue("resources/regions/genome.{contig}.region.{i}.bed"), sep="\t", col.names = FALSE)
+      data.frame(row) %>% t() %>% fwrite(., glue("results/variantAnalysis/regions/genome.{contig}.region.{i}.bed"), sep="\t", col.names = FALSE)
    }
 }
 
