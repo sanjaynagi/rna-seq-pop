@@ -163,15 +163,6 @@ def GetDesiredOutputs(wildcards):
             )
         )
 
-        if config['QualityControl']['coverage']['activate']:
-            wanted_input.extend(
-                expand(
-                    [
-                        "results/qc/coverage/{sample}.mosdepth.summary.txt",
-                    ],
-                sample=samples,
-                )
-            )
 
         if config["VariantAnalysis"]["selection"]["activate"]:
             wanted_input.extend(
@@ -189,18 +180,52 @@ def GetDesiredOutputs(wildcards):
                 )
             )
 
-    if config["VariantAnalysis"]["ancestry"]["activate"]:
+        if config["VariantAnalysis"]["ancestry"]["activate"]:
+            wanted_input.extend(
+                expand(
+                    [
+                        "results/variantAnalysis/ancestry/AIMs_summary.tsv",
+                        "results/variantAnalysis/ancestry/AIM_fraction_whole_genome.svg",
+                        "results/variantAnalysis/ancestry/n_AIMS_per_chrom.tsv",
+                        "results/variantAnalysis/ancestry/AIM_fraction_{contig}.tsv",
+                    ],
+                    contig=config["contigs"],
+                )
+            )
+
+        if config["VariantAnalysis"]["karyotype"]["activate"]:
+            wanted_input.extend(
+                expand(
+                    [
+                        "results/karyotype/{karyo}.{dataset}.karyo.txt",
+                        "results/karyotype/karyoFreqs.svg",
+                    ],
+                    karyo=config["VariantAnalysis"]["karyotype"]["inversions"],
+                    dataset=config["dataset"],
+                )
+            )
+
+        if (
+        config["VariantAnalysis"]['selection']["activate"]
+        and config["DifferentialExpression"]["GSEA"]["activate"]
+        ):
+            wanted_input.extend(
+                expand(
+                    ["results/gsea/fst/{comp}.fst.tsv"],
+                    comp=config["contrasts"],
+                )
+            )
+
+    if config['QualityControl']['coverage']['activate']:
         wanted_input.extend(
             expand(
                 [
-                    "results/variantAnalysis/ancestry/AIMs_summary.tsv",
-                    "results/variantAnalysis/ancestry/AIM_fraction_whole_genome.svg",
-                    "results/variantAnalysis/ancestry/n_AIMS_per_chrom.tsv",
-                    "results/variantAnalysis/ancestry/AIM_fraction_{contig}.tsv",
+                    "results/qc/coverage/{sample}.mosdepth.summary.txt",
                 ],
-                contig=config["contigs"],
+            sample=samples,
             )
         )
+
 
     if config["miscellaneous"]["VariantsOfInterest"]["activate"]:
         wanted_input.extend(
@@ -218,29 +243,6 @@ def GetDesiredOutputs(wildcards):
                     "results/gsea/genediff/{comp}.de.tsv",
                 ],
                 comp=config["contrasts"],
-            )
-        )
-
-    if (
-        config["VariantAnalysis"]['selection']["activate"]
-        and config["DifferentialExpression"]["GSEA"]["activate"]
-    ):
-        wanted_input.extend(
-            expand(
-                ["results/gsea/fst/{comp}.fst.tsv"],
-                comp=config["contrasts"],
-            )
-        )
-
-    if config["VariantAnalysis"]["karyotype"]["activate"]:
-        wanted_input.extend(
-            expand(
-                [
-                    "results/karyotype/{karyo}.{dataset}.karyo.txt",
-                    "results/karyotype/karyoFreqs.svg",
-                ],
-                karyo=config["VariantAnalysis"]["karyotype"]["inversions"],
-                dataset=config["dataset"],
             )
         )
 
