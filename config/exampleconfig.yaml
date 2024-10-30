@@ -7,7 +7,7 @@ dataset: 'Ag_Bouake'                            # Dataset name: Can be anything,
 
 # if True, this builds a local webpage including some the analyses 
 # of rna-seq-pop
-jupyter-book:
+results-jupyterbook:
    activate: True
 
 ## Fastq filenames and locations can either be specified in the config/samples.tsv file in columns called
