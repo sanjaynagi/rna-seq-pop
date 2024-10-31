@@ -237,11 +237,9 @@ rule Karyotyping:
         nb = f"{workflow.basedir}/notebooks/karyotype.ipynb",
         kernel = "results/.kernel.set",
         tagsnps = "resources/karyotype_tag_snps.csv",
-        vcf=(
-            lambda wildcards: f"results/variantAnalysis/vcfs/{dataset}.{contig_2l}.vcf.gz"
-            if wildcards.karyo == "2La"
-            else f"results/variantAnalysis/vcfs/{dataset}.{contig_2r}.vcf.gz"
-        ),
+        vcf2l=expand("results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
+                        contig=contig_2l,
+                        dataset=config["dataset"]),
     output:
         nb = "results/notebooks/karyotype.ipynb",
         docs_nb = "docs/rna-seq-pop-results/notebooks/karyotype.ipynb",
