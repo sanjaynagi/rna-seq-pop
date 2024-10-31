@@ -57,7 +57,6 @@ for contig in contigs:
     vcf, geno, acsubpops, pos, alts, depth, snpeff, subpops, pops = rnaseqpop.readAndFilterVcf(path=path,
                                                                contig=contig, 
                                                                samples=metadata,
-                                                               numbers=numbers,
                                                                ploidy=ploidy,
                                                                qualflt=30,
                                                                missingfltprop=missingprop)
