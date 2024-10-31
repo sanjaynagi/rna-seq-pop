@@ -223,11 +223,12 @@ def get_numbers_dict(ploidy):
     return(numbers)
 
 
-def readAndFilterVcf(path, contig, samples, numbers, ploidy, qualflt=30, missingfltprop=0.6, verbose=False):
+def readAndFilterVcf(path, contig, samples, ploidy, qualflt=30, missingfltprop=0.6, verbose=False):
 
     """
     This function reads a VCF file, and filters it to a given quality and missingness proportion
     """
+    numbers = get_numbers_dict(ploidy)
     
     print(f"\n-------------- Reading VCF for chromosome {contig} --------------")
     vcf = allel.read_vcf(path, 
@@ -268,12 +269,13 @@ def readAndFilterVcf(path, contig, samples, numbers, ploidy, qualflt=30, missing
 
     pos = allel.SortedIndex(vcf['variants/POS'].compress(passfilter, axis=0))     
     depth = vcf['variants/DP'].compress(passfilter, axis=0)
+    alts = vcf['variants/ALT'][passfilter]
     #extract snpeff info and filter   
     snpeff = pd.DataFrame(vcf['variants/ANN'])[0].str.split("|", expand=True)[passfilter]
     
     ac_subpops = geno.count_alleles_subpops(subpops)
     
-    return(vcf, geno, ac_subpops, pos, depth, snpeff, subpops, samplenames)
+    return(vcf, geno, ac_subpops, pos, alts, depth, snpeff, subpops, samplenames)
     
 
 def meanPBS(ac1, ac2, ac3, window_size, normalise):

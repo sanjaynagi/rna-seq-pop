@@ -37,7 +37,7 @@ comparisons = [list(row) for i,row in comparisons.iterrows()]
 for i, contig in enumerate(contigs):
 
     path = f"results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz"
-    vcf, geno, acsubpops, pos, depth, snpeff, subpops, populations = rnaseqpop.readAndFilterVcf(path=path,
+    vcf, geno, acsubpops, pos, alts, depth, snpeff, subpops, populations = rnaseqpop.readAndFilterVcf(path=path,
                                                            contig=contig,
                                                            samples=metadata,
                                                            numbers=numbers,
