@@ -38,7 +38,7 @@ for contig in contigs:
 
     # read in and filter data
     path = f"results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz"
-    vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops =  rnaseqpop.readAndFilterVcf(path=path,
+    vcf, geno, acsubpops, pos, alts, depth, snpeff, subpops, pops =  rnaseqpop.readAndFilterVcf(path=path,
                                                                contig=contig,
                                                                samples=metadata,
                                                                ploidy=ploidy,
