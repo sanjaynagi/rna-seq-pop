@@ -49,7 +49,7 @@ for i, contig in enumerate(contigs):
     
     # Read in and Filter VCF
     path = f"results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz"
-    vcf, geno, acsubpops, pos, depth, snpeff, subpops, populations = rnaseqpop.readAndFilterVcf(path=path,
+    vcf, geno, acsubpops, pos, alts, depth, snpeff, subpops, populations = rnaseqpop.readAndFilterVcf(path=path,
                                                            contig=contig,
                                                            samples=metadata,
                                                            numbers=numbers,

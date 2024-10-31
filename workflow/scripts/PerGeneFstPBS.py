@@ -54,7 +54,7 @@ for contig in contigs:
     # path to vcf
     path = f"results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz"
     # function to read in vcfs and associated SNP data
-    vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops = rnaseqpop.readAndFilterVcf(path=path,
+    vcf, geno, acsubpops, pos, alts, depth, snpeff, subpops, pops = rnaseqpop.readAndFilterVcf(path=path,
                                                                contig=contig, 
                                                                samples=metadata,
                                                                numbers=numbers,

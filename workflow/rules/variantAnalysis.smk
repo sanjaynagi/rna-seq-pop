@@ -1,6 +1,3 @@
-################ Variant Analysis ##################
-# scikit-allel (Miles, Harding) 10.5281/zenodo.3935797
-
 rule SNPstatistics:
     """
     Calculate statistics such as no. of SNPs called in exons/introns/genes
@@ -232,62 +229,38 @@ rule AncestryInformativeMarkers:
         "../scripts/AncestryInformativeMarkers.py"
 
 
-rule Karyotype:
-    """
-    Use compkaryo to determine the "average" karyotype in each sample, based on tagging SNPs. 2la and 2rb only reliable marker sets.
-    """
+contig_2l = 'AgamP4_2L' if '2L' not in config['contigs'] else '2L'
+contig_2r = 'AgamP4_2R' if '2R' not in config['contigs'] else '2R'
+
+rule Karyotyping:
     input:
-        vcf=(
-            lambda wildcards: "results/variantAnalysis/vcfs/{dataset}.2L.vcf.gz"
-            if wildcards.karyo == "2La"
-            else "results/variantAnalysis/vcfs/{dataset}.2R.vcf.gz"
-        ),
-    output:
-        "results/karyotype/{karyo}.{dataset}.karyo.txt",
-    log:
-        "logs/compKaryo/{dataset}.karyo.{karyo}.log",
-    conda:
-        "../envs/pythonGenomics.yaml"
-    params:
-        ploidy=config["VariantAnalysis"]["ploidy"],
-        basedir=workflow.basedir,
-    shell:
-        """
-        paste <(bcftools query -l {input.vcf}) \
-        <(python {params.basedir}/scripts/compkaryo/compkaryo/compkaryo.py {input.vcf} {wildcards.karyo} -p {params.ploidy}) | 
-        column -s $'\\t' -t | sort -k 1 > {output}
-        """
-
-
-
-rule KaryotypePlots_notebook:
-    """
-    Plot karyotype results
-    """
-    input:
-        nb = f"{workflow.basedir}/notebooks/windowed-selection.ipynb",
+        nb = f"{workflow.basedir}/notebooks/karyotype.ipynb",
         kernel = "results/.kernel.set",
-        karyo = expand(
-            "results/karyotype/{karyo}.{dataset}.karyo.txt",
-            karyo=config["VariantAnalysis"]["karyotype"]["inversions"],
-            dataset=config["dataset"],
+        tagsnps = "resources/karyotype_tag_snps.csv",
+        vcf=(
+            lambda wildcards: f"results/variantAnalysis/vcfs/{dataset}.{contig_2l}.vcf.gz"
+            if wildcards.karyo == "2La"
+            else f"results/variantAnalysis/vcfs/{dataset}.{contig_2r}.vcf.gz"
         ),
     output:
         nb = "results/notebooks/karyotype.ipynb",
         docs_nb = "docs/rna-seq-pop-results/notebooks/karyotype.ipynb",
-        svg = "results/karyotype/karyoFreqs.svg",
+        tsv = "results/karyotype/karyotypes.tsv",
+        png = "results/karyotype/karyotype_heatmap.png",
     log:
-        "logs/notebooks/karyotype-plot.log",
+        "logs/notebooks/karyotyping.log",
     conda:
         "../envs/pythonGenomics.yaml"
     params:
         metadata=config["metadata"],
         configpath=configpath,
         ploidy=config["VariantAnalysis"]["ploidy"],
+        contig_2r=contig_2r,
+        contig_2l=contig_2l,
         inversions=config["VariantAnalysis"]["karyotype"]["inversions"],
         dataset=config["dataset"],
     shell:
         """
-        papermill {input.nb} {output.nb} -k pythonGenomics -p config_path {params.configpath} -p metadata_path {params.metadata} -p dataset {params.dataset} -p ploidy {params.ploidy} 2> {log}
+        papermill {input.nb} {output.nb} -k pythonGenomics -p contig_r {params.contig_2r} -p contig_l {params.contig_2l} -p tag_snp_path {input.tagsnps} -p inversion {params.inversions} -p config_path {params.configpath} -p metadata_path {params.metadata} -p dataset {params.dataset} -p ploidy {params.ploidy} 2> {log}
         cp {output.nb} {output.docs_nb} 2>> {log}
         """

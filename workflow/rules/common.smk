@@ -197,8 +197,8 @@ def GetDesiredOutputs(wildcards):
             wanted_input.extend(
                 expand(
                     [
-                        "results/karyotype/{karyo}.{dataset}.karyo.txt",
-                        "results/karyotype/karyoFreqs.svg",
+                        "results/karyotype/karyotypes.tsv",
+                        "results/karyotype/karyotype_heatmap.png",
                     ],
                     karyo=config["VariantAnalysis"]["karyotype"]["inversions"],
                     dataset=config["dataset"],
