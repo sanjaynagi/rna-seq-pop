@@ -52,13 +52,12 @@ for (contig in contigs){
 # 2) Make bamlist and populations.tsv file
 metadata = load_metadata(snakemake@params[['metadata']])
 
-# # Set the BAM file paths based on the pipeline condition
-# metadata$bams = if (snakemake@params[['aligner']] == 'STAR') {
-#     paste0("results/alignments/", metadata$sampleID, ".star.bam")
-# } else {
-#     paste0("results/alignments/", metadata$sampleID, ".hisat2.bam")
-# }
-metadata$bams = paste0("results/alignments/", metadata$sampleID, ".star.bam")
+# Set the BAM file paths based on the pipeline condition
+metadata$bams = if (snakemake@params[['aligner']] == 'STAR') {
+    paste0("results/alignments/", metadata$sampleID, ".star.bam")
+} else {
+    paste0("results/alignments/", metadata$sampleID, ".hisat2.bam")
+}
 
 # Write the populations file with BAM paths and strain information
 metadata %>% 

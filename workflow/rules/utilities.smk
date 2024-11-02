@@ -57,7 +57,6 @@ rule IndexBams:
         """
 
 
-
 rule RestrictToSNPs:
     """"
     Filter out indels

@@ -25,19 +25,19 @@ rule STARalign:
     Align reads to the genome with STAR, generate an unsorted BAM, and then sort with samtools.
     """
     input:
-        reads=lambda wildcards: getFASTQs(wildcards=wildcards),
+        reads=lambda wildcards: getFASTQs(wildcards=wildcards, rules="STARalign"),
         idx="resources/reference/starindex/"
     output:
         "results/alignments/{sample}.star.bam"
     log:
-        align="logs/STAR/{sample}_align.log",
-        sort="logs/samtoolsSort/{sample}.log"
+        align="logs/STAR/{sample}_align.log",              # Log for alignment
+        sort="logs/samtoolsSort/{sample}.log"              # Log for sorting
     conda:
-        "../envs/variants.yaml"
+        "../envs/variants.yaml"                            # Conda environment
     params:
-        readflags=lambda wildcards: getFASTQs(wildcards=wildcards),
-        extra="--outSAMtype BAM Unsorted",
-        rg="--outSAMattrRGline ID:{wildcards.sample} SM:{wildcards.sample} PL:ILLUMINA"
+        readflags=lambda wildcards: " ".join(getFASTQs(wildcards=wildcards, rules="STARalign")),
+        extra="--outSAMtype BAM Unsorted",                # STAR output type
+        rg=lambda wildcards: f"--outSAMattrRGline ID:{wildcards.sample} SM:{wildcards.sample} PL:ILLUMINA"
     threads: 12
     shell:
         """
@@ -50,6 +50,9 @@ rule STARalign:
         # Remove intermediate unsorted BAM to save space
         rm results/alignments/{wildcards.sample}.Aligned.out.bam
         """
+
+
+
 
 
 chunks = np.arange(1, config["VariantAnalysis"]["chunks"])
