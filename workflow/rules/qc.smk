@@ -41,8 +41,8 @@ rule BamStats:
     QC alignment statistics
     """
     input:
-        bam="results/alignments/{sample}.star.bam" if config['aligner'] == 'STAR' else "results/alignments/{sample}.hisat2.bam",
-        idx="results/alignments/{sample}.star.bam.bai" if config['aligner'] == 'STAR' else "results/alignments/{sample}.hisat2.bam.bai",
+        bam="results/alignments/{sample}.star.bam", # if config['aligner'] == 'STAR' else "results/alignments/{sample}.hisat2.bam",
+        idx="results/alignments/{sample}.star.bam.bai", # if config['aligner'] == 'STAR' else "results/alignments/{sample}.hisat2.bam.bai",
     output:
         stats="results/qc/alignments/{sample}.flagstat",
     log:
@@ -55,8 +55,8 @@ rule Coverage:
     Calculate coverage with mosdepth
     """
     input:
-        bam="results/alignments/{sample}.star.bam" if config['aligner'] == 'STAR' else "results/alignments/{sample}.hisat2.bam",
-        idx="results/alignments/{sample}.star.bam.bai" if config['aligner'] == 'STAR' else "results/alignments/{sample}.hisat2.bam.bai",
+        bam="results/alignments/{sample}.star.bam",# if config['aligner'] == 'STAR' else "results/alignments/{sample}.hisat2.bam",
+        idx="results/alignments/{sample}.star.bam.bai",# if config['aligner'] == 'STAR' else "results/alignments/{sample}.hisat2.bam.bai",
     output:
         "results/qc/coverage/{sample}.mosdepth.summary.txt",
     log:

@@ -44,9 +44,9 @@ rule IndexBams:
     Index bams with samtools
     """
     input:
-        bam="results/alignments/{sample}.star.bam" if config['aligner'] == 'STAR' else "results/alignments/{sample}.hisat2.bam",
+        bam="results/alignments/{sample}.star.bam", #if config['aligner'] == 'STAR' else "results/alignments/{sample}.hisat2.bam",
     output:
-        idx="results/alignments/{sample}.star.bam.bai" if config['aligner'] == 'STAR' else "results/alignments/{sample}.hisat2.bam",
+        idx="results/alignments/{sample}.star.bam.bai", #if config['aligner'] == 'STAR' else "results/alignments/{sample}.hisat2.bam",
     log:
         "logs/IndexBams/{sample}.log",
     conda: 

@@ -12,8 +12,6 @@ fastq:
       auto: True              # set auto if your files follow 
       paired: True
 
-#specify the seq aligner you want to use
-aligner: "STAR"  #or "HISAT2"
 
 # Paths for reference files 
 reference:

@@ -23,21 +23,14 @@ welcome(version="v2.0.2")
 
 include: "rules/qc.smk"
 include: "rules/diffexp.smk"
-
-if config['aligner'] == 'STAR':
-    include: "rules/star-freebayes.smk"
-    
+include: "rules/star-freebayes.smk"  
 include: "rules/utilities.smk"
 include: "rules/snpEff.smk"
 include: "rules/variantAnalysis.smk"
 include: "rules/jupyter-book.smk"
 
-
-
-if config['aligner'] == 'HISAT2':
-    include: "rules/hisat2-freebayes.smk"
-
-
+#if config['aligner'] == 'HISAT2':
+ #   include: "rules/hisat2-freebayes.smk"
 
 if config['pipeline'] == 'parabricks':
     include: "rules/star-haplotypecaller.smk"

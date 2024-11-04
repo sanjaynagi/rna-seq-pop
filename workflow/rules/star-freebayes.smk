@@ -51,10 +51,6 @@ rule STARalign:
         rm results/alignments/{wildcards.sample}.Aligned.out.bam
         """
 
-
-
-
-
 chunks = np.arange(1, config["VariantAnalysis"]["chunks"])
 
 rule GenerateFreebayesParams:
