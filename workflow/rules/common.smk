@@ -17,52 +17,56 @@ def load_metadata(metadata_path):
     return metadata
 
 
-
 def getFASTQs(wildcards, rules=None):
     """
     Get FASTQ files from unit sheet.
     If there are more than one wildcard (aka, sample), only return one fastq file
     If the rule is HISAT2align, then return the fastqs with -1 and -2 flags
+    If the rule is STARalign, return the fastqs without flags.
     """
     metadata = load_metadata(config["metadata"])
     
-    if config['fastq']['paired'] == True:
-        fastq_cols = ['fq1', 'fq2']
-    else:
-        fastq_cols = ['fq1']
+    # Determine if the FASTQs are paired or single-end
+    fastq_cols = ['fq1', 'fq2'] if config['fastq']['paired'] else ['fq1']
 
-    if config["QualityControl"]["fastp-trim"]["activate"] == True:
-        if rules in ["KallistoQuant", "HISAT2align", "HISAT2align_input"]:
+    # Check for fastp trimming activation
+    if config["QualityControl"]["fastp-trim"]["activate"]:
+        if rules in ["KallistoQuant", "HISAT2align", "HISAT2align_input", "STARalign", "STARalign_input"]:
             for i, col in enumerate(fastq_cols):
                 metadata = metadata.assign(**{col: f"resources/reads/trimmed/" + metadata["sampleID"] + f"_{i+1}.fastq.gz"})     
             metadata = metadata.set_index("sampleID")
             
             u = metadata.loc[wildcards.sample, fastq_cols].dropna()
             if rules == "HISAT2align":
-                return [f"-1 {u.fq1} -2 {u.fq2}"] if config['fastq']['paired'] == True else f"-U {u.fq1}"
+                return [f"-1 {u.fq1} -2 {u.fq2}"] if config['fastq']['paired'] else f"-U {u.fq1}"
+            elif rules in ["STARalign", "STARalign_input"]:
+                return [u.fq1, u.fq2] if config['fastq']['paired'] else [u.fq1]
             else:
-                return [u.fq1, u.fq2] if config['fastq']['paired'] == True else [u.fq1]
+                return [u.fq1, u.fq2] if config['fastq']['paired'] else [u.fq1]
 
+    # Auto-generate FASTQ paths if enabled
     if config["fastq"]["auto"]:
         for i, col in enumerate(fastq_cols):
             metadata = metadata.assign(**{col: f"resources/reads/" + metadata["sampleID"] + f"_{i+1}.fastq.gz"})     
         metadata = metadata.set_index("sampleID")
     else:
-        assert (
-            "fq1" in metadata.columns
-        ), f"The fq1 column in the metadata does not seem to exist. Please create one, or use the 'auto' option and name the fastq files as specified in the config/README.md"
+        assert "fq1" in metadata.columns, "The fq1 column in the metadata does not seem to exist. Please create one, or use the 'auto' option."
         if config['fastq']['paired']:
-            assert (
-                "fq2" in metadata.columns
-            ), f"The fq2 column in the metadata does not seem to exist. Please create one, or use the 'auto' option and name the fastq files as specified in the config/README.md"
+            assert "fq2" in metadata.columns, "The fq2 column in the metadata does not seem to exist. Please create one, or use the 'auto' option."
     
         metadata = metadata.set_index("sampleID")
 
+    # Retrieve FASTQ paths based on the current rules
     u = metadata.loc[wildcards.sample, fastq_cols].dropna()
     if rules == "HISAT2align":
-        return [f"-1 {u.fq1} -2 {u.fq2}"] if config['fastq']['paired'] == True else f"-U {u.fq1}"
+        return [f"-1 {u.fq1} -2 {u.fq2}"] if config['fastq']['paired'] else f"-U {u.fq1}"
+    elif rules in ["STARalign", "STARalign_input"]:
+        return [u.fq1, u.fq2] if config['fastq']['paired'] else [u.fq1]
     else:
-        return [u.fq1, u.fq2] if config['fastq']['paired'] == True else [u.fq1]
+        return [u.fq1, u.fq2] if config['fastq']['paired'] else [u.fq1]
+
+
+
 
 
 def getBAM(wildcards):

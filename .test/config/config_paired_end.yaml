@@ -9,8 +9,9 @@ results-jupyterbook:
       activate: True
 
 fastq: 
-      auto: True # set auto if your files follow 
+      auto: True              # set auto if your files follow 
       paired: True
+
 
 # Paths for reference files 
 reference:
