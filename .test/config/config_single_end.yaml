@@ -60,10 +60,10 @@ DifferentialExpression:                       # Activate differential expression
 
 
 # If activate:True, creates allele balance .xlsx reports on IR mutations of choice
-      VariantsOfInterest: 
-            activate: True
-            path: "resources/test-IRmutations.tsv"
-            
+VariantsOfInterest: 
+      activate: True
+      path: "resources/test-IRmutations.tsv"
+      
 
 VariantAnalysis:
       activate: True
