@@ -66,8 +66,7 @@ rule DifferentialGeneExpression:
     params:
         DEcontrasts=config["contrasts"],
     script:
-        "../scripts/DeseqGeneDE.R"
-
+        "../scripts/diffexp-deseq2-genes.R"
 
 rule DifferentialIsoformExpression:
     """
@@ -94,7 +93,7 @@ rule DifferentialIsoformExpression:
     params:
         DEcontrasts=config["contrasts"],
     script:
-        "../scripts/SleuthIsoformsDE.R"
+        "../scripts/diffexp-sleuth-isoforms.R"
 
 
 rule GeneSetEnrichment_notebook:

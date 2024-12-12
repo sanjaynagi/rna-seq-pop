@@ -19,7 +19,7 @@ rule CheckInputs:
         "../envs/pythonGenomics.yaml"
     priority: 50
     script:
-        "../scripts/checkInputs.py"
+        "../scripts/check-inputs.py"
 
 
 

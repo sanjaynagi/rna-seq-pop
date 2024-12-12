@@ -30,7 +30,7 @@ rule SNPstatistics:
         missingprop=config["VariantAnalysis"]["selection"]["missingness"],
         qualflt=30,
     script:
-        "../scripts/SNPstatistics.py"
+        "../scripts/snp-statistics.py"
 
 rule pca_notebook:
     """
@@ -191,7 +191,7 @@ rule PerGeneFstPBSDxyPi:
         ploidy=config["VariantAnalysis"]["ploidy"],
         missingprop=config["VariantAnalysis"]["selection"]["missingness"],
     script:
-        "../scripts/PerGeneFstPBS.py"
+        "../scripts/per-gene-fst-pbs.py"
 
 
 rule AncestryInformativeMarkers:
@@ -226,7 +226,7 @@ rule AncestryInformativeMarkers:
         missingprop=config["VariantAnalysis"]["ancestry"]["missingness"],
         qualflt=30,
     script:
-        "../scripts/AncestryInformativeMarkers.py"
+        "../scripts/ancestry-informative-markers.py"
 
 
 contig_2l = 'AgamP4_2L' if '2L' not in config['contigs'] else '2L'

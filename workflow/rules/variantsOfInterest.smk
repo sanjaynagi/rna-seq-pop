@@ -50,7 +50,7 @@ rule AlleleBalanceVariantsOfInterest:
     log:
         "logs/variantsOfInterestAlleleBalance.log",
     script:
-        "../scripts/VariantsOfInterestAlleleBalance.R"
+        "../scripts/variants-of-interest.R"
 
 
 
