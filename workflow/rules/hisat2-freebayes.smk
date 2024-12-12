@@ -69,10 +69,67 @@ rule GenerateFreebayesParams:
         metadata=config["metadata"],
         contigs=config["contigs"],
         chunks=config["VariantAnalysis"]["chunks"],
-    conda:
-        "../envs/diffexp.yaml"
-    script:
-        "../scripts/GenerateFreebayesParams.R"
+    run:
+        import pandas as pd
+        import numpy as np
+        from pathlib import Path
+        import logging
+        
+        # Setup logging
+        logging.basicConfig(
+            filename=log[0],
+            level=logging.INFO,
+            format='%(asctime)s - %(levelname)s - %(message)s'
+        )
+        
+        # Load and filter fai file
+        fai = pd.read_csv(input.index, sep='\t', header=None, usecols=[0, 1])
+        fai = fai[fai[0].isin(params.contigs)]
+        
+        # Create bed files for each contig and chunk
+        for contig in params.contigs:
+            contig_length = fai[fai[0] == contig][1].iloc[0]
+            bedseq = np.round(np.linspace(0, contig_length, params.chunks))
+            
+            for i in range(params.chunks - 1):
+                bed_content = f"{contig}\t{int(bedseq[i])}\t{int(bedseq[i+1])}"
+                output_path = Path(f"results/variantAnalysis/regions/genome.{contig}.region.{i+1}.bed")
+                output_path.parent.mkdir(parents=True, exist_ok=True)
+                
+                with open(output_path, 'w') as f:
+                    f.write(bed_content)
+        
+        # Load metadata
+        metadata_path = params.metadata
+        file_extension = Path(metadata_path).suffix.lower()
+        
+        if file_extension == '.xlsx':
+            metadata = pd.read_excel(metadata_path)
+        elif file_extension == '.tsv':
+            metadata = pd.read_csv(metadata_path, sep='\t')
+        elif file_extension == '.csv':
+            metadata = pd.read_csv(metadata_path)
+        else:
+            raise ValueError("Metadata file must be .xlsx, .tsv, or .csv")
+        
+        # Add bam paths and create output files
+        metadata['bams'] = 'results/alignments/' + metadata['sampleID'] + '.hisat2.bam'
+        
+        # Create populations file
+        metadata[['bams', 'strain']].to_csv(
+            output.pops, 
+            sep='\t', 
+            header=False, 
+            index=False
+        )
+        
+        # Create bamlist file
+        metadata[['bams']].to_csv(
+            output.bamlist, 
+            sep='\t', 
+            header=False, 
+            index=False
+        )
 
 
 rule VariantCallingFreebayes:
