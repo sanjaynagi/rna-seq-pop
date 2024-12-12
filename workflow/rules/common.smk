@@ -136,15 +136,6 @@ def GetDesiredOutputs(wildcards):
             )
         )
 
-    if config["DifferentialExpression"]["progressiveGenes"]["activate"]:
-        wanted_input.extend(
-            expand(
-                "results/genediff/{name}.{direction}.progressive.tsv",
-                name=config["DifferentialExpression"]["progressiveGenes"]["groups"],
-                direction=["up", "down"],
-            )
-        )
-
     if config["VariantAnalysis"]["activate"]:
         wanted_input.extend(
             expand(
@@ -227,7 +218,7 @@ def GetDesiredOutputs(wildcards):
         )
 
 
-    if config["miscellaneous"]["VariantsOfInterest"]["activate"]:
+    if config["VariantsOfInterest"]["activate"]:
         wanted_input.extend(
             [
                 "results/variantAnalysis/variantsOfInterest/alleleBalance.xlsx",
@@ -243,26 +234,6 @@ def GetDesiredOutputs(wildcards):
                     "results/gsea/genediff/{comp}.de.tsv",
                 ],
                 comp=config["contrasts"],
-            )
-        )
-
-    if config["miscellaneous"]["sweeps"]["activate"]:
-        if config["DifferentialExpression"]['gene-level']["activate"]:
-            wanted_input.extend(
-                expand(
-                    [
-                        "results/genediff/ag1000gSweeps/{comp}_swept.tsv",
-                    ],
-                    comp=config["contrasts"],
-                )
-            )
-
-    if config["miscellaneous"]["GeneFamiliesHeatmap"]["activate"]:
-        wanted_input.extend(
-            expand(
-                [
-                    "results/genediff/GeneFamiliesHeatmap.pdf",
-                ],
             )
         )
 

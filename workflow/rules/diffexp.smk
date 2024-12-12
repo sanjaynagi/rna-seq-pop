@@ -97,39 +97,6 @@ rule DifferentialIsoformExpression:
         "../scripts/SleuthIsoformsDE.R"
 
 
-rule progressiveGenesDE:
-    """
-    Determine if any genes are up/down regulated in same direction in multiple comparisons
-    """
-    input:
-        expand("results/genediff/{dataset}_diffexp.xlsx", dataset=config["dataset"]) if config["DifferentialExpression"]['gene-level']['activate'] else [],
-        expand("results/isoformdiff/{dataset}_isoformdiffexp.xlsx", dataset=config["dataset"])if config["DifferentialExpression"]['isoform-level']['activate'] else [],
-    output:
-        expand(
-            "results/genediff/{name}.{direction}.progressive.tsv",
-            name=config["DifferentialExpression"]["progressiveGenes"]["groups"],
-            direction=["up", "down"],
-        ) if config["DifferentialExpression"]['gene-level']['activate'] else [],
-        expand(
-            "results/isoformdiff/{name}.{direction}.progressive.tsv",
-            name=config["DifferentialExpression"]["progressiveGenes"]["groups"],
-            direction=["up", "down"],
-        ) if config["DifferentialExpression"]['isoform-level']['activate'] else [],
-    params:
-        metadata=config["metadata"],
-        comps=config["DifferentialExpression"]["progressiveGenes"]["groups"],
-        pval=config["DifferentialExpression"]["progressiveGenes"]["padj_threshold"],
-        fc=config["DifferentialExpression"]["progressiveGenes"]["fc_threshold"],
-        gene_level = config["DifferentialExpression"]['gene-level']['activate'],
-        isoform_level = config["DifferentialExpression"]['isoform-level']['activate']
-    conda:
-        "../envs/sleuth.yaml"
-    log:
-        "logs/progressiveGenesDE.log",
-    script:
-        "../scripts/ProgressiveGenes.R"
-
-
 rule GeneSetEnrichment_notebook:
     """
     Perform hypergeometric test GO terms from a gaf file 
@@ -170,57 +137,33 @@ rule GeneSetEnrichment_notebook:
         cp {output.nb} {output.docs_nb} 2>> {log}
         """
 
-
-rule Ag1000gSweepsDE:
-    """
-    Find differentially expressed genes that also lie underneath selective sweeps in the Ag1000g
-    """
-    input:
-        DEresults=expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
-        signals="resources/signals.csv",
-    output:
-        expand(
-            "results/genediff/ag1000gSweeps/{comp}_swept.tsv", comp=config["contrasts"]
-        ),
-    log:
-        "logs/Ag1000gSweepsDE.log",
-    conda:
-        "../envs/pythonGenomics.yaml"
-    params:
-        DEcontrasts=config["contrasts"],
-        pval=config["miscellaneous"]["sweeps"]["padj_threshold"],
-        fc=config["miscellaneous"]["sweeps"]["fc_threshold"],
-    script:
-        "../scripts/Ag1000gSweepsDE.py"
-
-
-rule geneFamilies_notebook:
-    """
-    Summarise gene expression for gene families
-    """
-    input:
-        nb = f"{workflow.basedir}/notebooks/gene-families-heatmap.ipynb",
-        kernel = "results/.kernel.set",
-        genediff=expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
-        normcounts="results/counts/normCounts.tsv",
-        eggnog=config["miscellaneous"]["GeneFamiliesHeatmap"]["eggnog"],
-        pfam=config["miscellaneous"]["GeneFamiliesHeatmap"]["pfam"],
-        metadata=config["metadata"],
-    output:
-        nb = "results/notebooks/gene-families-heatmap.ipynb",
-        docs_nb = "docs/rna-seq-pop-results/notebooks/gene-families-heatmap.ipynb",
-        heatmaps="results/genediff/GeneFamiliesHeatmap.pdf",
-    log:
-        "logs/notebooks/gene-families-heatmap.log",
-    conda:
-        "../envs/pythonGenomics.yaml"
-    params:
-        config_path = configpath
-    shell:
-        """
-        papermill {input.nb} {output.nb} -k pythonGenomics -p metadata_path {input.metadata} -p config_path {params.config_path} -p go_path {input.eggnog} -p normcounts_path {input.normcounts} -p pfam_path {input.pfam} 2> {log}
-        cp {output.nb} {output.docs_nb} 2>> {log}
-        """
+# rule geneFamilies_notebook:
+#     """
+#     Summarise gene expression for gene families
+#     """
+#     input:
+#         nb = f"{workflow.basedir}/notebooks/gene-families-heatmap.ipynb",
+#         kernel = "results/.kernel.set",
+#         genediff=expand("results/genediff/{comp}.csv", comp=config["contrasts"]),
+#         normcounts="results/counts/normCounts.tsv",
+#         eggnog=config["miscellaneous"]["GeneFamiliesHeatmap"]["eggnog"],
+#         pfam=config["miscellaneous"]["GeneFamiliesHeatmap"]["pfam"],
+#         metadata=config["metadata"],
+#     output:
+#         nb = "results/notebooks/gene-families-heatmap.ipynb",
+#         docs_nb = "docs/rna-seq-pop-results/notebooks/gene-families-heatmap.ipynb",
+#         heatmaps="results/genediff/GeneFamiliesHeatmap.pdf",
+#     log:
+#         "logs/notebooks/gene-families-heatmap.log",
+#     conda:
+#         "../envs/pythonGenomics.yaml"
+#     params:
+#         config_path = configpath
+#     shell:
+#         """
+#         papermill {input.nb} {output.nb} -k pythonGenomics -p metadata_path {input.metadata} -p config_path {params.config_path} -p go_path {input.eggnog} -p normcounts_path {input.normcounts} -p pfam_path {input.pfam} 2> {log}
+#         cp {output.nb} {output.docs_nb} 2>> {log}
+#         """
 
 
 

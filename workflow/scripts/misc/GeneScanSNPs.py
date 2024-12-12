@@ -17,7 +17,7 @@ gff = allel.gff3_to_dataframe(gffpath, attributes=['Parent', 'ID'])
 contig, start, end = gff.query("ID == @geneID")[['seqid', 'start', 'end']].values[0]
 
 numbers = rnaseqpop.get_numbers_dict(ploidy)
-vcf, geno, ac_subpops, pos, depth, snpeff, subpops, samplenames = rnaseqpop.terVcf(vcfpath, contig, metadata, numbers, ploidy, qualflt=0, missingfltprop=0, verbose=False)
+vcf, geno, ac_subpops, pos, depth, snpeff, subpops, samplenames = rnaseqpop.readAndFilterVcf(vcfpath, contig, metadata, numbers, ploidy, qualflt=0, missingfltprop=0, verbose=False)
 ann = allel.read_vcf(vcfpath,  fields=['ANN'], numbers={'ANN':1})
 
 

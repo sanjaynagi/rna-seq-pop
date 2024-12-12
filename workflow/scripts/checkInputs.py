@@ -25,9 +25,6 @@ ref = snakemake.input['ref']
 gffpath = snakemake.params['gffpath']
 contigs = snakemake.params['contigs']
 autofastq = snakemake.params['fastq']
-sweeps = snakemake.params['sweeps']
-signalpath = "resources/signals.csv"
-
 
 ## Read fasta file and grep chromosome names, check if they match config
 file = open(ref, "r")

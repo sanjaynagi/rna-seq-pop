@@ -53,18 +53,17 @@ DifferentialExpression:                       # Activate differential expression
       isoform-level:
             activate: True 
 
-      progressiveGenes:
-            activate: True
-            padj_threshold: 0.05
-            fc_threshold: 1.5
-            groups: "Kisumu_ContTia_PiriTia"
-
       GSEA:
             activate: True
             gaf: "resources/reference/X-test-PEST_GO.gaf"
-            KeggSpeciesID: "aga" # 3 letter KEGG species identifier
-            replaceString: "AgaP_"
 
+
+
+# If activate:True, creates allele balance .xlsx reports on IR mutations of choice
+      VariantsOfInterest: 
+            activate: True
+            path: "resources/test-IRmutations.tsv"
+            
 
 VariantAnalysis:
       activate: True
@@ -110,20 +109,3 @@ VariantAnalysis:
                   - "2Ru"
 
 
-
-
-miscellaneous:
-# If activate:True, creates allele balance .xlsx reports on IR mutations of choice
-      VariantsOfInterest: 
-            activate: True
-            path: "resources/test-IRmutations.tsv"
-            
-      GeneFamiliesHeatmap:
-            activate: False
-            eggnog: resources/Anogam_long.pep_eggnog_diamond.emapper.annotations.tsv.gz
-            pfam: resources/Anogam_long.pep_Pfamscan.seqs.gz
-
-      sweeps:
-            activate: False
-            padj_threshold: 0.05
-            fc_threshold: 1.5

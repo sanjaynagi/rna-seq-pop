@@ -36,7 +36,7 @@ rule AlleleBalanceVariantsOfInterest:
             mut=mutationData.Name,
         ),
         metadata=config["metadata"],
-        mutations=config["miscellaneous"]["VariantsOfInterest"]["path"],
+        mutations=config["VariantsOfInterest"]["path"],
     output:
         expand(
             "results/variantAnalysis/variantsOfInterest/csvs/{mut}_alleleBalance.csv",
@@ -65,7 +65,7 @@ rule VariantsOfInterest_notebook:
             "results/variantAnalysis/variantsOfInterest/csvs/{mut}_alleleBalance.csv",
             mut=mutationData.Name,
         ),
-        VariantsOfInterest=config["miscellaneous"]["VariantsOfInterest"]["path"],
+        VariantsOfInterest=config["VariantsOfInterest"]["path"],
     output:
         nb = "results/notebooks/variants-of-interest.ipynb",
         docs_nb = "docs/rna-seq-pop-results/notebooks/variants-of-interest.ipynb",
