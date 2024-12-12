@@ -21,7 +21,7 @@ rule mpileupVariantsOfInterest:
     shell:
         """
         samtools mpileup {input.bam} -r {params.region} -f {params.ref} 2> {log} | 
-        python {params.basedir}/scripts/BaseParser.py > {output} 2>> {log}
+        python {params.basedir}/scripts/base-parser.py > {output} 2>> {log}
         """
 
 
