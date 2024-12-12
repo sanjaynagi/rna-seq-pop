@@ -21,7 +21,7 @@ rule mpileupVariantsOfInterest:
     shell:
         """
         samtools mpileup {input.bam} -r {params.region} -f {params.ref} 2> {log} | 
-        python {params.basedir}/scripts/BaseParser.py > {output} 2>> {log}
+        python {params.basedir}/scripts/base-parser.py > {output} 2>> {log}
         """
 
 
@@ -36,7 +36,7 @@ rule AlleleBalanceVariantsOfInterest:
             mut=mutationData.Name,
         ),
         metadata=config["metadata"],
-        mutations=config["miscellaneous"]["VariantsOfInterest"]["path"],
+        mutations=config["VariantsOfInterest"]["path"],
     output:
         expand(
             "results/variantAnalysis/variantsOfInterest/csvs/{mut}_alleleBalance.csv",
@@ -50,7 +50,7 @@ rule AlleleBalanceVariantsOfInterest:
     log:
         "logs/variantsOfInterestAlleleBalance.log",
     script:
-        "../scripts/VariantsOfInterestAlleleBalance.R"
+        "../scripts/variants-of-interest.R"
 
 
 
@@ -65,7 +65,7 @@ rule VariantsOfInterest_notebook:
             "results/variantAnalysis/variantsOfInterest/csvs/{mut}_alleleBalance.csv",
             mut=mutationData.Name,
         ),
-        VariantsOfInterest=config["miscellaneous"]["VariantsOfInterest"]["path"],
+        VariantsOfInterest=config["VariantsOfInterest"]["path"],
     output:
         nb = "results/notebooks/variants-of-interest.ipynb",
         docs_nb = "docs/rna-seq-pop-results/notebooks/variants-of-interest.ipynb",

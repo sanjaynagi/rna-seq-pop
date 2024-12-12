@@ -13,14 +13,13 @@ rule CheckInputs:
         gene_names=config["reference"]["genes2transcripts"],
         contrasts=config["contrasts"],
         fastq=config["fastq"]["auto"],
-        sweeps=config["miscellaneous"]["sweeps"]["activate"],
     log:
         "logs/CheckInputs.log",
     conda:
         "../envs/pythonGenomics.yaml"
     priority: 50
     script:
-        "../scripts/checkInputs.py"
+        "../scripts/check-inputs.py"
 
 
 

@@ -62,17 +62,14 @@ DifferentialExpression:
             activate: True
       isoform-level:
             activate: True 
-
-      progressiveGenes:                       # Activate progressiveGenes analysis. Will find genes that are consistently up or downregulated across two comparisons. 
-            activate: True                    # For example - which genes upregulated in Kisumu v gambiaeCont, are also upregulated in gambiaeCont v gambiaePM
-            padj_threshold: 0.05
-            fc_threshold: 1
-            groups: "Kisumu_gambiaeCont_gambiaePM"
-
       GSEA:                                 # Activate Gene set enrichment analysis 
             activate: True
             gaf: "resources/reference/VectorBase-50_AgambiaePEST_GO.gaf"
 
+
+VariantsOfInterest:                                
+      activate: True                             
+      path: "resources/exampleMutations.tsv"          
 
 
 VariantAnalysis:
@@ -113,21 +110,3 @@ VariantAnalysis:
           #        - "2Rc_gam"
            #       - "2Rd"
             #      - "2Ru"
-
-
-miscellaneous:
-      VariantsOfInterest:                                
-            activate: True                             
-            path: "resources/exampleMutations.tsv"          
-      
-      GeneFamiliesHeatmap:
-            activate: True
-            eggnog: resources/Anogam_long.pep_eggnog_diamond.emapper.annotations.tsv.gz
-            pfam: resources/Anogam_long.pep_Pfamscan.seqs.gz
-
-      # find DE genes that lie under Ag1000g selective sweeps 
-      # Only applicable for Anopheles gambiae s.l
-      sweeps:
-            activate: True
-            padj_threshold: 0.05
-            fc_threshold: 1.5

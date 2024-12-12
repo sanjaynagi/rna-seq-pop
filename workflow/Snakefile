@@ -15,11 +15,11 @@ metadata = load_metadata(config['metadata'])
 validate(metadata, schema="schemas/samples.schema.yaml")
 samples = metadata["sampleID"]
 
-if config['miscellaneous']['VariantsOfInterest']['activate']:
-    mutationData =  pd.read_csv(config["miscellaneous"]["VariantsOfInterest"]["path"], sep="\t")
+if config['VariantsOfInterest']['activate']:
+    mutationData =  pd.read_csv(config["VariantsOfInterest"]["path"], sep="\t")
     include: "rules/variantsOfInterest.smk"
 
-welcome(version="v2.0.2")
+welcome(version="v2.1.0")
 
 include: "rules/qc.smk"
 include: "rules/diffexp.smk"
