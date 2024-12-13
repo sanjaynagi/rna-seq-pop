@@ -19,7 +19,7 @@ if config['VariantsOfInterest']['activate']:
     mutationData =  pd.read_csv(config["VariantsOfInterest"]["path"], sep="\t")
     include: "rules/variantsOfInterest.smk"
 
-welcome(version="v2.1.0")
+welcome(version="v2.3.0")
 
 include: "rules/qc.smk"
 include: "rules/diffexp.smk"
