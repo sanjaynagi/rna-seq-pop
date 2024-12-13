@@ -22,10 +22,9 @@ rule CheckInputs:
         "../scripts/check-inputs.py"
 
 
-
 rule fastp:
     input:
-        sample = getFASTQs,
+        sample=getFASTQs,
     output:
         trimmed=["resources/reads/trimmed/{sample}_1.fastq.gz", "resources/reads/trimmed/{sample}_2.fastq.gz"] if config['fastq']['paired'] else ["resources/reads/trimmed/{sample}_1.fastq.gz"],
         html="results/qc/{sample}.html",
@@ -36,15 +35,13 @@ rule fastp:
     wrapper:
         "v2.2.1/bio/fastp"
 
-
-
 rule BamStats:
     """
     QC alignment statistics
     """
     input:
-        bam="results/alignments/{sample}.star.bam" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam",
-        idx="results/alignments/{sample}.star.bam.bai" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam.bai",
+        bam="results/alignments/{sample}.star.bam", # if config['aligner'] == 'STAR' else "results/alignments/{sample}.hisat2.bam",
+        idx="results/alignments/{sample}.star.bam.bai", # if config['aligner'] == 'STAR' else "results/alignments/{sample}.hisat2.bam.bai",
     output:
         stats="results/qc/alignments/{sample}.flagstat",
     log:
@@ -52,14 +49,13 @@ rule BamStats:
     wrapper:
         "v3.12.1/bio/samtools/flagstat"
 
-
 rule Coverage:
     """
     Calculate coverage with mosdepth
     """
     input:
-        bam="results/alignments/{sample}.star.bam" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam",
-        idx="results/alignments/{sample}.star.bam.bai" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam.bai",
+        bam="results/alignments/{sample}.star.bam",# if config['aligner'] == 'STAR' else "results/alignments/{sample}.hisat2.bam",
+        idx="results/alignments/{sample}.star.bam.bai",# if config['aligner'] == 'STAR' else "results/alignments/{sample}.hisat2.bam.bai",
     output:
         "results/qc/coverage/{sample}.mosdepth.summary.txt",
     log:
