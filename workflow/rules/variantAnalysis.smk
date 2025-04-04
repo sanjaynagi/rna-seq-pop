@@ -240,6 +240,9 @@ rule Karyotyping:
         vcf2l=expand("results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
                         contig=contig_2l,
                         dataset=config["dataset"]),
+        vcf2r=expand("results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz",
+                        contig=contig_2r,
+                        dataset=config["dataset"]),
     output:
         nb = "results/notebooks/karyotype.ipynb",
         docs_nb = "docs/rna-seq-pop-results/notebooks/karyotype.ipynb",
