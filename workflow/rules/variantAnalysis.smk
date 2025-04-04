@@ -259,6 +259,6 @@ rule Karyotyping:
         dataset=config["dataset"],
     shell:
         """
-        papermill {input.nb} {output.nb} -k pythonGenomics -p contig_r {params.contig_2r} -p contig_l {params.contig_2l} -p tag_snp_path {input.tagsnps} -p inversion {params.inversions} -p config_path {params.configpath} -p metadata_path {params.metadata} -p dataset {params.dataset} -p ploidy {params.ploidy} 2> {log}
+        papermill {input.nb} {output.nb} -k pythonGenomics -p contig_r {params.contig_2r} -p contig_l {params.contig_2l} -p tag_snp_path {input.tagsnps} -p config_path {params.configpath} -p metadata_path {params.metadata} -p dataset {params.dataset} -p ploidy {params.ploidy} 2> {log}
         cp {output.nb} {output.docs_nb} 2>> {log}
         """
