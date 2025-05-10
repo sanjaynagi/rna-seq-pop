@@ -44,13 +44,17 @@ rule IndexBams:
     Index bams with samtools
     """
     input:
-        bam="results/alignments/{sample}.hisat2.bam",
+        bam="results/alignments/{sample}.star.bam", #if config['aligner'] == 'STAR' else "results/alignments/{sample}.hisat2.bam",
     output:
-        idx="results/alignments/{sample}.hisat2.bam.bai",
+        idx="results/alignments/{sample}.star.bam.bai", #if config['aligner'] == 'STAR' else "results/alignments/{sample}.hisat2.bam",
     log:
         "logs/IndexBams/{sample}.log",
-    wrapper:
-        "v1.15.0/bio/samtools/index"
+    conda: 
+        "../envs/variants.yaml"
+    shell:
+        """
+        samtools index {input.bam} {output.idx} 2> {log}
+        """
 
 
 rule RestrictToSNPs:

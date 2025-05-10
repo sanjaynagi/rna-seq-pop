@@ -1,22 +1,21 @@
-
 rule HISAT2index:
-    """
-    Make a HISAT2 index of the reference genome
-    """
-    input:
-        fasta=config["reference"]["genome"].rstrip(".gz"),
-    output:
-        "resources/reference/ht2index/idx.1.ht2",
-        touch("resources/reference/ht2index/.complete"),
-    log:
-        "logs/HISAT2/HISAT2index.log",
-    conda:
-        "../envs/variants.yaml"
-    params:
-        prefix=lambda w, output: output[0].split(os.extsep)[0],
-    threads: 8
-    shell:
-        "hisat2-build -p {threads} {input.fasta} {params.prefix}  2> {log}"
+     """
+     Make a HISAT2 index of the reference genome
+     """
+     input:
+         fasta=config["reference"]["genome"].rstrip(".gz"),
+     output:
+         "resources/reference/ht2index/idx.1.ht2",
+         touch("resources/reference/ht2index/.complete"),
+     log:
+         "logs/HISAT2/HISAT2index.log",
+     conda:
+         "../envs/variants.yaml"
+     params:
+         prefix=lambda w, output: output[0].split(os.extsep)[0],
+     threads: 8
+     shell:
+         "hisat2-build -p {threads} {input.fasta} {params.prefix}  2> {log}"
 
 
 rule HISAT2align:
