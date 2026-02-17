@@ -1,4 +1,5 @@
 import allel
+import os
 import pandas as pd
 import numpy as np
 import matplotlib
@@ -6,6 +7,18 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import seaborn as sns
 from collections import defaultdict
+
+def _scaled_font(n_items, min_size=6, max_size=18, base=42):
+    n_items = max(int(n_items), 1)
+    return float(np.clip(base / np.sqrt(n_items), min_size, max_size))
+
+
+def _plot_empty_heatmap(path, figsize, message="No variant data available", dpi=300):
+    plt.figure(figsize=figsize)
+    plt.text(0.5, 0.5, message, ha="center", va="center", fontsize=14)
+    plt.axis("off")
+    plt.savefig(path, bbox_inches="tight", dpi=dpi)
+
 
 def load_metadata(metadata_path):
     # load panel metadata
@@ -49,61 +62,85 @@ def plotWindowed(statName, cohortText, cohortNoSpaceText, values, midpoints, pre
     
 
 def plotRectangular(voiFreqTable, path, annot=True, xlab="Sample", ylab="Variant Of Interest", title=None, figsize=[10,10], cbar=True, vmax=None, rotate=True, cmap=sns.cubehelix_palette(start=.5, rot=-.75, as_cmap=True), dpi=300):
+    if voiFreqTable is None or voiFreqTable.empty:
+        _plot_empty_heatmap(path=path, figsize=figsize, dpi=dpi)
+        return
+
+    n_rows = voiFreqTable.shape[0]
+    n_cols = voiFreqTable.shape[1]
+    annot_fontsize = _scaled_font(n_rows, min_size=6, max_size=18, base=42)
+    xtick_fontsize = _scaled_font(n_cols, min_size=8, max_size=16, base=38)
+    ytick_fontsize = _scaled_font(n_rows, min_size=8, max_size=14, base=32)
+
     plt.figure(figsize=figsize)
-    #voiFreqTable = (voiFreqTable*100).astype(int)
     sns.heatmap(voiFreqTable, cmap=cmap, vmax=vmax, cbar=cbar,
-                   linewidths=0.8,linecolor="white",annot=annot, fmt = '',annot_kws={"size": 18})
+                   linewidths=0.8, linecolor="white", annot=annot, fmt='', annot_kws={"size": annot_fontsize})
     if title != None: plt.title(title, pad=10)
     
     if rotate:
-        plt.xticks(fontsize=16, rotation=45, ha='right',rotation_mode="anchor")#, labels=['Busia Parental', 'Busia Selected', 'Kisumu'], ticks=[0.5,1.5,2.5])
+        plt.xticks(fontsize=xtick_fontsize, rotation=45, ha='right', rotation_mode="anchor")
     else:
-        plt.xticks(fontsize=13)
+        plt.xticks(fontsize=xtick_fontsize)
         
-    plt.yticks(fontsize=14)
+    plt.yticks(fontsize=ytick_fontsize)
     plt.xlabel(xlab, fontdict={'fontsize':14}, labelpad=20)
     plt.ylabel(ylab, fontdict={'fontsize':14})
     plt.savefig(path, bbox_inches='tight', dpi=dpi)
     
-def getAlleleFreqTable(muts, Path, var="sample", mean_=False, lowCov = 10):
-    freqDict = {}
-    covDict = {}
+def getAlleleFreqTable(muts, Path, var="sample", mean_=False, lowCov=10, id_col="Name"):
+    freq_frames = []
+    cov_frames = []
     cov_var = "cov" if mean_== False else "cov_mean"
 
-    for mut in muts['Name']:
-        df = pd.read_csv(Path.format(mut=mut))
+    if id_col not in muts.columns:
+        raise ValueError(f"id_col '{id_col}' is not present in mutation table.")
+
+    for _, mut_row in muts.iterrows():
+        mut_id = str(mut_row[id_col])
+        mut_name = str(mut_row["Name"])
+        csv_path = Path.format(mut=mut_id, mut_id=mut_id, name=mut_name)
+        if not os.path.exists(csv_path):
+            continue
+
+        df = pd.read_csv(csv_path)
+        if df.empty:
+            continue
+
         if mean_:
-            df['gene'] = muts[muts.Name == mut]['Gene'].iloc[0]
+            df['gene'] = mut_row['Gene']
         df['name'] = df['chrom'].astype(str) + ":"+ df['pos'].astype(str) + "  " + df['gene'].astype(str) + " | " + df['mutation'].astype(str)
         df['frequency'] = df.filter(like="proportion").sum(axis=1)
-        freqDict[mut] = df[['name', var, 'frequency']]
-        covDict[mut] = df[['name', var, cov_var]]
+        if var not in df.columns or cov_var not in df.columns:
+            continue
+        freq_frames.append(df[['name', var, 'frequency']])
+        cov_frames.append(df[['name', var, cov_var]])
 
-    voiData = pd.concat(freqDict)
-    covData = pd.concat(covDict)
-    voiFreqTable = voiData.pivot(index="name", columns=var).round(2).droplevel(0, axis=1)
-    voiCovTable = covData.pivot(index="name", columns=var).round(2).droplevel(0, axis=1)
+    if not freq_frames or not cov_frames:
+        return (pd.DataFrame(), pd.DataFrame())
 
-    #annotTable = (voiFreqTable*100).astype(int).astype(str) + "%" ## percentages
-    annotTable = voiFreqTable.astype(str).apply(lambda x: x.str.strip("0")).applymap(addZeros)  ## decimals
-    ## adding asterisks if low Cov 
-    asteriskTable = voiCovTable.applymap(lambda x: "*" if x < lowCov else "")
+    voiData = pd.concat(freq_frames, ignore_index=True)
+    covData = pd.concat(cov_frames, ignore_index=True)
+    voiFreqTable = voiData.pivot_table(index="name", columns=var, values="frequency", aggfunc="first").round(2)
+    voiCovTable = covData.pivot_table(index="name", columns=var, values=cov_var, aggfunc="first").round(2)
+
+    annotTable = voiFreqTable.apply(lambda col: col.map(_format_annot_value))
+    asteriskTable = voiCovTable.apply(lambda col: col.map(lambda x: "*" if pd.notna(x) and x < lowCov else ""))
     annotTable = annotTable + asteriskTable
-    #annotTable = annotTable.applymap(lambda x: "" if x == "0%*" else x)
-    #annotTable = annotTable.applymap(lambda x: "" if x == "0%" else x)
     return(voiFreqTable, annotTable)
 
-def addZeros(x):
-    if x == "1.":
-        return("1")
-    elif x == ".":
-        return("")
-    elif len(x) < 3:
-        return(x + "0")
-    else: 
-        return(x)
+def _format_annot_value(x):
+    if pd.isna(x):
+        return ""
+    if x == 1:
+        return "1"
+    if x == 0:
+        return "0"
+    return f"{x:.2f}".rstrip("0").rstrip(".")
 
 def plotTwoRectangular(FreqTable1, annotdf1, FreqTable2, annotdf2, path, ylab="Variant Of Interest", annotFontsize=50, ylabfontsize=28 ,ytickfontsize=18, title1=None, title2=None, figsize=[20,10], ratio='auto', vmax=None, rotate=True, cmap=sns.cubehelix_palette(start=.5, rot=-.75, as_cmap=True), dpi=100):
+    if FreqTable1 is None or FreqTable1.empty or FreqTable2 is None or FreqTable2.empty:
+        _plot_empty_heatmap(path=path, figsize=figsize, dpi=dpi)
+        return
     
     if ratio=='auto':
         ratio=[FreqTable1.shape[1],FreqTable2.shape[1]]
@@ -123,12 +160,12 @@ def plotTwoRectangular(FreqTable1, annotdf1, FreqTable2, annotdf2, path, ylab="V
                 linecolor="white",
                 annot=annotdf1,
                 fmt = '', 
-                annot_kws={"size": annotFontsize / np.sqrt(len(FreqTable1))})
+                annot_kws={"size": _scaled_font(len(FreqTable1), min_size=6, max_size=16, base=40)})
     ax[0].set(xlabel="")
-    plt.setp(ax[0].get_xticklabels(),fontsize=18, rotation=45, ha='right',rotation_mode="anchor")
+    plt.setp(ax[0].get_xticklabels(), fontsize=_scaled_font(FreqTable1.shape[1], min_size=8, max_size=16, base=36), rotation=45, ha='right', rotation_mode="anchor")
     ax[0].set_ylabel(ylab, fontsize=ylabfontsize)
     plt.xlabel(None)     
-    plt.setp(ax[0].get_yticklabels(),fontsize=ytickfontsize)
+    plt.setp(ax[0].get_yticklabels(), fontsize=_scaled_font(FreqTable1.shape[0], min_size=8, max_size=16, base=30))
     
     ## Second heatmap
     sns.heatmap(ax=ax[1],
@@ -141,9 +178,9 @@ def plotTwoRectangular(FreqTable1, annotdf1, FreqTable2, annotdf2, path, ylab="V
                 annot=annotdf2, 
                 yticklabels=False, 
                 fmt = '', 
-                annot_kws={"size": annotFontsize / np.sqrt(len(FreqTable2))})
+                annot_kws={"size": _scaled_font(len(FreqTable2), min_size=6, max_size=16, base=40)})
     
-    plt.setp(ax[1].get_xticklabels(),fontsize=18, rotation=45, ha='right',rotation_mode="anchor")
+    plt.setp(ax[1].get_xticklabels(), fontsize=_scaled_font(FreqTable2.shape[1], min_size=8, max_size=16, base=36), rotation=45, ha='right', rotation_mode="anchor")
     ax[1].set(xlabel="", ylabel="")
     if title2 != None: plt.title(title2, fontsize=28)
     if path != None: plt.savefig(path, bbox_inches='tight', dpi=dpi)

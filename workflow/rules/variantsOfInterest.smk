@@ -6,16 +6,16 @@ rule mpileupVariantsOfInterest:
         bam="results/alignments/{sample}.star.bam" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam",
         idx="results/alignments/{sample}.star.bam.bai" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam.bai",
     output:
-        "results/variantAnalysis/variantsOfInterest/counts/{sample}_{mut}_allele_counts.tsv",
+        "results/variantAnalysis/variantsOfInterest/counts/{sample}_{mut_id}_allele_counts.tsv",
     conda:
         "../envs/variants.yaml"
     priority: 10
     log:
-        "logs/variantsOfInterestMpileup/{sample}_{mut}.log",
+        "logs/variantsOfInterestMpileup/{sample}_{mut_id}.log",
     params:
         region=lambda wildcards: mutationData[
-            mutationData.Name == wildcards.mut
-        ].Location.tolist(),
+            mutationData.mutID == wildcards.mut_id
+        ].Location.iloc[0],
         ref=config["reference"]["genome"].rstrip(".gz"),
         basedir=workflow.basedir,
     shell:
@@ -31,16 +31,16 @@ rule AlleleBalanceVariantsOfInterest:
     """
     input:
         counts=expand(
-            "results/variantAnalysis/variantsOfInterest/counts/{sample}_{mut}_allele_counts.tsv",
+            "results/variantAnalysis/variantsOfInterest/counts/{sample}_{mut_id}_allele_counts.tsv",
             sample=samples,
-            mut=mutationData.Name,
+            mut_id=mutationData.mutID,
         ),
         metadata=config["metadata"],
         mutations=config["VariantsOfInterest"]["path"],
     output:
         expand(
-            "results/variantAnalysis/variantsOfInterest/csvs/{mut}_alleleBalance.csv",
-            mut=mutationData.Name,
+            "results/variantAnalysis/variantsOfInterest/csvs/{mut_id}_alleleBalance.csv",
+            mut_id=mutationData.mutID,
         ),
         alleleBalance="results/variantAnalysis/variantsOfInterest/alleleBalance.xlsx",
         mean_alleleBalance="results/variantAnalysis/variantsOfInterest/mean_alleleBalance.xlsx",
@@ -62,8 +62,8 @@ rule VariantsOfInterest_notebook:
         nb = f"{workflow.basedir}/notebooks/variants-of-interest.ipynb",
         kernel = "results/.kernel.set",
         muts = expand(
-            "results/variantAnalysis/variantsOfInterest/csvs/{mut}_alleleBalance.csv",
-            mut=mutationData.Name,
+            "results/variantAnalysis/variantsOfInterest/csvs/{mut_id}_alleleBalance.csv",
+            mut_id=mutationData.mutID,
         ),
         VariantsOfInterest=config["VariantsOfInterest"]["path"],
     output:

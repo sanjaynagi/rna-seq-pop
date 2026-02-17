@@ -17,6 +17,17 @@ samples = metadata["sampleID"]
 
 if config['VariantsOfInterest']['activate']:
     mutationData =  pd.read_csv(config["VariantsOfInterest"]["path"], sep="\t")
+    mutationData["mutID"] = (
+        mutationData["Name"].astype(str).str.strip().str.replace(r"\s+", "_", regex=True)
+        + "__"
+        + mutationData["Location"].astype(str).str.strip().str.replace(r"[^A-Za-z0-9._-]", "_", regex=True)
+    )
+    mutid_dupe_index = mutationData.groupby("mutID").cumcount()
+    mutationData.loc[mutid_dupe_index > 0, "mutID"] = (
+        mutationData.loc[mutid_dupe_index > 0, "mutID"]
+        + "__dup"
+        + (mutid_dupe_index[mutid_dupe_index > 0] + 1).astype(str)
+    )
     include: "rules/variantsOfInterest.smk"
 
 welcome(version="v2.3.0")
