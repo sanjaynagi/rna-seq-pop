@@ -3,8 +3,8 @@ rule mpileup_variants_of_interest:
     Get allele count tables of variants of choice (specified in config file ("IRmutations.tsv"))
     """
     input:
-        bam="results/alignments/{sample}.star.bam" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam",
-        idx="results/alignments/{sample}.star.bam.bai" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam.bai",
+        bam="results/alignments/{sample}.star.bam",
+        idx="results/alignments/{sample}.star.bam.bai",
     output:
         "results/variantAnalysis/variantsOfInterest/counts/{mut_id}/{sample}_allele_counts.tsv",
     conda:

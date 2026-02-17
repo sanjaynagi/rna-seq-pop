@@ -22,7 +22,7 @@ def get_fastqs(wildcards, rules=None):
     """
     Get FASTQ files from unit sheet.
     If there are more than one wildcard (aka, sample), only return one fastq file
-    If the rule is hisat2_align, then return the fastqs with -1 and -2 flags
+    For align/quant rules, this can resolve to trimmed FASTQs when fastp-trim is active.
     """
     metadata = load_metadata(config["metadata"])
     
@@ -32,16 +32,13 @@ def get_fastqs(wildcards, rules=None):
         fastq_cols = ['fq1']
 
     if config["QualityControl"]["fastp-trim"]["activate"] == True:
-        if rules in ["kallisto_quant", "hisat2_align", "hisat2_align_input"]:
+        if rules in ["kallisto_quant", "star_align_cpu", "star_align_cpu_input"]:
             for i, col in enumerate(fastq_cols):
                 metadata = metadata.assign(**{col: f"resources/reads/trimmed/" + metadata["sampleID"] + f"_{i+1}.fastq.gz"})     
             metadata = metadata.set_index("sampleID")
             
             u = metadata.loc[wildcards.sample, fastq_cols].dropna()
-            if rules == "hisat2_align":
-                return [f"-1 {u.fq1} -2 {u.fq2}"] if config['fastq']['paired'] == True else f"-U {u.fq1}"
-            else:
-                return [u.fq1, u.fq2] if config['fastq']['paired'] == True else [u.fq1]
+            return [u.fq1, u.fq2] if config['fastq']['paired'] == True else [u.fq1]
 
     if config["fastq"]["auto"]:
         for i, col in enumerate(fastq_cols):
@@ -59,21 +56,14 @@ def get_fastqs(wildcards, rules=None):
         metadata = metadata.set_index("sampleID")
 
     u = metadata.loc[wildcards.sample, fastq_cols].dropna()
-    if rules == "hisat2_align":
-        return [f"-1 {u.fq1} -2 {u.fq2}"] if config['fastq']['paired'] == True else f"-U {u.fq1}"
-    else:
-        return [u.fq1, u.fq2] if config['fastq']['paired'] == True else [u.fq1]
+    return [u.fq1, u.fq2] if config['fastq']['paired'] == True else [u.fq1]
 
 
 def get_bam(wildcards):
     """
     Get BAM files depending on aligner
     """
-    if config['pipeline'] == 'parabricks':
-        bam = "results/alignments/{sample}.star.bam"
-    else:
-        bam = "results/alignments/{sample}.hisat2.bam"
-    return bam
+    return "results/alignments/{sample}.star.bam"
 
 def rnaseqpop_outputs(wildcards):
 
@@ -278,7 +268,7 @@ def welcome(version, using_user_metadata_colours=False):
     else:
         input_str = "Single-end FASTQ paths provided in metadata column fq1"
 
-    aligner_str = "STAR + GATK HaplotypeCaller (Parabricks)" if pipeline_mode == "parabricks" else "HISAT2 + FreeBayes"
+    aligner_str = "STAR + GATK HaplotypeCaller (Parabricks)" if pipeline_mode == "parabricks" else "STAR + FreeBayes"
 
     active_modules = []
     if qc_cfg.get("multiqc", {}).get("activate", False):

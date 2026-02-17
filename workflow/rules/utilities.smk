@@ -39,20 +39,6 @@ rule genome_index:
         "v1.15.0/bio/samtools/faidx"
 
 
-rule index_bams:
-    """
-    Index bams with samtools
-    """
-    input:
-        bam="results/alignments/{sample}.hisat2.bam",
-    output:
-        idx="results/alignments/{sample}.hisat2.bam.bai",
-    log:
-        "logs/IndexBams/{sample}.log",
-    wrapper:
-        "v1.15.0/bio/samtools/index"
-
-
 rule restrict_to_snps:
     """"
     Filter out indels

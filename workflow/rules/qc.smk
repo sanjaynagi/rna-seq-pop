@@ -43,8 +43,8 @@ rule bam_stats:
     QC alignment statistics
     """
     input:
-        bam="results/alignments/{sample}.star.bam" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam",
-        idx="results/alignments/{sample}.star.bam.bai" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam.bai",
+        bam="results/alignments/{sample}.star.bam",
+        idx="results/alignments/{sample}.star.bam.bai",
     output:
         stats="results/qc/alignments/{sample}.flagstat",
     log:
@@ -58,8 +58,8 @@ rule coverage:
     Calculate coverage with mosdepth
     """
     input:
-        bam="results/alignments/{sample}.star.bam" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam",
-        idx="results/alignments/{sample}.star.bam.bai" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam.bai",
+        bam="results/alignments/{sample}.star.bam",
+        idx="results/alignments/{sample}.star.bam.bai",
     output:
         "results/qc/coverage/{sample}.mosdepth.summary.txt",
     log:

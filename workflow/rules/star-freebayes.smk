@@ -1,50 +1,65 @@
 
-rule hisat2_index:
+rule star_index_cpu:
     """
-    Make a HISAT2 index of the reference genome
+    Build a STAR genome index for CPU alignment.
     """
     input:
         fasta=config["reference"]["genome"].rstrip(".gz"),
+        gff=config["reference"]["gff"],
     output:
-        "resources/reference/ht2index/idx.1.ht2",
-        touch("resources/reference/ht2index/.complete"),
+        index=directory("resources/reference/star_index_cpu"),
     log:
-        "logs/HISAT2/HISAT2index.log",
+        "logs/star/index_cpu.log",
     conda:
         "../envs/variants.yaml"
     params:
-        prefix=lambda w, output: output[0].split(os.extsep)[0],
+        extra="--sjdbGTFtagExonParentTranscript Parent",
     threads: 8
     shell:
-        "hisat2-build -p {threads} {input.fasta} {params.prefix}  2> {log}"
+        """
+        mkdir -p {output.index}
+        STAR \
+            --runThreadN {threads} \
+            --runMode genomeGenerate \
+            --genomeFastaFiles {input.fasta} \
+            --sjdbGTFfile {input.gff} \
+            {params.extra} \
+            --genomeDir {output.index} \
+            --outFileNamePrefix {output.index}/ > {log} 2>&1
+        """
 
 
-rule hisat2_align:
+rule star_align_cpu:
     """
-    Align reads to the genome with HISAT2, mark duplicates with samblaster and sort with samtools
+    Align reads with STAR (CPU) and output a coordinate-sorted BAM plus index.
     """
     input:
-        reads=lambda wildcards: get_fastqs(
-            wildcards=wildcards, rules="hisat2_align_input"
-        ),
-        idx="resources/reference/ht2index/.complete",
+        reads=lambda wildcards: get_fastqs(wildcards=wildcards, rules="star_align_cpu_input"),
+        idx="resources/reference/star_index_cpu",
     output:
-        "results/alignments/{sample}.hisat2.bam",
+        bam="results/alignments/{sample}.star.bam",
+        bai="results/alignments/{sample}.star.bam.bai",
     log:
-        align="logs/HISAT2/{sample}_align.log",
+        align="logs/star/{sample}_align_cpu.log",
         sort="logs/samtoolsSort/{sample}.log",
     conda:
         "../envs/variants.yaml"
     params:
-        readflags=lambda wildcards: get_fastqs(wildcards=wildcards, rules="hisat2_align"),
-        extra="--dta -q --rg-id {sample} --rg SM:{sample} --rg PL:ILLUMINA --new-summary",
-        idx="resources/reference/ht2index/idx",
-        samblaster="" if config['fastq']['paired'] is True else "--ignoreUnmated"
+        prefix="results/alignments/{sample}.star.",
     threads: 12
     shell:
         """
-        hisat2 {params.extra} --threads {threads} -x {params.idx} {params.readflags} 2> {log.align} | 
-        samblaster {params.samblaster} 2> {log.sort} | samtools sort -@{threads} - -o {output} 2>> {log.sort}
+        STAR \
+            --runThreadN {threads} \
+            --genomeDir {input.idx} \
+            --readFilesIn {input.reads} \
+            --readFilesCommand zcat \
+            --outSAMtype BAM SortedByCoordinate \
+            --outSAMunmapped Within \
+            --outSAMattributes Standard \
+            --outFileNamePrefix {params.prefix} > {log.align} 2>&1
+        mv {params.prefix}Aligned.sortedByCoord.out.bam {output.bam}
+        samtools index -@ {threads} {output.bam} {output.bai} 2> {log.sort}
         """
 
 
@@ -54,7 +69,7 @@ rule generate_freebayes_params:
     input:
         ref_idx=config["reference"]["genome"].rstrip(".gz"),
         index=config["reference"]["genome"].rstrip(".gz") + ".fai",
-        bams=expand("results/alignments/{sample}.hisat2.bam", sample=samples),
+        bams=expand("results/alignments/{sample}.star.bam", sample=samples),
     output:
         bamlist="results/alignments/bam.list",
         pops="results/alignments/populations.tsv",
@@ -113,7 +128,7 @@ rule generate_freebayes_params:
             raise ValueError("Metadata file must be .xlsx, .tsv, or .csv")
         
         # Add bam paths and create output files
-        metadata['bams'] = 'results/alignments/' + metadata['sampleID'] + '.hisat2.bam'
+        metadata['bams'] = 'results/alignments/' + metadata['sampleID'] + '.star.bam'
         
         # Create populations file
         metadata[['bams', 'strain']].to_csv(
@@ -137,8 +152,8 @@ rule variant_calling_freebayes:
     Run freebayes on chunks of the genome, splitting the samples by population (strain)
     """
     input:
-        bams=expand("results/alignments/{sample}.hisat2.bam", sample=samples),
-        index=expand("results/alignments/{sample}.hisat2.bam.bai", sample=samples),
+        bams=expand("results/alignments/{sample}.star.bam", sample=samples),
+        index=expand("results/alignments/{sample}.star.bam.bai", sample=samples),
         ref=config["reference"]["genome"].rstrip(".gz"),
         samples="results/alignments/bam.list",
         pops="results/alignments/populations.tsv",
@@ -175,4 +190,3 @@ rule concat_vcfs:
     threads: 4
     shell:
         "bcftools concat {input.calls} | vcfuniq > {output} 2> {log}"
-
