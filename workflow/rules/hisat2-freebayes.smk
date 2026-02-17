@@ -1,5 +1,5 @@
 
-rule HISAT2index:
+rule hisat2_index:
     """
     Make a HISAT2 index of the reference genome
     """
@@ -19,13 +19,13 @@ rule HISAT2index:
         "hisat2-build -p {threads} {input.fasta} {params.prefix}  2> {log}"
 
 
-rule HISAT2align:
+rule hisat2_align:
     """
     Align reads to the genome with HISAT2, mark duplicates with samblaster and sort with samtools
     """
     input:
-        reads=lambda wildcards: getFASTQs(
-            wildcards=wildcards, rules="HISAT2align_input"
+        reads=lambda wildcards: get_fastqs(
+            wildcards=wildcards, rules="hisat2_align_input"
         ),
         idx="resources/reference/ht2index/.complete",
     output:
@@ -36,7 +36,7 @@ rule HISAT2align:
     conda:
         "../envs/variants.yaml"
     params:
-        readflags=lambda wildcards: getFASTQs(wildcards=wildcards, rules="HISAT2align"),
+        readflags=lambda wildcards: get_fastqs(wildcards=wildcards, rules="hisat2_align"),
         extra="--dta -q --rg-id {sample} --rg SM:{sample} --rg PL:ILLUMINA --new-summary",
         idx="resources/reference/ht2index/idx",
         samblaster="" if config['fastq']['paired'] is True else "--ignoreUnmated"
@@ -50,7 +50,7 @@ rule HISAT2align:
 
 chunks = np.arange(1, config["VariantAnalysis"]["chunks"])
 
-rule GenerateFreebayesParams:
+rule generate_freebayes_params:
     input:
         ref_idx=config["reference"]["genome"].rstrip(".gz"),
         index=config["reference"]["genome"].rstrip(".gz") + ".fai",
@@ -132,7 +132,7 @@ rule GenerateFreebayesParams:
         )
 
 
-rule VariantCallingFreebayes:
+rule variant_calling_freebayes:
     """
     Run freebayes on chunks of the genome, splitting the samples by population (strain)
     """
@@ -157,7 +157,7 @@ rule VariantCallingFreebayes:
 
 chunks = np.arange(1, config["VariantAnalysis"]["chunks"])
 
-rule ConcatVCFs:
+rule concat_vcfs:
     """
     Concatenate VCFs together
     """
@@ -175,5 +175,4 @@ rule ConcatVCFs:
     threads: 4
     shell:
         "bcftools concat {input.calls} | vcfuniq > {output} 2> {log}"
-
 

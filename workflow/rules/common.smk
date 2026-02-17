@@ -18,11 +18,11 @@ def load_metadata(metadata_path):
 
 
 
-def getFASTQs(wildcards, rules=None):
+def get_fastqs(wildcards, rules=None):
     """
     Get FASTQ files from unit sheet.
     If there are more than one wildcard (aka, sample), only return one fastq file
-    If the rule is HISAT2align, then return the fastqs with -1 and -2 flags
+    If the rule is hisat2_align, then return the fastqs with -1 and -2 flags
     """
     metadata = load_metadata(config["metadata"])
     
@@ -32,13 +32,13 @@ def getFASTQs(wildcards, rules=None):
         fastq_cols = ['fq1']
 
     if config["QualityControl"]["fastp-trim"]["activate"] == True:
-        if rules in ["KallistoQuant", "HISAT2align", "HISAT2align_input"]:
+        if rules in ["kallisto_quant", "hisat2_align", "hisat2_align_input"]:
             for i, col in enumerate(fastq_cols):
                 metadata = metadata.assign(**{col: f"resources/reads/trimmed/" + metadata["sampleID"] + f"_{i+1}.fastq.gz"})     
             metadata = metadata.set_index("sampleID")
             
             u = metadata.loc[wildcards.sample, fastq_cols].dropna()
-            if rules == "HISAT2align":
+            if rules == "hisat2_align":
                 return [f"-1 {u.fq1} -2 {u.fq2}"] if config['fastq']['paired'] == True else f"-U {u.fq1}"
             else:
                 return [u.fq1, u.fq2] if config['fastq']['paired'] == True else [u.fq1]
@@ -59,13 +59,13 @@ def getFASTQs(wildcards, rules=None):
         metadata = metadata.set_index("sampleID")
 
     u = metadata.loc[wildcards.sample, fastq_cols].dropna()
-    if rules == "HISAT2align":
+    if rules == "hisat2_align":
         return [f"-1 {u.fq1} -2 {u.fq2}"] if config['fastq']['paired'] == True else f"-U {u.fq1}"
     else:
         return [u.fq1, u.fq2] if config['fastq']['paired'] == True else [u.fq1]
 
 
-def getBAM(wildcards):
+def get_bam(wildcards):
     """
     Get BAM files depending on aligner
     """
@@ -75,7 +75,7 @@ def getBAM(wildcards):
         bam = "results/alignments/{sample}.hisat2.bam"
     return bam
 
-def GetDesiredOutputs(wildcards):
+def rnaseqpop_outputs(wildcards):
 
     """
     Function that returns a list of the desired outputs for the rule all, depending on the config.yaml

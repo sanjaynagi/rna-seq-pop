@@ -49,7 +49,7 @@ for i, contig in enumerate(contigs):
     
     # Read in and Filter VCF
     path = f"results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz"
-    vcf, geno, acsubpops, pos, alts, depth, snpeff, subpops, populations = rnaseqpop.readAndFilterVcf(path=path,
+    vcf, geno, acsubpops, pos, alts, depth, snpeff, subpops, populations = rnaseqpop.read_and_filter_vcf(path=path,
                                                            contig=contig,
                                                            samples=metadata,
                                                            ploidy=ploidy,
@@ -73,7 +73,7 @@ for i, contig in enumerate(contigs):
     exons = features.query("type == 'exon'").reset_index(drop=True)
     
     ## Proportion SNPs per GFF feature
-    snpsPerGff[contig] = rnaseqpop.getSNPGffstats(gff,  pos)
+    snpsPerGff[contig] = rnaseqpop.get_snp_gff_stats(gff,  pos)
     snpsPerGff[contig]['chromosome'] = contig
 
     ## Calculate missing SNPs per sample, SNPs per gene etc

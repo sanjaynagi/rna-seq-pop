@@ -1,5 +1,5 @@
 
-rule KallistoIndex:
+rule kallisto_index:
     """
     Create a kallisto index of the reference transcriptome
     """
@@ -15,13 +15,13 @@ rule KallistoIndex:
         "v1.15.0/bio/kallisto/index"
 
 
-rule KallistoQuant:
+rule kallisto_quant:
     """
     Pseudo-align reads for each sample to the reference transcriptome.
     Bootstrap to allow for isoform differential expression.
     """
     input:
-        fastq=lambda wildcards: getFASTQs(wildcards=wildcards, rules="KallistoQuant"),
+        fastq=lambda wildcards: get_fastqs(wildcards=wildcards, rules="kallisto_quant"),
         index="resources/reference/kallisto.idx",
     output:
         directory("results/counts/{sample}"),
@@ -37,7 +37,7 @@ rule KallistoQuant:
 
 
 
-rule DifferentialGeneExpression:
+rule differential_gene_expression:
     """
     Perform differential expression analysis at the gene-level with DESeq2
     Produce PCAs, heatmaps, volcano plots
@@ -68,7 +68,7 @@ rule DifferentialGeneExpression:
     script:
         "../scripts/diffexp-deseq2-genes.R"
 
-rule DifferentialIsoformExpression:
+rule differential_isoform_expression:
     """
     Perform differential expression analysis at the isoform-level with Sleuth
     Produce volcano plots
@@ -96,7 +96,7 @@ rule DifferentialIsoformExpression:
         "../scripts/diffexp-sleuth-isoforms.R"
 
 
-rule GeneSetEnrichment_notebook:
+rule gene_set_enrichment_notebook:
     """
     Perform hypergeometric test GO terms from a gaf file 
     """
@@ -216,5 +216,4 @@ rule diffexp_notebook:
         papermill {input.nb} {output.nb} -k pythonGenomics -p wkdir {params.wd} -p dataset {params.dataset} 2> {log}
         cp {output.nb} {output.docs_nb} 2>> {log}
         """
-
 

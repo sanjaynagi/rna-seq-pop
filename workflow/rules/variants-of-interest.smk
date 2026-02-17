@@ -1,4 +1,4 @@
-rule mpileupVariantsOfInterest:
+rule mpileup_variants_of_interest:
     """
     Get allele count tables of variants of choice (specified in config file ("IRmutations.tsv"))
     """
@@ -25,7 +25,7 @@ rule mpileupVariantsOfInterest:
         """
 
 
-rule AlleleBalanceVariantsOfInterest:
+rule allele_balance_variants_of_interest:
     """
     R script to take allele count tables from mpileupVOI rule and output .xlsx report for all mutations of interest
     """
@@ -54,7 +54,7 @@ rule AlleleBalanceVariantsOfInterest:
 
 
 
-rule VariantsOfInterest_notebook:
+rule variants_of_interest_notebook:
     """
     Notebook to plot frequencies of Variants of interest
     """

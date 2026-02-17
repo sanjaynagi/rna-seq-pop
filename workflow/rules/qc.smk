@@ -1,4 +1,4 @@
-rule CheckInputs:
+rule check_inputs:
     """
     Check to see that fastq files exist, and reference files are appropriate
     """
@@ -25,7 +25,7 @@ rule CheckInputs:
 
 rule fastp:
     input:
-        sample = getFASTQs,
+        sample = get_fastqs,
     output:
         trimmed=["resources/reads/trimmed/{sample}_1.fastq.gz", "resources/reads/trimmed/{sample}_2.fastq.gz"] if config['fastq']['paired'] else ["resources/reads/trimmed/{sample}_1.fastq.gz"],
         html="results/qc/{sample}.html",
@@ -38,7 +38,7 @@ rule fastp:
 
 
 
-rule BamStats:
+rule bam_stats:
     """
     QC alignment statistics
     """
@@ -53,7 +53,7 @@ rule BamStats:
         "v3.12.1/bio/samtools/flagstat"
 
 
-rule Coverage:
+rule coverage:
     """
     Calculate coverage with mosdepth
     """
@@ -73,7 +73,7 @@ rule Coverage:
         "mosdepth --threads {threads} --fast-mode {params.prefix} {input.bam} 2> {log}"
 
 
-rule vcfStats:
+rule vcf_stats:
     """
     QC stats of VCF files
     """
@@ -93,7 +93,7 @@ rule vcfStats:
         bcftools stats {input} > {output} 2> {log}
         """
 
-rule multiQC:
+rule multi_qc:
     """
     Integrate QC statistics from other tools into a final .html report
     """

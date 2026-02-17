@@ -11,7 +11,7 @@ rule set_kernel:
         python -m ipykernel install --user --name=pythonGenomics 2> {log}
         """
 
-rule GenomeUnzip:
+rule genome_unzip:
     """
     Index the reference genome with samtools
     """
@@ -25,7 +25,7 @@ rule GenomeUnzip:
         "gzip -d -c {input} > {output} 2> {log}"
 
 
-rule GenomeIndex:
+rule genome_index:
     """
     Index the reference genome with samtools
     """
@@ -39,7 +39,7 @@ rule GenomeIndex:
         "v1.15.0/bio/samtools/faidx"
 
 
-rule IndexBams:
+rule index_bams:
     """
     Index bams with samtools
     """
@@ -53,7 +53,7 @@ rule IndexBams:
         "v1.15.0/bio/samtools/index"
 
 
-rule RestrictToSNPs:
+rule restrict_to_snps:
     """"
     Filter out indels
     """

@@ -33,7 +33,7 @@ def load_metadata(metadata_path):
     return metadata
 
 
-def plotWindowed(statName, cohortText, cohortNoSpaceText, values, midpoints, prefix, contig, ylim, colour, save=True):
+def plot_windowed(statName, cohortText, cohortNoSpaceText, values, midpoints, prefix, contig, ylim, colour, save=True):
 
     """
     Saves to .tsv and plots windowed statistics
@@ -61,7 +61,7 @@ def plotWindowed(statName, cohortText, cohortNoSpaceText, values, midpoints, pre
 
     
 
-def plotRectangular(voiFreqTable, path, annot=True, xlab="Sample", ylab="Variant Of Interest", title=None, figsize=[10,10], cbar=True, vmax=None, rotate=True, cmap=sns.cubehelix_palette(start=.5, rot=-.75, as_cmap=True), dpi=300):
+def plot_rectangular(voiFreqTable, path, annot=True, xlab="Sample", ylab="Variant Of Interest", title=None, figsize=[10,10], cbar=True, vmax=None, rotate=True, cmap=sns.cubehelix_palette(start=.5, rot=-.75, as_cmap=True), dpi=300):
     if voiFreqTable is None or voiFreqTable.empty:
         _plot_empty_heatmap(path=path, figsize=figsize, dpi=dpi)
         return
@@ -87,7 +87,7 @@ def plotRectangular(voiFreqTable, path, annot=True, xlab="Sample", ylab="Variant
     plt.ylabel(ylab, fontdict={'fontsize':14})
     plt.savefig(path, bbox_inches='tight', dpi=dpi)
     
-def getAlleleFreqTable(muts, Path, var="sample", mean_=False, lowCov=10, id_col="Name"):
+def get_allele_freq_table(muts, Path, var="sample", mean_=False, lowCov=10, id_col="Name"):
     freq_frames = []
     cov_frames = []
     cov_var = "cov" if mean_== False else "cov_mean"
@@ -137,7 +137,7 @@ def _format_annot_value(x):
         return "0"
     return f"{x:.2f}".rstrip("0").rstrip(".")
 
-def plotTwoRectangular(FreqTable1, annotdf1, FreqTable2, annotdf2, path, ylab="Variant Of Interest", annotFontsize=50, ylabfontsize=28 ,ytickfontsize=18, title1=None, title2=None, figsize=[20,10], ratio='auto', vmax=None, rotate=True, cmap=sns.cubehelix_palette(start=.5, rot=-.75, as_cmap=True), dpi=100):
+def plot_two_rectangular(FreqTable1, annotdf1, FreqTable2, annotdf2, path, ylab="Variant Of Interest", annotFontsize=50, ylabfontsize=28 ,ytickfontsize=18, title1=None, title2=None, figsize=[20,10], ratio='auto', vmax=None, rotate=True, cmap=sns.cubehelix_palette(start=.5, rot=-.75, as_cmap=True), dpi=100):
     if FreqTable1 is None or FreqTable1.empty or FreqTable2 is None or FreqTable2.empty:
         _plot_empty_heatmap(path=path, figsize=figsize, dpi=dpi)
         return
@@ -260,7 +260,7 @@ def get_numbers_dict(ploidy):
     return(numbers)
 
 
-def readAndFilterVcf(path, contig, samples, ploidy, qualflt=30, missingfltprop=0.6, verbose=False):
+def read_and_filter_vcf(path, contig, samples, ploidy, qualflt=30, missingfltprop=0.6, verbose=False):
 
     """
     This function reads a VCF file, and filters it to a given quality and missingness proportion
@@ -315,7 +315,7 @@ def readAndFilterVcf(path, contig, samples, ploidy, qualflt=30, missingfltprop=0
     return(vcf, geno, ac_subpops, pos, alts, depth, snpeff, subpops, samplenames)
     
 
-def meanPBS(ac1, ac2, ac3, window_size, normalise):
+def mean_pbs(ac1, ac2, ac3, window_size, normalise):
     """
     This function calculate PBS on allele counts arrays and then takes the mean of all pbs values.
     """
@@ -329,7 +329,7 @@ def meanPBS(ac1, ac2, ac3, window_size, normalise):
     return(meanpbs, se, pbs, stats)
 
 
-def windowedDiversity(geno, pos, subpops, statistic='pi', window_size=20000):
+def windowed_diversity(geno, pos, subpops, statistic='pi', window_size=20000):
     ### Estimate in windows separately
     pi_dict = {}
     for pop, idx in subpops.items():
@@ -412,16 +412,6 @@ def plot_density(pos, window_size, title, path):
     if title:
         ax.set_title(title)
     fig.savefig(path)
-
-def meanPBS(ac1, ac2, ac3, window_size, normalise):
-    # pbs per variant
-    pbs = allel.pbs(ac1, ac2, ac3, window_size=window_size, normed=normalise)
-    # get average of all pbs values (will be per gene)
-    meanpbs = np.nanmean(pbs)
-    
-    _, se, stats = allel.stats.misc.jackknife(pbs, statistic=lambda n: np.mean(n))
-    
-    return(meanpbs, se, pbs, stats)
 
 def legend_without_duplicate_labels(ax, **kwargs):
     handles, labels = ax.get_legend_handles_labels()
@@ -534,7 +524,7 @@ def plot_aims(df, n_aims, species1="coluzzii", species2="gambiae", figtitle="AIM
     plt.savefig(f"results/variantAnalysis/ancestry/{figtitle}.pdf", dpi=300)
     plt.close()    
 
-def getSNPGffstats(gff, pos):
+def get_snp_gff_stats(gff, pos):
     """
     Calculates number of sites found that intersect with a GFF feature and the proportion % 
     """
@@ -563,8 +553,8 @@ def getSNPGffstats(gff, pos):
     RefDict = {}
     SamplesDict = {}
     for feature in ['chromosome', 'gene', 'exon', 'intron', 'three_prime_UTR', 'five_prime_UTR']:
-                RefDict[feature] = getSNPsinType(gff, refBases, feature, verbose=False)
-                SamplesDict[feature] = getSNPsinType(gff, pos, feature, verbose=False)
+                RefDict[feature] = get_snps_in_type(gff, refBases, feature, verbose=False)
+                SamplesDict[feature] = get_snps_in_type(gff, pos, feature, verbose=False)
     
     RefDict['intergenic'] = [RefIntergenicSNPs.shape[0], refBases.shape[0], RefIntergenicSNPs.shape[0]/refBases.shape[0]]
     SamplesDict['intergenic'] = [intergenicSNPs.shape[0], pos.shape[0], intergenicSNPs.shape[0]/pos.shape[0]]
@@ -579,7 +569,7 @@ def getSNPGffstats(gff, pos):
 
 
 
-def getSNPsinType(gff, pos, feature, verbose=False):
+def get_snps_in_type(gff, pos, feature, verbose=False):
     gf = gff.query("type == @feature")
 
     snps = pos.intersect_ranges(gf['start'], gf['end'])

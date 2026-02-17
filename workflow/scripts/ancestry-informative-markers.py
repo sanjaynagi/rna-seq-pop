@@ -38,7 +38,7 @@ for contig in contigs:
 
     # read in and filter data
     path = f"results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz"
-    vcf, geno, acsubpops, pos, alts, depth, snpeff, subpops, pops =  rnaseqpop.readAndFilterVcf(path=path,
+    vcf, geno, acsubpops, pos, alts, depth, snpeff, subpops, pops =  rnaseqpop.read_and_filter_vcf(path=path,
                                                                contig=contig,
                                                                samples=metadata,
                                                                ploidy=ploidy,
@@ -55,7 +55,7 @@ for contig in contigs:
     aimscolu = aims[contig]['colu_allele'][:][aims_mask_2]
     aimsgamb = aims[contig]['gamb_allele'][:][aims_mask_2]
 
-    # get mask that was used in readAndFilterVcf()
+    # get mask that was used in read_and_filter_vcf()
     mask = pos.locate_intersection(vcf['variants/POS'])[1]
     ref  = vcf['variants/REF'][mask][aims_pos_mask]
     alt = vcf['variants/ALT'][mask][aims_pos_mask]
@@ -184,7 +184,7 @@ if metadata['species'].isin(['arabiensis']).any():
 
         # read in and filter data
         path = f"results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz"
-        vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops = rnaseqpop.readAndFilterVcf(path=path,
+        vcf, geno, acsubpops, pos, depth, snpeff, subpops, pops = rnaseqpop.read_and_filter_vcf(path=path,
                                                                 contig=contig,
                                                                 samples=metadata,
                                                                 qualflt=qualflt,
@@ -200,7 +200,7 @@ if metadata['species'].isin(['arabiensis']).any():
         aimsgamb = aims[contig]['gambcolu_allele'][:][aims_mask_2]
         aimsarab = aims[contig]['arab_allele'][:][aims_mask_2]
 
-        # get mask that was used in readAndFilterVcf()
+        # get mask that was used in read_and_filter_vcf()
         mask = pos.locate_intersection(vcf['variants/POS'])[1]
         ref  = vcf['variants/REF'][mask][aims_pos_mask]
         alt = vcf['variants/ALT'][mask][aims_pos_mask]
