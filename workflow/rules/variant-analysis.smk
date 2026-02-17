@@ -1,4 +1,4 @@
-rule SNPstatistics:
+rule snp_statistics:
     """
     Calculate statistics such as no. of SNPs called in exons/introns/genes
     no. of missing SNPs
@@ -69,7 +69,7 @@ rule pca_notebook:
         cp {output.nb} {output.docs_nb} 2>> {log}
         """
 
-rule geneticDiversity_notebook:
+rule genetic_diversity_notebook:
     """
     Calculate population genetic summary statistics on genotype data 
     """
@@ -107,7 +107,7 @@ rule geneticDiversity_notebook:
         """
 
 
-rule WindowedFstPBS_notebook:
+rule windowed_fst_pbs_notebook:
     """
     Calculate population genetic summary statistics on genotype data 
     """
@@ -158,7 +158,7 @@ rule WindowedFstPBS_notebook:
         """
 
 
-rule PerGeneFstPBSDxyPi:
+rule per_gene_fst_pbs_dxy_pi:
     """
     Calculate Fst and PBS for each gene
     """
@@ -194,7 +194,7 @@ rule PerGeneFstPBSDxyPi:
         "../scripts/per-gene-fst-pbs.py"
 
 
-rule AncestryInformativeMarkers:
+rule ancestry_informative_markers:
     """
     Calculate the proportion of An.gambiae / An.coluzzii / An.arabiensis ancestry for each sample
     """
@@ -232,7 +232,7 @@ rule AncestryInformativeMarkers:
 contig_2l = 'AgamP4_2L' if '2L' not in config['contigs'] else '2L'
 contig_2r = 'AgamP4_2R' if '2R' not in config['contigs'] else '2R'
 
-rule Karyotyping:
+rule karyotyping:
     input:
         nb = f"{workflow.basedir}/notebooks/karyotype.ipynb",
         kernel = "results/.kernel.set",

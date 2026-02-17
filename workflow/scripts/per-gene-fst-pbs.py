@@ -54,7 +54,7 @@ for contig in contigs:
     # path to vcf
     path = f"results/variantAnalysis/vcfs/{dataset}.{contig}.vcf.gz"
     # function to read in vcfs and associated SNP data
-    vcf, geno, acsubpops, pos, alts, depth, snpeff, subpops, pops = rnaseqpop.readAndFilterVcf(path=path,
+    vcf, geno, acsubpops, pos, alts, depth, snpeff, subpops, pops = rnaseqpop.read_and_filter_vcf(path=path,
                                                                contig=contig, 
                                                                samples=metadata,
                                                                ploidy=ploidy,
@@ -116,7 +116,7 @@ for contig in contigs:
         if pbs is True:
             for pbscomp in pbscomps:
                 pop1, pop2, outpop = pbscomp.split("_")
-                pbs_per_comp[pbscomp],se,_,_ = rnaseqpop.meanPBS(acsubpops[pop1].compress(gene_bool, axis=0),
+                pbs_per_comp[pbscomp],se,_,_ = rnaseqpop.mean_pbs(acsubpops[pop1].compress(gene_bool, axis=0),
                                           acsubpops[pop2].compress(gene_bool, axis=0),
                                           acsubpops[outpop].compress(gene_bool, axis=0),
                                                      window_size=1,

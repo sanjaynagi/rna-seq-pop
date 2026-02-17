@@ -1,4 +1,4 @@
-rule mpileupVariantsOfInterest:
+rule mpileup_variants_of_interest:
     """
     Get allele count tables of variants of choice (specified in config file ("IRmutations.tsv"))
     """
@@ -6,16 +6,16 @@ rule mpileupVariantsOfInterest:
         bam="results/alignments/{sample}.star.bam" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam",
         idx="results/alignments/{sample}.star.bam.bai" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam.bai",
     output:
-        "results/variantAnalysis/variantsOfInterest/counts/{sample}_{mut}_allele_counts.tsv",
+        "results/variantAnalysis/variantsOfInterest/counts/{mut_id}/{sample}_allele_counts.tsv",
     conda:
         "../envs/variants.yaml"
     priority: 10
     log:
-        "logs/variantsOfInterestMpileup/{sample}_{mut}.log",
+        "logs/variantsOfInterestMpileup/{sample}_{mut_id}.log",
     params:
         region=lambda wildcards: mutationData[
-            mutationData.Name == wildcards.mut
-        ].Location.tolist(),
+            mutationData.mutID == wildcards.mut_id
+        ].Location.iloc[0],
         ref=config["reference"]["genome"].rstrip(".gz"),
         basedir=workflow.basedir,
     shell:
@@ -25,22 +25,22 @@ rule mpileupVariantsOfInterest:
         """
 
 
-rule AlleleBalanceVariantsOfInterest:
+rule allele_balance_variants_of_interest:
     """
     R script to take allele count tables from mpileupVOI rule and output .xlsx report for all mutations of interest
     """
     input:
         counts=expand(
-            "results/variantAnalysis/variantsOfInterest/counts/{sample}_{mut}_allele_counts.tsv",
+            "results/variantAnalysis/variantsOfInterest/counts/{mut_id}/{sample}_allele_counts.tsv",
             sample=samples,
-            mut=mutationData.Name,
+            mut_id=mutationData.mutID,
         ),
         metadata=config["metadata"],
         mutations=config["VariantsOfInterest"]["path"],
     output:
         expand(
-            "results/variantAnalysis/variantsOfInterest/csvs/{mut}_alleleBalance.csv",
-            mut=mutationData.Name,
+            "results/variantAnalysis/variantsOfInterest/csvs/{mut_id}_alleleBalance.csv",
+            mut_id=mutationData.mutID,
         ),
         alleleBalance="results/variantAnalysis/variantsOfInterest/alleleBalance.xlsx",
         mean_alleleBalance="results/variantAnalysis/variantsOfInterest/mean_alleleBalance.xlsx",
@@ -54,7 +54,7 @@ rule AlleleBalanceVariantsOfInterest:
 
 
 
-rule VariantsOfInterest_notebook:
+rule variants_of_interest_notebook:
     """
     Notebook to plot frequencies of Variants of interest
     """
@@ -62,8 +62,8 @@ rule VariantsOfInterest_notebook:
         nb = f"{workflow.basedir}/notebooks/variants-of-interest.ipynb",
         kernel = "results/.kernel.set",
         muts = expand(
-            "results/variantAnalysis/variantsOfInterest/csvs/{mut}_alleleBalance.csv",
-            mut=mutationData.Name,
+            "results/variantAnalysis/variantsOfInterest/csvs/{mut_id}_alleleBalance.csv",
+            mut_id=mutationData.mutID,
         ),
         VariantsOfInterest=config["VariantsOfInterest"]["path"],
     output:

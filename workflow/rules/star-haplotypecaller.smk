@@ -31,7 +31,7 @@ rule fq2bam:
     and outputting an aligned BAM file ready for variant and fusion calling. 
     """
     input:
-        reads=getFASTQs,
+        reads=get_fastqs,
         ref_fasta=config["reference"]["genome"].rstrip(".gz"),
         star_index= "resources/reference/star_index",
     output:

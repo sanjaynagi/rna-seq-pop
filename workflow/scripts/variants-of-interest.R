@@ -22,38 +22,152 @@ load_metadata <- function(metadata_path) {
   return(metadata)
 }
 
+sanitize_token <- function(x) {
+  x <- trimws(as.character(x))
+  x <- gsub("\\s+", "_", x)
+  gsub("[^A-Za-z0-9._-]", "_", x)
+}
+
+make_mut_id <- function(names, locations) {
+  raw_ids <- paste0(sanitize_token(names), "__", sanitize_token(locations))
+  dup_idx <- ave(seq_along(raw_ids), raw_ids, FUN = seq_along)
+  ifelse(dup_idx == 1, raw_ids, paste0(raw_ids, "__dup", dup_idx))
+}
+
+parse_location <- function(location) {
+  location <- as.character(location)
+  loc_parts <- strsplit(location, ":", fixed = TRUE)[[1]]
+  chrom <- ifelse(length(loc_parts) >= 1, loc_parts[1], NA_character_)
+  pos_block <- ifelse(length(loc_parts) >= 2, loc_parts[2], NA_character_)
+  pos <- suppressWarnings(as.integer(strsplit(pos_block, "-", fixed = TRUE)[[1]][1]))
+  list(chrom = chrom, pos = pos)
+}
+
+fallback_counts <- function(location) {
+  loc <- parse_location(location)
+  data.table(
+    chrom = loc$chrom,
+    pos = loc$pos,
+    ref = "N",
+    cov = 0,
+    A = 0,
+    C = 0,
+    G = 0,
+    T = 0
+  )
+}
+
+safe_read_counts <- function(path, location) {
+  if (!file.exists(path)) {
+    warning(glue("Missing allele count file: {path}. Using zero-coverage fallback row."))
+    return(fallback_counts(location))
+  }
+
+  dt <- tryCatch(
+    fread(path, sep = "\t", fill = TRUE),
+    error = function(e) data.table()
+  )
+
+  if (nrow(dt) == 0) {
+    return(fallback_counts(location))
+  }
+
+  required_cols <- c("chrom", "pos", "ref", "cov", "A", "C", "G", "T")
+  for (col_name in required_cols) {
+    if (!col_name %in% names(dt)) {
+      default_value <- if (col_name %in% c("chrom", "ref")) NA_character_ else 0
+      dt[, (col_name) := default_value]
+    }
+  }
+
+  dt <- dt[, ..required_cols]
+  numeric_cols <- c("pos", "cov", "A", "C", "G", "T")
+  dt[, (numeric_cols) := lapply(.SD, as.numeric), .SDcols = numeric_cols]
+  dt
+}
+
+first_or_na <- function(x) {
+  x <- x[!is.na(x)]
+  if (length(x) == 0) {
+    return(NA_real_)
+  }
+  x[[1]]
+}
+
+make_unique_sheet_names <- function(labels) {
+  labels <- as.character(labels)
+  labels <- gsub("[:\\\\/?*\\[\\]]", "_", labels)
+  labels[is.na(labels) | labels == ""] <- "Mutation"
+  output <- character(length(labels))
+  seen <- integer(0)
+  names(seen) <- character(0)
+
+  for (i in seq_along(labels)) {
+    base <- labels[[i]]
+    if (!base %in% names(seen)) {
+      seen[[base]] <- 1L
+      output[[i]] <- substr(base, 1, 31)
+    } else {
+      seen[[base]] <- seen[[base]] + 1L
+      suffix <- paste0("_", seen[[base]])
+      keep <- max(1, 31 - nchar(suffix))
+      output[[i]] <- paste0(substr(base, 1, keep), suffix)
+    }
+  }
+
+  if (any(duplicated(output))) {
+    output <- make.unique(output, sep = "_")
+    output <- substr(output, 1, 31)
+  }
+  output
+}
+
 #### allele imbalance ####
 metadata = load_metadata(snakemake@input[['metadata']])
 samples = metadata$sampleID
 # Read IR mutation data 
 mutation_data = fread(snakemake@input[['mutations']], sep="\t")
+mutation_data[, mutID := make_mut_id(Name, Location)]
+mutation_data[, ALT2 := ifelse(is.na(ALT2), "", ALT2)]
 
-all_list = list()
-mean_list = list()
+all_list = vector("list", nrow(mutation_data))
+mean_list = vector("list", nrow(mutation_data))
+display_names = mutation_data$Name
 
 # Loop through each mutation, finding allele coverage at each position
-for (m in mutation_data$Name){
+for (i in seq_len(nrow(mutation_data))){
+  mut <- mutation_data[i]
+  m <- mut$Name
+  mut_id <- mut$mutID
   
-  base = mutation_data[mutation_data$Name == m]$ALT
-  propstring = glue("proportion{base}")
-  base2 = mutation_data[mutation_data$Name == m]$ALT2 #### add in if second alt
-  propstring2 = glue("proportion{base2}")
+  base <- toupper(mut$ALT)
+  propstring <- glue("proportion{base}")
+  base2 <- toupper(mut$ALT2)
+  propstring2 <- glue("proportion{base2}")
+  has_base <- base %in% c("A", "C", "G", "T")
+  has_base2 <- nzchar(base2) && base2 %in% c("A", "C", "G", "T")
   
   #### load allele balance data ####
   allele_list = list()
   # read data for each sample and subset to what we want
   for (sample in samples){
-    allele_list[[sample]] = fread(glue("results/variantAnalysis/variantsOfInterest/counts/{sample}_{m}_allele_counts.tsv"))[,c(1:8)] #for each sample read data, and store first 8 columns 
+    counts_path <- glue("results/variantAnalysis/variantsOfInterest/counts/{mut_id}/{sample}_allele_counts.tsv")
+    allele_list[[sample]] <- safe_read_counts(counts_path, mut$Location)
     allele_list[[sample]]$sample = sample                                            #add sample column
     allele_list[[sample]]$treatment = metadata$treatment[samples == sample]         #add treatment column
     allele_list[[sample]]$mutation = m
-    allele_list[[sample]]$gene = mutation_data[mutation_data$Name == m]$Gene
+    allele_list[[sample]]$gene = mut$Gene
     
     cover = allele_list[[sample]] %>% select(A,C,G,T) %>% rowSums()
-    allele_list[[sample]] = allele_list[[sample]] %>% mutate(!!propstring := (!!sym(base))/cover) #new column, proportion of Alts to total.  
+    if (has_base) {
+      allele_list[[sample]] = allele_list[[sample]] %>% mutate(!!propstring := ifelse(cover > 0, (!!sym(base))/cover, NA_real_))
+    } else {
+      warning(glue("Mutation '{m}' has invalid ALT '{base}'. Setting frequency to NA."))
+      allele_list[[sample]] = allele_list[[sample]] %>% mutate(!!propstring := NA_real_)
+    }
     
-    if (!base2 %in% c("", NA)){
-      allele_list[[sample]] = allele_list[[sample]] %>% mutate(!!propstring2 := (!!sym(base2))/cover) #new column, proportion of Alts to total.  
+    if (has_base2){
+      allele_list[[sample]] = allele_list[[sample]] %>% mutate(!!propstring2 := ifelse(cover > 0, (!!sym(base2))/cover, NA_real_))
     }
   }
   
@@ -66,50 +180,73 @@ for (m in mutation_data$Name){
     
     alleles_per_pop = alleles %>% filter(treatment == pop) 
     
-    pop_prop = sum(alleles_per_pop[, ..base])/ sum(alleles_per_pop[, 'cov'])
-    error = sqrt((pop_prop*(1-pop_prop))/nrow(alleles_per_pop))*1.96
-    lower = pmax(pop_prop - error, 0)
-    upper = pmin(pop_prop + error, 1)
+    sum_cov <- sum(alleles_per_pop$cov, na.rm = TRUE)
+    n_obs <- sum(alleles_per_pop$cov > 0, na.rm = TRUE)
+    pop_prop <- if (has_base && sum_cov > 0) sum(alleles_per_pop[, ..base], na.rm = TRUE) / sum_cov else NA_real_
+    error <- if (!is.na(pop_prop) && n_obs > 0) sqrt((pop_prop * (1 - pop_prop)) / n_obs) * 1.96 else NA_real_
+    lower <- if (!is.na(error)) pmax(pop_prop - error, 0) else NA_real_
+    upper <- if (!is.na(error)) pmin(pop_prop + error, 1) else NA_real_
     
     alleles_per_pop_list[[pop]] = alleles_per_pop %>% mutate(!!propstring := pop_prop, lowerCI = lower, upperCI = upper)
     
-    # average across replicates
-    if (!base2 %in% c("", NA)){
-      pop_prop2 = sum(alleles_per_pop[, ..base2])/ sum(alleles_per_pop[, 'cov'])
-      error2 = sqrt((pop_prop*(1-pop_prop))/nrow(alleles_per_pop))*1.96
-      lower2 = pmax(pop_prop - error, 0)
-      upper2 = pmin(pop_prop + error, 1)
+    if (has_base2){
+      pop_prop2 <- if (sum_cov > 0) sum(alleles_per_pop[, ..base2], na.rm = TRUE) / sum_cov else NA_real_
+      error2 <- if (!is.na(pop_prop2) && n_obs > 0) sqrt((pop_prop2 * (1 - pop_prop2)) / n_obs) * 1.96 else NA_real_
+      lower2 <- if (!is.na(error2)) pmax(pop_prop2 - error2, 0) else NA_real_
+      upper2 <- if (!is.na(error2)) pmin(pop_prop2 + error2, 1) else NA_real_
       
-      alleles_per_pop_list[[pop]] = alleles_per_pop_list[[pop]] %>% mutate(!!propstring2 := pop_prop2, lowerCI_2 = lower2, upperCI_2 = upper2)
+      alleles_per_pop_list[[pop]] = alleles_per_pop_list[[pop]] %>%
+        mutate(!!propstring2 := pop_prop2, lowerCI_2 = lower2, upperCI_2 = upper2)
     }
   }
   
   mean_alleles = rbindlist(alleles_per_pop_list, fill=TRUE)
   
-  # average across replicates
-  if (!base2 %in% c("", NA)){
-    mean_alleles = mean_alleles %>% 
-      group_by(chrom, pos, ref, mutation, treatment, !!sym(propstring), lowerCI, upperCI, !!sym(propstring2), lowerCI_2, upperCI_2) %>% 
-      summarise_at(.vars = c("cov","A","C","G","T"), .funs = c(mean="mean"), na.rm = TRUE) %>% 
-      select(chrom, pos, ref, mutation, treatment, cov_mean, A_mean, C_mean, G_mean, T_mean, lowerCI, upperCI, !!propstring, !!propstring2, lowerCI_2, upperCI_2)
+  if (has_base2){
+    mean_alleles = mean_alleles %>%
+      group_by(chrom, pos, ref, mutation, treatment, gene) %>%
+      summarise(
+        cov_mean = mean(cov, na.rm = TRUE),
+        A_mean = mean(A, na.rm = TRUE),
+        C_mean = mean(C, na.rm = TRUE),
+        G_mean = mean(G, na.rm = TRUE),
+        T_mean = mean(T, na.rm = TRUE),
+        lowerCI = first_or_na(lowerCI),
+        upperCI = first_or_na(upperCI),
+        prop_value = first_or_na(!!sym(propstring)),
+        prop_value_2 = first_or_na(!!sym(propstring2)),
+        lowerCI_2 = first_or_na(lowerCI_2),
+        upperCI_2 = first_or_na(upperCI_2),
+        .groups = "drop"
+      )
+    mean_alleles <- mean_alleles %>% rename(!!propstring := prop_value, !!propstring2 := prop_value_2)
   } else {
-    mean_alleles = mean_alleles %>% 
-      group_by(chrom, pos, ref, mutation, treatment, !!sym(propstring), lowerCI, upperCI) %>% 
-      summarise_at(.vars = c("cov","A","C","G","T"), .funs = c(mean="mean"), na.rm = TRUE) %>% 
-      select(chrom,pos, ref, mutation, treatment, cov_mean, A_mean, C_mean, G_mean, T_mean, lowerCI, upperCI, !!propstring)
+    mean_alleles = mean_alleles %>%
+      group_by(chrom, pos, ref, mutation, treatment, gene) %>%
+      summarise(
+        cov_mean = mean(cov, na.rm = TRUE),
+        A_mean = mean(A, na.rm = TRUE),
+        C_mean = mean(C, na.rm = TRUE),
+        G_mean = mean(G, na.rm = TRUE),
+        T_mean = mean(T, na.rm = TRUE),
+        lowerCI = first_or_na(lowerCI),
+        upperCI = first_or_na(upperCI),
+        prop_value = first_or_na(!!sym(propstring)),
+        .groups = "drop"
+      )
+    mean_alleles <- mean_alleles %>% rename(!!propstring := prop_value)
   }
   
-  #write to file, reorder mean_kdr_alleles
-  fwrite(alleles, glue("results/variantAnalysis/variantsOfInterest/csvs/{m}_alleleBalance.csv"))
-  fwrite(mean_alleles, glue("results/variantAnalysis/variantsOfInterest/csvs/mean_{m}_alleleBalance.csv"))
+  fwrite(alleles, glue("results/variantAnalysis/variantsOfInterest/csvs/{mut_id}_alleleBalance.csv"))
+  fwrite(mean_alleles, glue("results/variantAnalysis/variantsOfInterest/csvs/mean_{mut_id}_alleleBalance.csv"))
   
-  all_list[[m]] = alleles
-  mean_list[[m]] = mean_alleles
+  all_list[[i]] = alleles
+  mean_list[[i]] = mean_alleles
 }
 
 #### write to excel file on diff sheets #### 
 results_list = all_list
-sheets = unique(mutation_data$Name)
+sheets = make_unique_sheet_names(display_names)
 wb <- createWorkbook("Workbook")
 
 for (i in 1:length(sheets)){
@@ -123,7 +260,7 @@ saveWorkbook(wb,file=snakemake@output[['alleleBalance']], overwrite = TRUE)
 ### mean balance ####
 #### write to excel file on diff sheets #### 
 results_list = mean_list
-sheets = unique(mutation_data$Name)
+sheets = make_unique_sheet_names(display_names)
 wb <- createWorkbook("Workbook")
 
 for (i in 1:length(sheets)){
