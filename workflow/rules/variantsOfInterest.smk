@@ -6,7 +6,7 @@ rule mpileupVariantsOfInterest:
         bam="results/alignments/{sample}.star.bam" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam",
         idx="results/alignments/{sample}.star.bam.bai" if config['pipeline'] == 'parabricks' else "results/alignments/{sample}.hisat2.bam.bai",
     output:
-        "results/variantAnalysis/variantsOfInterest/counts/{sample}_{mut_id}_allele_counts.tsv",
+        "results/variantAnalysis/variantsOfInterest/counts/{mut_id}/{sample}_allele_counts.tsv",
     conda:
         "../envs/variants.yaml"
     priority: 10
@@ -31,7 +31,7 @@ rule AlleleBalanceVariantsOfInterest:
     """
     input:
         counts=expand(
-            "results/variantAnalysis/variantsOfInterest/counts/{sample}_{mut_id}_allele_counts.tsv",
+            "results/variantAnalysis/variantsOfInterest/counts/{mut_id}/{sample}_allele_counts.tsv",
             sample=samples,
             mut_id=mutationData.mutID,
         ),

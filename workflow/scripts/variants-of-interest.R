@@ -151,7 +151,7 @@ for (i in seq_len(nrow(mutation_data))){
   allele_list = list()
   # read data for each sample and subset to what we want
   for (sample in samples){
-    counts_path <- glue("results/variantAnalysis/variantsOfInterest/counts/{sample}_{mut_id}_allele_counts.tsv")
+    counts_path <- glue("results/variantAnalysis/variantsOfInterest/counts/{mut_id}/{sample}_allele_counts.tsv")
     allele_list[[sample]] <- safe_read_counts(counts_path, mut$Location)
     allele_list[[sample]]$sample = sample                                            #add sample column
     allele_list[[sample]]$treatment = metadata$treatment[samples == sample]         #add treatment column
