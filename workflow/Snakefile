@@ -28,7 +28,7 @@ if config['VariantsOfInterest']['activate']:
         + "__dup"
         + (mutid_dupe_index[mutid_dupe_index > 0] + 1).astype(str)
     )
-    include: "rules/variants_of_interest.smk"
+    include: "rules/variants-of-interest.smk"
 
 welcome(version="v2.3.0")
 
